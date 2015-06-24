@@ -1,7 +1,6 @@
 var CategoryListController = ['$scope', '$timeout', '$location', 'Category', 'Feed', 'Bridge', '$route', '$routeParams',
   function($scope, $timeout, $location, Category, Feed, Bridge, $route, $routeParams) {
 
-    /*
     var lastRoute = $route.current;
     $scope.$on('$locationChangeSuccess', function(event) {
       if($location.path() !== '/') {
@@ -39,7 +38,7 @@ var CategoryListController = ['$scope', '$timeout', '$location', 'Category', 'Fe
       {
         $scope.status.post_selected = false;
       }
-    });*/
+    });
 
   	$scope.categories = [];
   	$scope.resolving  = true;
@@ -64,6 +63,7 @@ var CategoryListController = ['$scope', '$timeout', '$location', 'Category', 'Fe
 
   	$scope.startupFeed = function(category) {
   		$scope.resolving_posts = true;
+      $scope.previewStyle = {'background-image': 'url(/images/boards/'+$scope.category.slug+'.png)'};
 
   		Feed.get({limit: 10, offset: 0, category: category.slug}, function(data) {
         for(p in data.feed) {
@@ -78,7 +78,6 @@ var CategoryListController = ['$scope', '$timeout', '$location', 'Category', 'Fe
   			$scope.resolving_posts = false;
   			$scope.offset = 10;
   		});
-      //$scope.walkFeed();
 
   		$timeout(function() {
   			$scope.$broadcast('changedContainers');
@@ -107,7 +106,7 @@ var CategoryListController = ['$scope', '$timeout', '$location', 'Category', 'Fe
   	$scope.turnCategory = function(category) {
   		$scope.category = category;
   		$scope.startupFeed(category);
-  		$scope.previewStyle = {'background-image': 'url(/public/img/boards/'+$scope.category.slug+'.png)'};
+  		$scope.previewStyle = {'background-image': 'url(/images/boards/'+$scope.category.slug+'.png)'};
 
   		// Reset counters if exists though
   		$scope.category.recent = 0;
@@ -122,7 +121,7 @@ var CategoryListController = ['$scope', '$timeout', '$location', 'Category', 'Fe
   		$scope.activePostId = post.id;
       $scope.status.post_selected = true;
   		Bridge.changePost(post);
-      $(window).scrollTop(0);
+      //$(window).scrollTop(0);
   		ga('send', 'pageview', '/post/' + $scope.category.slug + '/' + post.id);
   	};
 
@@ -136,31 +135,13 @@ var CategoryListController = ['$scope', '$timeout', '$location', 'Category', 'Fe
 
   	// Resolve categories though
   	Category.query(function(data) {
-
   		$scope.resolving = false;
   		$scope.categories = data;
 
-      //var colorThief = new ColorThief();
-      for(var c in $scope.categories) {
-        cat = $scope.categories[c];
-        //console.log(cat.id != undefined)
-        if(cat.id != undefined) {
-          //var img = $("<img />").attr("src", "/images/boards/" + cat.slug + ".png");
-          /*var img = new Image();
-          img.onload = function () {
-            var colorThief = new ColorThief();
-            colorThief.getColor(img);
-          };
-          img.src = "/images/boards/" + cat.slug + ".png";*/
-
-          //img.load(function(){
-            //color = colorThief.getColor(img[0]);
-          //});
-          //console.log(img[0])
-          //color = colorThief.getColor(img.src);
-          //console.log('Color:' + color);
-        }
-      }
+      // Preload the images for each board
+      for (var category in $scope.categories) {
+        $("<img />").attr("src", "/images/boards/" + $scope.categories[category].slug + ".png");
+      }// Error undefined
 
   		// Once the categories has been resolved then catch the first one and try to fetch the feed for it
   		var path = $location.path();
@@ -175,7 +156,6 @@ var CategoryListController = ['$scope', '$timeout', '$location', 'Category', 'Fe
     			for (var category in $scope.categories) {
     				if ($scope.categories[category].slug == category_segment) {
     					$scope.category = $scope.categories[category];
-    					//$scope.previewStyle = {'background-image': 'url(/public/img/boards/'+$scope.category.slug+'.png)'};
     					$scope.startupFeed($scope.category);
     					$scope.$broadcast('changedContainers');
     					$scope.$broadcast('scrollMeUpdate');
@@ -188,18 +168,10 @@ var CategoryListController = ['$scope', '$timeout', '$location', 'Category', 'Fe
         }
   		}
   		if (loaded == false) {
-  			$scope.category = {slug:''}//$scope.categories[0];
-  			//$scope.previewStyle = {'background-image': 'url(/public/img/boards/'+$scope.category.slug+'.png)'};
+  			$scope.category = $scope.categories[0];
   			$scope.startupFeed($scope.category);
   			$scope.$broadcast('changedContainers');
   		}
-
-  		// Preload the images for each board
-  		/*for (var category in $scope.categories) {
-  			$("<img />").attr("src", "/public/img/boards/" + $scope.categories[category].slug + ".png");
-  		}*/ // Error undefined
   	});
-
-    //console.log(User);
   }
 ];

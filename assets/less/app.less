@@ -8,6 +8,7 @@
 @import "forum/components.less";
 @import "forum/notifications.less";
 @import "forum/user.less";
+@import "forum/wizzy.less";
 
 .row-no-padding {
   margin-left: 0;
@@ -325,16 +326,11 @@ body {
   overflow-x: hidden;
   overflow-y: scroll;
 }
-
 .board-list .list .board-item {
   padding: 0.8em 1.5em;
   border-bottom: 2px solid #F4F6F8;
   position: relative;
 }
-.board-list .list .board-item.active {
-  background: #F6F9FC;
-}
-
 .board-list .list .board-item h4 {
   font: inherit;
   font-weight: 700;
@@ -346,7 +342,9 @@ body {
 
 .board-list .list .board-item:hover {
   cursor: pointer;
-  background: #ECF0F5;
+  h4 {
+    color: @brand-primary;
+  }
 }
 
 .board-list .list .board-item p {
@@ -355,18 +353,6 @@ body {
   font-size: 12px;
   line-height: 20px;
   margin-bottom: 1em;
-}
-
-.board-list .list .board-item .counters {
-  color: #7C8592;
-  text-align: right;
-  font: inherit;
-  font-size: 12px;
-}
-
-.board-list .list .board-item .counters i {
-  color: #B2CEE6;
-  font-size: 16px;
 }
 
 .board-list .list .board-item .pending {
@@ -382,6 +368,12 @@ body {
   font-weight: 700;
   top: 12px;
   right: 15px;
+}
+
+.board-list .list .board-item.active {
+  p {
+    color: @brand-primary;
+  }
 }
 
 .current-board {
@@ -446,14 +438,10 @@ body {
 
 .current-board .list .post-item {
   border-bottom: 1px solid #F4F5F8;
-  padding-top: 0.7em;
-  padding-bottom: 0.7em;
   padding: 0.7em;
-  /*margin-bottom: 1em;*/
+  padding-top: 1.2em;
+  padding-bottom: 1.2em;
 
-  &.active {
-    background-color: @brand-primary-lighter;
-  }
   img {
     width: 50px;
     height: 50px;
@@ -470,12 +458,14 @@ body {
 }
 
 .current-board .list .post-item .author {
-  color: darken(@brand-primary, 10%);
+  color: @brand-primary-opaque;
   display: block;
   font-size: 12px;
+  margin-bottom: 0.5em;
+
   a {
     font-weight: bold;
-    color: darken(@brand-primary, 10%);
+    color: @brand-primary-opaque;
   }
 }
 
@@ -483,11 +473,12 @@ body {
   font-style: normal;
 }
 
-.current-board .list .post-item .counters {
+ul.counters {
   color: #7C8592;
   text-align: right;
   font: inherit;
-  font-size: 13px;
+  font-size: 11px;
+  line-height: 14px;
   margin-bottom: 0;
   list-style-type: none;
 
@@ -495,10 +486,18 @@ body {
     display: inline-block;
     margin-left: 10px;
     min-width: 20px;
+    text-transform: uppercase;
 
     i {
       color: @brand-primary;
-      font-size: 1
+      font-size: 14px;
+    }
+  }
+
+  .pinned {
+    color: #EA400E;
+    i {
+      color: #EA400E;
     }
   }
 }

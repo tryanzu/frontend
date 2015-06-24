@@ -1457,69 +1457,40 @@ iw.directive('idiotWizzy', function ($window, $document) {
       model: '=',
       trigger: '=action'
     },
-    template: 
-      '<div class="idiot-wizzy">' +
-        '<div class="content" contenteditable ng-model="model"></div>' +
-        '<div class="actions">' +
-          '<nav>' +
-            '<button ng-click="apply(\'bold\')" class="bold"><i class="fa fa-bold"></i></button>' + 
-            '<a ng-click="actionover(\'bold\')"><i class="fa fa-italic"></i></a>' + 
-            '<a ng-click="actionover(\'bold\')"><i class="fa fa-list"></i></a>' + 
-            '<a ng-click="actionover(\'bold\')"><i class="fa fa-link"></i></a>' + 
-            '<a ng-click="actionover(\'bold\')"><i class="fa fa-camera-retro"></i></a>' + 
-            '<a ng-click="publish()" ng-class="{waiting: waiting==true}" class="button">Publicar</a>' +
-          '</nav>' +
-        '</div>' +
-      '</div>'
-    ,
+    templateUrl: '/js/partials/wizzy.html',
     link: function(scope, element, attrs) {
-
       var getSelection = function() {
-
         return window.getSelection();
       };
 
-      scope.waiting = false; 
+      scope.waiting = false;
 
       scope.publish = function() {
-
         if (scope.waiting == false) {
-
-            scope.waiting = true;
-
-            var http = scope.trigger();
-
-            http.then(function(data) {
-
-              // Allow to comment once again
-              scope.waiting = false;
-              scope.model = '';
-
-            }, function(error) {
-
-
-            });
+          scope.waiting = true;
+          var http = scope.trigger();
+          http.then(function(data) {
+            // Allow to comment once again
+            scope.waiting = false;
+            scope.model = '';
+          }, function(error) {
+          });
         }
       };
 
       scope.apply = function(name) {
-
         // Get current text selection
         var selection = getSelection();
         var parentElement = selection.anchorNode.parentElement;
-
         if (parentElement == element[0].querySelector('.content')) {
-
           var range = selection.getRangeAt(0);
           var starts_at = range.startOffset;
           var ends_at   = range.endOffset;
           var content   = scope.model;
-
           console.log('starts: ' + starts_at + ' - ends_at: ' + ends_at);
           console.log(content.substr(starts_at, ends_at));
 
           markdown = content.substr(0, starts_at) + '*' + content.substr(starts_at, ends_at-starts_at) + '*' + content.substr(ends_at);
-
           scope.model = markdown;
         }
       };
@@ -2241,7 +2212,6 @@ var CategoryService = function($resource) {
 var CategoryListController = ['$scope', '$timeout', '$location', 'Category', 'Feed', 'Bridge', '$route', '$routeParams',
   function($scope, $timeout, $location, Category, Feed, Bridge, $route, $routeParams) {
 
-    /*
     var lastRoute = $route.current;
     $scope.$on('$locationChangeSuccess', function(event) {
       if($location.path() !== '/') {
@@ -2279,7 +2249,7 @@ var CategoryListController = ['$scope', '$timeout', '$location', 'Category', 'Fe
       {
         $scope.status.post_selected = false;
       }
-    });*/
+    });
 
   	$scope.categories = [];
   	$scope.resolving  = true;
@@ -2304,6 +2274,7 @@ var CategoryListController = ['$scope', '$timeout', '$location', 'Category', 'Fe
 
   	$scope.startupFeed = function(category) {
   		$scope.resolving_posts = true;
+      $scope.previewStyle = {'background-image': 'url(/images/boards/'+$scope.category.slug+'.png)'};
 
   		Feed.get({limit: 10, offset: 0, category: category.slug}, function(data) {
         for(p in data.feed) {
@@ -2318,7 +2289,6 @@ var CategoryListController = ['$scope', '$timeout', '$location', 'Category', 'Fe
   			$scope.resolving_posts = false;
   			$scope.offset = 10;
   		});
-      //$scope.walkFeed();
 
   		$timeout(function() {
   			$scope.$broadcast('changedContainers');
@@ -2347,7 +2317,7 @@ var CategoryListController = ['$scope', '$timeout', '$location', 'Category', 'Fe
   	$scope.turnCategory = function(category) {
   		$scope.category = category;
   		$scope.startupFeed(category);
-  		$scope.previewStyle = {'background-image': 'url(/public/img/boards/'+$scope.category.slug+'.png)'};
+  		$scope.previewStyle = {'background-image': 'url(/images/boards/'+$scope.category.slug+'.png)'};
 
   		// Reset counters if exists though
   		$scope.category.recent = 0;
@@ -2362,7 +2332,7 @@ var CategoryListController = ['$scope', '$timeout', '$location', 'Category', 'Fe
   		$scope.activePostId = post.id;
       $scope.status.post_selected = true;
   		Bridge.changePost(post);
-      $(window).scrollTop(0);
+      //$(window).scrollTop(0);
   		ga('send', 'pageview', '/post/' + $scope.category.slug + '/' + post.id);
   	};
 
@@ -2376,31 +2346,13 @@ var CategoryListController = ['$scope', '$timeout', '$location', 'Category', 'Fe
 
   	// Resolve categories though
   	Category.query(function(data) {
-
   		$scope.resolving = false;
   		$scope.categories = data;
 
-      //var colorThief = new ColorThief();
-      for(var c in $scope.categories) {
-        cat = $scope.categories[c];
-        //console.log(cat.id != undefined)
-        if(cat.id != undefined) {
-          //var img = $("<img />").attr("src", "/images/boards/" + cat.slug + ".png");
-          /*var img = new Image();
-          img.onload = function () {
-            var colorThief = new ColorThief();
-            colorThief.getColor(img);
-          };
-          img.src = "/images/boards/" + cat.slug + ".png";*/
-
-          //img.load(function(){
-            //color = colorThief.getColor(img[0]);
-          //});
-          //console.log(img[0])
-          //color = colorThief.getColor(img.src);
-          //console.log('Color:' + color);
-        }
-      }
+      // Preload the images for each board
+      for (var category in $scope.categories) {
+        $("<img />").attr("src", "/images/boards/" + $scope.categories[category].slug + ".png");
+      }// Error undefined
 
   		// Once the categories has been resolved then catch the first one and try to fetch the feed for it
   		var path = $location.path();
@@ -2415,7 +2367,6 @@ var CategoryListController = ['$scope', '$timeout', '$location', 'Category', 'Fe
     			for (var category in $scope.categories) {
     				if ($scope.categories[category].slug == category_segment) {
     					$scope.category = $scope.categories[category];
-    					//$scope.previewStyle = {'background-image': 'url(/public/img/boards/'+$scope.category.slug+'.png)'};
     					$scope.startupFeed($scope.category);
     					$scope.$broadcast('changedContainers');
     					$scope.$broadcast('scrollMeUpdate');
@@ -2428,19 +2379,11 @@ var CategoryListController = ['$scope', '$timeout', '$location', 'Category', 'Fe
         }
   		}
   		if (loaded == false) {
-  			$scope.category = {slug:''}//$scope.categories[0];
-  			//$scope.previewStyle = {'background-image': 'url(/public/img/boards/'+$scope.category.slug+'.png)'};
+  			$scope.category = $scope.categories[0];
   			$scope.startupFeed($scope.category);
   			$scope.$broadcast('changedContainers');
   		}
-
-  		// Preload the images for each board
-  		/*for (var category in $scope.categories) {
-  			$("<img />").attr("src", "/public/img/boards/" + $scope.categories[category].slug + ".png");
-  		}*/ // Error undefined
   	});
-
-    //console.log(User);
   }
 ];
 
@@ -2547,7 +2490,7 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post) {
 	});
 
   var addImagePreview = function(comment) {
-    console.log(comment);
+    //console.log(comment);
     var regex = new RegExp("(https?:\/\/.*\.(?:png|jpg|jpeg|JPEG|PNG|JPG|gif|GIF))");
     var res = regex.exec(comment.content);
     if(res) {
@@ -2555,7 +2498,6 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post) {
       var image = "<div class=\"img-preview\"><p>Vista previa</p><a href=\""+res[0]+"\" target=\"_blank\"><img src=\"" + res[0] + "\" style=\"max-height: 200px; width: auto; max-width: 100%;\"></a></div>";
       comment.content += image;
     }
-    console.log("terminé! TWSS");
   }
 };
 
@@ -2958,7 +2900,7 @@ var boardApplication = angular.module('board', [
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider',
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider) {
 
-  /*
+
   $routeProvider.when('/', {
     templateUrl: '/js/partials/main.html',
     controller: 'CategoryListController'
@@ -2986,7 +2928,7 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
     }
   });
   $routeProvider.otherwise({ redirectTo: '/' });
-  */
+
 
   // Please note we're annotating the function so that the $injector works when the file is minified
   jwtInterceptorProvider.tokenGetter = ['config', 'jwtHelper', function(config, jwtHelper) {

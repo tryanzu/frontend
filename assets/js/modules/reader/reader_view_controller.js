@@ -90,7 +90,7 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post) {
 	});
 
   var addImagePreview = function(comment) {
-    console.log(comment);
+    //console.log(comment);
     var regex = new RegExp("(https?:\/\/.*\.(?:png|jpg|jpeg|JPEG|PNG|JPG|gif|GIF))");
     var res = regex.exec(comment.content);
     if(res) {
@@ -98,6 +98,5 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post) {
       var image = "<div class=\"img-preview\"><p>Vista previa</p><a href=\""+res[0]+"\" target=\"_blank\"><img src=\"" + res[0] + "\" style=\"max-height: 200px; width: auto; max-width: 100%;\"></a></div>";
       comment.content += image;
     }
-    console.log("terminé! TWSS");
   }
 };

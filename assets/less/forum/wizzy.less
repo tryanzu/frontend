@@ -1,0 +1,49 @@
+.idiot-wizzy {
+  background: #F8F9FB;
+  border: 1px solid #BBC0CB;
+  border-radius: 6px;
+  font: 14px "Open Sans", sans-serif;
+
+  .content {
+    color: #666F7D;
+    min-height: 140px;
+    padding: 1em 2em;
+
+    box-shadow: inset 0px 4px 3px 0px rgba(187,192,203,0.2);
+  }
+}
+
+.idiot-wizzy .actions {
+  background: #ffffff;
+  border-top: 1px solid #E4E6EB;
+  border-bottom-right-radius: 6px;
+  border-bottom-left-radius: 6px;
+  text-align: right;
+  padding-right: 0.5em;
+
+  .btn {
+    padding-left: 2.5em;
+    padding-right: 2.5em;
+  }
+
+  nav i {
+    border-right: 1px solid #E4E6EB;
+    color: #ACB3BF;
+    display: inline-block;
+    padding: 0.8em 1.1em;
+  }
+
+  nav i:hover {
+    color: @brand-primary;
+    cursor: pointer;
+  }
+}
+
+.idiot-wizzy .content:focus {
+  outline: none;
+}
+
+.idiot-wizzy .content::selection {
+  background: @brand-primary;
+  color: #ffffff;
+}
