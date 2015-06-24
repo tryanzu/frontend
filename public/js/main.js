@@ -2241,6 +2241,7 @@ var CategoryService = function($resource) {
 var CategoryListController = ['$scope', '$timeout', '$location', 'Category', 'Feed', 'Bridge', '$route', '$routeParams',
   function($scope, $timeout, $location, Category, Feed, Bridge, $route, $routeParams) {
 
+    /*
     var lastRoute = $route.current;
     $scope.$on('$locationChangeSuccess', function(event) {
       if($location.path() !== '/') {
@@ -2278,7 +2279,7 @@ var CategoryListController = ['$scope', '$timeout', '$location', 'Category', 'Fe
       {
         $scope.status.post_selected = false;
       }
-    });
+    });*/
 
   	$scope.categories = [];
   	$scope.resolving  = true;
@@ -2444,7 +2445,7 @@ var CategoryListController = ['$scope', '$timeout', '$location', 'Category', 'Fe
 ];
 
 // @codekit-prepend "category_service"
-// @codekit-prepend "list_controller"
+// @codekit-prepend "category_list_controller"
 
 var CategoryModule = angular.module('categoryModule', ['ngResource']);
 
@@ -2456,7 +2457,7 @@ CategoryModule.controller('CategoryListController', CategoryListController);
 
 var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post) {
 
-	$scope.waiting = false;
+	$scope.waiting = true;
 	$scope.post = {};
 	$scope.comment = '';
 
@@ -2571,7 +2572,7 @@ var PostService = function($resource) {
   );
 };
 
-// @codekit-prepend "view_controller"
+// @codekit-prepend "reader_view_controller"
 // @codekit-prepend "post_service"
 
 var ReaderModule = angular.module('readerModule', ['ngResource']);

@@ -1,6 +1,7 @@
 var CategoryListController = ['$scope', '$timeout', '$location', 'Category', 'Feed', 'Bridge', '$route', '$routeParams',
   function($scope, $timeout, $location, Category, Feed, Bridge, $route, $routeParams) {
 
+    /*
     var lastRoute = $route.current;
     $scope.$on('$locationChangeSuccess', function(event) {
       if($location.path() !== '/') {
@@ -38,7 +39,7 @@ var CategoryListController = ['$scope', '$timeout', '$location', 'Category', 'Fe
       {
         $scope.status.post_selected = false;
       }
-    });
+    });*/
 
   	$scope.categories = [];
   	$scope.resolving  = true;

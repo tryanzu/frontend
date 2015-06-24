@@ -1,6 +1,6 @@
 var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post) {
 
-	$scope.waiting = false;
+	$scope.waiting = true;
 	$scope.post = {};
 	$scope.comment = '';
 

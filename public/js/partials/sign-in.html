@@ -1,0 +1,35 @@
+<button class="btn btn-icon btn-link close back-control" ng-click="cancel()">
+  <i class="fa fa-fw fa-times"></i>
+</button>
+<form>
+  <div class="modal-header">
+    <h3 class="title-control">Iniciar Sesión</h3>
+  </div>
+  <div class="modal-body">
+    <div class="form-centered">
+      <a href="" class="btn btn-fb" ng-class="{'disabled': fb_loading}" ng-click="loginFb()"><i class="fa fa-facebook"></i> Iniciar sesión con Facebook</a>
+      <div class="text-left">
+        <div class="or-up">o si prefieres</div>
+      </div>
+      <hr class="or-up-separator">
+      <div class="form-group">
+        <input name="email" placeholder="Correo electrónico" class="form-control" ng-model="form.email">
+      </div>
+      <div class="form-group">
+        <input type="password" name="password" placeholder="Contraseña" ng-model="form.password" class="form-control">
+      </div>
+      <div class="form-group">
+        <button type="submit" ng-click="signIn()" class="btn btn-primary btn-block">Iniciar sesión</button>
+      </div>
+    </div>
+    <div class="alert alert-danger text-center" ng-show="form.error">
+      {{ form.error.message }}
+    </div>
+  </div>
+  <div class="modal-footer">
+    <p class="forgot-password-link hidden">
+      <a href="">¿Olvidaste tu contraseña?</a>
+    </p>
+    <p class="sign-up-link hidden">¿No tienes una cuenta? <a href="#">Regístrate</a></p>
+  </div>
+</form>

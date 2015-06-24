@@ -27,5 +27,377 @@
   <script type="text/javascript" src="js/main.js"></script>
 </head>
 <body ng-controller="MainController">
+  <nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle row-no-paddingd" data-toggle="collapse" data-target="#sg-options">
+          <span class="sr-only">Alternar menú</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#/">
+          <img src="/images/logo.png" alt="Spartan Geek" />
+        </a>
+      </div>
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div class="collapse navbar-collapse" id="sg-options">
+        <ul class="nav navbar-nav navbar-right" ng-if="!user.isLogged">
+          <li><a href="" ng-click="signIn()">Iniciar sesión</a></li>
+          <li><a href="" ng-click="signUp()">Únete</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right" ng-if="user.isLogged" ng-cloak>
+          <li class="dropdown notifications" dropdown on-toggle="toggle_notifications(open)">
+            <a dropdown-toggle href="" class="dropdown-toggle btn-user" data-toggle="dropdown" role="button" aria-expanded="false">
+              <span class="notifications-icon"><i class="fa fa-fw fa-bell icon-glyph"></i></span>
+              <span class="label">Notificaciones</span>
+              <span class="notification-badge" ng-if="total_notifications() > 0">{{ total_notifications() }}</span>
+            </a>
+            <ul class="dropdown-menu" role="menu">
+              <div class="notifications-header">
+                <a class="btn btn-icon btn-link btn-sm" title="Mark All as Read" href="">
+                  <i class="fa fa-fw fa-check icon"></i> <span class="label"></span>
+                </a>
+                <h4 ng-click="console.log(notifications)">Notificaciones</h4>
+              </div>
+              <li>
+                <a class="unread" style="white-space:initial" href="">
+                  Te falta completar información de tu perfil
+                  <div class="description" style="margin-bottom: 5px;">Una vez lleno, <strong>SpartanGeek</strong> podrá recomendarte conversaciones, hardware, juegos, partidas en línea y promociones</div>
+                  <div href="" class="btn btn-xs btn-primary"><span class="label">Agregar datos a mi perfil</span></div>
+                </a>
+              </li>
+              <li ng-repeat="n in (user.notifications.list | orderBy:'-created_at')">
+                <a ng-class="{'unread': !n.seen}" href="#/p/{{n.related_extra}}/{{n.related_id}}" ng-if="n.related ==='comment'">
+                  <div class="content" marked="n.title"></div>
+                  <div class="description">en tu publicación "{{ n.text }}"</div>
+                  <div class="date">Hace {{ n.created_at | timeago }}</div>
+                </a>
+              </li>
+            </ul>
+          </li>
+          <li class="dropdown item-count-0" dropdown>
+            <a dropdown-toggle href="" class="dropdown-toggle btn-user" data-toggle="dropdown" role="button" aria-expanded="false">
+              <img class="avatar hidden" title="{{ user.info.username }}" src="http://demo.flarum.org/assets/avatars/tbew85cxekv6hkao.jpg">
+              <span class="avatar" style="background: #305FA9;">{{ user.info.username[0].toUpperCase() }}</span>
+              <span class="label">
+                <span class="username">{{ user.info.username }}</span>
+              </span>
+              <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu" role="menu">
+              <li>
+                <a href="#/u/{{ user.info.username }}/{{ user.info.id }}">
+                  <i class="fa fa-fw fa-user icon"></i> Ver mi perfil
+                </a>
+              </li>
+              <li><a href="#/config"><i class="fa fa-fw fa-cog icon"></i> Configuración</a></li>
+              <li class="divider"></li>
+              <li><a href="" ng-click="signOut()"><i class="fa fa-fw fa-sign-out icon"></i> Salir</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div><!-- /.navbar-collapse -->
+
+    </div><!-- /.container -->
+  </nav>
+
+  <main class="main-reader">
+    <div class="row row-no-padding">
+      <div class="col-md-6" ng-controller="CategoryListController as catListCtrl">
+        <div class="row row-no-padding">
+          <div class="col-md-5" ng-class="{'hide-for-small-only': category.name !== ''}">
+            <section class="board-list">
+              <div class="choose">
+                <p>Foros</p>
+              </div>
+
+              <div class="list always-visible" adjust-height>
+                <div class="resolving" ng-hide="resolving==false">
+                  <i class="fa fa-circle-o-notch fa-spin"></i>
+                </div>
+
+                <div class="board-item" ng-class="{'active': cat.name == category.name}" ng-click="turnCategory(cat)" ng-repeat="cat in categories" ng-cloak>
+                  <h4>{{ cat.name }}</h4>
+                  <p>{{ cat.description }}</p>
+
+                  <div class="counters">
+                    <i class="fa fa-heart-o "></i>  <span class="">0</span>
+                    <i class="fa fa-comments-o"></i> <span>{{ cat.count }} respuestas</span>
+                  </div>
+
+                  <!-- New posts since last saw the board -->
+                  <span class="pending" ng-show="cat.recent>0">{{ cat.recent }}</span>
+                </div>
+              </div>
+            </section>
+          </div>
+          <div class="col-md-7" ng-class="{'hide-for-small-only': activePostId !== null}">
+            <div class="current-board">
+              <div class="preview" ng-if="category.slug != ''" ng-cloak ng-style="{'background-image':'url(/images/boards/'+category.slug+'.png)'}" ng-cloak>
+                <h3>{{ category.name }}</h3>
+                <p>{{ category.description }}</p>
+              </div>
+
+              <div class="segments">
+                <a href="/publish/{{ category.slug }}" class="btn btn-primary">Crear Publicación</a>
+                <!--<a href="#"><i class="fa fa-certificate"></i> Reciente</a>
+                <a href="#"><i class="fa fa-heart-o"></i> Los mejores</a>-->
+              </div>
+
+              <div class="resolving" ng-hide="resolving_posts==false">
+                <i class="fa fa-circle-o-notch fa-spin"></i>
+              </div>
+
+              <div class="list always-visible" scroll-me="walkFeed()" ng-hide="resolving_posts" adjust-height>
+                <div class="post-item" ng-class="{active: activePostId==post.id}" ng-repeat="post in posts" ng-cloak>
+                  <div class="row">
+                    <div class="col-md-2 hidden" ng-click="viewPost(post)"><img src="/images/no-thumb.png" /></div>
+                    <div class="col-md-12">
+                      <span class="title" ng-click="viewPost(post)">{{ post.title }}</span>
+                      <span class="author"><a href="">{{ post.author.username }}</a> escribió <i>hace {{ post.created_at | timeago }}</i></span>
+
+                      <ul class="counters">
+                        <li>
+                          <i class="fa fa-heart-o"></i>  <span>{{ post.votes.up }}</span>
+                        </li>
+                        <li>
+                          <i class="fa fa-comments-o"></i> <span>{{ post.comments.count }}</span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="resolving" style="position: relative; z-index: 1002;" ng-hide="resolving_posts"><i class="fa fa-circle-o-notch fa-spin"></i></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="current-article" ng-controller="ReaderViewController" adjust-height>
+
+          <div class="waiting" ng-show="waiting">
+            <img src="/images/head.png" />
+            <h4>Únete a la conversación</h4>
+            <p>Puedes ver a la <strong>izquierda</strong> las publicaciones de otros espartanos, nuestros foros y nuestras recomendaciones, empieza viendo y únete a la conversación.</p>
+          </div>
+
+          <div ng-hide="waiting">
+            <div class="author">
+              <div class="row adjust row-no-padding">
+                <div class="col-md-1 col-sm-3">
+                  <span class="avatar" title="{{ post.author.username }}" ng-if="!post.author.image">{{ post.author.username[0] }}</span>
+                  <img class="avatar" ng-src="{{ post.author.image }}" alt="{{ post.author.username }}" ng-if="post.author.image">
+                </div>
+
+                <div class="col-md-5 col-sm-9">
+                  <div class="user-info">
+                    <span class="username">{{ post.author.username }}</span>
+                    <p class="description">{{ post.author.description }}</p>
+                  </div>
+                </div>
+
+                <div id="resume" class="col-md-6 hide-for-small-only">
+                  <div class="row">
+                    <div class="col-md-4 large-offset-4">
+                      <i class="fa fa-users"></i><br>
+                      <span class="stat"><strong>0</strong>seguidores</span>
+                    </div>
+
+                    <div class="col-md-4 hidden">
+                      <i class="fa fa-heart"></i><br>
+                      <span class="stat"><strong>0</strong>recomendaciones</span>
+                    </div>
+
+                    <div class="col-md-4">
+                      <i class="fa fa-edit"></i><br>
+                      <span class="stat"><strong>0</strong>posts</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="resolving" ng-hide="resolving == false">
+              <i class="fa fa-circle-o-notch fa-spin"></i>
+            </div>
+
+            <div ng-hide="resolving">
+              <h2>{{ post.title }}</h2>
+
+              <div class="share-buttons">
+                <div class="fb-share-button" data-href="https://spartangeek.com/" data-layout="button_count"></div>
+                <a href="https://twitter.com/share" class="twitter-share-button">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+              </div>
+
+              <div class="content" ng-if="post.type !== 'recommendations'" marked="post.content">
+              </div>
+
+              <div class="recommendations" ng-if="post.type === 'recommendations'">
+                <div class="content" marked="post.content">
+                </div>
+
+                <div class="components">
+                  <div ng-if="post.components.cpu.content" class="component">
+                    <div class="row">
+                      <div class="col-md-2 col-sm-3">
+                        <img src="/images/components/cpu.png" alt="CPU" />
+                      </div>
+
+                      <div class="col-md-10 col-sm-9">
+                        <h6>Procesador <span class="status" ng-if="post.components.cpu.status == 'needed'">Lo necesito</span> <span class="status owned" ng-if="post.components.cpu.status == 'owned'">Ya lo tengo</span></h6>
+                        {{ post.components.cpu.content }}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div ng-if="post.components.motherboard.content" class="component">
+                    <div class="row">
+                      <div class="col-md-2 col-sm-3">
+                        <img src="/images/components/motherboard.png" alt="CPU" />
+                      </div>
+
+                      <div class="col-md-10 col-sm-9">
+                        <h6>Motherboard <span class="status" ng-if="post.components.motherboard.status == 'needed'">Lo necesito</span> <span class="status owned" ng-if="post.components.motherboard.status == 'owned'">Ya lo tengo</span></h6>
+                        {{ post.components.motherboard.content }}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div ng-if="post.components.cabinet.content" class="component">
+                    <div class="row">
+                      <div class="col-md-2 col-sm-3">
+                        <img src="/images/components/cabinet.png" alt="CPU" />
+                      </div>
+
+                      <div class="col-md-10 col-sm-9">
+                        <h6>Gabinete <span class="status" ng-if="post.components.cabinet.status == 'needed'">Lo necesito</span> <span class="status owned" ng-if="post.components.cabinet.status == 'owned'">Ya lo tengo</span></h6>
+                        {{ post.components.cabinet.content }}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div ng-if="post.components.ram.content" class="component">
+                    <div class="row">
+                      <div class="col-md-2 col-sm-3">
+                        <img src="/images/components/ram.png" alt="CPU" />
+                      </div>
+
+                      <div class="col-md-10 col-sm-9">
+                        <h6>Memoria RAM <span class="status" ng-if="post.components.ram.status == 'needed'">Lo necesito</span> <span class="status owned" ng-if="post.components.ram.status == 'owned'">Ya lo tengo</span></h6>
+                        {{ post.components.ram.content }}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div ng-if="post.components.screen.content" class="component">
+                    <div class="row">
+                      <div class="col-md-2 col-sm-3">
+                        <img src="/images/components/screen.png" alt="CPU" />
+                      </div>
+
+                      <div class="col-md-10 col-sm-9">
+                        <h6>Monitor <span class="status" ng-if="post.components.screen.status == 'needed'">Lo necesito</span> <span class="status owned" ng-if="post.components.screen.status == 'owned'">Ya lo tengo</span></h6>
+                        {{ post.components.screen.content }}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div ng-if="post.components.videocard.content" class="component">
+                    <div class="row">
+                      <div class="col-md-2 col-sm-3">
+                        <img src="/images/components/videocard.png" alt="CPU" />
+                      </div>
+
+                      <div class="col-md-10 col-sm-9">
+                        <h6>Tarjeta gráfica <span class="status" ng-if="post.components.videocard.status == 'needed'">Lo necesito</span> <span class="status owned" ng-if="post.components.videocard.status == 'owned'">Ya lo tengo</span></h6>
+                        {{ post.components.videocard.content }}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div ng-if="post.components.power.content" class="component">
+                    <div class="row">
+                      <div class="col-md-2 col-sm-3">
+                        <img src="/images/components/power.png" alt="CPU" />
+                      </div>
+
+                      <div class="col-md-10 col-sm-9">
+                        <h6>Fuente de Poder <span class="status" ng-if="post.components.power.status == 'needed'">Lo necesito</span> <span class="status owned" ng-if="post.components.power.status == 'owned'">Ya lo tengo</span></h6>
+                        {{ post.components.power.content }}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div ng-if="post.components.storage.content" class="component">
+                    <div class="row">
+                      <div class="col-md-2 col-sm-3">
+                        <img src="/images/components/storage.png" alt="CPU" />
+                      </div>
+
+                      <div class="col-md-10 col-sm-9">
+                        <h6>Almacenamiento <span class="status" ng-if="post.components.storage.status == 'needed'">Lo necesito</span> <span class="status owned" ng-if="post.components.storage.status == 'owned'">Ya lo tengo</span></h6>
+                        {{ post.components.storage.content }}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div ng-if="post.components.cooler.content" class="component">
+                    <div class="row">
+                      <div class="col-md-2 col-sm-3">
+                        <img src="/images/components/cooler.png" alt="CPU" />
+                      </div>
+
+                      <div class="col-md-10 col-sm-9">
+                        <h6>Enfriamento <span class="status" ng-if="post.components.cooler.status == 'needed'">Lo necesito</span> <span class="status owned" ng-if="post.components.cooler.status == 'owned'">Ya lo tengo</span></h6>
+                        {{ post.components.cooler.content }}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="component" ng-if="post.components.software">
+                    <h6>Programas que utilizaré</h6>
+                    {{ post.components.software }}
+                  </div>
+                </div>
+              </div>
+
+              <div class="answers">
+                <h5>{{ post.comments.count }} respuestas</h5>
+              </div>
+
+              <div class="comments">
+                <div class="comment" ng-repeat="comment in (post.comments.set | orderBy : 'position')">
+                  <div class="comment-author">
+                    <div class="row row-no-padding">
+                      <div class="col-md-12">
+                        <span class="avatar" title="{{ comment.author.username }}">{{ comment.author.username[0] }}</span>
+
+                        <span class="username"><strong>{{ comment.author.username }}</strong> {{ comment.author.description }}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="content" marked="comment.content"></div>
+                  <p class="date">Escrito hace {{ comment.created_at | timeago }}</p>
+                </div>
+              </div>
+
+              <div ng-show="post.comments.count > 0 || force_comment" ng-if="user.isLogged">
+                <idiot-wizzy model="comment" action="publishComment"></idiot-wizzy>
+              </div>
+
+              <div class="need-signin" ng-if="!user.isLogged">
+                <p>¿Quieres dejar un comentario? <a href="" ng-click="signIn()">Inicia sesión</a> o <a href="" ng-click="signUp()">Crea una cuenta</a></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
 </body>
 </html>

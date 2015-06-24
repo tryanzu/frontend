@@ -1,4 +1,4 @@
-// @codekit-prepend "view_controller"
+// @codekit-prepend "reader_view_controller"
 // @codekit-prepend "post_service"
 
 var ReaderModule = angular.module('readerModule', ['ngResource']);
