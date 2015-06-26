@@ -1,295 +1,215 @@
-      <main class="global-content">
-        <div class="content">
-          <div class="container">
-            <div class="row">
-              <div class="col-md-9">
-                <div id="publish-title" class="row">
-                  <div class="col-md-6">
-                    <h2>Escribir nuevo tema en la categoría:</h2>
-                  </div>
-                  <div class="col-md-6">
-                    <span class="select-input">
-                      <select class="form-control" ng-options="category.name for category in categories" ng-model="postCategory"></select>
-                      <i class="fa fa-fw fa-sort"></i>
-                    </span>
-                  </div>
-                </div>
+<main class="application">
+  <div class="row row-no-padding full-width publish">
 
-                <div class="btn-toolbar" style="margin-bottom: 10px;">
-                  <a ng-click="activateComponents()" class="btn btn-info btn-sm" ng-show="postCategory.slug === 'recommendations' && postComponents === false"><span class="label">Quiero publicar una PC</span></a>
-                  <a ng-click="deactivateComponents()" class="btn btn-danger btn-sm" ng-show="postCategory.slug === 'recommendations' && postComponents === true"><span class="label">Cancelar publicación de PC</span></a>
-                </div>
+    <div class="col-md-9">
+      <div class="publish-content" ng-hide="postComponents">
+        <input type="text" ng-model="postTitle" class="title" placeholder="Ingresa un titulo para tu post" />
+        <div class="toolbar">
+          <nav>
+            <div class="block">
+              <a href=""><i class="fa fa-bold"></i></a>
+              <a href=""><i class="fa fa-italic"></i></a>
+              <a href=""><i class="fa fa-underline"></i></a>
+            </div>
 
-                <div class="publish-content" ng-hide="postComponents">
-                  <input type="text" ng-model="postTitle" class="form-control title" placeholder="Ingresa un titulo para tu post">
+            <div class="block">
+              <a href=""><i class="fa fa-list"></i></a>
+              <a href=""><i class="fa fa-link"></i></a>
+              <a href=""><i class="fa fa-camera-retro"></i></a>
+            </div>
 
-                  <div class="editable-content" ng-model="postContent" ng-class="{active: contentFocused}" ng-focus="cleanContent()" ng-blur="blurContent()" contenteditable></div>
+            <div class="block">
+              <a ng-click="activateComponents()" href="" ng-show="postCategory.slug=='recommendations' && postComponents==false">Quiero publicar una PC</a>
+            </div>
+          </nav>
+        </div>
 
-                  <h4>¿Es una pregunta?</h4>
-                  <p><small>De esta forma decidimos a quien mostrar tu publicación, a espartanos que responden o que buscan respuestas.</small></p>
-                  <div class="checkbox">
-                    <label>
-                      <input type="checkbox" value="None" id="is_question" name="check" /> Este post es una pregunta
-                    </label>
-                  </div>
-                  p: {{ publishing }}
-                  <div class="btn-toolbar text-right" ng-if="!publishing">
-                    <a href="#/" ng-click="status.section = 'main'; window.history.back();" class="btn btn-danger">Cancelar</a>
-                    <a href="" ng-click="normalPostPublish()" class="btn btn-primary">Publicar Ahora</a>
-                  </div>
-                </div>
+        <div class="editable-content" ng-model="postContent" ng-class="{active: contentFocused}" ng-focus="cleanContent()" contenteditable>
+        </div>
 
-                <div class="publish-content componently ng-hide" ng-show="postComponents">
-                  <input type="text" ng-model="postTitle" class="form-control title" placeholder="Nombra a tu PC">
-                  <h4>Descripción y dudas</h4>
-                  <div class="editable-content" ng-model="postContent" ng-class="{active: contentFocused}" ng-focus="cleanContent()" contenteditable></div>
-                  <div class="row">
+        <a ng-click="normalPostPublish()" class="btn btn-primary btn-lg btn-publish">Publicar Ahora</a>
+      </div>
 
-                    <div class="col-md-10 col-md-offset-2 components-section">
-                      <h4>Presupuesto para tu PC</h4>
+      <div class="publish-content componently ng-hide" ng-show="postComponents">
+        <input type="text" ng-model="postTitle" class="title" placeholder="Nombra a tu PC" />
+        <div class="toolbar">
+          <nav>
+            <div class="block">
+              <a href=""><i class="fa fa-bold"></i></a>
+              <a href=""><i class="fa fa-italic"></i></a>
+              <a href=""><i class="fa fa-underline"></i></a>
+            </div>
 
-                      <div class="row component budget" style="margin-bottom: 2rem">
-                        <div class="col-md-4">
-                          <div class="select">
-                            <span class="select-input full-width">
-                              <select class="form-control" class="form-control" ng-model="computerPost.budget" ng-options="budget.label for budget in budgetFlexibility"></select>
-                              <i class="fa fa-fw fa-sort"></i>
-                            </span>
-                          </div>
-                        </div>
-                        <div class="col-md-4">
-                          <input type="text" ng-model="computerPost.components.budget" placeholder="10500" class="form-control">
-                        </div>
-                        <div class="col-md-4">
-                          <div class="select">
-                            <span class="select-input full-width">
-                              <select class="form-control" ng-model="computerPost.components.budget_currency" class="form-control">
-                                <option value="MXN">Pesos Mexicanos</option>
-                                <option value="USD">Dolares</option>
-                              </select>
-                              <i class="fa fa-fw fa-sort"></i>
-                            </span>
-                          </div>
-                        </div>
-                      </div>
+            <div class="block">
+              <a href=""><i class="fa fa-list"></i></a>
+              <a href=""><i class="fa fa-link"></i></a>
+              <a href=""><i class="fa fa-camera-retro"></i></a>
+            </div>
+          </nav>
+        </div>
 
-                      <h4>Componentes</h4>
+        <div class="row row-recover">
+          <div class="col-md-5">
+            <div class="editable-content" ng-model="postContent" ng-class="{active: contentFocused}" ng-focus="cleanContent()" contenteditable>
+            </div>
+          </div>
+          <div class="col-md-7 components-section">
+            <h6>Presupuesto para tu PC</h6>
 
-                      <div class="row component">
-                        <div class="col-md-4">
-                          <span class="component-name">Motherboard</span>
-                          <div class="select">
-                            <span class="select-input full-width">
-                              <select class="form-control" ng-model="computerPost.components.motherboard.owned"><option value="true">Lo tengo</option> <option value="false">Lo necesito</option></select>
-                              <i class="fa fa-fw fa-sort"></i>
-                            </span>
-                          </div>
-                        </div>
-                        <div class="col-md-8">
-                          <div class="form-group">
-                            <label for="motherboard_brand">Marca</label>
-                            <span class="select-input full-width">
-                              <select class="form-control" ng-model="partForm.motherboard.model" ng-options="m as m for m in partForm.motherboard.brand_list" ng-change="changeModels('motherboard')">
-                                <option value="">Elige...</option>
-                              </select>
-                              <i class="fa fa-fw fa-sort"></i>
-                            </span>
-                          </div>
-                          <div class="form-group" ng-show="partForm.motherboard.model != ''">
-                            <label for="motherboard_model">Modelo</label>
-                            <input type="text" ng-model="computerPost.components.motherboard.value" typeahead="m.name as m.name for m in partForm.motherboard.model_list | filter:$viewValue | limitTo:10" class="form-control" placeholder="Escribe el modelo" typeahead-min-length="0">
-                          </div>
-                        </div>
-                      </div>
-
-                      <div class="row component">
-                        <div class="col-md-4">
-                          <span class="component-name">Procesador</span>
-                          <div class="select">
-                            <span class="select-input full-width">
-                              <select class="form-control" ng-model="computerPost.components.cpu.owned"><option value="true">Lo tengo</option> <option value="false">Lo necesito</option></select>
-                              <i class="fa fa-fw fa-sort"></i>
-                            </span>
-                          </div>
-                        </div>
-                        <div class="col-md-8">
-                          <div class="form-group">
-                            <label for="motherboard_brand">Marca</label>
-                            <span class="select-input full-width">
-                              <select class="form-control" ng-model="partForm.cpu.model" ng-options="m as m for m in partForm.cpu.brand_list" ng-change="changeModels('cpu')">
-                                <option value="">Elige...</option>
-                              </select>
-                              <i class="fa fa-fw fa-sort"></i>
-                            </span>
-                          </div>
-                          <div class="form-group" ng-show="partForm.cpu.model != ''">
-                            <label for="motherboard_model">Modelo</label>
-                            <input type="text" ng-model="omputerPost.components.cpu.value" typeahead="m.full_name as m.full_name for m in partForm.cpu.model_list | filter:$viewValue | limitTo:10" class="form-control" placeholder="Escribe el modelo" typeahead-min-length="0">
-                          </div>
-                        </div>
-                      </div>
-
-                      <div class="row component">
-                        <div class="col-md-4">
-                          <span class="component-name">Cooler del CPU</span>
-                          <div class="select">
-                            <span class="select-input full-width">
-                              <select class="form-control" ng-model="computerPost.components.cooler.owned"><option value="true">Lo tengo</option> <option value="false">Lo necesito</option></select>
-                              <i class="fa fa-fw fa-sort"></i>
-                            </span>
-                          </div>
-                        </div>
-                        <div class="col-md-8">
-                          <div class="form-group">
-                            <label for="motherboard_brand">Marca</label>
-                            <span class="select-input full-width">
-                              <select class="form-control" ng-model="partForm['cpu-cooler'].model" ng-options="m as m for m in partForm['cpu-cooler'].brand_list" ng-change="changeModels('cpu-cooler', 'cooler')">
-                                <option value="">Elige...</option>
-                              </select>
-                              <i class="fa fa-fw fa-sort"></i>
-                            </span>
-                          </div>
-                          <div class="form-group" ng-show="partForm['cpu-cooler'].model != ''">
-                            <label for="motherboard_model">Modelo</label>
-                            <input type="text" ng-model="computerPost.components.cooler.value" typeahead="m.name as m.name for m in partForm['cpu-cooler'].model_list | filter:$viewValue | limitTo:10" class="form-control" placeholder="Escribe el modelo" typeahead-min-length="0">
-                          </div>
-                        </div>
-                      </div>
-
-                      <div class="row component">
-                        <div class="col-md-4">
-                          <span class="component-name">RAM</span>
-                          <div class="select">
-                            <span class="select-input full-width">
-                              <select class="form-control" ng-model="computerPost.components.ram.owned">
-                                <option value="true">Lo tengo</option>
-                                <option value="false">Lo necesito</option>
-                              </select>
-                              <i class="fa fa-fw fa-sort"></i>
-                            </span>
-                          </div>
-                        </div>
-                        <div class="col-md-8">
-                          <div class="form-group">
-                            <label for="motherboard_brand">Marca</label>
-                            <span class="select-input full-width">
-                              <select class="form-control" ng-model="partForm.memory.model" ng-options="m as m for m in partForm.memory.brand_list" ng-change="changeModels('memory', 'ram')" >
-                                <option value="">Elige...</option>
-                              </select>
-                              <i class="fa fa-fw fa-sort"></i>
-                            </span>
-                          </div>
-                          <div class="form-group" ng-show="partForm.memory.model != ''">
-                            <label for="motherboard_model">Modelo</label>
-                            <input type="text" ng-model="computerPost.components.ram.value" typeahead="m.full_name as m.full_name for m in partForm.memory.model_list | filter:$viewValue | limitTo:10" class="form-control" placeholder="Escribe el modelo" typeahead-min-length="0">
-                          </div>
-                        </div>
-                      </div>
-
-                      <div class="row component">
-                        <div class="col-md-4">
-                          <span class="component-name">Almacenamiento</span>
-                          <div class="select">
-                            <span class="select-input full-width">
-                              <select class="form-control" ng-model="computerPost.components.storage.owned">
-                                <option value="true">Lo tengo</option>
-                                <option value="false">Lo necesito</option>
-                              </select>
-                              <i class="fa fa-fw fa-sort"></i>
-                            </span>
-                          </div>
-                        </div>
-                        <div class="col-md-8">
-                          <div class="form-group">
-                            <label for="motherboard_brand">Marca</label>
-                            <span class="select-input full-width">
-                              <select class="form-control" ng-model="partForm.storage.model" ng-options="m as m for m in partForm.storage.brand_list" ng-change="changeModels('storage')" >
-                                <option value="">Elige...</option>
-                              </select>
-                              <i class="fa fa-fw fa-sort"></i>
-                            </span>
-                          </div>
-                          <div class="form-group" ng-show="partForm.storage.model != ''">
-                            <label for="motherboard_model">Modelo</label>
-                            <input type="text" ng-model="computerPost.components.storage.value" typeahead="m.full_name as m.full_name for m in partForm.storage.model_list | filter:$viewValue | limitTo:10" class="form-control" placeholder="Escribe el modelo" typeahead-min-length="0">
-                          </div>
-                        </div>
-
-                      </div>
-
-                      <div class="row component">
-                        <div class="col-md-3"><span class="component-name">Fuente de poder</span></div>
-                        <div class="col-md-6"><input class="form-control" type="text" ng-model="computerPost.components.power.value" placeholder="(Ej. Corsair AX760 760W 80 PLUS Platinum)" /></div>
-                        <div class="col-md-3">
-                          <div class="select">
-                            <span class="select-input full-width">
-                              <select class="form-control" ng-model="computerPost.components.power.owned"><option value="true">Lo tengo</option> <option value="false">Lo necesito</option></select>
-                              <i class="fa fa-fw fa-sort"></i>
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div class="row component">
-                        <div class="col-md-3"><span class="component-name">Gabinete</span></div>
-                        <div class="col-md-6"><input class="form-control" type="text" ng-model="computerPost.components.cabinet.value" placeholder="(Ej. Corsair Graphite 600T)" /></div>
-                        <div class="col-md-3">
-                          <div class="select">
-                            <span class="select-input full-width">
-                              <select class="form-control" ng-model="computerPost.components.cabinet.owned"><option value="true">Lo tengo</option> <option value="false">Lo necesito</option></select>
-                              <i class="fa fa-fw fa-sort"></i>
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div class="row component">
-                        <div class="col-md-3"><span class="component-name">Tarjeta de video</span></div>
-                        <div class="col-md-6"><input class="form-control" type="text" ng-model="computerPost.components.videocard.value" placeholder="(Ej. Gigabyte NVIDIA GeForce GTX 780 Ti 3GB GDDR)" /></div>
-                        <div class="col-md-3">
-                          <div class="select">
-                            <span class="select-input full-width">
-                              <select class="form-control" ng-model="computerPost.components.videocard.owned"><option value="true">Lo tengo</option> <option value="false">Lo necesito</option></select>
-                              <i class="fa fa-fw fa-sort"></i>
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div class="row component">
-                        <div class="col-md-3"><span class="component-name">Monitor</span></div>
-                        <div class="col-md-6"><input class="form-control" type="text" ng-model="computerPost.components.screen.value" placeholder="(Ej. ASUS VG278HE 27 pulgadas Full-HD 2ms)" /></div>
-                        <div class="col-md-3">
-                          <div class="select">
-                            <span class="select-input full-width">
-                              <select class="form-control" ng-model="computerPost.components.screen.owned"><option value="true">Lo tengo</option> <option value="false">Lo necesito</option></select>
-                              <i class="fa fa-fw fa-sort"></i>
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div class="row component">
-                        <div class="col-md-12">
-                          <h4>Videojuegos o programas que utilizaré</h4>
-                          <input class="form-control" type="text" ng-model="computerPost.components.software" class="only" placeholder="(Ej. Minecraft, Battlefield 4, Photoshop CS6)" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  p: {{ publishing }}
-
-                  <div class="btn-toolbar text-right" style="margin-top: 15px;" ng-if="!publishing">
-                    <a href="#/" ng-click="status.section = 'main';" class="btn btn-danger">Cancelar</a>
-                    <a href="" ng-click="computerPostPublish()" class="btn btn-primary">Publicar Ahora</a>
-                  </div>
+            <div class="row row-no-padding component budget" style="margin-bottom: 2rem">
+              <div class="col-md-4"><div class="select">
+                  <select ng-model="computerPost.budget" ng-options="budget.label for budget in budgetFlexibility"></select>
+                </div></div>
+              <div class="col-md-4"><input type="text" ng-model="computerPost.components.budget" placeholder="10500" /></div>
+              <div class="col-md-4">
+                <div class="select">
+                  <select ng-model="computerPost.components.budget_currency"><option value="MXN">Pesos Mexicanos</option><option value="USD">Dolares</option></select>
                 </div>
               </div>
+            </div>
 
+            <h6>Componentes</h6>
+
+            <div class="row row-no-padding component">
+              <div class="col-md-3"><span class="component-name">Procesador</span></div>
+              <div class="col-md-6"><input type="text" ng-model="computerPost.components.cpu.value" placeholder="(Ej. AMD FX-8320 8-Core 3.5 Ghz)" /></div>
               <div class="col-md-3">
+                <div class="select">
+                  <select ng-model="computerPost.components.cpu.owned"><option value="true">Lo tengo</option> <option value="false">Lo necesito</option></select>
+                </div>
+              </div>
+            </div>
+
+            <div class="row row-no-padding component">
+              <div class="col-md-3"><span class="component-name">Motherboard</span></div>
+              <div class="col-md-6"><input type="text" ng-model="computerPost.components.motherboard.value" placeholder="(Ej. ASUS M5A99FX PRO R2.0)" /></div>
+              <div class="col-md-3">
+                <div class="select">
+                  <select ng-model="computerPost.components.motherboard.owned"><option value="true">Lo tengo</option> <option value="false">Lo necesito</option></select>
+                </div>
+              </div>
+            </div>
+
+            <div class="row row-no-padding component">
+              <div class="col-md-3"><span class="component-name">RAM</span></div>
+              <div class="col-md-6"><input type="text" ng-model="computerPost.components.ram.value" placeholder="(Ej. Corsair Vengeance 8GB 1600MHz DDR3)" /></div>
+              <div class="col-md-3">
+                <div class="select">
+                  <select ng-model="computerPost.components.ram.owned"><option value="true">Lo tengo</option> <option value="false">Lo necesito</option></select>
+                </div>
+              </div>
+            </div>
+
+            <div class="row row-no-padding component">
+              <div class="col-md-3"><span class="component-name">Almacenamiento</span></div>
+              <div class="col-md-6"><input type="text" ng-model="computerPost.components.storage.value" placeholder="(Ej. SSD Samsung 840 PRO 512GB)" /></div>
+              <div class="col-md-3">
+                <div class="select">
+                  <select ng-model="computerPost.components.storage.owned"><option value="true">Lo tengo</option> <option value="false">Lo necesito</option></select>
+                </div>
+              </div>
+            </div>
+
+            <div class="row row-no-padding component">
+              <div class="col-md-3"><span class="component-name">Cooler del CPU</span></div>
+              <div class="col-md-6"><input type="text" ng-model="computerPost.components.cooler.value" placeholder="(Ej. Phanteks PH-TC14PE_BK)" /></div>
+              <div class="col-md-3">
+                <div class="select">
+                  <select ng-model="computerPost.components.cooler.owned"><option value="true">Lo tengo</option> <option value="false">Lo necesito</option></select>
+                </div>
+              </div>
+            </div>
+
+            <div class="row row-no-padding component">
+              <div class="col-md-3"><span class="component-name">Fuente de poder</span></div>
+              <div class="col-md-6"><input type="text" ng-model="computerPost.components.power.value" placeholder="(Ej. Corsair AX760 760W 80 PLUS Platinum)" /></div>
+              <div class="col-md-3">
+                <div class="select">
+                  <select ng-model="computerPost.components.power.owned"><option value="true">Lo tengo</option> <option value="false">Lo necesito</option></select>
+                </div>
+              </div>
+            </div>
+
+            <div class="row row-no-padding component">
+              <div class="col-md-3"><span class="component-name">Gabinete</span></div>
+              <div class="col-md-6"><input type="text" ng-model="computerPost.components.cabinet.value" placeholder="(Ej. Corsair Graphite 600T)" /></div>
+              <div class="col-md-3">
+                <div class="select">
+                  <select ng-model="computerPost.components.cabinet.owned"><option value="true">Lo tengo</option> <option value="false">Lo necesito</option></select>
+                </div>
+              </div>
+            </div>
+
+            <div class="row row-no-padding component">
+              <div class="col-md-3"><span class="component-name">Tarjeta de video</span></div>
+              <div class="col-md-6"><input type="text" ng-model="computerPost.components.videoCard.value" placeholder="(Ej. Gigabyte NVIDIA GeForce GTX 780 Ti 3GB GDDR)" /></div>
+              <div class="col-md-3">
+                <div class="select">
+                  <select ng-model="computerPost.components.videoCard.owned"><option value="true">Lo tengo</option> <option value="false">Lo necesito</option></select>
+                </div>
+              </div>
+            </div>
+
+            <div class="row row-no-padding component">
+              <div class="col-md-3"><span class="component-name">Monitor</span></div>
+              <div class="col-md-6"><input type="text" ng-model="computerPost.components.screen.value" placeholder="(Ej. ASUS VG278HE 27 pulgadas Full-HD 2ms)" /></div>
+              <div class="col-md-3">
+                <div class="select">
+                  <select ng-model="computerPost.components.screen.owned"><option value="true">Lo tengo</option> <option value="false">Lo necesito</option></select>
+                </div>
+              </div>
+            </div>
+
+            <div class="row row-no-padding component">
+              <div class="col-md-12">
+                <h6>Videojuegos o programas que utilizare</h6>
+
+                <input type="text" ng-model="computerPost.components.software" class="only" placeholder="(Ej. Minecraft, Battlefield 4, Photoshop CS6)" />
               </div>
             </div>
           </div>
         </div>
-      </main>
+        <a ng-click="computerPostPublish()" class="publish-button">Publicar Ahora</a>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="sidebar" adjust-height>
+        <div class="config">
+          <h4>Categoria</h4>
+          <div class="category">
+            <select ng-options="category.name for category in categories" ng-model="postCategory">
+              <option>Seleccionar categoria</option>
+              <option>PC's Spartanas</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="config thumbnail hidden">
+          <h4>Thumbnail</h4>
+
+          <div class="upload">
+            <label>
+              <span><i class="fa fa-camera"></i> Subir imagen</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="config">
+          <h4>¿Es una pregunta?</h4>
+          <div class="question">
+            <div class="check">
+              <input type="checkbox" value="None" id="is_question" name="check" />
+              <label for="is_question"></label>
+            </div>
+          </div>
+          <p>De esta forma decidimos a quien mostrar tu publicación, a espartanos que responden o que buscan respuestas.</p>
+        </div>
+
+        <div class="config">
+          <a ng-click="computerPostPublish()" class="btn btn-block btn-primary">Publicar Ahora</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>

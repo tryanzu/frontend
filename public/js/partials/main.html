@@ -1,6 +1,6 @@
   <main class="main-reader">
     <div class="row row-no-padding">
-      <div class="col-md-6" ng-controller="CategoryListController as catListCtrl">
+      <div class="col-md-6">
         <div class="row row-no-padding">
           <div class="col-md-5" ng-class="{'hide-for-small-only': category.name !== ''}">
             <section class="board-list">
@@ -34,13 +34,13 @@
           </div>
           <div class="col-md-7" ng-class="{'hide-for-small-only': activePostId !== null}">
             <div class="current-board">
-              <div class="preview" ng-if="category.slug != ''" ng-cloak ng-style="previewStyle" ng-cloak>
+              <div class="preview" ng-if="category.slug != ''" ng-style="previewStyle" ng-cloak>
                 <h3>{{ category.name }}</h3>
                 <p>{{ category.description }}</p>
               </div>
 
               <div class="segments">
-                <a href="/publish/{{ category.slug }}" class="btn btn-primary">Crear Publicación</a>
+                <a href="#/post/create/{{ category.slug }}" class="btn btn-primary">Crear Publicación</a>
                 <!--<a href="#"><i class="fa fa-certificate"></i> Reciente</a>
                 <a href="#"><i class="fa fa-heart-o"></i> Los mejores</a>-->
               </div>
@@ -54,7 +54,7 @@
                   <div class="row">
                     <div class="col-md-2 hidden" ng-click="viewPost(post)"><img src="/images/no-thumb.png" /></div>
                     <div class="col-md-12">
-                      <span class="title" ng-click="viewPost(post)">{{ post.title }}</span>
+                      <a href="#/p/{{ post.slug }}/{{ post.id }}" class="title">{{ post.title }}</a>
                       <span class="author"><a href="">{{ post.author.username }}</a> escribió <i>hace {{ post.created_at | timeago }}</i></span>
 
                       <ul class="counters">
@@ -104,12 +104,12 @@
 
                 <div id="resume" class="col-md-6 hide-for-small-only">
                   <div class="row">
-                    <div class="col-md-4 large-offset-4">
+                    <div class="col-md-4">
                       <i class="fa fa-users"></i><br>
                       <span class="stat"><strong>0</strong>seguidores</span>
                     </div>
 
-                    <div class="col-md-4 hidden">
+                    <div class="col-md-4">
                       <i class="fa fa-heart"></i><br>
                       <span class="stat"><strong>0</strong>recomendaciones</span>
                     </div>
@@ -268,7 +268,7 @@
               </div>
 
               <div class="answers">
-                <h5>{{ post.comments.count }} respuestas</h5>
+                <h5>{{ post.comments.count }} respuesta{{post.comments.count == 1?'':'s'}}</h5>
               </div>
 
               <div class="comments">
@@ -287,7 +287,7 @@
                 </div>
               </div>
 
-              <div ng-show="post.comments.count > 0 || force_comment == true" ng-if="user.isLogged">
+              <div ng-show="post.comments.count > 0 || force_comment == true || true" ng-if="user.isLogged">
                 <idiot-wizzy model="comment" action="publishComment"></idiot-wizzy>
               </div>
 

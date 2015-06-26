@@ -2917,11 +2917,10 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
     templateUrl: '/js/partials/profile.html',
     controller: 'UserController'
   });
-  $routeProvider.when('/post/create', {
+  $routeProvider.when('/post/create/:cat_slug', {
     templateUrl: '/js/partials/publish.html',
     controller: 'PublishController',
     onEnter: function() {
-      alert('ja!')
       if(!$scope.user.isLogged) {
         window.location = '/';
       }
