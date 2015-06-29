@@ -3,6 +3,7 @@
 @import "variables";
 
 @import "lib/dropdowns.less";
+@import "lib/modals.less";
 
 @import "forum/reader.less";
 @import "forum/components.less";
@@ -11,6 +12,8 @@
 @import "forum/user.less";
 @import "forum/hero.less";
 @import "forum/wizzy.less";
+@import "forum/feed.less";
+@import "forum/misc.less";
 
 .row-no-padding {
   margin-left: 0;
@@ -297,168 +300,19 @@ body {
   max-width: initial;
 }
 
-.board-list {
-  border-right: 2px solid #F4F6F8;
-}
-
-.board-list .choose {
-  background: @brand-primary-light;
-  padding: 0.8em 1.5em;
-  position: relative;
-}
-
-.board-list .choose p {
-  margin: 0;
-  font-weight: 600;
-  color: #6E7F98;
-}
-
-.board-list .choose select {
-  background: #fff;
-  border: 1px solid #C0CBD5;
-  border-radius: 2px;
-  color: #7E8793;
-  padding: 8px 14px;
-  font: inherit;
-  font-size: 14px;
-
-  -webkit-appearance:none;
-  -moz-appearance:none;
-  appearance:none;
-}
-
-.board-list .list {
-  position: relative;
-  overflow-x: hidden;
-  overflow-y: scroll;
-}
-.board-list .list .board-item {
-  padding: 0.8em 1.5em;
-  border-bottom: 2px solid #F4F6F8;
-  position: relative;
-}
-.board-list .list .board-item h4 {
-  font: inherit;
-  font-weight: 700;
-  font-size: 14px;
-}
-.board-list .list .board-item.active h4 {
-  color: #1B5FA8;
-}
-
-.board-list .list .board-item:hover {
-  cursor: pointer;
-  h4 {
-    color: @brand-primary;
-  }
-}
-
-.board-list .list .board-item p {
-  color: #606C7E;
-  font: inherit;
-  font-size: 12px;
-  line-height: 20px;
-  margin-bottom: 1em;
-}
-
-.board-list .list .board-item .pending {
-  background: #919EA6;
-  border-radius: 2px;
-  -moz-border-radius: 2px;
-  -webkit-border-radius: 2px;
-  color: #fff;
-  display: block;
-  position: absolute;
-  padding: 2px 8px;
-  font-size: 12px;
-  font-weight: 700;
-  top: 12px;
-  right: 15px;
-}
-
-.board-list .list .board-item.active {
-  p {
-    color: @brand-primary;
-  }
-}
-
-.current-board {
-  margin: 0;
-  padding: 0;
-}
-
-.current-board .preview {
-  height: 110px;
-  margin: 0;
-  padding: 20px 25px;
-  background-size: cover;
-  background-position: center top;
-
-  h3 {
-    color: #fff;
-    margin: 0;
-    font-size: 18px;
-    font-weight: 600;
-    margin-bottom: 0.8em;
-  }
-
-  p {
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 13px;
-  }
-}
-
-.current-board .segments {
-  background: #D5E1EC;
-  background: rgba(213, 225, 236, 0.9);
-  background: #F5F9FD;
-  background-color: @brand-primary-light;
-  padding: 16px 20px;
-  text-align: center;
-
-  .btn.btn-primary {
-    padding-left: 30px;
-    padding-right: 30px;
-  }
-}
-
-.current-board .segments a.btn.btn-segment {
-  background: #fff;
-  border: 2px solid #CBD6E1;
-  color: #606C7E;
-  padding: 5px 12px;
+.ball {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  line-height: 14px;
+  border-radius: 50%;
   margin-right: 5px;
+  background-color: @brand-primary-light-text;
+}
+.ball.empty {
+  border: 0px solid @brand-primary;
 }
 
-.current-board .segments a.btn.btn-segment i {
-  color: #96AEC2;
-}
-
-.current-board .list {
-  border-right: 2px solid #F4F6F8;
-  /*padding: 1.4em;*/
-  position: relative;
-  overflow-x: hidden;
-  overflow-y: scroll;
-}
-
-.current-board .list .post-item {
-  border-bottom: 1px solid #F4F5F8;
-  padding: 0.7em;
-  padding-top: 1.2em;
-  padding-bottom: 1.2em;
-
-  img {
-    width: 50px;
-    height: 50px;
-  }
-  a.title {
-    display: block;
-    font-weight: 600;
-    text-decoration: none;
-    color: @brand-primary-opaque;
-  }
-}
 
 .current-board .list .post-item a.title:hover, .current-board .list .post-item.active a.title {
   color: @link-color;
@@ -483,16 +337,17 @@ body {
 
 ul.counters {
   color: #7C8592;
-  text-align: right;
+  text-align: left;
   font: inherit;
   font-size: 11px;
   line-height: 14px;
   margin-bottom: 0;
   list-style-type: none;
+  padding-left: 0;
 
   li {
     display: inline-block;
-    margin-left: 10px;
+    margin-right: 10px;
     min-width: 20px;
     text-transform: uppercase;
 

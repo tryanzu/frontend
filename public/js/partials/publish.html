@@ -26,11 +26,9 @@
 
         <div class="editable-content" ng-model="postContent" ng-class="{active: contentFocused}" ng-focus="cleanContent()" contenteditable>
         </div>
-
-        <a ng-click="normalPostPublish()" class="btn btn-primary btn-lg btn-publish">Publicar Ahora</a>
       </div>
 
-      <div class="publish-content componently ng-hide" ng-show="postComponents">
+      <div class="publish-content componently" ng-show="postComponents">
         <input type="text" ng-model="postTitle" class="title" placeholder="Nombra a tu PC" />
         <div class="toolbar">
           <nav>
@@ -142,10 +140,10 @@
 
             <div class="row row-no-padding component">
               <div class="col-md-3"><span class="component-name">Tarjeta de video</span></div>
-              <div class="col-md-6"><input type="text" ng-model="computerPost.components.videoCard.value" placeholder="(Ej. Gigabyte NVIDIA GeForce GTX 780 Ti 3GB GDDR)" /></div>
+              <div class="col-md-6"><input type="text" ng-model="computerPost.components.videocard.value" placeholder="(Ej. Gigabyte NVIDIA GeForce GTX 780 Ti 3GB GDDR)" /></div>
               <div class="col-md-3">
                 <div class="select">
-                  <select ng-model="computerPost.components.videoCard.owned"><option value="true">Lo tengo</option> <option value="false">Lo necesito</option></select>
+                  <select ng-model="computerPost.components.videocard.owned"><option value="true">Lo tengo</option> <option value="false">Lo necesito</option></select>
                 </div>
               </div>
             </div>
@@ -169,7 +167,6 @@
             </div>
           </div>
         </div>
-        <a ng-click="computerPostPublish()" class="publish-button">Publicar Ahora</a>
       </div>
     </div>
 
@@ -207,7 +204,8 @@
         </div>
 
         <div class="config">
-          <a ng-click="computerPostPublish()" class="btn btn-block btn-primary">Publicar Ahora</a>
+          <a ng-click="computerPostPublish()" class="btn btn-block btn-primary" ng-show="postComponents">Publicar Ahora</a>
+          <a ng-click="normalPostPublish()" class="btn btn-block btn-primary" ng-hide="postComponents">Publicar Ahora</a>
         </div>
       </div>
     </div>

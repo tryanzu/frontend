@@ -111,9 +111,6 @@ var CategoryListController = ['$scope', '$timeout', '$location', 'Category', 'Fe
   		// Reset counters if exists though
   		$scope.category.recent = 0;
 
-  		// Persist the category in the first section of the url
-  		// $location.path($scope.category.slug);
-
   		ga('send', 'pageview', '/category/' + $scope.category.slug);
   	};
 
@@ -157,7 +154,7 @@ var CategoryListController = ['$scope', '$timeout', '$location', 'Category', 'Fe
     				if ($scope.categories[category].slug == category_segment) {
     					$scope.category = $scope.categories[category];
     					$scope.startupFeed($scope.category);
-    					$scope.$broadcast('changedContainers');
+    					/*$scope.$broadcast('changedContainers');*/
     					$scope.$broadcast('scrollMeUpdate');
     					loaded = true;
               break;
@@ -168,9 +165,9 @@ var CategoryListController = ['$scope', '$timeout', '$location', 'Category', 'Fe
         }
   		}
   		if (loaded == false) {
-  			$scope.category = $scope.categories[0];
+  			//$scope.category = $scope.categories[0];
   			$scope.startupFeed($scope.category);
-  			$scope.$broadcast('changedContainers');
+  			/*$scope.$broadcast('changedContainers');*/
   		}
   	});
   }

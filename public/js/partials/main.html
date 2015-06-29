@@ -1,84 +1,77 @@
   <main class="main-reader">
     <div class="row row-no-padding">
-      <div class="col-md-6">
+      <div class="col-md-4" ng-class="{'col-md-6': false, 'col-md-4': false}">
         <div class="row row-no-padding">
-          <div class="col-md-5" ng-class="{'hide-for-small-only': category.name !== ''}">
-            <section class="board-list">
-              <div class="choose">
-                <p>Foros</p>
-              </div>
-
-              <div class="list always-visible" adjust-height>
-                <div class="resolving" ng-hide="resolving==false">
-                  <i class="fa fa-circle-o-notch fa-spin"></i>
-                </div>
-
-                <div class="board-item" ng-class="{'active': cat.name == category.name}" ng-click="turnCategory(cat)" ng-repeat="cat in categories" ng-cloak>
-                  <h4>{{ cat.name }}</h4>
-                  <p>{{ cat.description }}</p>
-
-                  <ul class="counters">
-                    <li>
-                      <i class="fa fa-heart-o "></i> <span class="">0</span>
-                    </li>
-                    <li>
-                      <i class="fa fa-comments-o"></i> <span>{{ cat.count }} respuestas</span>
-                    </li>
-                  </ul>
-
-                  <!-- New posts since last saw the board -->
-                  <span class="pending" ng-show="cat.recent>0 || true">1{{ cat.recent }}</span>
-                </div>
-              </div>
-            </section>
-          </div>
-          <div class="col-md-7" ng-class="{'hide-for-small-only': activePostId !== null}">
+          <div class="col-md-12" ng-class="{'hide-for-small-only': activePostId !== null}">
             <div class="current-board">
-              <div class="preview" ng-if="category.slug != ''" ng-style="previewStyle" ng-cloak>
-                <h3>{{ category.name }}</h3>
-                <p>{{ category.description }}</p>
+              <div class="title">
+                <div class="row">
+                  <div class="col-md-6">
+                    <h2>Todas las publicaciones</h2>
+                  </div>
+                  <div class="col-md-6 text-right">
+                    <a href="#/post/create/{{ category.slug }}" class="btn btn-primary btn-sm" ng-if="user.isLogged">Crear publicación</a>
+                  </div>
+                </div>
               </div>
 
-              <div class="segments">
-                <a href="#/post/create/{{ category.slug }}" class="btn btn-primary">Crear Publicación</a>
-                <!--<a href="#"><i class="fa fa-certificate"></i> Reciente</a>
-                <a href="#"><i class="fa fa-heart-o"></i> Los mejores</a>-->
-              </div>
+              <ul class="discussions-list always-visible" scroll-me="walkFeed()" ng-hide="resolving_posts" adjust-height-feed>
+                <li data-id="{{ post.id }}" class="discussion-summary" ng-class="{'active': post.id === $parent.activePostId}" ng-repeat="post in posts" ng-cloak>
+                  <div>
+                    <a href="#/u/{{ post.author.username }}/{{ post.author.id }}" title class="author" data-original-title="Escrito por {{ post.author.username }} hace {{ post.created_at | timeago }}">
+                      <img class="avatar hidden" gravatar-src="post.author.email" gravatar-default="http://river.spartangeek.com/images/no-thumb.png" />
+                      <span class="avatar " style="background: #305FA9;">{{:: post.author.username[0].toUpperCase() }}</span>
+                    </a>
+                    <a href="#/p/{{ post.slug }}/{{ post.id }}" class="main">
+                      <h3 class="title">{{:: post.title }}</h3>
+                      <ul class="info">
+                        <li class="hidden">
+                          <span>
+                            <span class="username">Dadang-San</span> replied <time>12h ago</time>
+                          </span>
+                        </li>
+                        <li class="">
+                          <span>
+                            Escrito por <span class="username">{{:: post.author.username }}</span> <time>hace {{:: post.created_at | timeago }}</time>
+                          </span>
+                        </li>
+                      </ul>
+                      <ul class="extra-info">
+                        <li class="category" ng-if="category.slug === '' || true">
+                          <span class="ball" ng-style="{'background-color': post.category.color}"></span>
+                          <span class="name">{{ post.category.name }}</span>
+                        </li>
+                        <li class="pinned" ng-if="post.pinned">
+                          <i class="fa fa-exclamation-circle"></i> <span>Importante</span>
+                        </li>
+                      </ul>
+                    </a>
+                    <span class="count">{{ post.comments.count }}<span class="label">{{ post.comments.count==1?'Respuesta':'Respuestas'}}</span></span>
+                  </div>
+                </li>
+                <div class="resolving" style="position: relative; z-index: 1002;" ng-hide="resolving_posts"><i class="fa fa-circle-o-notch fa-spin"></i></div>
+              </ul>
 
-              <div class="resolving" ng-hide="resolving_posts==false">
+              <div class="resolving" ng-hide="!resolving_posts">
                 <i class="fa fa-circle-o-notch fa-spin"></i>
               </div>
 
-              <div class="list always-visible" scroll-me="walkFeed()" ng-hide="resolving_posts" adjust-height>
-                <div class="post-item" ng-class="{active: activePostId==post.id}" ng-repeat="post in posts" ng-cloak>
-                  <div class="row">
-                    <div class="col-md-2 hidden" ng-click="viewPost(post)"><img src="/images/no-thumb.png" /></div>
-                    <div class="col-md-12">
-                      <a href="#/p/{{ post.slug }}/{{ post.id }}" class="title">{{ post.title }}</a>
-                      <span class="author"><a href="">{{ post.author.username }}</a> escribió <i>hace {{ post.created_at | timeago }}</i></span>
-
-                      <ul class="counters">
-                        <li class="pinned" ng-if="post.pinned">
-                          <i class="fa fa-bookmark-o"></i> <span>Importante</span>
-                        </li>
-                        <li>
-                          <i class="fa fa-heart-o"></i>  <span>{{ post.votes.up }}</span>
-                        </li>
-                        <li>
-                          <i class="fa fa-comments-o"></i> <span>{{ post.comments.count }} Respuestas</span>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
+              <div class="segments">
+                <h2>Categorías disponibles</h2>
+                <div id="tags">
+                  <a href="#/c/{{ category.slug }}" ng-repeat="category in categories">
+                    <span class="ball" ng-class="{'empty': !category.color}" ng-style="{'background-color': category.color}"></span>
+                    <span class="name">{{ category.name }}</span>
+                    <span class="count">{{ category.count }}</span>
+                  </a>
                 </div>
-
-                <div class="resolving" style="position: relative; z-index: 1002;" ng-hide="resolving_posts"><i class="fa fa-circle-o-notch fa-spin"></i></div>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <div class="col-md-6">
+
+      <div class="col-md-8" ng-class="{'col-md-6': false, 'col-md-8': false}">
         <div class="current-article" ng-controller="ReaderViewController" adjust-height>
 
           <div class="waiting" ng-show="waiting">
@@ -88,8 +81,21 @@
           </div>
 
           <div ng-hide="waiting">
-            <div class="author">
-              <div class="row adjust row-no-padding">
+            <header class="hero discussion-hero hidden" ng-style="{'background-image': 'url(/images/boards/' + post.category.slug + '.png)'};" ng-if="!resolving" style="background-image: url(http://agis.spartangeek.dev:8888/images/boards/recommendations.png);">
+              <div class="container">
+                <ul class="discussion-hero-items">
+                  <li class="">
+                    <span class="category-label ng-binding">{{ post.category.name }}</span>
+                  </li>
+                  <li class="block-item">
+                    <h2 class="discussion-title ng-binding">{{ post.title }}</h2>
+                  </li>
+                </ul>
+              </div>
+            </header>
+
+            <div class="author" ng-hide="resolving">
+              <div class="row">
                 <div class="col-md-1 col-sm-3">
                   <span class="avatar" title="{{ post.author.username }}" ng-if="!post.author.image">{{ post.author.username[0] }}</span>
                   <img class="avatar" ng-src="{{ post.author.image }}" alt="{{ post.author.username }}" ng-if="post.author.image">
@@ -98,26 +104,13 @@
                 <div class="col-md-5 col-sm-9">
                   <div class="user-info">
                     <span class="username">{{ post.author.username }}</span>
-                    <p class="description">{{ post.author.description }}</p>
+                    <p class="description">{{ post.author.description || "Just another Spartan Geek" }}</p>
                   </div>
                 </div>
 
-                <div id="resume" class="col-md-6 hide-for-small-only">
-                  <div class="row">
-                    <div class="col-md-4">
-                      <i class="fa fa-users"></i><br>
-                      <span class="stat"><strong>0</strong>seguidores</span>
-                    </div>
-
-                    <div class="col-md-4">
-                      <i class="fa fa-heart"></i><br>
-                      <span class="stat"><strong>0</strong>recomendaciones</span>
-                    </div>
-
-                    <div class="col-md-4">
-                      <i class="fa fa-edit"></i><br>
-                      <span class="stat"><strong>0</strong>posts</span>
-                    </div>
+                <div class="col-md-6">
+                  <div class="category-preview" ng-style="{'background-image': 'url(/images/boards/' + post.category.slug + '.png)'};">
+                    <p class="category-label">{{ post.category.name }}</p>
                   </div>
                 </div>
               </div>
@@ -128,12 +121,8 @@
             </div>
 
             <div ng-hide="resolving">
-              <h2>{{ post.title }}</h2>
 
-              <div class="share-buttons">
-                <div class="fb-share-button" data-href="https://spartangeek.com/" data-layout="button_count"></div>
-                <a href="https://twitter.com/share" class="twitter-share-button">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
-              </div>
+              <h2 class="discussion-title">{{ post.title }}</h2>
 
               <div class="content" ng-if="post.type !== 'recommendations'" marked="post.content">
               </div>
@@ -274,7 +263,7 @@
               <div class="comments">
                 <div class="comment" ng-repeat="comment in (post.comments.set | orderBy : 'position')">
                   <div class="comment-author">
-                    <div class="row row-no-padding">
+                    <div class="row">
                       <div class="col-md-12">
                         <img class="avatar" ng-src="{{ comment.author.image }}" alt="{{ comment.author.username }}" ng-if="comment.author.image">
                         <span class="avatar" title="{{ comment.author.username }}" ng-if="!comment.author.image">{{ comment.author.username[0] }}</span>
@@ -288,7 +277,22 @@
               </div>
 
               <div ng-show="post.comments.count > 0 || force_comment == true || true" ng-if="user.isLogged">
-                <idiot-wizzy model="comment" action="publishComment"></idiot-wizzy>
+                <div class="idiot-wizzy">
+                  <textarea placeholder="Escribe tu comentario..." class="form-control flexible-height content" ng-model="comment.content" ng-disabled="waiting_comment"></textarea>
+                  <div class="actions">
+                    <ul>
+                      <li ng-show="comment.content != ''">
+                        <strong>**Negrita**</strong>
+                      </li>
+                      <li ng-show="comment.content != ''">
+                        <em>*Itálica*</em>
+                      </li>
+                      <li style="margin-left: 3em;">
+                        <a href="" ng-click="publish()" ng-class="{'disabled': waiting_comment == true || comment.content == ''}" class="btn btn-primary btn-sm">Publicar</a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
               </div>
 
               <div class="need-signin" ng-if="!user.isLogged">

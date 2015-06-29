@@ -4,20 +4,13 @@ directives.directive('adjustHeight', function($window, $document) {
 	return {
 		restrict: 'A',
 		link: function(scope, element, attrs) {
-			scope.calculate = function(startup) {
-        startup = startup || true;
-
+			scope.calculate = function() {
         var top = $(element).offset().top;
         var height = $(window).height();
-
         var neededHeight = height - top;
+        console.log(top,height,neededHeight, element);
 
         $(element).css('height', neededHeight);
-
-        if (!('onlyFit' in attrs) && startup)
-        {
-        	//$(element).perfectScrollbar({suppressScrollX: true});
-        }
       };
       scope.calculate();
 
@@ -27,32 +20,54 @@ directives.directive('adjustHeight', function($window, $document) {
 
       // Listen for possible container size changes
       scope.$on('changedContainers', function() {
-        scope.calculate(false);
+        scope.calculate();
       });
 		}
 	};
 });
 
-directives.directive('scrollMe', function() {
+directives.directive('adjustHeightFeed', function($window, $document) {
+  return {
+    restrict: 'A',
+    link: function(scope, element, attrs) {
+      scope.calculate = function() {
+        var top = $(element).offset().top;
+        var height = $(window).height();
+        var tagsHeight = $('.segments').outerHeight();
+        var neededHeight = height - top - tagsHeight;
+        console.log(top,height, tagsHeight, neededHeight, element);
 
-    return {
-        restrict: 'A',
-        scope: {
-            trigger: '&scrollMe'
-        },
-        link: function(scope, element, attrs) {
+        $(element).css('height', neededHeight);
+      };
+      scope.calculate();
 
-            element.on('scroll', function() {
+      $window.addEventListener('resize', function() {
+        scope.calculate();
+      });
 
-                if($(this).scrollTop() + $(this).innerHeight() >= this.scrollHeight) {
-
-                    scope.$apply(function() {
-
-                        // Trigger scroll
-                        scope.trigger();
-                    });
-                }
-            });
-        }
+      // Listen for possible container size changes
+      scope.$on('changedContainers', function() {
+        scope.calculate();
+      });
     }
+  };
+});
+
+directives.directive('scrollMe', function() {
+  return {
+    restrict: 'A',
+    scope: {
+      trigger: '&scrollMe'
+    },
+    link: function(scope, element, attrs) {
+      element.on('scroll', function() {
+        if($(this).scrollTop() + $(this).innerHeight() >= this.scrollHeight) {
+          scope.$apply(function() {
+            // Trigger scroll
+            scope.trigger();
+          });
+        }
+      });
+    }
+  }
 });

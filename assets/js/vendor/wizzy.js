@@ -23,8 +23,7 @@ iw.directive('idiotWizzy', function ($window, $document) {
             // Allow to comment once again
             scope.waiting = false;
             scope.model = '';
-          }, function(error) {
-          });
+          }, function(error) {});
         }
       };
 

@@ -1,8 +1,9 @@
 var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post) {
 
+  $scope.post = {};
+  $scope.comment = {content:''};
 	$scope.waiting = true;
-	$scope.post = {};
-	$scope.comment = '';
+  $scope.waiting_comment = false;
 
 	$scope.forceFirstComment = function() {
 		// TO-DO analytics about this trigger
@@ -11,50 +12,41 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post) {
 	};
 
   $scope.publish = function() {
-    if($scope.waiting == false) {
-        $scope.waiting = true;
-        $scope.publishComment().then(function(data) {
-          var comment = $scope.post.comments.set[$scope.post.comments.count - 1];
-          addImagePreview(comment);
-          // Allow to comment once again
-          $scope.waiting = false;
-          $scope.comment = '';
-          $scope.composer.minimized = true;
-        }, function(error) {
-          console.log("Error publicando comentario...");
-        });
+    if(!$scope.waiting_comment) {
+      $scope.waiting_comment = true;
+      $scope.publishComment().then(function(data) {
+        var comment = $scope.post.comments.set[$scope.post.comments.count - 1];
+        addImagePreview(comment);
+        // Allow to comment once again
+        $scope.waiting_comment = false;
+        $scope.comment.content = '';
+      }, function(error) {
+        console.log("Error publicando comentario...");
+      });
     }
   };
 
 	$scope.publishComment = function() {
-		// Check for the post integrity and then send the comment and return the promise
-		if ('id' in $scope.post) {
-			var date = new Date();
-			$scope.post.comments.count = $scope.post.comments.count + 1;
-			$scope.post.comments.set.push({
-				user_id: $scope.user.info.id,
-				author: {
-					id: $scope.user.info.id,
-					username: $scope.user.info.username,
-					email: $scope.user.info.email,
-					description: $scope.user.info.description
-				},
-				content: $scope.comment,
-				created_at: date.toISOString(),
-				position: $scope.post.comments.count - 1,
-				votes: {down: 0, up: 0}
-			});
+    // Check for the post integrity and then send the comment and return the promise
+    if ('id' in $scope.post) {
+      var date = new Date();
+      $scope.post.comments.count = $scope.post.comments.count + 1;
+      $scope.post.comments.set.push({
+        user_id: $scope.user.info.id,
+        author: {
+          id: $scope.user.info.id,
+          username: $scope.user.info.username,
+          email: $scope.user.info.email,
+          description: $scope.user.info.description
+        },
+        content: $scope.comment.content,
+        created_at: date.toISOString(),
+        position: $scope.post.comments.count - 1,
+        votes: {down: 0, up: 0}
+      });
 
-			return $http.post(layer_path + 'post/comment/' + $scope.post.id, {content: $scope.comment});
-		}
-	};
-
-  $scope.show_composer = function() {
-    $scope.composer.open = true;
-    $scope.composer.minimized = false;
-    $timeout(function() {
-      $(window).scrollTop($('.stream.discussion-posts.posts').height() + 300);
-    }, 50);
+      return $http.post(layer_path + 'post/comment/' + $scope.post.id, {content: $scope.comment.content});
+    }
   };
 
 	$scope.$on('pushLoggedComment', function(event, comment) {
