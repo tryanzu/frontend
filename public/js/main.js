@@ -2843,7 +2843,6 @@ var boardApplication = angular.module('board', [
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider',
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider) {
 
-
   $routeProvider.when('/', {
     templateUrl: '/js/partials/main.html',
     controller: 'CategoryListController'
@@ -2871,6 +2870,8 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   });
   $routeProvider.otherwise({ redirectTo: '/' });
 
+  // use the HTML5 History API
+  $locationProvider.html5Mode(true);
 
   // Please note we're annotating the function so that the $injector works when the file is minified
   jwtInterceptorProvider.tokenGetter = ['config', 'jwtHelper', function(config, jwtHelper) {

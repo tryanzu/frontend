@@ -37,7 +37,7 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="#/">
+        <a class="navbar-brand" href="/">
           <img src="/images/logo.png" alt="Spartan Geek" />
         </a>
       </div>
@@ -70,7 +70,7 @@
                 </a>
               </li>
               <li ng-repeat="n in (user.notifications.list | orderBy:'-created_at')">
-                <a ng-class="{'unread': !n.seen}" href="#/p/{{n.related_extra}}/{{n.related_id}}" ng-if="n.related ==='comment'">
+                <a ng-class="{'unread': !n.seen}" href="/p/{{n.related_extra}}/{{n.related_id}}" ng-if="n.related ==='comment'">
                   <div class="content" marked="n.title"></div>
                   <div class="description">en tu publicación "{{ n.text }}"</div>
                   <div class="date">Hace {{ n.created_at | timeago }}</div>
@@ -89,11 +89,11 @@
             </a>
             <ul class="dropdown-menu" role="menu">
               <li>
-                <a href="#/u/{{ user.info.username }}/{{ user.info.id }}">
+                <a href="/u/{{ user.info.username }}/{{ user.info.id }}">
                   <i class="fa fa-fw fa-user icon"></i> Ver mi perfil
                 </a>
               </li>
-              <li><a href="#/config"><i class="fa fa-fw fa-cog icon"></i> Configuración</a></li>
+              <li><a href="/config"><i class="fa fa-fw fa-cog icon"></i> Configuración</a></li>
               <li class="divider"></li>
               <li><a href="" ng-click="signOut()"><i class="fa fa-fw fa-sign-out icon"></i> Salir</a></li>
             </ul>
