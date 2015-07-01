@@ -7,11 +7,14 @@ var PublishController = function($scope, $http, Category, Part) {
   }
 
 	$scope.categories = [];
-	$scope.contentFocused = false;
-	$scope.postContent = 'Escribe contenido para tu post';
-	$scope.postTitle = '';
-	$scope.postCategory = '';
-	$scope.postComponents = false;
+
+  $scope.post = {
+    title: '',
+    content: '',
+    category: '',
+    components: false,
+    isQuestion: false
+  };
 
 	$scope.budgetFlexibility = [
 		{
@@ -44,55 +47,55 @@ var PublishController = function($scope, $http, Category, Part) {
 	$scope.computerPost = {
 		budget: $scope.budgetFlexibility[0],
 		components: {
-	        cpu: {
-                value: '',
-                owned: false,
-                poll: false
-            },
-            motherboard: {
-                value: '',
-                owned: false,
-                poll: false
-            },
-            ram: {
-                value: '',
-                owned: false,
-                poll: false
-            },
-            storage: {
-                value: '',
-                owned: false,
-                poll: false
-            },
-            cooler: {
-                value: '',
-                owned: false,
-                poll: false
-            },
-            power: {
-                value: '',
-                owned: false,
-                poll: false
-            },
-            cabinet: {
-                value: '',
-                owned: false,
-                poll: false
-            },
-            screen: {
-                value: '',
-                owned: false,
-                poll: false
-            },
-            videocard: {
-                value: '',
-                owned: false,
-                poll: false
-            },
-            software: '',
-            budget: '0',
-            budget_currency: 'MXN'
-	    }
+      cpu: {
+        value: '',
+        owned: false,
+        poll: false
+      },
+      motherboard: {
+        value: '',
+        owned: false,
+        poll: false
+      },
+      ram: {
+        value: '',
+        owned: false,
+        poll: false
+      },
+      storage: {
+        value: '',
+        owned: false,
+        poll: false
+      },
+      cooler: {
+        value: '',
+        owned: false,
+        poll: false
+      },
+      power: {
+        value: '',
+        owned: false,
+        poll: false
+      },
+      cabinet: {
+        value: '',
+        owned: false,
+        poll: false
+      },
+      screen: {
+        value: '',
+        owned: false,
+        poll: false
+      },
+      videocard: {
+        value: '',
+        owned: false,
+        poll: false
+      },
+      software: '',
+      budget: '0',
+      budget_currency: 'MXN'
+    }
 	};
 
   $scope.partForm = {
@@ -125,7 +128,7 @@ var PublishController = function($scope, $http, Category, Part) {
 
 	Category.query(function(data) {
 		$scope.categories = $scope.categories.concat(data);
-    $scope.postCategory = $scope.categories[0];
+    $scope.post.category = $scope.categories[0];
 		/*if ($scope.category != '') {
 			for (var i = $scope.categories.length - 1; i >= 0; i--) {
 				if ($scope.categories[i].slug == $scope.category) {
@@ -167,8 +170,8 @@ var PublishController = function($scope, $http, Category, Part) {
   }
 
 	$scope.activateComponents = function() {
-		$scope.postComponents = true;
-		$scope.postContent = '(Ej. Hola spartanos, me gustaria que me ayudaran a elegir...)';
+		$scope.post.components = true;
+
     if(!$scope.partForm.motherboard.brand_list) {
       Part.get({type:'motherboard', action:'manufacturers'}, function(data){
         $scope.partForm.motherboard.brand_list = data.manufacturers;
@@ -196,34 +199,11 @@ var PublishController = function($scope, $http, Category, Part) {
     }
 	};
   $scope.deactivateComponents = function() {
-    $scope.postComponents = false;
-    $scope.postContent = 'Escribe contenido para tu post';
+    $scope.post.components = false;
   };
 
-	$scope.cleanContent = function() {
-		// Clean placeholder
-		if ($scope.contentFocused == false) {
-      if($scope.postContent == 'Escribe contenido para tu post') {
-        $scope.postContent = '';
-      }
-      if($scope.postContent == '(Ej. Hola spartanos, me gustaria que me ayudaran a elegir...)') {
-        $scope.postContent = '';
-      }
-		}
-
-		// Set the content focused active
-		$scope.contentFocused = true;
-	};
-  $scope.blurContent = function() {
-    if($scope.postContent == '') {
-      $scope.postContent = 'Escribe contenido para tu post';
-    }
-    // Set the content focused inactive
-    $scope.contentFocused = false;
-  }
-
 	$scope.computerPostPublish = function() {
-		console.log($scope.computerPost);
+		//console.log($scope.computerPost);
 		var components = $scope.computerPost.components;
 		components.budget_type = $scope.computerPost.budget.type;
 		components.budget_flexibility = $scope.computerPost.budget.flexibility;
@@ -237,27 +217,28 @@ var PublishController = function($scope, $http, Category, Part) {
 
 		var post = {
 			kind: "recommendations",
-      name: $scope.postTitle,
-      content: $scope.postContent,
+      name: $scope.post.title,
+      content: $scope.post.content,
       components: components
 		};
 
 		$http.post(layer_path + 'post', post).then(function(data) {
-			// Reload the window
-      window.location.reload();
+			// Return to home
+      window.location.href = "/";
 		}, function(err) {});
 	};
 	$scope.normalPostPublish = function() {
 		var post = {
-			content: $scope.postContent,
-			name: $scope.postTitle,
-			tag: $scope.postCategory.slug,
-			kind: 'category-post'
+			content: $scope.post.content,
+			name: $scope.post.title,
+			tag: $scope.post.category.slug,
+			kind: 'category-post',
+      isquestion: $scope.post.isQuestion
 		};
 
 		$http.post(layer_path + 'post', post).then(function(data) {
-			// Reload the window
-			window.location.reload();
+			// Return to home
+      window.location.href = "/";
 		}, function(err) {});
 	};
 };

@@ -1,6 +1,3 @@
-.publish select {
-  width: 100%;
-}
 
 .publish .title {
   border: 0;
@@ -9,28 +6,51 @@
   font-size: 18px;
   padding: 1em 2em;
   width: 100%;
+  outline: 0;
 }
 
 .publish .toolbar {
   border-top: 2px solid #EEF1F4;
   border-bottom: 2px solid #EEF1F4;
   padding: 8px 2em;
+
+  .block {
+    border: 2px solid #E3E5E8;
+    display: inline-block;
+    margin-right: 1em;
+
+    a {
+      color: #AEB6BC;
+      border-right: 2px solid #e3e5e8;
+      display: inline-block;
+      padding: 5px 10px;
+
+      &.cancel {
+        color: #EC8585;
+      }
+      &.publish_components {
+        color: @brand-primary;
+      }
+    }
+
+    a:last-child {
+      border-right: 0;
+    }
+  }
 }
 
 .publish .editable-content {
-  color: #CFCECF;
+  color: @brand-primary-dark;
   padding: 1em 2em;
   font: inherit;
   font-size: 16px;
   min-height: 60vh;
-}
-
-.publish .editable-content.active {
-  color: #606C7E;
-}
-
-.publish .editable-content:focus {
-  outline: 0;
+  width: 100%;
+  border: none;
+  resize: none;
+  &:focus {
+    outline: 0;
+  }
 }
 
 .btn-publish {
@@ -40,27 +60,9 @@
   text-align: center;
 }
 
-
-.publish .block {
-  border: 2px solid #E3E5E8;
-  display: inline-block;
-  margin-right: 1em;
-}
-
-.publish .block a {
-  color: #AEB6BC;
-  border-right: 2px solid #e3e5e8;
-  display: inline-block;
-  padding: 5px 10px;
-}
-
-.publish .block a:last-child {
-  border-right: 0;
-}
-
 .publish .sidebar {
-  background: @brand-primary-light;
-  border-left: 2px solid #EEF1F4;
+  background: @brand-primary-lighter;
+  border-left: 2px solid @brand-primary-light;
   min-height: 80vh;
   padding: 1em 1.5em;
 }
@@ -233,40 +235,55 @@
 
 .publish .componently .components-section {
   padding-top: 1em;
+  overflow-x: hidden;
+  overflow-y: scroll;
 }
 
 .publish .componently .components-section .component {
-  margin-bottom: 1em;
-}
+  border-bottom: 1px solid #f9f9f9;
+  padding-bottom: 0.5em;
+  margin-bottom: 0.5em;
 
-.publish .componently .components-section .component input {
-  border: 2px solid #EDF1F4;
-  border-right: 2px solid transparent;
-  background: #fff;
-  color: #606C7E;
-  display: block;
-  padding: 8px 1em;
-  font-size: 14px;
-  width: 100%;
-  height: 40px;
-}
+  label {
+    color: @brand-primary-light-text;
+    font-weight: normal;
+  }
 
-.publish .componently .components-section .component input.only {
-  border-right: 2px solid #EDF1F4;
+  .from-db {
+    select {
+      border-color: @brand-primary-light;
+    }
+    input {
+      border: 2px solid @brand-primary-light;
+    }
+  }
+
+  input {
+    border: 2px solid @brand-primary-light;
+    border-right: 2px solid transparent;
+    background: #fff;
+    color: #606C7E;
+    display: block;
+    padding: 8px 1em;
+    font-size: 14px;
+    width: 100%;
+    height: 40px;
+  }
+
+  input.only {
+    border-right: 2px solid @brand-primary-light;
+  }
 }
 
 .publish .componently .components-section .component input::-webkit-input-placeholder {
   color: #CFCECF;
 }
-
 .publish .componently .components-section .component input::-moz-input-placeholder {
   color: #CFCECF;
 }
-
 .publish .componently .components-section .component input:-moz-input-placeholder {
   color: #CFCECF;
 }
-
 .publish .componently .components-section .component input:-ms-input-placeholder {
   color: #CFCECF;
 }
@@ -310,18 +327,59 @@
 }
 
 .publish .componently .components-section .component .component-name {
-  color: #7E8793;
+  color: lighten(@brand-primary-dark, 20%);
   font: inherit;
   font-size: 14px;
   font-weight: 600;
   display: block;
-  margin-top: 10px;
+  margin-top: 0;
 }
 
 .publish .componently h6 {
-  color: #A4B0BC;
+  color: lighten(@brand-primary-opaque, 25%);
   font-size: 14px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 1px;
+}
+
+.publish select {
+  width: 100%;
+
+  &:focus {
+    outline: none;
+    border-color: @brand-primary;
+  }
+
+  &:disabled {
+    color: #b1b1b1;
+    background-color: #f5f5f5;
+  }
+}
+
+.btn-owned, .btn-needed {
+  border-width: 2px;
+}
+.btn-owned {
+  color: @brand-success;
+  border-color: @brand-success;
+  &:active, &:focus {
+    color: @brand-success;
+    border-color: @brand-success;
+    background-color: white;
+  }
+}
+.btn-needed {
+  color: @brand-primary;
+  border-color: @brand-primary;
+  &:active, &:focus {
+    color: @brand-primary;
+    border-color: @brand-primary;
+    background-color: white;
+  }
+}
+.ab-label {
+  font-size: 13px;
+  margin-right: 5px;
+  color: @brand-primary-light-text;
 }

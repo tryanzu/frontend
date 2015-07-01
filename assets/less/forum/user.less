@@ -47,7 +47,7 @@
   }
 }
 .darken-overlay {
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.0);
   position: absolute;
   top: 0;
   left: 0;
@@ -99,8 +99,8 @@
   }
   & .avatar {
     .avatar-size(96px);
-    border: 3px solid @brand-primary-light;
-    /*.box-shadow(0 2px 6px @gray-dark);*/
+    border: 3px solid white;
+    .box-shadow(0 0 4px 1px @brand-primary-opaque);
   }
   & .badges {
     margin-left: 10px;
@@ -255,5 +255,38 @@
   & .dropdown-menu {
     left: 35%;
     top: 65%;
+  }
+}
+
+.rank {
+  .progress {
+    height: 4px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    border-radius: 0;
+    background-color: #E7E7E7;
+    box-shadow: none;
+    width: 90%;
+
+    .progress-bar {
+      box-shadow: none;
+    }
+  }
+  .description {
+    font-size: 18px;
+    text-transform: uppercase;
+  }
+  .experience-points {
+    font-weight: bold;
+    font-size: 12px;
+  }
+  .next-level {
+    font-size: 12px;
+    &.hot {
+      color: #0FB657;
+    }
+    &.cold {
+      color: @brand-primary
+    }
   }
 }

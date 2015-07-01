@@ -33,7 +33,7 @@
   position: relative;
 
   &, & .main {
-    color: @brand-primary;
+    color: lighten(@brand-primary-dark,20%);
     text-decoration: none;
   }
   & .contextual-controls {
@@ -214,10 +214,13 @@
   margin: 0;
   padding-left: 72px;
   padding-right: 90px;
-  border-bottom: 1px solid @brand-primary-light;
+  border-bottom: 1px solid @brand-primary-lighter;
 
   &.active {
     background: @brand-primary-lighter;
+    .title {
+      color: @brand-primary;
+    }
   }
 }
 

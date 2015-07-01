@@ -1,6 +1,6 @@
 var directives = angular.module('directivesModule', []);
 
-directives.directive('adjustHeight', function($window, $document) {
+directives.directive('adjustHeight', function($window, $document, $timeout) {
 	return {
 		restrict: 'A',
 		link: function(scope, element, attrs) {
@@ -8,11 +8,13 @@ directives.directive('adjustHeight', function($window, $document) {
         var top = $(element).offset().top;
         var height = $(window).height();
         var neededHeight = height - top;
-        console.log(top,height,neededHeight, element);
+        console.log(top, height, neededHeight, element);
 
         $(element).css('height', neededHeight);
       };
-      scope.calculate();
+      $timeout(function(){
+        scope.calculate();
+      }, 100);
 
       $window.addEventListener('resize', function() {
         scope.calculate();

@@ -1,6 +1,6 @@
 var directives = angular.module('directivesModule', []);
 
-directives.directive('adjustHeight', function($window, $document) {
+directives.directive('adjustHeight', function($window, $document, $timeout) {
 	return {
 		restrict: 'A',
 		link: function(scope, element, attrs) {
@@ -8,11 +8,13 @@ directives.directive('adjustHeight', function($window, $document) {
         var top = $(element).offset().top;
         var height = $(window).height();
         var neededHeight = height - top;
-        console.log(top,height,neededHeight, element);
+        console.log(top, height, neededHeight, element);
 
         $(element).css('height', neededHeight);
       };
-      scope.calculate();
+      $timeout(function(){
+        scope.calculate();
+      }, 100);
 
       $window.addEventListener('resize', function() {
         scope.calculate();
@@ -2537,11 +2539,14 @@ var PublishController = function($scope, $http, Category, Part) {
   }
 
 	$scope.categories = [];
-	$scope.contentFocused = false;
-	$scope.postContent = 'Escribe contenido para tu post';
-	$scope.postTitle = '';
-	$scope.postCategory = '';
-	$scope.postComponents = false;
+
+  $scope.post = {
+    title: '',
+    content: '',
+    category: '',
+    components: false,
+    isQuestion: false
+  };
 
 	$scope.budgetFlexibility = [
 		{
@@ -2574,55 +2579,55 @@ var PublishController = function($scope, $http, Category, Part) {
 	$scope.computerPost = {
 		budget: $scope.budgetFlexibility[0],
 		components: {
-	        cpu: {
-                value: '',
-                owned: false,
-                poll: false
-            },
-            motherboard: {
-                value: '',
-                owned: false,
-                poll: false
-            },
-            ram: {
-                value: '',
-                owned: false,
-                poll: false
-            },
-            storage: {
-                value: '',
-                owned: false,
-                poll: false
-            },
-            cooler: {
-                value: '',
-                owned: false,
-                poll: false
-            },
-            power: {
-                value: '',
-                owned: false,
-                poll: false
-            },
-            cabinet: {
-                value: '',
-                owned: false,
-                poll: false
-            },
-            screen: {
-                value: '',
-                owned: false,
-                poll: false
-            },
-            videocard: {
-                value: '',
-                owned: false,
-                poll: false
-            },
-            software: '',
-            budget: '0',
-            budget_currency: 'MXN'
-	    }
+      cpu: {
+        value: '',
+        owned: false,
+        poll: false
+      },
+      motherboard: {
+        value: '',
+        owned: false,
+        poll: false
+      },
+      ram: {
+        value: '',
+        owned: false,
+        poll: false
+      },
+      storage: {
+        value: '',
+        owned: false,
+        poll: false
+      },
+      cooler: {
+        value: '',
+        owned: false,
+        poll: false
+      },
+      power: {
+        value: '',
+        owned: false,
+        poll: false
+      },
+      cabinet: {
+        value: '',
+        owned: false,
+        poll: false
+      },
+      screen: {
+        value: '',
+        owned: false,
+        poll: false
+      },
+      videocard: {
+        value: '',
+        owned: false,
+        poll: false
+      },
+      software: '',
+      budget: '0',
+      budget_currency: 'MXN'
+    }
 	};
 
   $scope.partForm = {
@@ -2655,7 +2660,7 @@ var PublishController = function($scope, $http, Category, Part) {
 
 	Category.query(function(data) {
 		$scope.categories = $scope.categories.concat(data);
-    $scope.postCategory = $scope.categories[0];
+    $scope.post.category = $scope.categories[0];
 		/*if ($scope.category != '') {
 			for (var i = $scope.categories.length - 1; i >= 0; i--) {
 				if ($scope.categories[i].slug == $scope.category) {
@@ -2697,8 +2702,8 @@ var PublishController = function($scope, $http, Category, Part) {
   }
 
 	$scope.activateComponents = function() {
-		$scope.postComponents = true;
-		$scope.postContent = '(Ej. Hola spartanos, me gustaria que me ayudaran a elegir...)';
+		$scope.post.components = true;
+
     if(!$scope.partForm.motherboard.brand_list) {
       Part.get({type:'motherboard', action:'manufacturers'}, function(data){
         $scope.partForm.motherboard.brand_list = data.manufacturers;
@@ -2726,34 +2731,11 @@ var PublishController = function($scope, $http, Category, Part) {
     }
 	};
   $scope.deactivateComponents = function() {
-    $scope.postComponents = false;
-    $scope.postContent = 'Escribe contenido para tu post';
+    $scope.post.components = false;
   };
 
-	$scope.cleanContent = function() {
-		// Clean placeholder
-		if ($scope.contentFocused == false) {
-      if($scope.postContent == 'Escribe contenido para tu post') {
-        $scope.postContent = '';
-      }
-      if($scope.postContent == '(Ej. Hola spartanos, me gustaria que me ayudaran a elegir...)') {
-        $scope.postContent = '';
-      }
-		}
-
-		// Set the content focused active
-		$scope.contentFocused = true;
-	};
-  $scope.blurContent = function() {
-    if($scope.postContent == '') {
-      $scope.postContent = 'Escribe contenido para tu post';
-    }
-    // Set the content focused inactive
-    $scope.contentFocused = false;
-  }
-
 	$scope.computerPostPublish = function() {
-		console.log($scope.computerPost);
+		//console.log($scope.computerPost);
 		var components = $scope.computerPost.components;
 		components.budget_type = $scope.computerPost.budget.type;
 		components.budget_flexibility = $scope.computerPost.budget.flexibility;
@@ -2767,27 +2749,28 @@ var PublishController = function($scope, $http, Category, Part) {
 
 		var post = {
 			kind: "recommendations",
-      name: $scope.postTitle,
-      content: $scope.postContent,
+      name: $scope.post.title,
+      content: $scope.post.content,
       components: components
 		};
 
 		$http.post(layer_path + 'post', post).then(function(data) {
-			// Reload the window
-      window.location.reload();
+			// Return to home
+      window.location.href = "/";
 		}, function(err) {});
 	};
 	$scope.normalPostPublish = function() {
 		var post = {
-			content: $scope.postContent,
-			name: $scope.postTitle,
-			tag: $scope.postCategory.slug,
-			kind: 'category-post'
+			content: $scope.post.content,
+			name: $scope.post.title,
+			tag: $scope.post.category.slug,
+			kind: 'category-post',
+      isquestion: $scope.post.isQuestion
 		};
 
 		$http.post(layer_path + 'post', post).then(function(data) {
-			// Reload the window
-			window.location.reload();
+			// Return to home
+      window.location.href = "/";
 		}, function(err) {});
 	};
 };
@@ -2817,51 +2800,8 @@ PartModule.factory('Part', PartService);
 var UserModule = angular.module('userModule',[]);
 
 // Service of the user module
-UserModule.factory('UserService', ['$http', '$firebaseObject', function($http, $firebaseObject) {
-  var isLogged = false;
-  var info = null;
-  var notifications = {count:0, list:null};
-
-  var rf = {
-    isLogged: function() {
-      return isLogged;
-    },
-    info: function() {
-      return info;
-    },
-    doLogin: function() {
-      $http.get(layer_path + 'user/my')
-        .error(function(data, status, headers, config) {
-          info = {username: 'Unknown'};
-        })
-        .success(function(data) {
-          isLogged = true;
-          info = data;
-
-          var ref = new Firebase("https://spartangeek.firebaseio.com/users/" + info.id + "/notifications");
-          ref.authWithCustomToken(localStorage.firebase_token, function(error, authData) {
-            if (error) {
-              console.log("Login Failed!", error);
-            } else {
-              //console.log("Login Succeeded!", authData);
-              // download the data into a local object
-              notifications = $firebaseObject(ref);
-              //var nots = $firebaseObject(ref)
-              //$rootScope.notifications = $firebaseObject(ref);
-              // synchronize the object with a three-way data binding
-              //nots.$bindTo($rootScope, "notifications");
-              notifications.$loaded( function() {
-                $rootScope.notifications.count = 13;
-              });
-            }
-          });
-        });
-    },
-    getNotifications: function() {
-      return notifications;
-    }
-  };
-  return rf;
+UserModule.factory('User', ['$resource', function($resource) {
+  return $resource(layer_path + 'users/:user_id', {user_id: '@user_id'});
 }]);
 
 // @codekit-prepend "common/directives"
@@ -2894,7 +2834,7 @@ var boardApplication = angular.module('board', [
   'readerModule',
 	'publisherModule',
   'partModule',
-  //'userModule',
+  'userModule',
   'angular-jwt',
   'firebase',
   'ngRoute'
@@ -2920,7 +2860,7 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
     templateUrl: '/js/partials/profile.html',
     controller: 'UserController'
   });
-  $routeProvider.when('/post/create/:cat_slug', {
+  $routeProvider.when('/post/create/:cat_slug?', {
     templateUrl: '/js/partials/publish.html',
     controller: 'PublishController',
     onEnter: function() {
@@ -3118,7 +3058,14 @@ boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http'
     };
 }]);
 
-boardApplication.controller('UserController', ['$scope', '$http', function($scope, $http) {
+boardApplication.controller('UserController', ['$scope', 'User', '$routeParams', function($scope, User, $routeParams) {
+  $scope.user = null;
+
+  User.get({user_id: $routeParams.id}, function(data){
+    $scope.user = data;
+  }, function(response) {
+    //window.location = '/';
+  });
 
 }]);
 

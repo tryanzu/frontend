@@ -28,7 +28,7 @@ var boardApplication = angular.module('board', [
   'readerModule',
 	'publisherModule',
   'partModule',
-  //'userModule',
+  'userModule',
   'angular-jwt',
   'firebase',
   'ngRoute'
@@ -54,7 +54,7 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
     templateUrl: '/js/partials/profile.html',
     controller: 'UserController'
   });
-  $routeProvider.when('/post/create/:cat_slug', {
+  $routeProvider.when('/post/create/:cat_slug?', {
     templateUrl: '/js/partials/publish.html',
     controller: 'PublishController',
     onEnter: function() {
@@ -252,7 +252,14 @@ boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http'
     };
 }]);
 
-boardApplication.controller('UserController', ['$scope', '$http', function($scope, $http) {
+boardApplication.controller('UserController', ['$scope', 'User', '$routeParams', function($scope, User, $routeParams) {
+  $scope.user = null;
+
+  User.get({user_id: $routeParams.id}, function(data){
+    $scope.user = data;
+  }, function(response) {
+    //window.location = '/';
+  });
 
 }]);
 

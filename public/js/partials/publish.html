@@ -2,167 +2,284 @@
   <div class="row row-no-padding full-width publish">
 
     <div class="col-md-9">
-      <div class="publish-content" ng-hide="postComponents">
-        <input type="text" ng-model="postTitle" class="title" placeholder="Ingresa un titulo para tu post" />
+      <div class="publish-content" ng-hide="post.components">
+        <input type="text" ng-model="post.title" class="title" placeholder="Ingresa un titulo para tu post" />
         <div class="toolbar">
-          <nav>
-            <div class="block">
-              <a href=""><i class="fa fa-bold"></i></a>
-              <a href=""><i class="fa fa-italic"></i></a>
-              <a href=""><i class="fa fa-underline"></i></a>
-            </div>
+          <div class="block">
+            <a href=""><i class="fa fa-bold"></i></a>
+            <a href=""><i class="fa fa-italic"></i></a>
+            <a href=""><i class="fa fa-underline"></i></a>
+          </div>
 
-            <div class="block">
-              <a href=""><i class="fa fa-list"></i></a>
-              <a href=""><i class="fa fa-link"></i></a>
-              <a href=""><i class="fa fa-camera-retro"></i></a>
-            </div>
+          <div class="block">
+            <a href=""><i class="fa fa-list"></i></a>
+            <a href=""><i class="fa fa-link"></i></a>
+            <a href=""><i class="fa fa-camera-retro"></i></a>
+          </div>
 
-            <div class="block">
-              <a ng-click="activateComponents()" href="" ng-show="postCategory.slug=='recommendations' && postComponents==false">Quiero publicar una PC</a>
-            </div>
-          </nav>
+          <div class="block" ng-show="post.category.slug == 'recommendations' && !post.components">
+            <a href="" ng-click="activateComponents()" class="publish_components">Quiero publicar una PC</a>
+          </div>
         </div>
 
-        <div class="editable-content" ng-model="postContent" ng-class="{active: contentFocused}" ng-focus="cleanContent()" contenteditable>
-        </div>
+        <textarea ng-model="post.content" class="editable-content" placeholder="Escribe el contenido de tu publicación..."></textarea>
+
       </div>
 
-      <div class="publish-content componently" ng-show="postComponents">
-        <input type="text" ng-model="postTitle" class="title" placeholder="Nombra a tu PC" />
+      <div class="publish-content componently" ng-show="post.components">
+        <input type="text" ng-model="post.title" class="title" placeholder="Nombra a tu PC" />
         <div class="toolbar">
-          <nav>
-            <div class="block">
-              <a href=""><i class="fa fa-bold"></i></a>
-              <a href=""><i class="fa fa-italic"></i></a>
-              <a href=""><i class="fa fa-underline"></i></a>
-            </div>
+          <div class="block">
+            <a href=""><i class="fa fa-bold"></i></a>
+            <a href=""><i class="fa fa-italic"></i></a>
+            <a href=""><i class="fa fa-underline"></i></a>
+          </div>
 
-            <div class="block">
-              <a href=""><i class="fa fa-list"></i></a>
-              <a href=""><i class="fa fa-link"></i></a>
-              <a href=""><i class="fa fa-camera-retro"></i></a>
-            </div>
-          </nav>
+          <div class="block">
+            <a href=""><i class="fa fa-list"></i></a>
+            <a href=""><i class="fa fa-link"></i></a>
+            <a href=""><i class="fa fa-camera-retro"></i></a>
+          </div>
+
+          <div class="block" ng-show="post.category.slug == 'recommendations' && post.components">
+            <a href="" ng-click="deactivateComponents()" class="cancel">Ya no quiero publicar una PC</a>
+          </div>
         </div>
 
         <div class="row row-recover">
           <div class="col-md-5">
-            <div class="editable-content" ng-model="postContent" ng-class="{active: contentFocused}" ng-focus="cleanContent()" contenteditable>
-            </div>
+            <textarea ng-model="post.content" class="editable-content" placeholder="Escribe el contenido de tu publicación... (Ej. Hola espartanos, me gustaría que me ayudaran a elegir...)"></textarea>
           </div>
-          <div class="col-md-7 components-section">
-            <h6>Presupuesto para tu PC</h6>
+          <div class="col-md-7">
+            <div class="components-section">
 
-            <div class="row row-no-padding component budget" style="margin-bottom: 2rem">
-              <div class="col-md-4"><div class="select">
-                  <select ng-model="computerPost.budget" ng-options="budget.label for budget in budgetFlexibility"></select>
-                </div></div>
-              <div class="col-md-4"><input type="text" ng-model="computerPost.components.budget" placeholder="10500" /></div>
-              <div class="col-md-4">
-                <div class="select">
-                  <select ng-model="computerPost.components.budget_currency"><option value="MXN">Pesos Mexicanos</option><option value="USD">Dolares</option></select>
+              <h6>Presupuesto para tu PC</h6>
+
+              <div class="row row-no-padding component budget" style="margin-bottom: 2rem">
+                <div class="col-md-4"><div class="select">
+                    <select ng-model="computerPost.budget" ng-options="budget.label for budget in budgetFlexibility"></select>
+                  </div></div>
+                <div class="col-md-4"><input type="text" ng-model="computerPost.components.budget" placeholder="10500" /></div>
+                <div class="col-md-4">
+                  <div class="select">
+                    <select ng-model="computerPost.components.budget_currency"><option value="MXN">Pesos Mexicanos</option><option value="USD">Dólares</option></select>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <h6>Componentes</h6>
+              <h6>Componentes</h6>
 
-            <div class="row row-no-padding component">
-              <div class="col-md-3"><span class="component-name">Procesador</span></div>
-              <div class="col-md-6"><input type="text" ng-model="computerPost.components.cpu.value" placeholder="(Ej. AMD FX-8320 8-Core 3.5 Ghz)" /></div>
-              <div class="col-md-3">
-                <div class="select">
-                  <select ng-model="computerPost.components.cpu.owned"><option value="true">Lo tengo</option> <option value="false">Lo necesito</option></select>
+              <!-- Motherboard -->
+              <div class="row component">
+                <div class="col-md-3">
+                  <span class="component-name">Motherboard</span>
+                </div>
+                <div class="col-md-9">
+                  <div class="text-right">
+                    <span class="ab-label">Selecciona:</span>
+                    <a href="" class="btn btn-default" ng-class="{'btn-owned': computerPost.components.motherboard.owned == 'true'}" ng-click="computerPost.components.motherboard.owned = 'true'">Ya lo tengo</a>
+                    <a href="" class="btn btn-default" ng-class="{'btn-needed': computerPost.components.motherboard.owned == 'false'}" ng-click="computerPost.components.motherboard.owned = 'false'">Lo necesito</a>
+                  </div>
+                </div>
+                <div class="col-md-12 from-db">
+                  <div class="form-group">
+                    <label>Marca</label>
+                    <div class="select">
+                      <select ng-model="partForm.motherboard.model" ng-options="m as m for m in partForm.motherboard.brand_list" ng-change="changeModels('motherboard')">
+                        <option value="">Selecciona...</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group" ng-show="partForm.motherboard.model != ''">
+                    <label>Modelo</label>
+                    <input type="text" ng-model="computerPost.components.motherboard.value" typeahead="m.name as m.name for m in partForm.motherboard.model_list | filter:$viewValue | limitTo:10" placeholder="Escribe el modelo" typeahead-min-length="0">
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div class="row row-no-padding component">
-              <div class="col-md-3"><span class="component-name">Motherboard</span></div>
-              <div class="col-md-6"><input type="text" ng-model="computerPost.components.motherboard.value" placeholder="(Ej. ASUS M5A99FX PRO R2.0)" /></div>
-              <div class="col-md-3">
-                <div class="select">
-                  <select ng-model="computerPost.components.motherboard.owned"><option value="true">Lo tengo</option> <option value="false">Lo necesito</option></select>
+              <!-- CPU -->
+              <div class="row component">
+                <div class="col-md-3">
+                  <span class="component-name">Procesador</span>
+                </div>
+                <div class="col-md-9">
+                  <div class="text-right">
+                    <span class="ab-label">Selecciona:</span>
+                    <a href="" class="btn btn-default" ng-class="{'btn-owned': computerPost.components.cpu.owned == 'true'}" ng-click="computerPost.components.cpu.owned = 'true'">Ya lo tengo</a>
+                    <a href="" class="btn btn-default" ng-class="{'btn-needed': computerPost.components.cpu.owned == 'false'}" ng-click="computerPost.components.cpu.owned = 'false'">Lo necesito</a>
+                  </div>
+                </div>
+                <div class="col-md-12 from-db">
+                  <div class="form-group">
+                    <label>Marca</label>
+                    <div class="select">
+                      <select ng-model="partForm.cpu.model" ng-options="m as m for m in partForm.cpu.brand_list" ng-change="changeModels('cpu')">
+                        <option value="">Selecciona...</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group" ng-show="partForm.cpu.model != ''">
+                    <label>Modelo</label>
+                    <input type="text" ng-model="computerPost.components.cpu.value" typeahead="m.full_name as m.full_name for m in partForm.cpu.model_list | filter:$viewValue | limitTo:10" placeholder="Escribe el modelo" typeahead-min-length="0">
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div class="row row-no-padding component">
-              <div class="col-md-3"><span class="component-name">RAM</span></div>
-              <div class="col-md-6"><input type="text" ng-model="computerPost.components.ram.value" placeholder="(Ej. Corsair Vengeance 8GB 1600MHz DDR3)" /></div>
-              <div class="col-md-3">
-                <div class="select">
-                  <select ng-model="computerPost.components.ram.owned"><option value="true">Lo tengo</option> <option value="false">Lo necesito</option></select>
+              <!-- CPU Cooler -->
+              <div class="row component">
+                <div class="col-md-3">
+                  <span class="component-name">Cooler del CPU</span>
+                </div>
+                <div class="col-md-9">
+                  <div class="text-right">
+                    <span class="ab-label">Selecciona:</span>
+                    <a href="" class="btn btn-default" ng-class="{'btn-owned': computerPost.components.cooler.owned == 'true'}" ng-click="computerPost.components.cooler.owned = 'true'">Ya lo tengo</a>
+                    <a href="" class="btn btn-default" ng-class="{'btn-needed': computerPost.components.cooler.owned == 'false'}" ng-click="computerPost.components.cooler.owned = 'false'">Lo necesito</a>
+                  </div>
+                </div>
+                <div class="col-md-12 from-db">
+                  <div class="form-group">
+                    <label>Marca</label>
+                    <div class="select">
+                      <select ng-model="partForm['cpu-cooler'].model" ng-options="m as m for m in partForm['cpu-cooler'].brand_list" ng-change="changeModels('cpu-cooler', 'cooler')">
+                        <option value="">Selecciona...</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group" ng-show="partForm['cpu-cooler'].model != ''">
+                    <label>Modelo</label>
+                    <input type="text" ng-model="computerPost.components.cooler.value" typeahead="m.name as m.name for m in partForm['cpu-cooler'].model_list | filter:$viewValue | limitTo:10"  placeholder="Escribe el modelo" typeahead-min-length="0">
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div class="row row-no-padding component">
-              <div class="col-md-3"><span class="component-name">Almacenamiento</span></div>
-              <div class="col-md-6"><input type="text" ng-model="computerPost.components.storage.value" placeholder="(Ej. SSD Samsung 840 PRO 512GB)" /></div>
-              <div class="col-md-3">
-                <div class="select">
-                  <select ng-model="computerPost.components.storage.owned"><option value="true">Lo tengo</option> <option value="false">Lo necesito</option></select>
+              <!-- RAM -->
+              <div class="row component">
+                <div class="col-md-3">
+                  <span class="component-name">RAM</span>
+                </div>
+                <div class="col-md-9">
+                  <div class="text-right">
+                    <span class="ab-label">Selecciona:</span>
+                    <a href="" class="btn btn-default" ng-class="{'btn-owned': computerPost.components.ram.owned == 'true'}" ng-click="computerPost.components.ram.owned = 'true'">Ya lo tengo</a>
+                    <a href="" class="btn btn-default" ng-class="{'btn-needed': computerPost.components.ram.owned == 'false'}" ng-click="computerPost.components.ram.owned = 'false'">Lo necesito</a>
+                  </div>
+                </div>
+                <div class="col-md-12 from-db">
+                  <div class="form-group">
+                    <label>Marca</label>
+                    <div class="select">
+                      <select ng-model="partForm.memory.model" ng-options="m as m for m in partForm.memory.brand_list" ng-change="changeModels('memory', 'ram')" >
+                        <option value="">Selecciona...</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group" ng-show="partForm.memory.model != ''">
+                    <label>Modelo</label>
+                    <input type="text" ng-model="computerPost.components.ram.value" typeahead="m.full_name as m.full_name for m in partForm.memory.model_list | filter:$viewValue | limitTo:10" placeholder="Escribe el modelo" typeahead-min-length="0">
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div class="row row-no-padding component">
-              <div class="col-md-3"><span class="component-name">Cooler del CPU</span></div>
-              <div class="col-md-6"><input type="text" ng-model="computerPost.components.cooler.value" placeholder="(Ej. Phanteks PH-TC14PE_BK)" /></div>
-              <div class="col-md-3">
-                <div class="select">
-                  <select ng-model="computerPost.components.cooler.owned"><option value="true">Lo tengo</option> <option value="false">Lo necesito</option></select>
+              <!-- Almacenamiento -->
+              <div class="row component">
+                <div class="col-md-3">
+                  <span class="component-name">Almacenamiento</span>
+                </div>
+                <div class="col-md-9">
+                  <div class="text-right">
+                    <span class="ab-label">Selecciona:</span>
+                    <a href="" class="btn btn-default" ng-class="{'btn-owned': computerPost.components.storage.owned == 'true'}" ng-click="computerPost.components.storage.owned = 'true'">Ya lo tengo</a>
+                    <a href="" class="btn btn-default" ng-class="{'btn-needed': computerPost.components.storage.owned == 'false'}" ng-click="computerPost.components.storage.owned = 'false'">Lo necesito</a>
+                  </div>
+                </div>
+                <div class="col-md-12 from-db">
+                  <div class="form-group">
+                    <label>Marca</label>
+                    <div class="select">
+                      <select ng-model="partForm.storage.model" ng-options="m as m for m in partForm.storage.brand_list" ng-change="changeModels('storage')" >
+                        <option value="">Selecciona...</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group" ng-show="partForm.storage.model != ''">
+                    <label>Modelo</label>
+                    <input type="text" ng-model="computerPost.components.storage.value" typeahead="m.full_name as m.full_name for m in partForm.storage.model_list | filter:$viewValue | limitTo:10" placeholder="Escribe el modelo" typeahead-min-length="0">
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div class="row row-no-padding component">
-              <div class="col-md-3"><span class="component-name">Fuente de poder</span></div>
-              <div class="col-md-6"><input type="text" ng-model="computerPost.components.power.value" placeholder="(Ej. Corsair AX760 760W 80 PLUS Platinum)" /></div>
-              <div class="col-md-3">
-                <div class="select">
-                  <select ng-model="computerPost.components.power.owned"><option value="true">Lo tengo</option> <option value="false">Lo necesito</option></select>
+
+              <div class="row row-no-padding component">
+                <div class="col-md-3">
+                  <span class="component-name">Fuente de poder</span>
+                </div>
+                <div class="col-md-9">
+                  <div class="text-right">
+                    <span class="ab-label">Selecciona:</span>
+                    <a href="" class="btn btn-default" ng-class="{'btn-owned': computerPost.components.power.owned == 'true'}" ng-click="computerPost.components.power.owned = 'true'">Ya lo tengo</a>
+                    <a href="" class="btn btn-default" ng-class="{'btn-needed': computerPost.components.power.owned == 'false'}" ng-click="computerPost.components.power.owned = 'false'">Lo necesito</a>
+                  </div>
+                </div>
+                <div class="col-md-12">
+                  <input type="text" class="only" ng-model="computerPost.components.power.value" placeholder="(Ej. Corsair AX760 760W 80 PLUS Platinum)" />
                 </div>
               </div>
-            </div>
 
-            <div class="row row-no-padding component">
-              <div class="col-md-3"><span class="component-name">Gabinete</span></div>
-              <div class="col-md-6"><input type="text" ng-model="computerPost.components.cabinet.value" placeholder="(Ej. Corsair Graphite 600T)" /></div>
-              <div class="col-md-3">
-                <div class="select">
-                  <select ng-model="computerPost.components.cabinet.owned"><option value="true">Lo tengo</option> <option value="false">Lo necesito</option></select>
+              <div class="row row-no-padding component">
+                <div class="col-md-3">
+                  <span class="component-name">Gabinete</span>
+                </div>
+                <div class="col-md-9">
+                  <div class="text-right">
+                    <span class="ab-label">Selecciona:</span>
+                    <a href="" class="btn btn-default" ng-class="{'btn-owned': computerPost.components.cabinet.owned == 'true'}" ng-click="computerPost.components.cabinet.owned = 'true'">Ya lo tengo</a>
+                    <a href="" class="btn btn-default" ng-class="{'btn-needed': computerPost.components.cabinet.owned == 'false'}" ng-click="computerPost.components.cabinet.owned = 'false'">Lo necesito</a>
+                  </div>
+                </div>
+                <div class="col-md-12">
+                  <input type="text" class="only" ng-model="computerPost.components.cabinet.value" placeholder="(Ej. Corsair Graphite 600T)" />
                 </div>
               </div>
-            </div>
 
-            <div class="row row-no-padding component">
-              <div class="col-md-3"><span class="component-name">Tarjeta de video</span></div>
-              <div class="col-md-6"><input type="text" ng-model="computerPost.components.videocard.value" placeholder="(Ej. Gigabyte NVIDIA GeForce GTX 780 Ti 3GB GDDR)" /></div>
-              <div class="col-md-3">
-                <div class="select">
-                  <select ng-model="computerPost.components.videocard.owned"><option value="true">Lo tengo</option> <option value="false">Lo necesito</option></select>
+              <div class="row row-no-padding component">
+                <div class="col-md-3">
+                  <span class="component-name">Tarjeta de video</span>
+                </div>
+                <div class="col-md-9">
+                  <div class="text-right">
+                    <span class="ab-label">Selecciona:</span>
+                    <a href="" class="btn btn-default" ng-class="{'btn-owned': computerPost.components.videocard.owned == 'true'}" ng-click="computerPost.components.videocard.owned = 'true'">Ya lo tengo</a>
+                    <a href="" class="btn btn-default" ng-class="{'btn-needed': computerPost.components.videocard.owned == 'false'}" ng-click="computerPost.components.videocard.owned = 'false'">Lo necesito</a>
+                  </div>
+                </div>
+                <div class="col-md-12">
+                  <input type="text" class="only" ng-model="computerPost.components.videocard.value" placeholder="(Ej. Gigabyte NVIDIA GeForce GTX 780 Ti 3GB GDDR)">
                 </div>
               </div>
-            </div>
 
-            <div class="row row-no-padding component">
-              <div class="col-md-3"><span class="component-name">Monitor</span></div>
-              <div class="col-md-6"><input type="text" ng-model="computerPost.components.screen.value" placeholder="(Ej. ASUS VG278HE 27 pulgadas Full-HD 2ms)" /></div>
-              <div class="col-md-3">
-                <div class="select">
-                  <select ng-model="computerPost.components.screen.owned"><option value="true">Lo tengo</option> <option value="false">Lo necesito</option></select>
+              <div class="row row-no-padding component">
+                <div class="col-md-3">
+                  <span class="component-name">Monitor</span>
+                </div>
+                <div class="col-md-9">
+                  <div class="text-right">
+                    <span class="ab-label">Selecciona:</span>
+                    <a href="" class="btn btn-default" ng-class="{'btn-owned': computerPost.components.screen.owned == 'true'}" ng-click="computerPost.components.screen.owned = 'true'">Ya lo tengo</a>
+                    <a href="" class="btn btn-default" ng-class="{'btn-needed': computerPost.components.screen.owned == 'false'}" ng-click="computerPost.components.screen.owned = 'false'">Lo necesito</a>
+                  </div>
+                </div>
+                <div class="col-md-12">
+                  <input type="text" class="only" ng-model="computerPost.components.screen.value" placeholder="(Ej. ASUS VG278HE 27 pulgadas Full-HD 2ms)">
                 </div>
               </div>
-            </div>
 
-            <div class="row row-no-padding component">
-              <div class="col-md-12">
-                <h6>Videojuegos o programas que utilizare</h6>
+              <div class="row row-no-padding component">
+                <div class="col-md-12">
+                  <h6>Videojuegos o programas que utilizaré</h6>
 
-                <input type="text" ng-model="computerPost.components.software" class="only" placeholder="(Ej. Minecraft, Battlefield 4, Photoshop CS6)" />
+                  <input type="text" ng-model="computerPost.components.software" class="only" placeholder="(Ej. Minecraft, Battlefield 4, Photoshop CS6)" />
+                </div>
               </div>
             </div>
           </div>
@@ -175,9 +292,7 @@
         <div class="config">
           <h4>Categoria</h4>
           <div class="category">
-            <select ng-options="category.name for category in categories" ng-model="postCategory">
-              <option>Seleccionar categoria</option>
-              <option>PC's Spartanas</option>
+            <select ng-options="category.name for category in categories" ng-model="post.category" ng-disabled="post.components">
             </select>
           </div>
         </div>
@@ -196,16 +311,19 @@
           <h4>¿Es una pregunta?</h4>
           <div class="question">
             <div class="check">
-              <input type="checkbox" value="None" id="is_question" name="check" />
+              <input type="checkbox" id="is_question" name="check" ng-model="post.isQuestion" />
               <label for="is_question"></label>
             </div>
           </div>
-          <p>De esta forma decidimos a quien mostrar tu publicación, a espartanos que responden o que buscan respuestas.</p>
+          <p>De esta forma decidimos a quien mostrar tu publicación, a espartanos que responden ó que buscan respuestas.</p>
         </div>
 
         <div class="config">
-          <a ng-click="computerPostPublish()" class="btn btn-block btn-primary" ng-show="postComponents">Publicar Ahora</a>
-          <a ng-click="normalPostPublish()" class="btn btn-block btn-primary" ng-hide="postComponents">Publicar Ahora</a>
+
+          <p ng-show="post.components && post.title != ''"><strong>Así verán tu publicación:</strong><br>PC '{{ post.title }}' <span ng-show="computerPost.components.budget > 0">con presupuesto de ${{ computerPost.components.budget }}</span><br>Escrito por {{ user.info.username }} hace 1 minuto</p>
+
+          <a ng-click="computerPostPublish()" class="btn btn-block btn-primary" ng-show="post.components">Publicar PC Ahora</a>
+          <a ng-click="normalPostPublish()" class="btn btn-block btn-primary" ng-hide="post.components">Publicar Ahora</a>
         </div>
       </div>
     </div>

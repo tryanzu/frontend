@@ -128,9 +128,11 @@
               </div>
 
               <div class="recommendations" ng-if="post.type === 'recommendations'">
-                <div class="content" marked="post.content">
-                </div>
 
+                <div class="content" marked="post.content"></div>
+
+                <div class="row">
+                  <div class="col-md-9">
                 <div class="components">
                   <div ng-if="post.components.cpu.content" class="component">
                     <div class="row">
@@ -254,6 +256,8 @@
                     {{ post.components.software }}
                   </div>
                 </div>
+                  </div>
+                </div>
               </div>
 
               <div class="answers">
@@ -276,21 +280,25 @@
                 </div>
               </div>
 
-              <div ng-show="post.comments.count > 0 || force_comment == true || true" ng-if="user.isLogged">
-                <div class="idiot-wizzy">
-                  <textarea placeholder="Escribe tu comentario..." class="form-control flexible-height content" ng-model="comment.content" ng-disabled="waiting_comment"></textarea>
-                  <div class="actions">
-                    <ul>
-                      <li ng-show="comment.content != ''">
-                        <strong>**Negrita**</strong>
-                      </li>
-                      <li ng-show="comment.content != ''">
-                        <em>*Itálica*</em>
-                      </li>
-                      <li style="margin-left: 3em;">
-                        <a href="" ng-click="publish()" ng-class="{'disabled': waiting_comment == true || comment.content == ''}" class="btn btn-primary btn-sm">Publicar</a>
-                      </li>
-                    </ul>
+              <div class="row">
+                <div class="col-md-10">
+                  <div ng-show="post.comments.count > 0 || force_comment == true || true" ng-if="user.isLogged">
+                    <div class="idiot-wizzy">
+                      <textarea placeholder="Escribe tu comentario..." class="form-control flexible-height content" ng-model="comment.content" ng-disabled="waiting_comment"></textarea>
+                      <div class="actions">
+                        <ul>
+                          <li ng-show="comment.content != ''">
+                            <strong>**Negrita**</strong>
+                          </li>
+                          <li ng-show="comment.content != ''">
+                            <em>*Itálica*</em>
+                          </li>
+                          <li style="margin-left: 3em;">
+                            <a href="" ng-click="publish()" ng-class="{'disabled': waiting_comment == true || comment.content == ''}" class="btn btn-primary btn-sm">Publicar</a>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
