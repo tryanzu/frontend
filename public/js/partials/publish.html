@@ -20,6 +20,11 @@
           <div class="block" ng-show="post.category.slug == 'recommendations' && !post.components">
             <a href="" ng-click="activateComponents()" class="publish_components">Quiero publicar una PC</a>
           </div>
+
+          <div class="block helper" ng-show="post.category.slug == 'recommendations' && !post.components" tooltip="Podrás cargar todos los componentes de una PC con la que necesites ayuda" tooltip-placement="right">
+            <i class="fa fa-info-circle"></i> ¿Qué es esto?
+          </div>
+
         </div>
 
         <textarea ng-model="post.content" class="editable-content" placeholder="Escribe el contenido de tu publicación..."></textarea>
