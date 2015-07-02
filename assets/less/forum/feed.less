@@ -243,7 +243,7 @@
     }
 
     #tags {
-      a {
+      div {
         padding: 2px 8px 0 0;
         margin-right: 6px;
         margin-bottom: 4px;
@@ -252,6 +252,19 @@
         font-size: 13px;
         color: @brand-primary-dark;
         position: relative;
+
+        &.active {
+          color: @brand-primary;
+          font-weight: bold;
+
+          a {
+            color: @brand-primary;
+          }
+        }
+
+        a {
+          color: @brand-primary-dark;
+        }
 
         .count {
           display: inline-block;
