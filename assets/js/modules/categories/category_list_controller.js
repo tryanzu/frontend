@@ -63,7 +63,6 @@ var CategoryListController = ['$scope', '$timeout', '$location', 'Category', 'Fe
 
   	$scope.startupFeed = function(category) {
   		$scope.resolving_posts = true;
-      $scope.previewStyle = {'background-image': 'url(/images/boards/'+$scope.category.slug+'.png)'};
 
   		Feed.get({limit: 10, offset: 0, category: category.slug}, function(data) {
         for(p in data.feed) {
@@ -78,10 +77,6 @@ var CategoryListController = ['$scope', '$timeout', '$location', 'Category', 'Fe
   			$scope.resolving_posts = false;
   			$scope.offset = 10;
   		});
-
-  		$timeout(function() {
-  			$scope.$broadcast('changedContainers');
-  		}, 500);
   	};
 
   	$scope.walkFeed = function() {
@@ -134,6 +129,10 @@ var CategoryListController = ['$scope', '$timeout', '$location', 'Category', 'Fe
   	Category.query(function(data) {
   		$scope.resolving = false;
   		$scope.categories = data;
+
+      $timeout(function() {
+        $scope.$broadcast('changedContainers');
+      }, 100);
 
       // Preload the images for each board
       for (var category in $scope.categories) {

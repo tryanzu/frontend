@@ -320,7 +320,14 @@
 
         <div class="config">
 
-          <p ng-show="post.components && post.title != ''"><strong>Así verán tu publicación:</strong><br>PC '{{ post.title }}' <span ng-show="computerPost.components.budget > 0">con presupuesto de ${{ computerPost.components.budget }}</span><br>Escrito por {{ user.info.username }} hace 1 minuto</p>
+          <p ng-show="post.components && post.title != ''">
+            <strong>Así verán tu publicación:</strong>
+          </p>
+          <div ng-show="post.components && post.title != ''" class="preview">
+            <p>PC '{{ post.title }}' <span ng-show="computerPost.components.budget > 0">con presupuesto de ${{ computerPost.components.budget }}</span></p>
+            <p>Escrito por {{ user.info.username }} hace 1 minuto</p>
+            <span class="ball"></span> PC's Spartanas
+          </div>
 
           <a ng-click="computerPostPublish()" class="btn btn-block btn-primary" ng-show="post.components">Publicar PC Ahora</a>
           <a ng-click="normalPostPublish()" class="btn btn-block btn-primary" ng-hide="post.components">Publicar Ahora</a>
