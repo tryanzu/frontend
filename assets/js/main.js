@@ -306,6 +306,18 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
                 }
                 var list_ref = new Firebase(url + "/list");
                 $scope.user.notifications.list = $firebaseArray(list_ref.limitToLast(to_show));
+
+                $scope.user.notifications.list.$loaded()
+                .then(function(x) {
+                  x.$watch(function(event) {
+                    //console.log(event);
+                    if(event.event === "child_added") {
+                      var audio = new Audio('/sounds/notification.mp3');
+                      audio.play();
+                    }
+                  });
+                })
+
                 /*$scope.user.notifications.list.$loaded(function(){
                   console.log($scope.user.notifications.list) ;
                 });*/
@@ -347,24 +359,22 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
       window.location = '/';
     };
 
-    $scope.toggle_notifications = function(open) {
-      if(open) {
-        $scope.user.notifications.count.$value = 0;
-        $timeout(function() {
-          var arrayLength = $scope.user.notifications.list.length;
-          for (var i = 0; i < arrayLength; i++) {
-            //console.log($scope.user.notifications.list[i]);
-            if(!$scope.user.notifications.list[i].seen) {
-              $scope.user.notifications.list[i].seen = true;
-              $scope.user.notifications.list.$save(i);
-            }
+    $scope.toggle_notifications = function() {
+      $scope.user.notifications.count.$value = 0;
+      $timeout(function() {
+        var arrayLength = $scope.user.notifications.list.length;
+        for (var i = 0; i < arrayLength; i++) {
+          //console.log($scope.user.notifications.list[i]);
+          if(!$scope.user.notifications.list[i].seen) {
+            $scope.user.notifications.list[i].seen = true;
+            $scope.user.notifications.list.$save(i);
           }
-        }, 300);
-      }
+        }
+      }, 50);
     };
 
     $scope.total_notifications = function() {
-      return 1 + $scope.user.notifications.count.$value;
+      return 0 + $scope.user.notifications.count.$value;
     }
 
     $rootScope.$on('fbLoginSuccess', function(name, response) {

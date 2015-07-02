@@ -49,7 +49,7 @@
           <li><a href="" ng-click="signUp()">Únete</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right" ng-if="user.isLogged" ng-cloak>
-          <li class="dropdown notifications" dropdown on-toggle="toggle_notifications(open)">
+          <li class="dropdown notifications" dropdown>
             <a dropdown-toggle href="" class="dropdown-toggle btn-user" data-toggle="dropdown" role="button" aria-expanded="false">
               <span class="notifications-icon"><i class="fa fa-fw fa-bell icon-glyph"></i></span>
               <span class="label">Notificaciones</span>
@@ -57,12 +57,12 @@
             </a>
             <ul class="dropdown-menu" role="menu">
               <div class="notifications-header">
-                <a class="btn btn-icon btn-link btn-sm" title="Mark All as Read" href="">
-                  <i class="fa fa-fw fa-check icon"></i> <span class="label"></span>
+                <a class="btn btn-icon btn-link btn-sm" title="Marcar como leídas" href="" ng-if="total_notifications() > 0" ng-click="toggle_notifications()">
+                  <i class="fa fa-fw fa-check icon"></i> <span class="label">Marcar como leídas</span>
                 </a>
-                <h4 ng-click="console.log(notifications)">Notificaciones</h4>
+                <h4>Notificaciones</h4>
               </div>
-              <li>
+              <li class="hidden">
                 <a class="unread" style="white-space:initial" href="">
                   Te falta completar información de tu perfil
                   <div class="description" style="margin-bottom: 5px;">Una vez lleno, <strong>SpartanGeek</strong> podrá recomendarte conversaciones, hardware, juegos, partidas en línea y promociones</div>
