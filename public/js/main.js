@@ -2535,7 +2535,7 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post) {
         addImagePreview($scope.post.comments.set[c]);
       }
 
-      if($scope.view_comment.position >= 0) {
+      if($scope.view_comment.position >= 0 && $scope.view_comment.position != '') {
         $timeout(function() {
           var elem = $('.comment[data-number='+$scope.view_comment.position+']');
           if(elem.val() === "") {
@@ -3233,13 +3233,21 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
       }, 50);
     };
 
+    $scope.toggle_notification = function(elem) {
+      if(!elem.seen) {
+        $scope.user.notifications.count.$value = $scope.user.notifications.count.$value - 1;
+        elem.seen = true;
+        $scope.user.notifications.list.$save(elem);
+      }
+    };
+
     $scope.total_notifications = function() {
       return 0 + $scope.user.notifications.count.$value;
-    }
+    };
 
     $scope.reloadPost = function() {
       $scope.$broadcast('reloadPost');
-    }
+    };
 
     $scope.$on('login', function(e) {
       $scope.logUser();

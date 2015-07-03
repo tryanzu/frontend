@@ -80,7 +80,7 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post) {
         addImagePreview($scope.post.comments.set[c]);
       }
 
-      if($scope.view_comment.position >= 0) {
+      if($scope.view_comment.position >= 0 && $scope.view_comment.position != '') {
         $timeout(function() {
           var elem = $('.comment[data-number='+$scope.view_comment.position+']');
           if(elem.val() === "") {

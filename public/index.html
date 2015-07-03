@@ -70,12 +70,12 @@
                 </a>
               </li>
               <li ng-repeat="n in (user.notifications.list | orderBy:'-created_at')">
-                <a ng-class="{'unread': !n.seen}" href="/p/{{n.related_extra}}/{{n.related_id}}" ng-if="n.related ==='comment'" my-refresh="reloadPost()">
+                <a ng-class="{'unread': !n.seen}" href="/p/{{n.related_extra}}/{{n.related_id}}/{{n.related_position}}" ng-if="n.related ==='comment'" my-refresh="reloadPost()" ng-click="toggle_notification($index)">
                   <div class="content" marked="n.title"></div>
                   <div class="description">en tu publicación "{{ n.text }}"</div>
                   <div class="date">Hace {{ n.created_at | timeago }}</div>
                 </a>
-                <a ng-class="{'unread': !n.seen}" href="/p/{{n.related_extra}}/{{n.related_id}}" ng-if="n.related ==='mention'" my-refresh="reloadPost()">
+                <a ng-class="{'unread': !n.seen}" href="/p/{{n.related_extra}}/{{n.related_id}}/{{n.related_position}}" ng-if="n.related ==='mention'" my-refresh="reloadPost()" ng-click="toggle_notification(n)">
                   <div class="content" marked="n.title"></div>
                   <div class="description">en la publicación "{{ n.text }}"</div>
                   <div class="date">Hace {{ n.created_at | timeago }}</div>
