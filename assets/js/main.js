@@ -115,6 +115,9 @@ boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http'
         $scope.form.error = {message:'Usuario o contraseña incorrecta.'};
       })
       .success(function(data) {
+
+        mixpanel.track("Regular login");
+
         localStorage.setItem('id_token', data.token);
         localStorage.setItem('firebase_token', data.firebase);
         localStorage.setItem('signed_in', true);
@@ -153,6 +156,9 @@ boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http'
                 $scope.form.error = {message:'No se pudo iniciar sesión.'};
               })
               .success(function(data) {
+
+                mixpanel.track("Facebook login");
+                
                 localStorage.setItem('id_token', data.token);
                 localStorage.setItem('firebase_token', data.firebase);
                 localStorage.setItem('signed_in', true);
@@ -195,6 +201,9 @@ boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http'
         $scope.form.error = {message:'El usuario o correo elegido ya existe.'};
       })
       .success(function(data) {
+
+        mixpanel.track("Sign up");
+
         localStorage.setItem('id_token', data.token);
         localStorage.setItem('firebase_token', data.firebase);
         localStorage.setItem('signed_in', true);
@@ -236,6 +245,9 @@ boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http'
                 $scope.form.error = {message:'No se pudo iniciar sesión.'};
               })
               .success(function(data) {
+
+                mixpanel.track("Facebook login");
+
                 localStorage.setItem('id_token', data.token);
                 localStorage.setItem('firebase_token', data.firebase);
                 localStorage.setItem('signed_in', true);
@@ -286,6 +298,14 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
         .success(function(data) {
           $scope.user.info = data;
           $scope.user.isLogged = true;
+
+          mixpanel.identify(data.id);
+          mixpanel.people.set({
+              "$first_name": data.username,
+              "$last_name": "",
+              "$email": data.email
+          });
+
           var url = "https://spartangeek.firebaseio.com/users/" + data.id + "/notifications";
 
           var ref = new Firebase(url + "/count");
