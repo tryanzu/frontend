@@ -2389,7 +2389,7 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
       $scope.status.post_selected = true;
       Bridge.changePost({id: postId, slug: slug, name: ""});
 
-      mixpanel.track("View post", {id: post.id, category: $scope.category.id});
+      mixpanel.track("View post", {id: postId, category: $scope.category.id});
       ga('send', 'pageview', '/post/' + slug + '/' + postId);
     };
 
