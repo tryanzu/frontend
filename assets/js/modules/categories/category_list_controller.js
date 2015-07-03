@@ -26,6 +26,14 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
             }
           }
           else if (loc.indexOf("/p/") >= 0) {
+            var cn = loc.split('/');
+            if(cn.length == 5) {
+              cn = cn[4]; // comment number
+              $scope.view_comment.position = cn;
+            }
+            else {
+              $scope.view_comment.position = -1;
+            }
             $scope.viewPostID(params.id, params.slug);
           }
         }
@@ -49,6 +57,10 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
     $scope.adding_posts = false;
   	$scope.offset = 0;
   	$scope.previewStyle = {};
+
+    $scope.view_comment = {
+      position: -1
+    };
 
     $scope.activePostId = null;
 
@@ -126,7 +138,6 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
       $scope.activePostId = postId;
       $scope.status.post_selected = true;
       Bridge.changePost({id: postId, slug: slug, name: ""});
-      //$(window).scrollTop(0);
       ga('send', 'pageview', '/post/' + slug + '/' + postId);
     };
 

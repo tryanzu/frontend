@@ -2272,6 +2272,14 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
             }
           }
           else if (loc.indexOf("/p/") >= 0) {
+            var cn = loc.split('/');
+            if(cn.length == 5) {
+              cn = cn[4]; // comment number
+              $scope.view_comment.position = cn;
+            }
+            else {
+              $scope.view_comment.position = -1;
+            }
             $scope.viewPostID(params.id, params.slug);
           }
         }
@@ -2295,6 +2303,10 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
     $scope.adding_posts = false;
   	$scope.offset = 0;
   	$scope.previewStyle = {};
+
+    $scope.view_comment = {
+      position: -1
+    };
 
     $scope.activePostId = null;
 
@@ -2372,7 +2384,6 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
       $scope.activePostId = postId;
       $scope.status.post_selected = true;
       Bridge.changePost({id: postId, slug: slug, name: ""});
-      //$(window).scrollTop(0);
       ga('send', 'pageview', '/post/' + slug + '/' + postId);
     };
 
@@ -2522,6 +2533,16 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post) {
 
       for( var c in $scope.post.comments.set) {
         addImagePreview($scope.post.comments.set[c]);
+      }
+
+      if($scope.view_comment.position >= 0) {
+        $timeout(function() {
+          var elem = $('.comment[data-number='+$scope.view_comment.position+']');
+          if(elem.val() === "") {
+            elem.addClass('active');
+            $('.current-article').animate({scrollTop: (elem.offset().top - 80)}, 50);
+          }
+        }, 100);
       }
       $scope.resolving = false;
 		});
@@ -2884,7 +2905,7 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
     templateUrl: '/js/partials/main.html',
     controller: 'CategoryListController'
   });
-  $routeProvider.when('/p/:slug/:id', {
+  $routeProvider.when('/p/:slug/:id/:comment_position?', {
     templateUrl: '/js/partials/main.html',
     controller: 'CategoryListController'
   });

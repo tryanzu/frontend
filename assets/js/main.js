@@ -45,7 +45,7 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
     templateUrl: '/js/partials/main.html',
     controller: 'CategoryListController'
   });
-  $routeProvider.when('/p/:slug/:id', {
+  $routeProvider.when('/p/:slug/:id/:comment_position?', {
     templateUrl: '/js/partials/main.html',
     controller: 'CategoryListController'
   });

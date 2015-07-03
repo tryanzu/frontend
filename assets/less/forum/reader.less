@@ -177,17 +177,27 @@
 }
 
 
-.current-article .comments .comment {
-  border-bottom: 1px solid #F4F6F8;
-  margin-bottom: 3em;
-  padding-bottom: 1em;
-}
+.current-article .comments {
+  margin-left: -1em;
 
-.current-article .comments .comment .date {
-  color: #7C8592;
-  font: inherit;
-  font-size: 12px;
-  margin: 0;
+  .comment {
+    border-bottom: 1px solid #F4F6F8;
+    margin-bottom: 2em;
+    padding: 1em;
+
+    .date {
+      color: #7C8592;
+      font: inherit;
+      font-size: 12px;
+      margin: 0;
+    }
+
+    &.active {
+      background-color: #FFF7E5;
+      border-color: transparent;
+      border-radius: 5px;
+    }
+  }
 }
 
 .current-article {

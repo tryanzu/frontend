@@ -79,6 +79,16 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post) {
       for( var c in $scope.post.comments.set) {
         addImagePreview($scope.post.comments.set[c]);
       }
+
+      if($scope.view_comment.position >= 0) {
+        $timeout(function() {
+          var elem = $('.comment[data-number='+$scope.view_comment.position+']');
+          if(elem.val() === "") {
+            elem.addClass('active');
+            $('.current-article').animate({scrollTop: (elem.offset().top - 80)}, 50);
+          }
+        }, 100);
+      }
       $scope.resolving = false;
 		});
 	});

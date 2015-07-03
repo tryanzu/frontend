@@ -22,10 +22,10 @@
                   <div>
                     <a href="/u/{{ post.author.username }}/{{ post.author.id }}" title class="author" data-original-title="Escrito por {{ post.author.username }} hace {{ post.created_at | timeago }}">
                       <img class="avatar hidden" gravatar-src="post.author.email" gravatar-default="http://river.spartangeek.com/images/no-thumb.png" />
-                      <span class="avatar " style="background: #305FA9;">{{:: post.author.username[0].toUpperCase() }}</span>
+                      <span class="avatar " style="background: #305FA9;">{{ post.author.username[0].toUpperCase() }}</span>
                     </a>
                     <a href="/p/{{ post.slug }}/{{ post.id }}" class="main">
-                      <h3 class="title">{{:: post.title }}</h3>
+                      <h3 class="title">{{ post.title }}</h3>
                       <ul class="info">
                         <li class="hidden">
                           <span>
@@ -34,7 +34,7 @@
                         </li>
                         <li class="">
                           <span>
-                            Escrito por <span class="username">{{:: post.author.username }}</span> <time>hace {{:: post.created_at | timeago }}</time>
+                            Escrito por <span class="username">{{ post.author.username }}</span> <time>hace {{ post.created_at | timeago }}</time>
                           </span>
                         </li>
                       </ul>
@@ -268,7 +268,7 @@
               </div>
 
               <div class="comments">
-                <div class="comment" ng-repeat="comment in (post.comments.set | orderBy : 'position')">
+                <div class="comment" data-number="{{ comment.position }}" ng-repeat="comment in (post.comments.set | orderBy : 'position')">
                   <div class="comment-author">
                     <div class="row">
                       <div class="col-md-12">
