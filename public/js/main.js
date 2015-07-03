@@ -2339,6 +2339,9 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
   			$scope.posts = data.feed;
   			$scope.resolving_posts = false;
   			$scope.offset = 10;
+
+        // Category track
+        mixpanel.track("View category", {offset: 0, category: category.slug});
   		});
   	};
 
