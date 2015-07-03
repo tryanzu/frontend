@@ -1,11 +1,11 @@
-var CategoryListController = ['$scope', '$timeout', '$location', 'Category', 'Feed', 'Bridge', '$route', '$routeParams',
-  function($scope, $timeout, $location, Category, Feed, Bridge, $route, $routeParams) {
+var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', 'Category', 'Feed', 'Bridge', '$route', '$routeParams',
+  function($scope, $rootScope, $timeout, $location, Category, Feed, Bridge, $route, $routeParams) {
 
     var lastRoute = $route.current;
     $scope.$on('$locationChangeSuccess', function(event) {
       if($location.path() !== '/') {
         if(lastRoute.$$route.controller === $route.current.$$route.controller) {
-          console.log(lastRoute.$$route.controller, $route.current.$$route.controller);
+          // console.log(lastRoute.$$route.controller, $route.current.$$route.controller);
           // Will not load only if my view use the same controller
           // We recover new params
           new_params = $route.current.params;
@@ -64,6 +64,11 @@ var CategoryListController = ['$scope', '$timeout', '$location', 'Category', 'Fe
   	$scope.startupFeed = function(category) {
   		$scope.resolving_posts = true;
 
+      if(category.slug != null) {
+        //console.log("Categoria", category.slug);
+        $scope.page.title = "SpartanGeek.com | " + category.name;
+      }
+
   		Feed.get({limit: 10, offset: 0, category: category.slug}, function(data) {
         for(p in data.feed) {
           for(c in $scope.categories) {
@@ -120,10 +125,18 @@ var CategoryListController = ['$scope', '$timeout', '$location', 'Category', 'Fe
     $scope.viewPostID = function(postId, slug) {
       $scope.activePostId = postId;
       $scope.status.post_selected = true;
-      Bridge.changePost({id: postId, slug: slug, name: "Rodrigo"});
-      $(window).scrollTop(0);
+      Bridge.changePost({id: postId, slug: slug, name: ""});
+      //$(window).scrollTop(0);
       ga('send', 'pageview', '/post/' + slug + '/' + postId);
     };
+
+    $scope.reloadPost = function() {
+      $scope.viewPostID($scope.activePostId, "");
+    }
+
+    $scope.$on('reloadPost', function(e) {
+      $scope.reloadPost();
+    });
 
   	// Resolve categories though
   	Category.query(function(data) {

@@ -76,6 +76,23 @@ directives.directive('scrollMe', function() {
   }
 });
 
+directives.directive('myRefresh', ['$location', function($location) {
+  return {
+    restrict: 'A',
+    scope: {
+      trigger: '&myRefresh'
+    },
+    link: function(scope, element, attrs) {
+      element.bind('click', function() {
+        if(element[0] && element[0].href && element[0].href === $location.absUrl()){
+          console.log("Recarga!");
+          scope.trigger();
+        }
+      });
+    }
+  }
+}]);
+
 var filters = angular.module('filtersModule', []);
 
 filters.filter('date_at', function() {
@@ -2227,14 +2244,14 @@ var CategoryService = function($resource) {
   );
 };
 
-var CategoryListController = ['$scope', '$timeout', '$location', 'Category', 'Feed', 'Bridge', '$route', '$routeParams',
-  function($scope, $timeout, $location, Category, Feed, Bridge, $route, $routeParams) {
+var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', 'Category', 'Feed', 'Bridge', '$route', '$routeParams',
+  function($scope, $rootScope, $timeout, $location, Category, Feed, Bridge, $route, $routeParams) {
 
     var lastRoute = $route.current;
     $scope.$on('$locationChangeSuccess', function(event) {
       if($location.path() !== '/') {
         if(lastRoute.$$route.controller === $route.current.$$route.controller) {
-          console.log(lastRoute.$$route.controller, $route.current.$$route.controller);
+          // console.log(lastRoute.$$route.controller, $route.current.$$route.controller);
           // Will not load only if my view use the same controller
           // We recover new params
           new_params = $route.current.params;
@@ -2293,6 +2310,11 @@ var CategoryListController = ['$scope', '$timeout', '$location', 'Category', 'Fe
   	$scope.startupFeed = function(category) {
   		$scope.resolving_posts = true;
 
+      if(category.slug != null) {
+        //console.log("Categoria", category.slug);
+        $scope.page.title = "SpartanGeek.com | " + category.name;
+      }
+
   		Feed.get({limit: 10, offset: 0, category: category.slug}, function(data) {
         for(p in data.feed) {
           for(c in $scope.categories) {
@@ -2349,10 +2371,18 @@ var CategoryListController = ['$scope', '$timeout', '$location', 'Category', 'Fe
     $scope.viewPostID = function(postId, slug) {
       $scope.activePostId = postId;
       $scope.status.post_selected = true;
-      Bridge.changePost({id: postId, slug: slug, name: "Rodrigo"});
-      $(window).scrollTop(0);
+      Bridge.changePost({id: postId, slug: slug, name: ""});
+      //$(window).scrollTop(0);
       ga('send', 'pageview', '/post/' + slug + '/' + postId);
     };
+
+    $scope.reloadPost = function() {
+      $scope.viewPostID($scope.activePostId, "");
+    }
+
+    $scope.$on('reloadPost', function(e) {
+      $scope.reloadPost();
+    });
 
   	// Resolve categories though
   	Category.query(function(data) {
@@ -2480,6 +2510,8 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post) {
       //console.log(data);
 			$scope.post = data;
       $scope.post.category = {slug: data.categories[0]};
+
+      $scope.page.title = "SpartanGeek.com | " + $scope.post.title;
 
       for (var category in $scope.categories) {
         if($scope.categories[category].slug == $scope.post.category.slug) {
@@ -3184,17 +3216,11 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
       return 0 + $scope.user.notifications.count.$value;
     }
 
-    $rootScope.$on('fbLoginSuccess', function(name, response) {
-      alert("estoy en linea!")
-      /*facebookUser.then(function(user) {
-        user.api('/me').then(function(response) {
-          console.log(response);
-        });
-      });*/
-    });
+    $scope.reloadPost = function() {
+      $scope.$broadcast('reloadPost');
+    }
 
     $scope.$on('login', function(e) {
-      console.log("Catching 'login'");
       $scope.logUser();
     });
 
@@ -3215,6 +3241,10 @@ boardApplication.run(['$rootScope', '$http', function($rootScope, $http) {
     // Initialize the local storage
     if(!localStorage.signed_in)
       localStorage.signed_in = false;
+
+    $rootScope.page = {
+      title: "SpartanGeek.com | Comunidad de tecnología, geeks y más"
+    };
   }
 ]);
 

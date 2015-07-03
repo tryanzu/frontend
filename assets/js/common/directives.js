@@ -75,3 +75,20 @@ directives.directive('scrollMe', function() {
     }
   }
 });
+
+directives.directive('myRefresh', ['$location', function($location) {
+  return {
+    restrict: 'A',
+    scope: {
+      trigger: '&myRefresh'
+    },
+    link: function(scope, element, attrs) {
+      element.bind('click', function() {
+        if(element[0] && element[0].href && element[0].href === $location.absUrl()){
+          console.log("Recarga!");
+          scope.trigger();
+        }
+      });
+    }
+  }
+}]);

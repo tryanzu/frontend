@@ -67,6 +67,8 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post) {
 			$scope.post = data;
       $scope.post.category = {slug: data.categories[0]};
 
+      $scope.page.title = "SpartanGeek.com | " + $scope.post.title;
+
       for (var category in $scope.categories) {
         if($scope.categories[category].slug == $scope.post.category.slug) {
           $scope.post.category.name = $scope.categories[category].name;

@@ -377,17 +377,11 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
       return 0 + $scope.user.notifications.count.$value;
     }
 
-    $rootScope.$on('fbLoginSuccess', function(name, response) {
-      alert("estoy en linea!")
-      /*facebookUser.then(function(user) {
-        user.api('/me').then(function(response) {
-          console.log(response);
-        });
-      });*/
-    });
+    $scope.reloadPost = function() {
+      $scope.$broadcast('reloadPost');
+    }
 
     $scope.$on('login', function(e) {
-      console.log("Catching 'login'");
       $scope.logUser();
     });
 
@@ -408,5 +402,9 @@ boardApplication.run(['$rootScope', '$http', function($rootScope, $http) {
     // Initialize the local storage
     if(!localStorage.signed_in)
       localStorage.signed_in = false;
+
+    $rootScope.page = {
+      title: "SpartanGeek.com | Comunidad de tecnología, geeks y más"
+    };
   }
 ]);
