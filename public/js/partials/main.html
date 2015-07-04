@@ -1,16 +1,16 @@
   <main class="main-reader">
     <div class="row row-no-padding">
-      <div class="col-md-4" ng-class="{'col-md-6': false, 'col-md-4': false}">
+      <div class="col-md-4" ng-class="{'col-md-6': false, 'col-md-4': false, 'hidden-xs': activePostId !== null}">
         <div class="row row-no-padding">
-          <div class="col-md-12" ng-class="{'hide-for-small-only': activePostId !== null}">
+          <div class="col-md-12">
             <div class="current-board">
               <div class="title">
                 <div class="row">
-                  <div class="col-md-7">
+                  <div class="col-md-7 col-xs-7">
                     <a href="/" class="btn btn-default btn-sm" ng-if="category.slug != null"><i class="fa fa-chevron-left"></i></a>
                     <h2>{{ category.name || "Todas las publicaciones" }}</h2>
                   </div>
-                  <div class="col-md-5 text-right">
+                  <div class="col-md-5 col-xs-5 text-right">
                     <a href="/post/create/{{ category.slug }}" class="btn btn-primary btn-sm" ng-if="user.isLogged">Crear publicación</a>
                     <a href="" ng-click="signIn()" class="btn btn-primary btn-sm" ng-if="!user.isLogged">Crear publicación</a>
                   </div>
@@ -74,7 +74,7 @@
         </div>
       </div>
 
-      <div class="col-md-8" ng-class="{'col-md-6': false, 'col-md-8': false}">
+      <div class="col-md-8" ng-class="{'col-md-6': false, 'col-md-8': false, 'hidden-xs': activePostId == null}">
         <div class="current-article" ng-controller="ReaderViewController" adjust-height>
 
           <div class="waiting" ng-show="waiting">
@@ -84,34 +84,24 @@
           </div>
 
           <div ng-hide="waiting">
-            <header class="hero discussion-hero hidden" ng-style="{'background-image': 'url(/images/boards/' + post.category.slug + '.png)'};" ng-if="!resolving" style="background-image: url(http://agis.spartangeek.dev:8888/images/boards/recommendations.png);">
-              <div class="container">
-                <ul class="discussion-hero-items">
-                  <li class="">
-                    <span class="category-label ng-binding">{{ post.category.name }}</span>
-                  </li>
-                  <li class="block-item">
-                    <h2 class="discussion-title ng-binding">{{ post.title }}</h2>
-                  </li>
-                </ul>
-              </div>
-            </header>
-
+            <div class="back-to-list visible-xs-block">
+              <a href="/" ng-click="activePostId = null"><i class="fa fa-chevron-left"></i> Regresar al listado de publicaciones</a>
+            </div>
             <div class="author" ng-hide="resolving">
               <div class="row">
-                <div class="col-md-1 col-sm-3">
+                <div class="col-md-1 col-xs-2">
                   <span class="avatar" title="{{ post.author.username }}" ng-if="!post.author.image">{{ post.author.username[0] }}</span>
                   <img class="avatar" ng-src="{{ post.author.image }}" alt="{{ post.author.username }}" ng-if="post.author.image">
                 </div>
 
-                <div class="col-md-5 col-sm-9">
+                <div class="col-md-5 col-xs-10">
                   <div class="user-info">
                     <span class="username">{{ post.author.username }}</span>
                     <p class="description">{{ post.author.description || "Just another Spartan Geek" }}</p>
                   </div>
                 </div>
 
-                <div class="col-md-6">
+                <div class="col-md-6 hidden-xs">
                   <div class="category-preview" ng-style="{'background-image': 'url(/images/boards/' + post.category.slug + '.png)'};">
                     <p class="category-label">{{ post.category.name }}</p>
                   </div>
