@@ -3030,7 +3030,7 @@ boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http'
               .success(function(data) {
 
                 mixpanel.track("Facebook login");
-                
+
                 localStorage.setItem('id_token', data.token);
                 localStorage.setItem('firebase_token', data.firebase);
                 localStorage.setItem('signed_in', true);
@@ -3181,6 +3181,14 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
           var url = "https://spartangeek.firebaseio.com/users/" + data.id + "/notifications";
 
           var ref = new Firebase(url + "/count");
+          ref.onAuth(function(authData) {
+            if (authData) {
+              console.log("Authenticated with uid:", authData.uid);
+            } else {
+              console.log("Client unauthenticated.");
+              $scope.signOut();
+            }
+          });
           ref.authWithCustomToken(localStorage.firebase_token, function(error, authData) {
             if (error) {
               console.log("Login to Firebase failed!", error);
