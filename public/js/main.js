@@ -3276,6 +3276,9 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
     $scope.toggle_notification = function(elem) {
       if(!elem.seen) {
         $scope.user.notifications.count.$value = $scope.user.notifications.count.$value - 1;
+        if($scope.user.notifications.count.$value < 0){
+          $scope.user.notifications.count.$value = 0;
+        }
         elem.seen = true;
         $scope.user.notifications.list.$save(elem);
       }
