@@ -314,7 +314,7 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
               console.log("Authenticated with uid:", authData.uid);
             } else {
               console.log("Client unauthenticated.");
-              $scope.signOut();
+              //$scope.signOut();
             }
           });
           ref.authWithCustomToken(localStorage.firebase_token, function(error, authData) {
