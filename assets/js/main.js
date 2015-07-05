@@ -135,19 +135,21 @@ boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http'
     $scope.loginFb = function() {
       $scope.fb_loading = true;
       var response;
-      Facebook.getLoginStatus(function(response) {
-        if(response.status === 'connected') {
-          //$scope.loggedIn = true;
+
+      if($rootScope.fb_response.status === 'connected') {
+        response = $rootScope.fb_response;
+        $scope.fb_try(response);
+      } else {
+        Facebook.login(function(response) {
+          // Do something with response.
           response = response;
-        } else {
-          Facebook.login(function(response) {
-            // Do something with response.
-            //console.log(response);
-            response = response;
-          });
-        }
-        //console.log(response.authResponse.accessToken);
-        $http.get("https://graph.facebook.com/me?access_token="+response.authResponse.accessToken).
+          $scope.fb_try(response);
+        });
+      }
+    };
+
+    $scope.fb_try = function(response) {
+      $http.get("https://graph.facebook.com/me?access_token="+response.authResponse.accessToken).
           success(function(data, status, headers, config) {
             //console.log(data);
             var info = data;
@@ -172,8 +174,7 @@ boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http'
             $scope.form.error = {message: 'Error conectando con FB'};
             return;
           });
-      });
-    };
+    }
   }
 ]);
 
@@ -224,19 +225,21 @@ boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http'
     $scope.loginFb = function() {
       $scope.fb_loading = true;
       var response;
-      Facebook.getLoginStatus(function(response) {
-        if(response.status === 'connected') {
-          //$scope.loggedIn = true;
+
+      if($rootScope.fb_response.status === 'connected') {
+        response = $rootScope.fb_response;
+        $scope.fb_try(response);
+      } else {
+        Facebook.login(function(response) {
+          // Do something with response.
           response = response;
-        } else {
-          Facebook.login(function(response) {
-            // Do something with response.
-            //console.log(response);
-            response = response;
-          });
-        }
-        //console.log(response.authResponse.accessToken);
-        $http.get("https://graph.facebook.com/me?access_token="+response.authResponse.accessToken).
+          $scope.fb_try(response);
+        });
+      }
+    };
+
+    $scope.fb_try = function(response) {
+      $http.get("https://graph.facebook.com/me?access_token="+response.authResponse.accessToken).
           success(function(data, status, headers, config) {
             //console.log(data);
             var info = data;
@@ -261,8 +264,7 @@ boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http'
             $scope.form.error = {message: 'Error conectando con FB'};
             return;
           });
-      });
-    };
+    }
 }]);
 
 boardApplication.controller('UserController', ['$scope', 'User', '$routeParams', function($scope, User, $routeParams) {
@@ -273,7 +275,6 @@ boardApplication.controller('UserController', ['$scope', 'User', '$routeParams',
   }, function(response) {
     //window.location = '/';
   });
-
 }]);
 
 boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', '$modal', '$timeout', '$firebaseObject', '$firebaseArray', 'Facebook',
@@ -427,6 +428,8 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
     if(localStorage.signed_in === 'true') {
       $scope.logUser();
     }
+
+    Facebook.getLoginStatus(function(r){$rootScope.fb_response = r;});
   }
 ]);
 

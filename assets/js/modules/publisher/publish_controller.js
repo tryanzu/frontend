@@ -1,6 +1,7 @@
-var PublishController = function($scope, $http, Category, Part) {
+var PublishController = function($scope, $routeParams, $http, Category, Part) {
 
   $scope.publishing = true;
+  $scope.message = "";
 
   if(!$scope.user.isLogged) {
     window.location = '/';
@@ -127,15 +128,17 @@ var PublishController = function($scope, $http, Category, Part) {
   };
 
 	Category.query(function(data) {
-		$scope.categories = $scope.categories.concat(data);
-    $scope.post.category = $scope.categories[0];
-		/*if ($scope.category != '') {
-			for (var i = $scope.categories.length - 1; i >= 0; i--) {
-				if ($scope.categories[i].slug == $scope.category) {
-					$scope.postCategory = $scope.categories[i];
+		$scope.categories = data;
+		if($routeParams.cat_slug != undefined) {
+			for (var i = 0; i < $scope.categories.length; i++) {
+				if ($scope.categories[i].slug === $routeParams.cat_slug) {
+					$scope.post.category = $scope.categories[i];
+          break;
 				}
 			};
-		}*/
+		} else {
+      $scope.post.category = $scope.categories[0];
+    }
     $scope.publishing = false;
 	});
 
@@ -203,42 +206,54 @@ var PublishController = function($scope, $http, Category, Part) {
   };
 
 	$scope.computerPostPublish = function() {
-		//console.log($scope.computerPost);
-		var components = $scope.computerPost.components;
-		components.budget_type = $scope.computerPost.budget.type;
-		components.budget_flexibility = $scope.computerPost.budget.flexibility;
+		if($scope.post.title === '') {
+      $scope.message = "Te falta el nombre de tu PC";
+    } else if($scope.post.content === '') {
+      $scope.message = "Te falta el contenido de tu publicación";
+    } else {
+  		var components = $scope.computerPost.components;
+  		components.budget_type = $scope.computerPost.budget.type;
+  		components.budget_flexibility = $scope.computerPost.budget.flexibility;
 
-		for (var i in components) {
-			if (typeof components[i] === 'object' && 'owned' in components[i]) {
-				if (components[i].owned == 'true') { components[i].owned = true; }
-				if (components[i].owned == 'false') { components[i].owned = false; }
-			}
-		}
+  		for (var i in components) {
+  			if (typeof components[i] === 'object' && 'owned' in components[i]) {
+  				if (components[i].owned == 'true') { components[i].owned = true; }
+  				if (components[i].owned == 'false') { components[i].owned = false; }
+  			}
+  		}
 
-		var post = {
-			kind: "recommendations",
-      name: $scope.post.title,
-      content: $scope.post.content,
-      components: components
-		};
+  		var post = {
+  			kind: "recommendations",
+        name: $scope.post.title,
+        content: $scope.post.content,
+        components: components
+  		};
 
-		$http.post(layer_path + 'post', post).then(function(data) {
-			// Return to home
-      window.location.href = "/";
-		}, function(err) {});
+  		$http.post(layer_path + 'post', post).then(function(data) {
+  			// Return to home
+        window.location.href = "/";
+  		}, function(err) {});
+    }
 	};
 	$scope.normalPostPublish = function() {
-		var post = {
-			content: $scope.post.content,
-			name: $scope.post.title,
-			tag: $scope.post.category.slug,
-			kind: 'category-post',
-      isquestion: $scope.post.isQuestion
-		};
 
-		$http.post(layer_path + 'post', post).then(function(data) {
-			// Return to home
-      window.location.href = "/";
-		}, function(err) {});
+    if($scope.post.title === '') {
+      $scope.message = "Te falta el título de tu publicación";
+    } else if($scope.post.content === '') {
+      $scope.message = "Te falta el contenido de tu publicación";
+    } else {
+  		var post = {
+  			content: $scope.post.content,
+  			name: $scope.post.title,
+  			tag: $scope.post.category.slug,
+  			kind: 'category-post',
+        isquestion: $scope.post.isQuestion
+  		};
+
+  		$http.post(layer_path + 'post', post).then(function(data) {
+  			// Return to home
+        window.location.href = "/";
+  		}, function(err) {});
+    }
 	};
 };

@@ -8,7 +8,7 @@ directives.directive('adjustHeight', function($window, $document, $timeout) {
         var top = $(element).offset().top;
         var height = $(window).height();
         var neededHeight = height - top;
-        console.log(top, height, neededHeight, element);
+        //console.log(top, height, neededHeight, element);
 
         $(element).css('height', neededHeight);
       };
@@ -38,7 +38,7 @@ directives.directive('adjustHeightFeed', function($window, $document) {
         top = 106;
         var tagsHeight = jQuery('.segments').outerHeight();
         var neededHeight = height - top - tagsHeight;
-        console.log(top, height, tagsHeight, neededHeight, element);
+        //console.log(top, height, tagsHeight, neededHeight, element);
 
         $(element).css('min-height', neededHeight);
         $(element).css('height', neededHeight);

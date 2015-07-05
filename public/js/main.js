@@ -8,7 +8,7 @@ directives.directive('adjustHeight', function($window, $document, $timeout) {
         var top = $(element).offset().top;
         var height = $(window).height();
         var neededHeight = height - top;
-        console.log(top, height, neededHeight, element);
+        //console.log(top, height, neededHeight, element);
 
         $(element).css('height', neededHeight);
       };
@@ -38,7 +38,7 @@ directives.directive('adjustHeightFeed', function($window, $document) {
         top = 106;
         var tagsHeight = jQuery('.segments').outerHeight();
         var neededHeight = height - top - tagsHeight;
-        console.log(top, height, tagsHeight, neededHeight, element);
+        //console.log(top, height, tagsHeight, neededHeight, element);
 
         $(element).css('min-height', neededHeight);
         $(element).css('height', neededHeight);
@@ -2608,9 +2608,10 @@ ReaderModule.factory('Post', PostService);
 // Reader module controllers
 ReaderModule.controller('ReaderViewController', ReaderViewController);
 
-var PublishController = function($scope, $http, Category, Part) {
+var PublishController = function($scope, $routeParams, $http, Category, Part) {
 
   $scope.publishing = true;
+  $scope.message = "";
 
   if(!$scope.user.isLogged) {
     window.location = '/';
@@ -2737,15 +2738,17 @@ var PublishController = function($scope, $http, Category, Part) {
   };
 
 	Category.query(function(data) {
-		$scope.categories = $scope.categories.concat(data);
-    $scope.post.category = $scope.categories[0];
-		/*if ($scope.category != '') {
-			for (var i = $scope.categories.length - 1; i >= 0; i--) {
-				if ($scope.categories[i].slug == $scope.category) {
-					$scope.postCategory = $scope.categories[i];
+		$scope.categories = data;
+		if($routeParams.cat_slug != undefined) {
+			for (var i = 0; i < $scope.categories.length; i++) {
+				if ($scope.categories[i].slug === $routeParams.cat_slug) {
+					$scope.post.category = $scope.categories[i];
+          break;
 				}
 			};
-		}*/
+		} else {
+      $scope.post.category = $scope.categories[0];
+    }
     $scope.publishing = false;
 	});
 
@@ -2813,43 +2816,55 @@ var PublishController = function($scope, $http, Category, Part) {
   };
 
 	$scope.computerPostPublish = function() {
-		//console.log($scope.computerPost);
-		var components = $scope.computerPost.components;
-		components.budget_type = $scope.computerPost.budget.type;
-		components.budget_flexibility = $scope.computerPost.budget.flexibility;
+		if($scope.post.title === '') {
+      $scope.message = "Te falta el nombre de tu PC";
+    } else if($scope.post.content === '') {
+      $scope.message = "Te falta el contenido de tu publicación";
+    } else {
+  		var components = $scope.computerPost.components;
+  		components.budget_type = $scope.computerPost.budget.type;
+  		components.budget_flexibility = $scope.computerPost.budget.flexibility;
 
-		for (var i in components) {
-			if (typeof components[i] === 'object' && 'owned' in components[i]) {
-				if (components[i].owned == 'true') { components[i].owned = true; }
-				if (components[i].owned == 'false') { components[i].owned = false; }
-			}
-		}
+  		for (var i in components) {
+  			if (typeof components[i] === 'object' && 'owned' in components[i]) {
+  				if (components[i].owned == 'true') { components[i].owned = true; }
+  				if (components[i].owned == 'false') { components[i].owned = false; }
+  			}
+  		}
 
-		var post = {
-			kind: "recommendations",
-      name: $scope.post.title,
-      content: $scope.post.content,
-      components: components
-		};
+  		var post = {
+  			kind: "recommendations",
+        name: $scope.post.title,
+        content: $scope.post.content,
+        components: components
+  		};
 
-		$http.post(layer_path + 'post', post).then(function(data) {
-			// Return to home
-      window.location.href = "/";
-		}, function(err) {});
+  		$http.post(layer_path + 'post', post).then(function(data) {
+  			// Return to home
+        window.location.href = "/";
+  		}, function(err) {});
+    }
 	};
 	$scope.normalPostPublish = function() {
-		var post = {
-			content: $scope.post.content,
-			name: $scope.post.title,
-			tag: $scope.post.category.slug,
-			kind: 'category-post',
-      isquestion: $scope.post.isQuestion
-		};
 
-		$http.post(layer_path + 'post', post).then(function(data) {
-			// Return to home
-      window.location.href = "/";
-		}, function(err) {});
+    if($scope.post.title === '') {
+      $scope.message = "Te falta el título de tu publicación";
+    } else if($scope.post.content === '') {
+      $scope.message = "Te falta el contenido de tu publicación";
+    } else {
+  		var post = {
+  			content: $scope.post.content,
+  			name: $scope.post.title,
+  			tag: $scope.post.category.slug,
+  			kind: 'category-post',
+        isquestion: $scope.post.isQuestion
+  		};
+
+  		$http.post(layer_path + 'post', post).then(function(data) {
+  			// Return to home
+        window.location.href = "/";
+  		}, function(err) {});
+    }
 	};
 };
 
@@ -3019,19 +3034,21 @@ boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http'
     $scope.loginFb = function() {
       $scope.fb_loading = true;
       var response;
-      Facebook.getLoginStatus(function(response) {
-        if(response.status === 'connected') {
-          //$scope.loggedIn = true;
+
+      if($rootScope.fb_response.status === 'connected') {
+        response = $rootScope.fb_response;
+        $scope.fb_try(response);
+      } else {
+        Facebook.login(function(response) {
+          // Do something with response.
           response = response;
-        } else {
-          Facebook.login(function(response) {
-            // Do something with response.
-            //console.log(response);
-            response = response;
-          });
-        }
-        //console.log(response.authResponse.accessToken);
-        $http.get("https://graph.facebook.com/me?access_token="+response.authResponse.accessToken).
+          $scope.fb_try(response);
+        });
+      }
+    };
+
+    $scope.fb_try = function(response) {
+      $http.get("https://graph.facebook.com/me?access_token="+response.authResponse.accessToken).
           success(function(data, status, headers, config) {
             //console.log(data);
             var info = data;
@@ -3056,8 +3073,7 @@ boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http'
             $scope.form.error = {message: 'Error conectando con FB'};
             return;
           });
-      });
-    };
+    }
   }
 ]);
 
@@ -3108,19 +3124,21 @@ boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http'
     $scope.loginFb = function() {
       $scope.fb_loading = true;
       var response;
-      Facebook.getLoginStatus(function(response) {
-        if(response.status === 'connected') {
-          //$scope.loggedIn = true;
+
+      if($rootScope.fb_response.status === 'connected') {
+        response = $rootScope.fb_response;
+        $scope.fb_try(response);
+      } else {
+        Facebook.login(function(response) {
+          // Do something with response.
           response = response;
-        } else {
-          Facebook.login(function(response) {
-            // Do something with response.
-            //console.log(response);
-            response = response;
-          });
-        }
-        //console.log(response.authResponse.accessToken);
-        $http.get("https://graph.facebook.com/me?access_token="+response.authResponse.accessToken).
+          $scope.fb_try(response);
+        });
+      }
+    };
+
+    $scope.fb_try = function(response) {
+      $http.get("https://graph.facebook.com/me?access_token="+response.authResponse.accessToken).
           success(function(data, status, headers, config) {
             //console.log(data);
             var info = data;
@@ -3145,8 +3163,7 @@ boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http'
             $scope.form.error = {message: 'Error conectando con FB'};
             return;
           });
-      });
-    };
+    }
 }]);
 
 boardApplication.controller('UserController', ['$scope', 'User', '$routeParams', function($scope, User, $routeParams) {
@@ -3157,7 +3174,6 @@ boardApplication.controller('UserController', ['$scope', 'User', '$routeParams',
   }, function(response) {
     //window.location = '/';
   });
-
 }]);
 
 boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', '$modal', '$timeout', '$firebaseObject', '$firebaseArray', 'Facebook',
@@ -3311,6 +3327,8 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
     if(localStorage.signed_in === 'true') {
       $scope.logUser();
     }
+
+    Facebook.getLoginStatus(function(r){$rootScope.fb_response = r;});
   }
 ]);
 

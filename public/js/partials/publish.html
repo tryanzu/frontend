@@ -334,6 +334,8 @@
             <span class="ball"></span> PC's Spartanas
           </div>
 
+          <div class="alert alert-danger" ng-if="message !== ''">{{ message }}</div>
+
           <a ng-click="computerPostPublish()" class="btn btn-block btn-primary" ng-show="post.components">Publicar PC Ahora</a>
           <a ng-click="normalPostPublish()" class="btn btn-block btn-primary" ng-hide="post.components">Publicar Ahora</a>
         </div>

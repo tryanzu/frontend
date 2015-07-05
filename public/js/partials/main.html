@@ -27,11 +27,6 @@
                     <a href="/p/{{ post.slug }}/{{ post.id }}" class="main">
                       <h3 class="title">{{ post.title }}</h3>
                       <ul class="info">
-                        <li class="hidden">
-                          <span>
-                            <span class="username">Dadang-San</span> replied <time>12h ago</time>
-                          </span>
-                        </li>
                         <li class="">
                           <span>
                             Escrito por <span class="username">{{ post.author.username }}</span> <time>hace {{ post.created_at | timeago }}</time>

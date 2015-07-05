@@ -567,7 +567,7 @@
 //
 //## Define alert colors, border radius, and padding.
 
-@alert-padding:               15px;
+@alert-padding:               8px;
 @alert-border-radius:         @border-radius-base;
 @alert-link-font-weight:      bold;
 
@@ -583,9 +583,9 @@
 @alert-warning-text:          @state-warning-text;
 @alert-warning-border:        @state-warning-border;
 
-@alert-danger-bg:             @state-danger-bg;
-@alert-danger-text:           @state-danger-text;
-@alert-danger-border:         @state-danger-border;
+@alert-danger-bg:             lighten(@state-danger-bg, 37%);
+@alert-danger-text:           darken(@state-danger-bg, 10%);
+@alert-danger-border:         lighten(@state-danger-border, 25%);
 
 
 //== Progress bars
