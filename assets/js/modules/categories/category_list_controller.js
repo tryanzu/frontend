@@ -29,10 +29,12 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
             var cn = loc.split('/');
             if(cn.length == 5) {
               cn = cn[4]; // comment number
+              console.log("Watching comment:", cn);
               $scope.view_comment.position = cn;
             }
             else {
               $scope.view_comment.position = -1;
+              console.log("Not watching comment");
             }
             $scope.viewPostID(params.id, params.slug);
           }
