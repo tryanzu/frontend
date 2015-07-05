@@ -2416,9 +2416,9 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
       }, 100);
 
       // Preload the images for each board
-      for (var category in $scope.categories) {
+      /*for (var category in $scope.categories) {
         $("<img />").attr("src", "/images/boards/" + $scope.categories[category].slug + ".png");
-      }// Error undefined
+      }*/// Error undefined
 
   		// Once the categories has been resolved then catch the first one and try to fetch the feed for it
   		var path = $location.path();
@@ -2442,6 +2442,16 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
     			}
         } else if(section_segment === 'p') {
           $scope.viewPostID($routeParams.id, $routeParams.slug);
+          var cn = path.split('/');
+          if(cn.length == 5) {
+            cn = cn[4]; // comment number
+            console.log("Watching comment:", cn);
+            $scope.view_comment.position = cn;
+          }
+          else {
+            $scope.view_comment.position = -1;
+            console.log("Not watching comment");
+          }
         }
   		}
   		if (loaded == false) {
