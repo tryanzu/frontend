@@ -21,8 +21,8 @@
                 <li data-id="{{ post.id }}" class="discussion-summary" ng-class="{'active': post.id === $parent.activePostId}" ng-repeat="post in posts" ng-cloak>
                   <div>
                     <a href="/u/{{ post.author.username }}/{{ post.author.id }}" title class="author" data-original-title="Escrito por {{ post.author.username }} hace {{ post.created_at | timeago }}">
-                      <img class="avatar hidden" gravatar-src="post.author.email" gravatar-default="http://river.spartangeek.com/images/no-thumb.png" />
-                      <span class="avatar " style="background: #305FA9;">{{ post.author.username[0].toUpperCase() }}</span>
+                      <span class="avatar" title="{{ post.author.username }}" ng-if="!post.author.image">{{ post.author.username[0] }}</span>
+                      <img class="avatar" ng-src="{{ post.author.image }}" alt="{{ post.author.username }}" ng-if="post.author.image">
                     </a>
                     <a href="/p/{{ post.slug }}/{{ post.id }}" class="main">
                       <h3 class="title">{{ post.title }}</h3>
@@ -92,6 +92,7 @@
                 <div class="col-md-5 col-xs-10">
                   <div class="user-info">
                     <span class="username">{{ post.author.username }}</span>
+                    <span class="verified-account" ng-if="post.author.id === '559af1c501c25d3790000054'" tooltip="Cuenta verificada" tooltip-placement="right"><i class="fa fa-check"></i></span>
                     <p class="description">{{ post.author.description || "Just another Spartan Geek" }}</p>
                   </div>
                 </div>
