@@ -2594,6 +2594,7 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post) {
       for( var c in $scope.post.comments.set) {
         addImagePreview($scope.post.comments.set[c]);
       }
+      $scope.resolving = false;
 
       if($scope.view_comment.position >= 0 && $scope.view_comment.position != '') {
         $timeout(function() {
@@ -2604,18 +2605,59 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post) {
           }
         }, 100);
       }
-      $scope.resolving = false;
+
+      /* TEMPORAL - TODO: MOVE TO A DIRECTIVE */
+      $scope.total_h = $scope.viewport_h = 0;
+      $timeout(function() {
+        $scope.total_h = $('.current-article')[0].scrollHeight;
+        $scope.viewport_h = $('.current-article').height();
+
+        $scope.ratio = $scope.viewport_h/$scope.total_h*100;
+        $scope.scrollable = 0;
+        $scope.scrollable_h = $scope.total_h - $scope.viewport_h;
+        if($scope.ratio < 15) {
+          $scope.ratio = 15;
+          $scope.scrollable = 85;
+        } else {
+          $scope.scrollable = 100 - $scope.ratio;
+        }
+        $scope.surplus = $scope.scrollable;
+        console.log($scope.viewport_h, $scope.total_h, $scope.scrollable_h, $scope.ratio, $scope.surplus);
+
+        $('.scrubber-before').css('height', (100 - $scope.ratio - $scope.surplus) + '%');
+        $('.scrubber-slider').css('height', $scope.ratio + '%');
+        $('.scrubber-after').css('height', $scope.surplus + '%');
+      }, 350);
+
+      $('.current-article').scroll(function() {
+        var surplus = $('.current-article').scrollTop() / $scope.scrollable_h;
+        surplus = 100 - surplus * 100;
+        if(surplus < 0) { surplus = 0; }
+        $scope.surplus = surplus * $scope.scrollable / 100;
+
+        $('.scrubber-before').css('height', (100 - $scope.ratio - $scope.surplus) + '%');
+        $('.scrubber-slider').css('height', $scope.ratio + '%');
+        $('.scrubber-after').css('height', $scope.surplus + '%');
+      });
+
 		});
 	});
 
   var addImagePreview = function(comment) {
     //console.log(comment);
-    var regex = new RegExp("(https?:\/\/.*\.(?:png|jpg|jpeg|JPEG|PNG|JPG|gif|GIF))");
+    var regex = new RegExp("(https?:\/\/.*\\.(?:png|jpg|jpeg|JPEG|PNG|JPG|gif|GIF)((\\?|\\&)[a-zA-Z0-9]+\\=[a-zA-Z0-9]+)*)");
     var res = regex.exec(comment.content);
     if(res) {
       // TODO: Create directive and template
-      var image = "<div class=\"img-preview\"><p>Vista previa</p><a href=\""+res[0]+"\" target=\"_blank\"><img src=\"" + res[0] + "\" style=\"max-height: 200px; width: auto; max-width: 100%;\"></a></div>";
+      var image = "<div class=\"img-preview\"><p>Vista previa</p><a href=\""+res[0]+"\" target=\"_blank\"><img src=\"" + res[0] + "\"></a></div>";
       comment.content += image;
+    } else {
+      var regex = new RegExp("(https?:\/\/.*\\.(?:webm|WEBM))");
+      var res = regex.exec(comment.content);
+      if(res) {
+        var video = "<div class=\"img-preview\"><p>Vista previa</p><video id=\"preview\" src=\"" + res[0] + "\" controls></video></div>";
+        comment.content += video;
+      }
     }
   }
 };
@@ -2973,15 +3015,15 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider) {
 
   $routeProvider.when('/', {
-    templateUrl: '/js/partials/main.html?v=1.1.4',
+    templateUrl: '/js/partials/main.html?v=1.1.5',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/c/:slug', {
-    templateUrl: '/js/partials/main.html?v=1.1.4',
+    templateUrl: '/js/partials/main.html?v=1.1.5',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/p/:slug/:id/:comment_position?', {
-    templateUrl: '/js/partials/main.html?v=1.1.4',
+    templateUrl: '/js/partials/main.html?v=1.1.5',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/u/:username/:id', {

@@ -132,15 +132,15 @@
                             <i class="fa fa-fw fa-angle-double-up"></i> Mensaje original
                           </a>
                           <div class="scrubber-scrollbar" style="max-height: 285px; cursor: pointer; -webkit-user-select: none;">
-                            <div class="scrubber-before" style="height: 0%;"></div>
-                            <div class="scrubber-slider" style="height: 55%; cursor: move;">
+                            <div class="scrubber-before" style="height: 55%;"></div>
+                            <div class="scrubber-slider" style="height: 45%; cursor: move;">
                               <div class="scrubber-handle"></div>
                               <div class="scrubber-info" ng-cloak>
-                                <strong><span class="index">1</span> de <span class="count">{{ post.comments.count }}</span> mensajes</strong>
+                                <strong><span class="index">1</span> de <span class="count">{{ post.comments.count + 1 }}</span> mensajes</strong>
                                 <span class="description">{{ post.created_at | date_at }}</span>
                               </div>
                             </div>
-                            <div class="scrubber-after" style="height: 45%;"></div>
+                            <div class="scrubber-after" style="height: 0%;"></div>
                           </div>
                           <a href="#" class="scrubber-last"><i class="fa fa-fw fa-angle-double-down"></i> Ahora</a>
                         </div>
@@ -299,7 +299,21 @@
                       </div>
                     </div>
                     <div class="content" marked="comment.content"></div>
-                    <p class="date">Escrito hace {{ comment.created_at | timeago }}</p>
+
+                    <span class="date dropdown" dropdown auto-close="outsideClick">
+                      <a href="" class="dropdown-toggle" dropdown-toggle>
+                        <time pubdate="" datetime="{{ comment.created_at }}" title="{{ comment.created_at | date_at}}">Escrito hace {{ comment.created_at | timeago}}</time>
+                      </a>
+                      <div class="dropdown-menu post-meta">
+                        <span class="number">Comentario #{{ comment.position + 1 }}</span>
+                        <span class="time">
+                          <time pubdate="" datetime="{{ comment.created_at }}"> publicado el {{ comment.created_at | date_at}}</time>
+                        </span>
+                        <input class="form-control permalink" value="http://spartangeek.com/p/{{ post.slug }}/{{ post.id }}/{{ comment.position }}">
+                      </div>
+                    </span>
+
+
                     <div class="actions" ng-if="user.isLogged">
                       <ul>
                         <li ng-if="comment.votes.up > 0">

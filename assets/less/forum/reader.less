@@ -54,6 +54,8 @@
 .current-article {
   .content {
     padding-top: 1em;
+    word-wrap: break-word;
+
     p {
       color: @brand-primary-dark;
       font-size: 14px;
@@ -62,7 +64,7 @@
 
     img {
       max-width: 100%;
-      max-height: 200px;
+      max-height: 240px;
     }
   }
 
@@ -286,6 +288,17 @@
       font-size: 11px;
       color: #99acc2;
       margin-bottom: 6px;
+    }
+
+    img {
+      max-height: 240px;
+      width: auto;
+      max-width: 100%;
+    }
+    video {
+      max-height: 240px;
+      width: auto;
+      max-width: 100%;
     }
   }
 }
