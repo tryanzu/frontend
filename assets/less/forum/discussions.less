@@ -1,0 +1,153 @@
+// ------------------------------------
+// Sidebar
+
+.discussion-nav {
+  & > ul {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+}
+
+@media @tablet, @desktop, @desktop-hd {
+  .discussion-nav {
+    float: right;
+
+    &, & > ul {
+      width: 150px;
+    }
+    & > ul {
+      position: fixed;
+      margin-top: 30px;
+
+      & > li {
+        margin-bottom: 10px;
+      }
+    }
+    & .btn-group, & .btn {
+      width: 100%;
+    }
+    & .btn-group:not(.item-count-1) {
+      & .btn {
+        width: 77%;
+      }
+      & .dropdown-toggle {
+        width: 22%;
+      }
+    }
+  }
+}
+
+// ------------------------------------
+// Stream
+
+.discussion-posts {
+  /*margin-top: 40px;*/
+}
+
+@media @tablet, @desktop, @desktop-hd {
+  .discussion-posts {
+    margin-right: 200px;
+  }
+}
+
+// ------------------------------------
+// Scrubber
+
+.scrubber {
+  & a {
+    margin-left: -5px;
+    color: @brand-primary-light-text;
+    & .fa {
+      font-size: 14px;
+      margin-right: 2px;
+    }
+    &:hover, &:focus {
+      text-decoration: none;
+      color: @link-hover-color;
+    }
+  }
+}
+.scrubber-scrollbar {
+  margin: 8px 0 8px 3px;
+  height: 300px;
+  min-height: 50px; // JavaScript sets a max-height
+  position: relative;
+}
+.scrubber-before, .scrubber-after {
+  border-left: 1px solid @brand-primary-light;
+}
+.scrubber-slider {
+  position: relative;
+  width: 100%;
+  padding: 5px 0;
+}
+.scrubber-handle {
+  height: 100%;
+  width: 5px;
+  background: @brand-primary;
+  border-radius: 4px;
+  float: left;
+  margin-left: -2px;
+  transition: background 0.2s;
+  .disabled & {
+    background: @brand-primary-normal;
+  }
+}
+.scrubber-info {
+  height: (2em * @line-height-base);
+  margin-top: (-1em * @line-height-base);
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  left: 15px;
+  & strong {
+    display: block;
+  }
+  & .description {
+    color: @brand-primary-light-text;
+  }
+}
+.scrubber-highlights {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  list-style-type: none;
+  pointer-events: none;
+}
+.scrubber-highlights li {
+  position: absolute;
+  right: -6px;
+  background: #fc0;
+  height: 8px;
+  width: 13px;
+  border-radius: 4px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15), inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+  opacity: 0.99;
+}
+
+@media @phone {
+  .stream-scrubber {
+    & .dropdown-toggle {
+      font-size: 14px;
+    }
+    & .dropdown-menu {
+      padding: 30px;
+      font-size: 14px;
+    }
+  }
+  .scrubber-scrollbar {
+    height: 40vh !important;
+    max-height: none !important;
+  }
+}
+
+@media @tablet, @desktop, @desktop-hd {
+  .stream-scrubber {
+    margin: 30px 0 0 0;
+
+    .expand-dropdown();
+  }
+}

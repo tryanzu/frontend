@@ -5,7 +5,7 @@ filters.filter('date_at', function() {
 		var date = new Date(input);
     var months = new Array("enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre");
 
-		return date.getDay() + ' de ' + months[date.getMonth()] + ' de ' + date.getFullYear();
+    return date.getDate() + ' de ' + months[date.getMonth()] + ' de ' + date.getFullYear();
 	};
 });
 

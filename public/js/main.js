@@ -100,7 +100,7 @@ filters.filter('date_at', function() {
 		var date = new Date(input);
     var months = new Array("enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre");
 
-		return date.getDay() + ' de ' + months[date.getMonth()] + ' de ' + date.getFullYear();
+    return date.getDate() + ' de ' + months[date.getMonth()] + ' de ' + date.getFullYear();
 	};
 });
 
@@ -2487,6 +2487,40 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post) {
 		$scope.force_comment = true;
 	};
 
+  $scope.show_composer = function() {
+    $('.current-article').animate({ scrollTop: $('.current-article')[0].scrollHeight}, 100);
+  }
+
+  $scope.reply_to = function(username) {
+    if($scope.comment.content == '') {
+      $scope.comment.content = '@' + username + ' ';
+    } else {
+      $scope.comment.content = $scope.comment.content + '\n@' + username + ' ';
+    }
+    $('#comment-content').focus();
+    $('.current-article').animate({ scrollTop: $('.current-article')[0].scrollHeight}, 100);
+  }
+
+  $scope.comment_like = function(post_id, comment) {
+    $http.post(layer_path + 'vote/comment/' + post_id, {comment: '' + comment.position}).
+      success(function(data, status, headers, config) {
+        // this callback will be called asynchronously
+        // when the response is available
+        comment.liked = !comment.liked;
+        if(comment.liked) {
+          comment.votes.up = comment.votes.up + 1;
+        } else {
+          comment.votes.up = comment.votes.up - 1;
+        }
+        console.log(data);
+      }).
+      error(function(data, status, headers, config) {
+        // called asynchronously if an error occurs
+        // or server returns response with an error status.
+        console.log(data);
+      });
+  }
+
   $scope.publish = function() {
     if(!$scope.waiting_comment) {
       $scope.waiting_comment = true;
@@ -2547,6 +2581,8 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post) {
       $scope.post.category = {slug: data.categories[0]};
 
       $scope.page.title = "SpartanGeek.com | " + $scope.post.title;
+
+      addImagePreview($scope.post);
 
       for (var category in $scope.categories) {
         if($scope.categories[category].slug == $scope.post.category.slug) {
@@ -2937,15 +2973,15 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider) {
 
   $routeProvider.when('/', {
-    templateUrl: '/js/partials/main.html?v=1.1.3',
+    templateUrl: '/js/partials/main.html?v=1.1.4',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/c/:slug', {
-    templateUrl: '/js/partials/main.html?v=1.1.3',
+    templateUrl: '/js/partials/main.html?v=1.1.4',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/p/:slug/:id/:comment_position?', {
-    templateUrl: '/js/partials/main.html?v=1.1.3',
+    templateUrl: '/js/partials/main.html?v=1.1.4',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/u/:username/:id', {

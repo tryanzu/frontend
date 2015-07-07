@@ -1770,6 +1770,26 @@
 		"strictMath": 1,
 		"strictUnits": 0
 		},
+	"\/assets\/less\/forum\/discussions.less": {
+		"allowInsecureImports": 0,
+		"createSourceMap": 1,
+		"disableJavascript": 0,
+		"fileType": 1,
+		"ieCompatibility": 1,
+		"ignore": 1,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/assets\/less\/forum\/discussions.less",
+		"outputAbbreviatedPath": "\/public\/css\/discussions.css",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"outputStyle": 1,
+		"relativeURLS": 0,
+		"shouldRunAutoprefixer": 1,
+		"shouldRunBless": 0,
+		"strictImports": 0,
+		"strictMath": 1,
+		"strictUnits": 0
+		},
 	"\/assets\/less\/forum\/feed.less": {
 		"allowInsecureImports": 0,
 		"createSourceMap": 1,
