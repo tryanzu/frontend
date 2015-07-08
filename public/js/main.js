@@ -2652,7 +2652,7 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post) {
       var image = "<div class=\"img-preview\"><p>Vista previa</p><a href=\""+res[0]+"\" target=\"_blank\"><img src=\"" + res[0] + "\"></a></div>";
       comment.content += image;
     } else {
-      var regex = new RegExp("(https?:\/\/.*\\.(?:webm|WEBM))");
+      var regex = new RegExp("(https?:\/\/.*\\.(?:webm|WEBM|gifv|GIFV))");
       var res = regex.exec(comment.content);
       if(res) {
         var video = "<div class=\"img-preview\"><p>Vista previa</p><video id=\"preview\" src=\"" + res[0] + "\" controls></video></div>";
