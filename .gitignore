@@ -3,3 +3,4 @@
 .LSOverride
 # Thumbnails
 ._*
+public/js/config.js
