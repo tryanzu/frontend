@@ -283,6 +283,13 @@
                   </div>
                 </div>
 
+                <div class="img-preview" ng-if="post.attach">
+                  <p>Vista previa</p>
+                  <a href="{{ post.attach.url }}" target="_blank" ng-if="post.attach.type === 'image'">
+                    <img ng-src="{{ post.attach.url }}">
+                  </a>
+                </div>
+
                 <div class="answers">
                   <h5>{{ post.comments.count }} respuesta{{post.comments.count == 1?'':'s'}}</h5>
                 </div>
