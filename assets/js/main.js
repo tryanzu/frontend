@@ -34,8 +34,8 @@ var boardApplication = angular.module('board', [
   'ngRoute'
 ]);
 
-boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider',
-  function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider) {
+boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider',
+  function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider) {
 
   $routeProvider.when('/', {
     templateUrl: '/js/partials/main.html?v=1.1.5',
@@ -66,6 +66,13 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
 
   // use the HTML5 History API
   $locationProvider.html5Mode(true);
+
+  // Marked
+  markedProvider.setRenderer({
+    link: function(href, title, text) {
+      return "<a href='" + href + "' title='" + title + "' target='_blank'>" + text + "</a>";
+    }
+  });
 
   // Please note we're annotating the function so that the $injector works when the file is minified
   jwtInterceptorProvider.tokenGetter = ['config', 'jwtHelper', function(config, jwtHelper) {

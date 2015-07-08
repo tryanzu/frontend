@@ -300,6 +300,13 @@
                     </div>
                     <div class="content" marked="comment.content"></div>
 
+                    <div class="img-preview" ng-if="comment.attach">
+                      <p>Vista previa</p>
+                      <a href="{{ comment.attach.url }}" target="_blank" ng-if="comment.attach.type === 'image'">
+                        <img ng-src="{{ comment.attach.url }}">
+                      </a>
+                    </div>
+
                     <span class="date dropdown" dropdown auto-close="outsideClick">
                       <a href="" class="dropdown-toggle" dropdown-toggle>
                         <time pubdate="" datetime="{{ comment.created_at }}" title="{{ comment.created_at | date_at}}">Escrito hace {{ comment.created_at | timeago}}</time>

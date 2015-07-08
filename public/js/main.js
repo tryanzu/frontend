@@ -280,8 +280,9 @@ block.normal = merge({}, block);
  */
 
 block.gfm = merge({}, block.normal, {
-  fences: /^ *(`{3,}|~{3,}) *(\S+)? *\n([\s\S]+?)\s*\1 *(?:\n+|$)/,
-  paragraph: /^/
+  fences: /^ *(`{3,}|~{3,})[ \.]*(\S+)? *\n([\s\S]+?)\s*\1 *(?:\n+|$)/,
+  paragraph: /^/,
+  heading: /^ *(#{1,6}) +([^\n]+?) *#* *(?:\n+|$)/
 });
 
 block.gfm.paragraph = replace(block.paragraph)
@@ -564,7 +565,8 @@ Lexer.prototype.token = function(src, top, bq) {
         type: this.options.sanitize
           ? 'paragraph'
           : 'html',
-        pre: cap[1] === 'pre' || cap[1] === 'script' || cap[1] === 'style',
+        pre: !this.options.sanitizer
+          && (cap[1] === 'pre' || cap[1] === 'script' || cap[1] === 'style'),
         text: cap[0]
       });
       continue;
@@ -811,8 +813,10 @@ InlineLexer.prototype.output = function(src) {
       }
       src = src.substring(cap[0].length);
       out += this.options.sanitize
-        ? escape(cap[0])
-        : cap[0];
+        ? this.options.sanitizer
+          ? this.options.sanitizer(cap[0])
+          : escape(cap[0])
+        : cap[0]
       continue;
     }
 
@@ -883,7 +887,7 @@ InlineLexer.prototype.output = function(src) {
     // text
     if (cap = this.rules.text.exec(src)) {
       src = src.substring(cap[0].length);
-      out += escape(this.smartypants(cap[0]));
+      out += this.renderer.text(escape(this.smartypants(cap[0])));
       continue;
     }
 
@@ -917,7 +921,9 @@ InlineLexer.prototype.smartypants = function(text) {
   if (!this.options.smartypants) return text;
   return text
     // em-dashes
-    .replace(/--/g, '\u2014')
+    .replace(/---/g, '\u2014')
+    // en-dashes
+    .replace(/--/g, '\u2013')
     // opening singles
     .replace(/(^|[-\u2014/(\[{"\s])'/g, '$1\u2018')
     // closing singles & apostrophes
@@ -935,6 +941,7 @@ InlineLexer.prototype.smartypants = function(text) {
  */
 
 InlineLexer.prototype.mangle = function(text) {
+  if (!this.options.mangle) return text;
   var out = ''
     , l = text.length
     , i = 0
@@ -1092,6 +1099,10 @@ Renderer.prototype.image = function(href, title, text) {
   }
   out += this.options.xhtml ? '/>' : '>';
   return out;
+};
+
+Renderer.prototype.text = function(text) {
+  return text;
 };
 
 /**
@@ -1436,7 +1447,9 @@ marked.defaults = {
   tables: true,
   breaks: false,
   pedantic: false,
-  sanitize: false,
+  sanitize: true,
+  sanitizer: null,
+  mangle: true,
   smartLists: false,
   silent: false,
   highlight: null,
@@ -1478,11 +1491,11 @@ if (typeof module !== 'undefined' && typeof exports === 'object') {
 
 // @codekit-prepend "marked.js"
 /*
- * angular-marked 0.0.12
- * (c) 2014 J. Harshbarger
+ * angular-marked 0.0.16
+ * (c) 2015 J. Harshbarger
  * Licensed MIT
  */
-!function(){"use strict";angular.module("hc.marked",[]).provider("marked",function(){var a=this;a.setOptions=function(a){this.defaults=a},a.$get=["$window",function(b){var c=b.marked;return a.setOptions=c.setOptions,c.setOptions(a.defaults),c}]}).directive("marked",["marked",function(a){return{restrict:"AE",replace:!0,scope:{opts:"=",marked:"="},link:function(b,c,d){function e(d){c.html(a(d||"",b.opts||null))}e(b.marked||c.text()||""),d.marked&&b.$watch("marked",e)}}}])}();
+!function(){"use strict";"undefined"!=typeof module&&"object"==typeof exports&&(module.exports="hc.marked"),angular.module("hc.marked",[]).provider("marked",function(){var a=this;a.setRenderer=function(a){this.renderer=a},a.setOptions=function(a){this.defaults=a},a.$get=["$window","$log",function(b,c){var d=function(){return"undefined"!=typeof module&&"object"==typeof exports?require("marked"):b.marked||marked}();if(angular.isUndefined(d))return void c.error("angular-marked Error: marked not loaded.  See installation instructions.");if(a.renderer){for(var e=new d.Renderer,f=Object.keys(a.renderer),g=f.length;g--;)e[f[g]]=a.renderer[f[g]];a.defaults=a.defaults?a.defaults.renderer=e:a.defaults={renderer:e}}return d.setOptions(a.defaults),d}]}).directive("marked",["marked",function(a){return{restrict:"AE",replace:!0,scope:{opts:"=",marked:"="},link:function(b,c,d){function e(a){if(!a)return a;var b,c,d,e=a.replace(/\t/g,"  ").split(/\r?\n/),f=null,g=e.length;for(b=0;g>b;b++)d=e[b],c=d.match(/^(\s*)/)[0].length,c!==d.length&&(f=f>c||null===f?c:f);if(null!==f&&f>0)for(b=0;g>b;b++)e[b]=e[b].substr(f);return e.join("\n")}function f(d){d=e(d||""),c.html(a(d,b.opts||null))}f(b.marked||c.text()||""),d.marked&&b.$watch("marked",f)}}}])}();
 
 var iw = angular.module('idiotWizzy', []);
 
@@ -2649,15 +2662,10 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post) {
     var res = regex.exec(comment.content);
     if(res) {
       // TODO: Create directive and template
-      var image = "<div class=\"img-preview\"><p>Vista previa</p><a href=\""+res[0]+"\" target=\"_blank\"><img src=\"" + res[0] + "\"></a></div>";
-      comment.content += image;
-    } else {
-      var regex = new RegExp("(https?:\/\/.*\\.(?:webm|WEBM|gifv|GIFV))");
-      var res = regex.exec(comment.content);
-      if(res) {
-        var video = "<div class=\"img-preview\"><p>Vista previa</p><video id=\"preview\" src=\"" + res[0] + "\" controls></video></div>";
-        comment.content += video;
-      }
+      comment.attach = {
+        url: res[0],
+        type: 'image'
+      };
     }
   }
 };
@@ -3011,8 +3019,8 @@ var boardApplication = angular.module('board', [
   'ngRoute'
 ]);
 
-boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider',
-  function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider) {
+boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider',
+  function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider) {
 
   $routeProvider.when('/', {
     templateUrl: '/js/partials/main.html?v=1.1.5',
@@ -3043,6 +3051,13 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
 
   // use the HTML5 History API
   $locationProvider.html5Mode(true);
+
+  // Marked
+  markedProvider.setRenderer({
+    link: function(href, title, text) {
+      return "<a href='" + href + "' title='" + title + "' target='_blank'>" + text + "</a>";
+    }
+  });
 
   // Please note we're annotating the function so that the $injector works when the file is minified
   jwtInterceptorProvider.tokenGetter = ['config', 'jwtHelper', function(config, jwtHelper) {
