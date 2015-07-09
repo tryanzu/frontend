@@ -84,6 +84,12 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
       }
 
   		Feed.get({limit: 10, offset: 0, category: category.slug}, function(data) {
+        $scope.status.pending.$value = 0;
+        if(category.slug == null) {
+          $scope.status.viewing.$value = 'all';
+        } else {
+          $scope.status.viewing.$value = category.slug;
+        }
         for(p in data.feed) {
           for(c in $scope.categories) {
             if (data.feed[p].categories[0] == $scope.categories[c].slug) {
@@ -92,6 +98,8 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
             }
           }
         }
+        $scope.status.newer_post_date = get_newer_date(data.feed);
+        //console.log($scope.status.newer_post_date);
   			$scope.posts = data.feed;
   			$scope.resolving_posts = false;
   			$scope.offset = 10;
@@ -103,7 +111,7 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
 
   	$scope.walkFeed = function() {
       $scope.adding_posts = true;
-  		Feed.get({limit: 10, offset: $scope.offset, category: $scope.category.slug}, function(data) {
+  		Feed.get({limit: 10, offset: $scope.offset + $scope.status.pending.$value, category: $scope.category.slug}, function(data) {
         for(p in data.feed) {
           for(c in $scope.categories) {
             if (data.feed[p].categories[0] == $scope.categories[c].slug) {
@@ -120,6 +128,54 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
       mixpanel.track("View feed", {offset: $scope.offset, category: $scope.category.slug});
   		ga('send', 'pageview', '/feed/' + $scope.category.slug);
   	};
+
+    var get_newer_date = function(posts) {
+      //var newer = posts[0].created_at;
+      var newer_d = new Date(posts[0].created_at);
+      var newer_i = 0;
+      for(var i = 1; i < posts.length; i++) {
+        var test = new Date(posts[i].created_at);
+        if(newer_d < test) {
+          newer_d = test;
+          newer_i = i;
+        }
+      }
+      return posts[newer_i].created_at;
+    }
+
+    $scope.get_newer = function() {
+      $scope.adding_new_posts = true;
+
+      Feed.get({limit: $scope.status.pending.$value, before: $scope.status.newer_post_date, category: $scope.category.slug}, function(data) {
+        for(p in data.feed) {
+          for(c in $scope.categories) {
+            if (data.feed[p].categories[0] == $scope.categories[c].slug) {
+              data.feed[p].category = {name: $scope.categories[c].name, color: $scope.categories[c].color, slug: $scope.categories[c].slug}
+              break;
+            }
+          }
+          data.feed[p].unread = true;
+
+          $timeout(function() {
+            data.feed[p].unread = false;
+          }, 500);
+        }
+        $scope.status.newer_post_date = get_newer_date(data.feed);
+        //$scope.posts = $scope.posts.concat(data.feed);
+        $scope.posts = data.feed.concat($scope.posts);
+        $scope.offset = $scope.offset + $scope.status.pending.$value;
+        $scope.status.pending.$value = 0;
+        $scope.adding_new_posts = false;
+        $('.discussions-list').animate({ scrollTop: 0}, 100);
+      });
+
+      if($scope.user.info.version == 'A' || $scope.user.info.version == 'B') {
+        mixpanel.track("Load more clicked", {version: $scope.user.info.version});
+      } else {
+        mixpanel.track("Load more clicked")
+      }
+      ga('send', 'pageview', '/feed/' + $scope.category.slug);
+    };
 
   	$scope.turnCategory = function(category) {
   		$scope.category = category;

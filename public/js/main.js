@@ -2343,6 +2343,12 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
       }
 
   		Feed.get({limit: 10, offset: 0, category: category.slug}, function(data) {
+        $scope.status.pending.$value = 0;
+        if(category.slug == null) {
+          $scope.status.viewing.$value = 'all';
+        } else {
+          $scope.status.viewing.$value = category.slug;
+        }
         for(p in data.feed) {
           for(c in $scope.categories) {
             if (data.feed[p].categories[0] == $scope.categories[c].slug) {
@@ -2351,6 +2357,8 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
             }
           }
         }
+        $scope.status.newer_post_date = get_newer_date(data.feed);
+        //console.log($scope.status.newer_post_date);
   			$scope.posts = data.feed;
   			$scope.resolving_posts = false;
   			$scope.offset = 10;
@@ -2362,7 +2370,7 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
 
   	$scope.walkFeed = function() {
       $scope.adding_posts = true;
-  		Feed.get({limit: 10, offset: $scope.offset, category: $scope.category.slug}, function(data) {
+  		Feed.get({limit: 10, offset: $scope.offset + $scope.status.pending.$value, category: $scope.category.slug}, function(data) {
         for(p in data.feed) {
           for(c in $scope.categories) {
             if (data.feed[p].categories[0] == $scope.categories[c].slug) {
@@ -2379,6 +2387,54 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
       mixpanel.track("View feed", {offset: $scope.offset, category: $scope.category.slug});
   		ga('send', 'pageview', '/feed/' + $scope.category.slug);
   	};
+
+    var get_newer_date = function(posts) {
+      //var newer = posts[0].created_at;
+      var newer_d = new Date(posts[0].created_at);
+      var newer_i = 0;
+      for(var i = 1; i < posts.length; i++) {
+        var test = new Date(posts[i].created_at);
+        if(newer_d < test) {
+          newer_d = test;
+          newer_i = i;
+        }
+      }
+      return posts[newer_i].created_at;
+    }
+
+    $scope.get_newer = function() {
+      $scope.adding_new_posts = true;
+
+      Feed.get({limit: $scope.status.pending.$value, before: $scope.status.newer_post_date, category: $scope.category.slug}, function(data) {
+        for(p in data.feed) {
+          for(c in $scope.categories) {
+            if (data.feed[p].categories[0] == $scope.categories[c].slug) {
+              data.feed[p].category = {name: $scope.categories[c].name, color: $scope.categories[c].color, slug: $scope.categories[c].slug}
+              break;
+            }
+          }
+          data.feed[p].unread = true;
+
+          $timeout(function() {
+            data.feed[p].unread = false;
+          }, 500);
+        }
+        $scope.status.newer_post_date = get_newer_date(data.feed);
+        //$scope.posts = $scope.posts.concat(data.feed);
+        $scope.posts = data.feed.concat($scope.posts);
+        $scope.offset = $scope.offset + $scope.status.pending.$value;
+        $scope.status.pending.$value = 0;
+        $scope.adding_new_posts = false;
+        $('.discussions-list').animate({ scrollTop: 0}, 100);
+      });
+
+      if($scope.user.info.version == 'A' || $scope.user.info.version == 'B') {
+        mixpanel.track("Load more clicked", {version: $scope.user.info.version});
+      } else {
+        mixpanel.track("Load more clicked")
+      }
+      ga('send', 'pageview', '/feed/' + $scope.category.slug);
+    };
 
   	$scope.turnCategory = function(category) {
   		$scope.category = category;
@@ -3023,15 +3079,15 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider) {
 
   $routeProvider.when('/', {
-    templateUrl: '/js/partials/main.html?v=118',
+    templateUrl: '/js/partials/main.html?v=119',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/c/:slug', {
-    templateUrl: '/js/partials/main.html?v=118',
+    templateUrl: '/js/partials/main.html?v=119',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/p/:slug/:id/:comment_position?', {
-    templateUrl: '/js/partials/main.html?v=118',
+    templateUrl: '/js/partials/main.html?v=119',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/u/:username/:id', {
@@ -3278,8 +3334,11 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
     }
     $scope.status = {
       post_selected: false,
+      selected_post: null,
       last_action: null,
-      section: 'main'
+      viewing: 'all',
+      pending: 0,
+      newer_post_date: null
     }
     $scope.user.isLogged = localStorage.getItem('signed_in')==='true'?true:false;
 
@@ -3292,6 +3351,8 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
           $scope.user.info = data;
           $scope.user.isLogged = true;
 
+          console.log(data);
+
           mixpanel.identify(data.id);
           mixpanel.people.set({
               "$first_name": data.username,
@@ -3299,24 +3360,49 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
               "$email": data.email
           });
 
-          var url = "https://spartangeek.firebaseio.com/users/" + data.id + "/notifications";
+          // FIREBASE PREPARATION
+          var url = "https://spartangeek.firebaseio.com/";
+          var userUrl = url + "users/" + data.id;
 
-          var ref = new Firebase(url + "/count");
-          ref.onAuth(function(authData) {
+          var notificationsCountRef = new Firebase(userUrl + "/notifications/count");
+          notificationsCountRef.onAuth(function(authData) {
             if (authData) {
-              console.log("Authenticated with uid:", authData.uid);
+              //console.log("Authenticated with uid:", authData.uid);
+              console.log("Authenticated to Firebase");
             } else {
               console.log("Client unauthenticated.");
               //$scope.signOut();
             }
           });
-          ref.authWithCustomToken(localStorage.firebase_token, function(error, authData) {
+          notificationsCountRef.authWithCustomToken(localStorage.firebase_token, function(error, authData) {
             if (error) {
               console.log("Login to Firebase failed!", error);
             } else {
-              // console.log("Login Succeeded!", authData);
+              var amOnline = new Firebase(url + '.info/connected');
+              //var userRef = new Firebase('https://spartangeek.firebaseio.com/presence/' + data.id);
+              var presenceRef = new Firebase(userUrl + '/online');
+              var categoryRef = new Firebase(userUrl + '/viewing');
+              var pendingRef = new Firebase(userUrl + '/pending');
+              amOnline.on('value', function(snapshot) {
+                if(snapshot.val()) {
+                  //userRef.onDisconnect().remove();
+                  presenceRef.onDisconnect().set(0);
+                  categoryRef.onDisconnect().remove();
+                  presenceRef.set(1);
+                  categoryRef.set("all");
+                }
+              });
+
+              var pending = $firebaseObject(pendingRef);
+              pending.$bindTo($scope, "status.pending");
+              pending.$loaded(function(){ $scope.status.pending.$value = 0; });
+
+              var viewing = $firebaseObject(categoryRef);
+              viewing.$bindTo($scope, "status.viewing");
+              //viewing.$loaded(function(){ $scope.status.viewing.$value = 0; });
+
               // download the data into a local object
-              var count = $firebaseObject(ref)
+              var count = $firebaseObject(notificationsCountRef)
               // synchronize the object with a three-way data binding
               count.$bindTo($scope, "user.notifications.count");
               count.$loaded(function(){
@@ -3325,7 +3411,7 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
                 if(count.$value > 15){
                   to_show = count.$value;
                 }
-                var list_ref = new Firebase(url + "/list");
+                var list_ref = new Firebase(userUrl + "/notifications/list");
                 $scope.user.notifications.list = $firebaseArray(list_ref.limitToLast(to_show));
 
                 $scope.user.notifications.list.$loaded()

@@ -8,7 +8,7 @@
                 <div class="row">
                   <div class="col-md-7 col-xs-7">
                     <a href="/" class="btn btn-default btn-sm" ng-if="category.slug != null"><i class="fa fa-chevron-left"></i></a>
-                    <h2>{{ category.name || "Todas las publicaciones" }}</h2>
+                    <h2>{{ category.name || "Todas las publicaciones" }} {{user.info.version}}</h2>
                   </div>
                   <div class="col-md-5 col-xs-5 text-right">
                     <a href="/post/create/{{ category.slug }}" class="btn btn-primary btn-sm" ng-if="user.isLogged">Crear publicación</a>
@@ -17,8 +17,17 @@
                 </div>
               </div>
 
+              <div class="new-posts" ng-if="status.pending.$value > 0 && false">
+                <span>Se han publicado {{ status.pending.$value }} mensajes nuevos</span>
+              </div>
+
+              <div class="new-posts-carlos" ng-cloak ng-if="status.pending.$value > 0" ng-click="get_newer()">
+                <span ng-if="user.info.version != 'B'">Cargar {{ status.pending.$value }} {{ status.pending.$value == 1?'publicación nueva':'publicaciones nuevas' }}</span>
+                <span ng-if="user.info.version == 'B'">Ver {{ status.pending.$value }} {{ status.pending.$value == 1?'publicación nueva':'publicaciones nuevas' }}</span>
+              </div>
+
               <ul class="discussions-list always-visible" scroll-me="walkFeed()" ng-hide="resolving_posts" adjust-height-feed>
-                <li data-id="{{ post.id }}" class="discussion-summary" ng-class="{'active': post.id === $parent.activePostId}" ng-repeat="post in posts" ng-cloak>
+                <li data-id="{{ post.id }}" class="discussion-summary" ng-class="{'active': post.id === $parent.activePostId, 'unread': post.unread == true}" ng-repeat="post in posts | orderBy:['pinned','-created_at']" ng-cloak>
                   <div>
                     <a href="/u/{{ post.author.username }}/{{ post.author.id }}" title class="author" data-original-title="Escrito por {{ post.author.username }} hace {{ post.created_at | timeago }}">
                       <span class="avatar" title="{{ post.author.username }}" ng-if="!post.author.image">{{ post.author.username[0] }}</span>

@@ -38,15 +38,15 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider) {
 
   $routeProvider.when('/', {
-    templateUrl: '/js/partials/main.html?v=118',
+    templateUrl: '/js/partials/main.html?v=119',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/c/:slug', {
-    templateUrl: '/js/partials/main.html?v=118',
+    templateUrl: '/js/partials/main.html?v=119',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/p/:slug/:id/:comment_position?', {
-    templateUrl: '/js/partials/main.html?v=118',
+    templateUrl: '/js/partials/main.html?v=119',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/u/:username/:id', {
@@ -293,8 +293,11 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
     }
     $scope.status = {
       post_selected: false,
+      selected_post: null,
       last_action: null,
-      section: 'main'
+      viewing: 'all',
+      pending: 0,
+      newer_post_date: null
     }
     $scope.user.isLogged = localStorage.getItem('signed_in')==='true'?true:false;
 
@@ -307,6 +310,8 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
           $scope.user.info = data;
           $scope.user.isLogged = true;
 
+          console.log(data);
+
           mixpanel.identify(data.id);
           mixpanel.people.set({
               "$first_name": data.username,
@@ -314,24 +319,49 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
               "$email": data.email
           });
 
-          var url = "https://spartangeek.firebaseio.com/users/" + data.id + "/notifications";
+          // FIREBASE PREPARATION
+          var url = "https://spartangeek.firebaseio.com/";
+          var userUrl = url + "users/" + data.id;
 
-          var ref = new Firebase(url + "/count");
-          ref.onAuth(function(authData) {
+          var notificationsCountRef = new Firebase(userUrl + "/notifications/count");
+          notificationsCountRef.onAuth(function(authData) {
             if (authData) {
-              console.log("Authenticated with uid:", authData.uid);
+              //console.log("Authenticated with uid:", authData.uid);
+              console.log("Authenticated to Firebase");
             } else {
               console.log("Client unauthenticated.");
               //$scope.signOut();
             }
           });
-          ref.authWithCustomToken(localStorage.firebase_token, function(error, authData) {
+          notificationsCountRef.authWithCustomToken(localStorage.firebase_token, function(error, authData) {
             if (error) {
               console.log("Login to Firebase failed!", error);
             } else {
-              // console.log("Login Succeeded!", authData);
+              var amOnline = new Firebase(url + '.info/connected');
+              //var userRef = new Firebase('https://spartangeek.firebaseio.com/presence/' + data.id);
+              var presenceRef = new Firebase(userUrl + '/online');
+              var categoryRef = new Firebase(userUrl + '/viewing');
+              var pendingRef = new Firebase(userUrl + '/pending');
+              amOnline.on('value', function(snapshot) {
+                if(snapshot.val()) {
+                  //userRef.onDisconnect().remove();
+                  presenceRef.onDisconnect().set(0);
+                  categoryRef.onDisconnect().remove();
+                  presenceRef.set(1);
+                  categoryRef.set("all");
+                }
+              });
+
+              var pending = $firebaseObject(pendingRef);
+              pending.$bindTo($scope, "status.pending");
+              pending.$loaded(function(){ $scope.status.pending.$value = 0; });
+
+              var viewing = $firebaseObject(categoryRef);
+              viewing.$bindTo($scope, "status.viewing");
+              //viewing.$loaded(function(){ $scope.status.viewing.$value = 0; });
+
               // download the data into a local object
-              var count = $firebaseObject(ref)
+              var count = $firebaseObject(notificationsCountRef)
               // synchronize the object with a three-way data binding
               count.$bindTo($scope, "user.notifications.count");
               count.$loaded(function(){
@@ -340,7 +370,7 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
                 if(count.$value > 15){
                   to_show = count.$value;
                 }
-                var list_ref = new Firebase(url + "/list");
+                var list_ref = new Firebase(userUrl + "/notifications/list");
                 $scope.user.notifications.list = $firebaseArray(list_ref.limitToLast(to_show));
 
                 $scope.user.notifications.list.$loaded()
