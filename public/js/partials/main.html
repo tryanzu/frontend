@@ -8,7 +8,7 @@
                 <div class="row">
                   <div class="col-md-7 col-xs-7">
                     <a href="/" class="btn btn-default btn-sm" ng-if="category.slug != null"><i class="fa fa-chevron-left"></i></a>
-                    <h2>{{ category.name || "Todas las publicaciones" }} {{user.info.version}}</h2>
+                    <h2>{{ category.name || "Todas las publicaciones" }}</h2>
                   </div>
                   <div class="col-md-5 col-xs-5 text-right">
                     <a href="/post/create/{{ category.slug }}" class="btn btn-primary btn-sm" ng-if="user.isLogged">Crear publicación</a>
