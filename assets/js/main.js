@@ -38,15 +38,15 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider) {
 
   $routeProvider.when('/', {
-    templateUrl: '/js/partials/main.html?v=119b',
+    templateUrl: '/js/partials/main.html?v=120',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/c/:slug', {
-    templateUrl: '/js/partials/main.html?v=119b',
+    templateUrl: '/js/partials/main.html?v=120',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/p/:slug/:id/:comment_position?', {
-    templateUrl: '/js/partials/main.html?v=119b',
+    templateUrl: '/js/partials/main.html?v=120',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/u/:username/:id', {
