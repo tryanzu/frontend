@@ -25,6 +25,7 @@
   background: #e7562e;
   color: #fff;
 }
+
 .notifications-header {
   padding: 12px 15px;
   border-bottom: 1px solid @brand-primary-light;
@@ -164,4 +165,19 @@
   color: #F4C1CF;
   padding: 0 4px;
   border-radius: 2px;
+}
+
+@media @phone {
+  .notifications-header {
+    background-color: white;
+    margin-right: 20px;
+  }
+  .navbar-default .navbar-nav li.notifications.open ul.dropdown-menu li {
+    background-color: white;
+
+    a {
+      margin-right: 20px;
+      color: @brand-primary-opaque;
+    }
+  }
 }

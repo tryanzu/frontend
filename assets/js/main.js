@@ -38,15 +38,15 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider) {
 
   $routeProvider.when('/', {
-    templateUrl: '/js/partials/main.html?v=120b',
+    templateUrl: '/js/partials/main.html?v=121',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/c/:slug', {
-    templateUrl: '/js/partials/main.html?v=120b',
+    templateUrl: '/js/partials/main.html?v=121',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/p/:slug/:id/:comment_position?', {
-    templateUrl: '/js/partials/main.html?v=120b',
+    templateUrl: '/js/partials/main.html?v=121',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/u/:username/:id', {
@@ -298,7 +298,8 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
       viewing: 'all',
       pending: 0,
       newer_post_date: null,
-      show_categories: true
+      show_categories: true,
+      menuCollapsed: true
     }
     $scope.user.isLogged = localStorage.getItem('signed_in')==='true'?true:false;
 
