@@ -63,12 +63,21 @@
               </div>
 
               <div class="segments">
-                <h2>Categorías disponibles</h2>
-                <div id="tags">
+                <div class="row">
+                  <div class="col-xs-8">
+                    <h2>Categorías disponibles</h2>
+                  </div>
+                  <div class="col-xs-4 text-right" ng-if="user.isLogged">
+                    <a class="toggle" href="" ng-click="toggleCategories()" ng-if="status.show_categories"><i class="fa fa-chevron-down"></i> Ocultar</a>
+                    <a class="toggle" href="" ng-click="toggleCategories()" ng-if="!status.show_categories"><i class="fa fa-chevron-up"></i> Mostrar</a>
+                  </div>
+                </div>
+                <div id="tags" ng-if="status.show_categories">
                   <div ng-repeat="c in categories" ng-class="{'active': category.slug === c.slug}">
                     <span class="ball" ng-class="{'empty': !c.color}" ng-style="{'background-color': c.color}"></span>
                     <a href="/c/{{ c.slug }}"><span class="name">{{ c.name }}</span></a>
-                    <span class="count">{{ c.count }}</span>
+                    <span class="count" ng-if="!user.isLogged">{{ c.count }}</span>
+                    <span class="count" ng-if="c.recent > 0 && user.isLogged">{{ c.recent }}</span>
                     <a href="/"><i class="fa fa-times" ng-if="category.slug === c.slug"></i></a>
                   </div>
                 </div>
@@ -123,17 +132,17 @@
               <nav class="discussion-nav">
                 <ul>
                   <li class="primary-control">
-                      <a class=" btn btn-primary" href="" ng-click="show_composer()" ng-if="user.isLogged">
-                        <i class="fa fa-fw fa-reply icon"></i> <span class="label">Responder</span>
-                      </a>
-                      <a class=" btn btn-primary" href="" ng-click="signIn()" ng-if="!user.isLogged">
-                        <i class="fa fa-fw fa-reply icon"></i> <span class="label">Quiero comentar</span>
-                      </a>
+                    <a class=" btn btn-primary" href="" ng-click="show_composer()" ng-if="user.isLogged">
+                      <i class="fa fa-fw fa-reply icon"></i> <span class="label">Responder</span>
+                    </a>
+                    <a class=" btn btn-primary" href="" ng-click="signIn()" ng-if="!user.isLogged">
+                      <i class="fa fa-fw fa-reply icon"></i> <span class="label">Quiero comentar</span>
+                    </a>
                   </li>
                   <li class="title-control">
                     <div class="stream-scrubber dropdown">
                       <a href="#" data-toggle="dropdown" class="btn btn-default dropdown-toggle">
-                        <span class="index">1</span> de <span class="count">{{ post.comments.count + 1}}</span> mensajes <i class="fa fa-fw fa-sort icon-glyph"></i>
+                        <span class="index">{{ scrubber.current_c }}</span> de <span class="count">{{ post.comments.count + 1}}</span> mensajes <i class="fa fa-fw fa-sort icon-glyph"></i>
                       </a>
                       <div class="dropdown-menu">
                         <div class="scrubber">
@@ -145,8 +154,9 @@
                             <div class="scrubber-slider" style="height: 45%; cursor: move;">
                               <div class="scrubber-handle"></div>
                               <div class="scrubber-info" ng-cloak>
-                                <strong><span class="index">1</span> de <span class="count">{{ post.comments.count + 1 }}</span> mensajes</strong>
-                                <span class="description">{{ post.created_at | date_at }}</span>
+                                <strong><span class="index">{{ scrubber.current_c + 1 }}</span> de <span class="count">{{ post.comments.count + 1 }}</span> mensajes</strong>
+                                <span class="description" ng-if="scrubber.current_c == 0">{{ post.created_at | date_at }}</span>
+                                <span class="description" ng-if="scrubber.current_c > 0">{{ post.comments.set[post.comments.set.length - scrubber.current_c].created_at | date_at }}</span>
                               </div>
                             </div>
                             <div class="scrubber-after" style="height: 0%;"></div>

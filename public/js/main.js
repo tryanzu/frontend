@@ -2334,13 +2334,15 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
       $scope.startupFeed($scope.category);
     });
 
+    $scope.toggleCategories = function() {
+      $scope.status.show_categories = !$scope.status.show_categories;
+      $timeout(function() {
+        $scope.$broadcast('changedContainers');
+      }, 50);
+    }
+
   	$scope.startupFeed = function(category) {
   		$scope.resolving_posts = true;
-
-      if(category.slug != null) {
-        //console.log("Categoria", category.slug);
-        $scope.page.title = "SpartanGeek.com | " + category.name;
-      }
 
   		Feed.get({limit: 10, offset: 0, category: category.slug}, function(data) {
         $scope.status.pending.$value = 0;
@@ -2357,6 +2359,15 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
             }
           }
         }
+
+        if(category.slug != null) {
+          $scope.page.title = "SpartanGeek.com | " + category.name;
+          $scope.page.description = category.description;
+        } else {
+          $scope.page.title = "SpartanGeek.com | Comunidad de tecnología, geeks y más";
+          $scope.page.description = "Creamos el mejor contenido para Geeks, y lo hacemos con pasión e irreverencia de Spartanos.";
+        }
+
         $scope.status.newer_post_date = get_newer_date(data.feed);
         //console.log($scope.status.newer_post_date);
   			$scope.posts = data.feed;
@@ -2632,7 +2643,6 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post) {
   };
 
 	$scope.$on('pushLoggedComment', function(event, comment) {
-    console.log("voy a pushear un comment");
 		// Push the comment to the main set of comments
     addImagePreview(comment);
 		$scope.post.comments.set.push(comment);
@@ -2649,8 +2659,6 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post) {
 			$scope.post = data;
       $scope.post.category = {slug: data.categories[0]};
 
-      $scope.page.title = "SpartanGeek.com | " + $scope.post.title;
-
       addImagePreview($scope.post);
 
       for (var category in $scope.categories) {
@@ -2658,6 +2666,14 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post) {
           $scope.post.category.name = $scope.categories[category].name;
           break;
         }
+      }
+
+      $scope.page.title = "SpartanGeek.com | "  + $scope.post.title + " en " + $scope.post.category.name;
+
+      if($scope.post.content.length - 1 < 157) {
+        $scope.page.description = $scope.post.content;
+      } else {
+        $scope.page.description = $scope.post.content.substring(0, 157) + '...';
       }
 
       for( var c in $scope.post.comments.set) {
@@ -2696,10 +2712,53 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post) {
         $('.scrubber-before').css('height', (100 - $scope.ratio - $scope.surplus) + '%');
         $('.scrubber-slider').css('height', $scope.ratio + '%');
         $('.scrubber-after').css('height', $scope.surplus + '%');
+
+        $scope.comments_positions = [{
+          top: 0,
+          bottom: $('div.comment:first-child').position().top - 2
+        }];
+        //console.log(0, $scope.comments_positions[0]);
+        $('div.comment').each(function(index) {
+          var t = $(this);
+          $scope.comments_positions[index + 1] = {
+            top: t.position().top,
+            bottom: t.position().top + t.height()
+          };
+          //console.log(index + 1, $scope.comments_positions[index+1]);
+        });
       }, 350);
 
+      var from_top, surplus, lastScrollTop = 0;
+      $scope.scrubber = {
+        current_c: 0
+      };
       $('.current-article').scroll(function() {
-        var surplus = $('.current-article').scrollTop() / $scope.scrollable_h;
+        from_top = $(this).scrollTop();
+
+        if (from_top > lastScrollTop){
+          // downscroll code
+          if($scope.scrubber.current_c < $scope.comments_positions.length - 1) {
+            if( (from_top + 210) > $scope.comments_positions[$scope.scrubber.current_c].bottom ) {
+              $scope.$apply(function () {
+                $scope.scrubber.current_c++;
+              });
+            }
+          }
+        } else {
+          // upscroll code
+          if($scope.scrubber.current_c > 0) {
+            if ( (from_top + 210) < $scope.comments_positions[$scope.scrubber.current_c].top ) {
+              $scope.$apply(function () {
+                $scope.scrubber.current_c--;
+              });
+            }
+          }
+        }
+        lastScrollTop = from_top;
+
+        //console.log($scope.scrubber.current_c);
+
+        surplus = from_top / $scope.scrollable_h;
         surplus = 100 - surplus * 100;
         if(surplus < 0) { surplus = 0; }
         $scope.surplus = surplus * $scope.scrollable / 100;
@@ -2708,6 +2767,8 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post) {
         $('.scrubber-slider').css('height', $scope.ratio + '%');
         $('.scrubber-after').css('height', $scope.surplus + '%');
       });
+
+      /* End TODO */
 
 		});
 	});
@@ -3338,7 +3399,8 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
       last_action: null,
       viewing: 'all',
       pending: 0,
-      newer_post_date: null
+      newer_post_date: null,
+      show_categories: true
     }
     $scope.user.isLogged = localStorage.getItem('signed_in')==='true'?true:false;
 
@@ -3350,6 +3412,10 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
         .success(function(data) {
           $scope.user.info = data;
           $scope.user.isLogged = true;
+
+          $timeout(function() {
+            $scope.$broadcast('changedContainers');
+          }, 100);
 
           console.log(data);
 
@@ -3421,13 +3487,13 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
                     if(event.event === "child_added") {
                       var audio = new Audio('/sounds/notification.mp3');
                       audio.play();
+
+                      /*if($scope.user.notifications.count.$value == 1) {
+                        $scope.page.title = "(" + $scope.user.notifications.count.$value + ") " + $scope.page.title;
+                      }*/
                     }
                   });
-                })
-
-                /*$scope.user.notifications.list.$loaded(function(){
-                  console.log($scope.user.notifications.list) ;
-                });*/
+                });
               });
             }
           });
@@ -3508,6 +3574,14 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
     }
 
     Facebook.getLoginStatus(function(r){$rootScope.fb_response = r;});
+
+    $http.get(layer_path + 'stats/board').
+      success(function(data, status) {
+        $scope.status.stats = data;
+        console.log(data);
+      }).
+      error(function(data) {
+      });
   }
 ]);
 
@@ -3524,7 +3598,8 @@ boardApplication.run(['$rootScope', '$http', function($rootScope, $http) {
       localStorage.signed_in = false;
 
     $rootScope.page = {
-      title: "SpartanGeek.com | Comunidad de tecnología, geeks y más"
+      title: "SpartanGeek.com | Comunidad de tecnología, geeks y más",
+      description: "Creamos el mejor contenido para Geeks, y lo hacemos con pasión e irreverencia de Spartanos."
     };
   }
 ]);

@@ -87,7 +87,6 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post) {
   };
 
 	$scope.$on('pushLoggedComment', function(event, comment) {
-    console.log("voy a pushear un comment");
 		// Push the comment to the main set of comments
     addImagePreview(comment);
 		$scope.post.comments.set.push(comment);
@@ -104,8 +103,6 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post) {
 			$scope.post = data;
       $scope.post.category = {slug: data.categories[0]};
 
-      $scope.page.title = "SpartanGeek.com | " + $scope.post.title;
-
       addImagePreview($scope.post);
 
       for (var category in $scope.categories) {
@@ -113,6 +110,14 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post) {
           $scope.post.category.name = $scope.categories[category].name;
           break;
         }
+      }
+
+      $scope.page.title = "SpartanGeek.com | "  + $scope.post.title + " en " + $scope.post.category.name;
+
+      if($scope.post.content.length - 1 < 157) {
+        $scope.page.description = $scope.post.content;
+      } else {
+        $scope.page.description = $scope.post.content.substring(0, 157) + '...';
       }
 
       for( var c in $scope.post.comments.set) {
@@ -151,10 +156,53 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post) {
         $('.scrubber-before').css('height', (100 - $scope.ratio - $scope.surplus) + '%');
         $('.scrubber-slider').css('height', $scope.ratio + '%');
         $('.scrubber-after').css('height', $scope.surplus + '%');
+
+        $scope.comments_positions = [{
+          top: 0,
+          bottom: $('div.comment:first-child').position().top - 2
+        }];
+        //console.log(0, $scope.comments_positions[0]);
+        $('div.comment').each(function(index) {
+          var t = $(this);
+          $scope.comments_positions[index + 1] = {
+            top: t.position().top,
+            bottom: t.position().top + t.height()
+          };
+          //console.log(index + 1, $scope.comments_positions[index+1]);
+        });
       }, 350);
 
+      var from_top, surplus, lastScrollTop = 0;
+      $scope.scrubber = {
+        current_c: 0
+      };
       $('.current-article').scroll(function() {
-        var surplus = $('.current-article').scrollTop() / $scope.scrollable_h;
+        from_top = $(this).scrollTop();
+
+        if (from_top > lastScrollTop){
+          // downscroll code
+          if($scope.scrubber.current_c < $scope.comments_positions.length - 1) {
+            if( (from_top + 210) > $scope.comments_positions[$scope.scrubber.current_c].bottom ) {
+              $scope.$apply(function () {
+                $scope.scrubber.current_c++;
+              });
+            }
+          }
+        } else {
+          // upscroll code
+          if($scope.scrubber.current_c > 0) {
+            if ( (from_top + 210) < $scope.comments_positions[$scope.scrubber.current_c].top ) {
+              $scope.$apply(function () {
+                $scope.scrubber.current_c--;
+              });
+            }
+          }
+        }
+        lastScrollTop = from_top;
+
+        //console.log($scope.scrubber.current_c);
+
+        surplus = from_top / $scope.scrollable_h;
         surplus = 100 - surplus * 100;
         if(surplus < 0) { surplus = 0; }
         $scope.surplus = surplus * $scope.scrollable / 100;
@@ -163,6 +211,8 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post) {
         $('.scrubber-slider').css('height', $scope.ratio + '%');
         $('.scrubber-after').css('height', $scope.surplus + '%');
       });
+
+      /* End TODO */
 
 		});
 	});

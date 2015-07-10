@@ -297,7 +297,8 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
       last_action: null,
       viewing: 'all',
       pending: 0,
-      newer_post_date: null
+      newer_post_date: null,
+      show_categories: true
     }
     $scope.user.isLogged = localStorage.getItem('signed_in')==='true'?true:false;
 
@@ -309,6 +310,10 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
         .success(function(data) {
           $scope.user.info = data;
           $scope.user.isLogged = true;
+
+          $timeout(function() {
+            $scope.$broadcast('changedContainers');
+          }, 100);
 
           console.log(data);
 
@@ -380,13 +385,13 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
                     if(event.event === "child_added") {
                       var audio = new Audio('/sounds/notification.mp3');
                       audio.play();
+
+                      /*if($scope.user.notifications.count.$value == 1) {
+                        $scope.page.title = "(" + $scope.user.notifications.count.$value + ") " + $scope.page.title;
+                      }*/
                     }
                   });
-                })
-
-                /*$scope.user.notifications.list.$loaded(function(){
-                  console.log($scope.user.notifications.list) ;
-                });*/
+                });
               });
             }
           });
@@ -467,6 +472,14 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
     }
 
     Facebook.getLoginStatus(function(r){$rootScope.fb_response = r;});
+
+    $http.get(layer_path + 'stats/board').
+      success(function(data, status) {
+        $scope.status.stats = data;
+        console.log(data);
+      }).
+      error(function(data) {
+      });
   }
 ]);
 
@@ -483,7 +496,8 @@ boardApplication.run(['$rootScope', '$http', function($rootScope, $http) {
       localStorage.signed_in = false;
 
     $rootScope.page = {
-      title: "SpartanGeek.com | Comunidad de tecnología, geeks y más"
+      title: "SpartanGeek.com | Comunidad de tecnología, geeks y más",
+      description: "Creamos el mejor contenido para Geeks, y lo hacemos con pasión e irreverencia de Spartanos."
     };
   }
 ]);

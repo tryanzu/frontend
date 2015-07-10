@@ -5,6 +5,8 @@
   <base href="/">
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="{{ page.description }}">
+
   <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
   <link type="text/css" rel="stylesheet" href="/css/app.css?v=119b">
 
@@ -69,6 +71,12 @@
 
       <!-- Collect the nav links, forms, and other content for toggling -->
       <div class="collapse navbar-collapse" id="sg-options">
+        <ul class="nav navbar-nav navbar-stats" ng-if="!user.isLogged">
+          <li><a><i class="fa fa-users"></i> Usuarios: {{status.stats.users}}</a></li>
+          <li><a><i class="fa fa-file"></i> Publicaciones: {{status.stats.posts}}</a></li>
+          <li><a><i class="fa fa-comments"></i> Comentarios: {{status.stats.comments}}</a></li>
+        </ul>
+
         <ul class="nav navbar-nav navbar-right" ng-if="!user.isLogged">
           <li><a href="" ng-click="signIn()">Iniciar sesión</a></li>
           <li><a href="" ng-click="signUp()">Únete</a></li>

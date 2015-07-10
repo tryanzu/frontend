@@ -75,13 +75,15 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
       $scope.startupFeed($scope.category);
     });
 
+    $scope.toggleCategories = function() {
+      $scope.status.show_categories = !$scope.status.show_categories;
+      $timeout(function() {
+        $scope.$broadcast('changedContainers');
+      }, 50);
+    }
+
   	$scope.startupFeed = function(category) {
   		$scope.resolving_posts = true;
-
-      if(category.slug != null) {
-        //console.log("Categoria", category.slug);
-        $scope.page.title = "SpartanGeek.com | " + category.name;
-      }
 
   		Feed.get({limit: 10, offset: 0, category: category.slug}, function(data) {
         $scope.status.pending.$value = 0;
@@ -98,6 +100,15 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
             }
           }
         }
+
+        if(category.slug != null) {
+          $scope.page.title = "SpartanGeek.com | " + category.name;
+          $scope.page.description = category.description;
+        } else {
+          $scope.page.title = "SpartanGeek.com | Comunidad de tecnología, geeks y más";
+          $scope.page.description = "Creamos el mejor contenido para Geeks, y lo hacemos con pasión e irreverencia de Spartanos.";
+        }
+
         $scope.status.newer_post_date = get_newer_date(data.feed);
         //console.log($scope.status.newer_post_date);
   			$scope.posts = data.feed;
