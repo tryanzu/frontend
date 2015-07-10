@@ -2381,7 +2381,9 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
 
   	$scope.walkFeed = function() {
       $scope.adding_posts = true;
-  		Feed.get({limit: 10, offset: $scope.offset + $scope.status.pending.$value, category: $scope.category.slug}, function(data) {
+      var pending = $scope.status.pending.$value==undefined?$scope.status.pending:$scope.status.pending.$value;
+      console.log($scope.offset, pending);
+  		Feed.get({limit: 10, offset: $scope.offset + pending, category: $scope.category.slug}, function(data) {
         for(p in data.feed) {
           for(c in $scope.categories) {
             if (data.feed[p].categories[0] == $scope.categories[c].slug) {
@@ -3140,15 +3142,15 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider) {
 
   $routeProvider.when('/', {
-    templateUrl: '/js/partials/main.html?v=120',
+    templateUrl: '/js/partials/main.html?v=120b',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/c/:slug', {
-    templateUrl: '/js/partials/main.html?v=120',
+    templateUrl: '/js/partials/main.html?v=120b',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/p/:slug/:id/:comment_position?', {
-    templateUrl: '/js/partials/main.html?v=120',
+    templateUrl: '/js/partials/main.html?v=120b',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/u/:username/:id', {

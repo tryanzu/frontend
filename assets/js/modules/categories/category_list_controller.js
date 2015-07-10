@@ -122,7 +122,9 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
 
   	$scope.walkFeed = function() {
       $scope.adding_posts = true;
-  		Feed.get({limit: 10, offset: $scope.offset + $scope.status.pending.$value, category: $scope.category.slug}, function(data) {
+      var pending = $scope.status.pending.$value==undefined?$scope.status.pending:$scope.status.pending.$value;
+      console.log($scope.offset, pending);
+  		Feed.get({limit: 10, offset: $scope.offset + pending, category: $scope.category.slug}, function(data) {
         for(p in data.feed) {
           for(c in $scope.categories) {
             if (data.feed[p].categories[0] == $scope.categories[c].slug) {
