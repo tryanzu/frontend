@@ -326,8 +326,7 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
           });
 
           // FIREBASE PREPARATION
-          var url = "https://spartangeek.firebaseio.com/";
-          var userUrl = url + "users/" + data.id;
+          var userUrl = firebase_url + "users/" + data.id;
 
           var notificationsCountRef = new Firebase(userUrl + "/notifications/count");
           notificationsCountRef.onAuth(function(authData) {
@@ -343,7 +342,7 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
             if (error) {
               console.log("Login to Firebase failed!", error);
             } else {
-              var amOnline = new Firebase(url + '.info/connected');
+              var amOnline = new Firebase(firebase_url + '.info/connected');
               //var userRef = new Firebase('https://spartangeek.firebaseio.com/presence/' + data.id);
               var presenceRef = new Firebase(userUrl + '/online');
               var categoryRef = new Firebase(userUrl + '/viewing');
