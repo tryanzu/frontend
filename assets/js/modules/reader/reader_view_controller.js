@@ -99,7 +99,6 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post) {
 		$scope.force_comment = false;
 
 		Post.get({id: post.id}, function(data) {
-      //console.log(data);
 			$scope.post = data;
       $scope.post.category = {slug: data.categories[0]};
 

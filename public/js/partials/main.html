@@ -135,7 +135,7 @@
 
               <nav class="discussion-nav">
                 <ul>
-                  <li class="primary-control">
+                  <li class="primary-control" ng-if="!post.comments_blocked">
                     <a class=" btn btn-primary" href="" ng-click="show_composer()" ng-if="user.isLogged">
                       <i class="fa fa-fw fa-reply icon"></i> <span class="label">Responder</span>
                     </a>
@@ -317,7 +317,7 @@
                 </div>
 
                 <div class="answers">
-                  <h5>{{ post.comments.count }} respuesta{{post.comments.count == 1?'':'s'}}</h5>
+                  <h5 ng-if="!post.comments_blocked || post.comments.count > 0">{{ post.comments.count }} respuesta{{post.comments.count == 1?'':'s'}}</h5>
                 </div>
 
                 <div class="comments">
@@ -372,14 +372,14 @@
                   </div>
                 </div>
 
-                <div class="need-signin" ng-if="!user.isLogged">
+                <div class="need-signin" ng-if="!user.isLogged && !post.comments_blocked">
                   <p>¿Quieres dejar un comentario? <a href="" ng-click="signIn()">Inicia sesión</a> o <a href="" ng-click="signUp()">Crea una cuenta</a></p>
                 </div>
               </div>
 
               <div class="row">
                 <div class="col-md-9">
-                  <div ng-show="post.comments.count > 0 || force_comment == true || true" ng-if="user.isLogged">
+                  <div ng-show="(post.comments.count > 0 || force_comment == true || true) && !post.comments_blocked" ng-if="user.isLogged">
                     <div class="idiot-wizzy">
                       <textarea id="comment-content" placeholder="Escribe tu comentario..." class="form-control flexible-height content" ng-model="comment.content" ng-disabled="waiting_comment"></textarea>
                       <div class="actions">
@@ -396,6 +396,12 @@
                         </ul>
                       </div>
                     </div>
+                  </div>
+                  <div ng-if="post.comments_blocked && post.comments.count > 0">
+                    <p class="alert alert-warning">Esta publicación no permite más comentarios.</p>
+                  </div>
+                  <div ng-if="post.comments_blocked && post.comments.count == 0">
+                    <p class="alert alert-info">Esta publicación no permite comentarios.</p>
                   </div>
                 </div>
               </div>
