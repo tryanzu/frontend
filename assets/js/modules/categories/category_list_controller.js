@@ -143,7 +143,6 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
   	};
 
     var get_newer_date = function(posts) {
-      //var newer = posts[0].created_at;
       var newer_d = new Date(posts[0].created_at);
       var newer_i = 0;
       for(var i = 1; i < posts.length; i++) {
@@ -168,15 +167,18 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
             }
           }
           data.feed[p].unread = true;
-
-          $timeout(function() {
-            data.feed[p].unread = false;
-          }, 500);
         }
+        $timeout(function() {
+          for(p in data.feed) {
+            data.feed[p].unread = false;
+          }
+        }, 800);
+
         $scope.status.newer_post_date = get_newer_date(data.feed);
-        //$scope.posts = $scope.posts.concat(data.feed);
+
         $scope.posts = data.feed.concat($scope.posts);
         $scope.offset = $scope.offset + $scope.status.pending.$value;
+
         $scope.status.pending.$value = 0;
         $scope.adding_new_posts = false;
         $('.discussions-list').animate({ scrollTop: 0}, 100);
