@@ -103,13 +103,17 @@
             <div class="author" ng-hide="resolving">
               <div class="row">
                 <div class="col-md-1 col-xs-2">
-                  <span class="avatar" title="{{ post.author.username }}" ng-if="!post.author.image">{{ post.author.username[0] }}</span>
-                  <img class="avatar" ng-src="{{ post.author.image }}" alt="{{ post.author.username }}" ng-if="post.author.image">
+                  <a href="/u/{{ post.author.username }}/{{ post.author.id }}" title="Perfil de {{ post.author.username }}">
+                    <span class="avatar" title="{{ post.author.username }}" ng-if="!post.author.image">{{ post.author.username[0] }}</span>
+                    <img class="avatar" ng-src="{{ post.author.image }}" alt="{{ post.author.username }}" ng-if="post.author.image">
+                  </a>
                 </div>
 
                 <div class="col-md-5 col-xs-10">
                   <div class="user-info">
-                    <span class="username">{{ post.author.username }}</span>
+                    <a href="/u/{{ post.author.username }}/{{ post.author.id }}" title="Perfil de {{ post.author.username }}">
+                      <span class="username">{{ post.author.username }}</span>
+                    </a>
                     <span class="verified-account" ng-if="post.author.id === '559af1c501c25d3790000054'" tooltip="Cuenta verificada" tooltip-placement="right"><i class="fa fa-check"></i></span>
                     <p class="description">{{ post.author.description || "Just another Spartan Geek" }}</p>
                   </div>
@@ -172,11 +176,14 @@
               <div class="discussion-posts">
                 <h2 class="discussion-title">{{ post.title }}</h2>
 
+                <span class="label label-default label-date">Escrito hace {{ post.created_at | timeago }}</span>
+
                 <div class="content" ng-if="post.type !== 'recommendations'" marked="post.content">
                 </div>
 
                 <div class="recommendations" ng-if="post.type === 'recommendations'">
                   <div class="content" marked="post.content"></div>
+
                   <div class="components">
                     <div ng-if="post.components.cpu.content" class="component">
                       <div class="row">
@@ -318,9 +325,11 @@
                     <div class="comment-author">
                       <div class="row">
                         <div class="col-md-12">
-                          <img class="avatar" ng-src="{{ comment.author.image }}" alt="{{ comment.author.username }}" ng-if="comment.author.image">
-                          <span class="avatar" title="{{ comment.author.username }}" ng-if="!comment.author.image">{{ comment.author.username[0] }}</span>
-                          <span class="username"><strong>{{ comment.author.username }}</strong> {{ comment.author.description }}</span>
+                          <a href="/u/{{ comment.author.username }}/{{ comment.author.id }}" title="Perfil de {{ comment.author.username }}">
+                            <img class="avatar" ng-src="{{ comment.author.image }}" alt="{{ comment.author.username }}" ng-if="comment.author.image">
+                            <span class="avatar" title="{{ comment.author.username }}" ng-if="!comment.author.image">{{ comment.author.username[0] }}</span>
+                          </a>
+                          <span class="username"><a href="/u/{{ comment.author.username }}/{{ comment.author.id }}" title="Perfil de {{ comment.author.username }}"><strong>{{ comment.author.username }}</strong></a> {{ comment.author.description }}</span>
                         </div>
                       </div>
                     </div>
