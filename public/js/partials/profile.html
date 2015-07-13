@@ -8,7 +8,7 @@
                   <div class="avatar-editor dropdown user-avatar" ng-class="{'loading': update.updating}" dropdown>
                     <img class="avatar" title="{{ profile.username }}" ng-src="{{ profile.image }}" ng-if="profile.image">
                     <span class="avatar" ng-if="!profile.image">{{ profile.username[0] }}</span>
-                    <a href="" data-toggle="dropdown" class="dropdown-toggle" ng-if="profile.id === user.info.id" dropdown-toggle>
+                    <a href="" data-toggle="dropdown" class="dropdown-toggle" ng-if="profile.id === user.info.id" dropdown-toggle ngf-drop ngf-change="upload($files)" ngf-accept="'image/*'" ngf-drag-over-class="dragover">
                       <i class="fa fa-fw fa-pencil icon" ng-if="!update.updating"></i>
                       <div class="loading-indicator" ng-if="update.updating">
                         <div class="spinner" style="position: absolute; width: 0px; z-index: auto; left: 18%; font-size: 14px;" role="progressbar">Cargando</div>
@@ -16,7 +16,7 @@
                     </a>
                     <ul class="dropdown-menu">
                       <li>
-                        <a href="">
+                        <a href="" ngf-select ngf-change="upload($files)" ngf-multiple="false" ngf-accept="'image/*'">
                           <i class="fa fa-fw fa-upload icon"></i> Subir imagen
                         </a>
                       </li>
@@ -25,8 +25,8 @@
                           <i class="fa fa-fw fa-code-fork icon"></i> Usar foto de FB
                         </a>
                       </li>
-                      <li>
-                        <a href=""><i class="fa fa-fw fa-times icon"></i> Eliminar</a>
+                      <li ng-if="user.info.image">
+                        <a href="" ng-click="remove_pic()"><i class="fa fa-fw fa-times icon"></i> Eliminar</a>
                       </li>
                     </ul>
                   </div>
@@ -42,7 +42,7 @@
                       <input name="description" type="text" rows="1" class="form-control" placeholder="Escribe una breve descripción" ng-if="update.editing_desc" ng-model="profile.description">
                     </div>
                   </li>
-                  <li class="">
+                  <li class="hidden">
                     <span class="user-last-seen online">
                       <i class="fa fa-fw fa-circle"></i> Online
                     </span>
@@ -73,10 +73,6 @@
                 </div>
               </div>
               <div class="col-md-9">
-                <div class="offset-content user-content">
-                  <input type="file" file-model="updating.myFile"/>
-                  <button ng-click="uploadFile()">upload me</button>
-                </div>
 
                 <div class="offset-content user-content">
                   <div ng-if="posts.length == 0">

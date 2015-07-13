@@ -6,7 +6,7 @@
 // @codekit-prepend "vendor/infinite-scroll"
 // @codekit-prepend "vendor/ui-bootstrap-tpls-0.13.0.min"
 // @codekit-prepend "vendor/angular-facebook"
-// @codekit-prepend "vendor/color-thief.min"
+// @codekit-prepend "vendor/ng-file-upload-all.min.js"
 // @codekit-prepend "modules/feed/init"
 // @codekit-prepend "modules/categories/init"
 // @codekit-prepend "modules/reader/init"
@@ -31,7 +31,8 @@ var boardApplication = angular.module('board', [
   'userModule',
   'angular-jwt',
   'firebase',
-  'ngRoute'
+  'ngRoute',
+  'ngFileUpload'
 ]);
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider',
@@ -274,7 +275,9 @@ boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http'
     }
 }]);
 
-boardApplication.controller('UserController', ['$scope', 'User', '$routeParams', 'fileUpload', 'Feed', function($scope, User, $routeParams, fileUpload, Feed) {
+boardApplication.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed', 'Upload',
+  function($scope, User, $routeParams, Feed, Upload) {
+
   $scope.profile = null;
   $scope.resolving_posts = false;
   $scope.update = {
@@ -287,27 +290,34 @@ boardApplication.controller('UserController', ['$scope', 'User', '$routeParams',
     $scope.profile = data;
     $scope.startFeed();
   }, function(response) {
-    //window.location = '/';
+    window.location = '/';
   });
 
-  $scope.uploadFile = function() {
-    $scope.update.updating = true;
-    var file = $scope.updating.myFile;
-    console.log('file is ' + JSON.stringify(file));
-    var uploadUrl = layer_path + "user/my/avatar";
-    var r = fileUpload.uploadFileToUrl(file, uploadUrl);
-    r.success(function(data){
-      $scope.update.updating = false;
-      $scope.user.info.image = data.url;
-      $scope.profile.image = data.url;
-    })
-    .error(function(){
-    });
+  $scope.upload = function(files) {
+    if(files.length == 1) {
+      var file = files[0];
+      $scope.update.updating = true;
+      Upload.upload({
+        url: layer_path + "user/my/avatar",
+        file: file
+      }).success(function (data) {
+        $scope.user.info.image = data.url;
+        $scope.profile.image = data.url;
+        $scope.update.updating = false;
+      }).error(function(data) {
+        $scope.update.updating = false;
+      });
+    }
   };
 
   $scope.use_fb_pic = function() {
     $scope.user.info.image = 'https://graph.facebook.com/'+$scope.user.info.facebook.id+'/picture?width=128';
     $scope.profile.image = 'https://graph.facebook.com/'+$scope.user.info.facebook.id+'/picture?width=128';
+  }
+
+  $scope.remove_pic = function() {
+    $scope.user.info.image = null;
+    $scope.profile.image = null;
   }
 
   $scope.startFeed = function() {
