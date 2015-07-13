@@ -30,7 +30,21 @@
                       </li>
                     </ul>
                   </div>
-                  <span class="username">{{ profile.username }}</span>
+                  <span class="username" ng-if="!update.editing_username">{{ profile.username }}</span>
+                  <span class="edit" ng-if="!user.info.final_username">
+                    <a href="" ng-click="update.editing_username = true" ng-if="!update.editing_username">Editar nombre de usuario</a>
+                    <div class="" ng-if="update.editing_username" style="display: inline-block">
+                      <div class="input-group">
+                        <input name="description" type="text" class="form-control" placeholder="Escribe tu nombre de usuario" ng-model="new_data.username" maxlength="32" popover="Sólo puedes cambiar tu nombre de usuario una vez, hazlo sabiamente." popover-placement="bottom">
+                        <span class="input-group-btn">
+                          <button class="btn btn-default btn-sm" type="button" ng-click="saveUsername()">Guardar nombre de usuario</button>
+                        </span>
+                        <span class="input-group-btn">
+                          <button class="btn btn-danger btn-sm" type="button" ng-click="update.editing_username = false">Cancelar</button>
+                        </span>
+                      </div>
+                    </div>
+                  </span>
                 </h2>
                 <ul class="user-badges badges"></ul>
                 <ul class="user-info">
@@ -39,7 +53,7 @@
                       <div class="bio-content" ng-click="update.editing_desc = true" ng-if="!update.editing_desc">
                         <p>{{ profile.description || 'Escribe una breve descripción' }}</p>
                       </div>
-                      <input name="description" type="text" rows="1" class="form-control" placeholder="Escribe una breve descripción" ng-if="update.editing_desc" ng-model="profile.description">
+                      <input name="description" type="text" class="form-control" placeholder="Escribe una breve descripción" ng-if="update.editing_desc" ng-model="profile.description">
                     </div>
                   </li>
                   <li class="hidden">

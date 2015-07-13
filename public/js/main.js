@@ -3363,15 +3363,25 @@ boardApplication.controller('UserController', ['$scope', 'User', '$routeParams',
   $scope.update = {
     updating: false,
     editing_desc: false,
-    myFile: null
+    editing_username: false
   };
 
-  User.get({user_id: $routeParams.id}, function(data){
-    $scope.profile = data;
-    $scope.startFeed();
-  }, function(response) {
-    window.location = '/';
-  });
+  $scope.new_data = {
+    username: null
+  }
+
+  $scope.editUsername = function() {
+    $scope.update.editing_username = true;
+  }
+  $scope.saveUsername = function() {
+    if(!$scope.user.info.final_username) {
+      $scope.profile.username = $scope.new_data.username;
+      $scope.user.info.username = $scope.new_data.username;
+      $scope.user.info.final_username = true;
+
+      $scope.update.editing_username = false
+    }
+  }
 
   $scope.upload = function(files) {
     if(files.length == 1) {
@@ -3418,6 +3428,17 @@ boardApplication.controller('UserController', ['$scope', 'User', '$routeParams',
       $scope.offset = 10;
     });
   };
+
+  User.get({user_id: $routeParams.id}, function(data){
+    $scope.profile = data;
+    $scope.startFeed();
+
+    $scope.new_data.username = $scope.profile.username;
+    $scope.user.info.final_username = false;
+
+  }, function(response) {
+    window.location = '/';
+  });
 
 }]);
 
