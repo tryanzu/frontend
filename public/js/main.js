@@ -3273,9 +3273,18 @@ boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http'
   		email: '',
   		password: '',
   		username: '',
+      username_error: false,
   		error: false
   	};
     $scope.fb_loading = false;
+
+    $scope.check_username = function() {
+      if( /^[a-zA-Z][a-zA-Z0-9\-]{1,30}[a-zA-Z0-9]$/.test($scope.form.username) ) {
+        $scope.form.username_error = false;
+      } else {
+        $scope.form.username_error = true;
+      }
+    };
 
   	$scope.signUp = function() {
 
