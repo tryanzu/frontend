@@ -6,7 +6,7 @@
 // @codekit-prepend "vendor/infinite-scroll"
 // @codekit-prepend "vendor/ui-bootstrap-tpls-0.13.0.min"
 // @codekit-prepend "vendor/angular-facebook"
-// @codekit-prepend "vendor/color-thief.min"
+// @codekit-prepend "vendor/ng-file-upload-all.min.js"
 // @codekit-prepend "modules/feed/init"
 // @codekit-prepend "modules/categories/init"
 // @codekit-prepend "modules/reader/init"
@@ -31,7 +31,8 @@ var boardApplication = angular.module('board', [
   'userModule',
   'angular-jwt',
   'firebase',
-  'ngRoute'
+  'ngRoute',
+  'ngFileUpload'
 ]);
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider',
@@ -191,9 +192,18 @@ boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http'
   		email: '',
   		password: '',
   		username: '',
+      username_error: false,
   		error: false
   	};
     $scope.fb_loading = false;
+
+    $scope.check_username = function() {
+      if( /^[a-zA-Z][a-zA-Z0-9\-]{1,30}[a-zA-Z0-9]$/.test($scope.form.username) ) {
+        $scope.form.username_error = false;
+      } else {
+        $scope.form.username_error = true;
+      }
+    };
 
   	$scope.signUp = function() {
 
@@ -274,14 +284,108 @@ boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http'
     }
 }]);
 
-boardApplication.controller('UserController', ['$scope', 'User', '$routeParams', function($scope, User, $routeParams) {
-  $scope.user = null;
+boardApplication.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed', 'Upload', '$http',
+  function($scope, User, $routeParams, Feed, Upload, $http) {
+
+  $scope.profile = null;
+  $scope.resolving_posts = false;
+  $scope.update = {
+    updating: false,
+    editing_desc: false,
+    editing_username: false
+  };
+
+  $scope.new_data = {
+    username: null,
+    username_saving: false,
+    username_error: false,
+    username_error_message: 'El nombre de usuario sólo puede llevar letras, números y guiones. Debe empezar con letra y terminar con número o letra y tener entre 3 y 32 caracteres.'
+  }
+
+  $scope.editUsername = function() {
+    $scope.update.editing_username = true;
+  };
+  $scope.saveUsername = function() {
+    if($scope.user.info.name_changes < 1) {
+      $scope.new_data.username_saving = true;
+      $http.put(layer_path + "user/my", {username: $scope.new_data.username}).
+      success(function(data) {
+        $scope.profile.username = $scope.new_data.username;
+        $scope.user.info.username = $scope.new_data.username;
+        $scope.user.info.name_changes = 1;
+
+        $scope.update.editing_username = false;
+      }).
+      error(function(data) {
+        $scope.update.editing_username = false;
+        $scope.new_data.username_saving = false;
+      });
+    }
+  };
+  $scope.check_username = function() {
+    if( /^[a-zA-Z][a-zA-Z0-9\-]{1,30}[a-zA-Z0-9]$/.test($scope.new_data.username) ) {
+      $scope.new_data.username_error = false;
+    } else {
+      $scope.new_data.username_error = true;
+    }
+  };
+
+  $scope.upload = function(files) {
+    if(files.length == 1) {
+      var file = files[0];
+      $scope.update.updating = true;
+      Upload.upload({
+        url: layer_path + "user/my/avatar",
+        file: file
+      }).success(function (data) {
+        $scope.user.info.image = data.url;
+        $scope.profile.image = data.url;
+        $scope.update.updating = false;
+      }).error(function(data) {
+        $scope.update.updating = false;
+      });
+    }
+  };
+
+  $scope.use_fb_pic = function() {
+    $scope.user.info.image = 'https://graph.facebook.com/'+$scope.user.info.facebook.id+'/picture?width=128';
+    $scope.profile.image = 'https://graph.facebook.com/'+$scope.user.info.facebook.id+'/picture?width=128';
+  }
+
+  $scope.remove_pic = function() {
+    $scope.user.info.image = null;
+    $scope.profile.image = null;
+  }
+
+  $scope.startFeed = function() {
+    $scope.resolving_posts = true;
+
+    Feed.get({limit: 10, offset: 0, user_id: $scope.profile.id}, function(data) {
+      for(p in data.feed) {
+        for(c in $scope.categories) {
+          if (data.feed[p].categories[0] == $scope.categories[c].slug) {
+            data.feed[p].category = {name: $scope.categories[c].name, color: $scope.categories[c].color, slug: $scope.categories[c].slug}
+            break;
+          }
+        }
+      }
+
+      $scope.posts = data.feed;
+      $scope.resolving_posts = false;
+      $scope.offset = 10;
+    });
+  };
 
   User.get({user_id: $routeParams.id}, function(data){
-    $scope.user = data;
+    $scope.profile = data;
+    $scope.startFeed();
+
+    $scope.new_data.username = $scope.profile.username;
+
   }, function(response) {
-    //window.location = '/';
+    window.location = '/';
   });
+
 }]);
 
 boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', '$modal', '$timeout', '$firebaseObject', '$firebaseArray', 'Facebook',

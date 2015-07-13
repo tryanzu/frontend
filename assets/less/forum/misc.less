@@ -60,3 +60,21 @@
     padding-right: 10px;
   }
 }
+
+@media @phone, @tablet {
+  .offset-content {
+    margin-top: 15px;
+  }
+}
+
+@media @desktop, @desktop-hd {
+  .offset-content {
+    margin-top: 30px;
+  }
+}
+
+.form-control.has-error {
+  background-color: lighten(@brand-danger, 40%);
+  color: @brand-danger;
+  border-color: @brand-danger;
+}

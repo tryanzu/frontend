@@ -74,7 +74,8 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post) {
           id: $scope.user.info.id,
           username: $scope.user.info.username,
           email: $scope.user.info.email,
-          description: $scope.user.info.description
+          description: $scope.user.info.description,
+          image: $scope.user.info.image
         },
         content: $scope.comment.content,
         created_at: date.toISOString(),
@@ -158,7 +159,7 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post) {
 
         $scope.comments_positions = [{
           top: 0,
-          bottom: $('div.comment:first-child').position().top - 2
+          bottom: $('div.discussion-posts div.content').height()
         }];
         //console.log(0, $scope.comments_positions[0]);
         $('div.comment').each(function(index) {

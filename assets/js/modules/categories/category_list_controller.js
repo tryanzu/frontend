@@ -275,7 +275,7 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
           }
           else {
             $scope.view_comment.position = -1;
-            console.log("Not watching comment");
+            //console.log("Not watching comment");
           }
         }
   		}

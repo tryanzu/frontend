@@ -87,20 +87,29 @@
   & .user-identity {
     display: inline;
     vertical-align: middle;
+
+    .username {
+      margin-right: 1em;
+    }
+
+    .edit {
+      font-size: 14px;
+      text-decoration: underline;
+    }
   }
   & .user-avatar {
     float: left;
     margin-left: -130px;
   }
   & .avatar-editor .dropdown-toggle {
-    margin: 4px;
-    line-height: 96px;
+    /*margin: 4px;*/
+    line-height: 98px;
     font-size: 26px;
   }
   & .avatar {
-    .avatar-size(96px);
-    border: 3px solid white;
-    .box-shadow(0 0 4px 1px @brand-primary-opaque);
+    .avatar-size(100px);
+    /*border: 3px solid white;*/
+    .box-shadow(0 0 5px 0px @brand-primary-opaque);
   }
   & .badges {
     margin-left: 10px;
@@ -128,7 +137,7 @@
       cursor: text;
 
       &:hover {
-        border-color: rgba(255, 255, 255, 0.5);
+        border-color: @brand-primary;
       }
     }
 
@@ -157,7 +166,7 @@
   height: 46px;
 }
 .activity-list {
-  border-left: 3px solid @brand-primary;
+  border-left: 3px solid @brand-primary-lighter;
   list-style: none;
   margin: 0 0 0 16px;
   padding: 0;
@@ -167,15 +176,16 @@
     padding-left: 32px;
   }
   & .activity-icon {
-    /*.avatar-size(32px);*/
+    .avatar-size(32px);
     float: left;
     margin-left: -50px;
     .box-shadow(0 0 0 3px #fff);
     margin-top: -5px;
   }
 }
+
 .activity-info {
-  color: @gray-light;
+  color: @brand-primary-light-text;
   margin-bottom: 10px;
 
   & strong {
@@ -185,9 +195,9 @@
 .activity-content {
   display: block;
   padding: 15px;
-  background: @brand-primary-opaque;
+  background: @brand-primary-lighter;
   border-radius: @border-radius-base;
-  color: @gray-light;
+  color: @brand-primary-opaque;
 
   &, &:hover {
     text-decoration: none;
@@ -201,7 +211,7 @@
     }
   }
 }
-.activity-post {
+.post-activity {
   overflow: hidden;
 
   & .title {
@@ -210,7 +220,7 @@
     font-weight: bold;
 
     &, & a {
-      color: @gray-dark;
+      color: @brand-primary-dark;
     }
   }
   &:hover .title {
@@ -237,9 +247,18 @@
     right: 0;
     bottom: 0;
     border-radius: 100%;
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(0, 0, 0, 0.5);
+    border: 2px solid white;
     text-align: center;
     text-decoration: none;
+
+    &.dragover {
+      opacity: 1
+    }
+
+    i.fa {
+      color: white;
+    }
   }
   &:hover .dropdown-toggle, &.open .dropdown-toggle, &.loading .dropdown-toggle {
     opacity: 1;

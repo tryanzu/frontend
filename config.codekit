@@ -277,6 +277,17 @@
 		"outputStyle": 0,
 		"syntaxCheckerStyle": 0
 		},
+	"\/assets\/js\/vendor\/ng-file-upload-all.min.js": {
+		"fileType": 64,
+		"ignore": 1,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/assets\/js\/vendor\/ng-file-upload-all.min.js",
+		"outputAbbreviatedPath": "\/public\/js\/ng-file-upload-all.min.js",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"outputStyle": 0,
+		"syntaxCheckerStyle": 0
+		},
 	"\/assets\/js\/vendor\/perfect-scrollbar.js": {
 		"fileType": 64,
 		"ignore": 1,
