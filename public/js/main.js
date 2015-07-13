@@ -1,5 +1,32 @@
 var directives = angular.module('directivesModule', []);
 
+directives.directive('fileModel', ['$parse', function ($parse) {
+  return {
+    restrict: 'A',
+    link: function(scope, element, attrs) {
+      var model = $parse(attrs.fileModel);
+      var modelSetter = model.assign;
+
+      element.bind('change', function(){
+        scope.$apply(function(){
+          modelSetter(scope, element[0].files[0]);
+        });
+      });
+    }
+  };
+}]);
+// Not a directive, but a service required for the last directive
+directives.service('fileUpload', ['$http', function ($http) {
+  this.uploadFileToUrl = function(file, uploadUrl){
+    var fd = new FormData();
+    fd.append('file', file);
+    return $http.post(uploadUrl, fd, {
+      transformRequest: angular.identity,
+      headers: {'Content-Type': undefined}
+    });
+  }
+}]);
+
 directives.directive('adjustHeight', function($window, $document, $timeout) {
 	return {
 		restrict: 'A',
@@ -2532,7 +2559,7 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
           }
           else {
             $scope.view_comment.position = -1;
-            console.log("Not watching comment");
+            //console.log("Not watching comment");
           }
         }
   		}
@@ -2717,7 +2744,7 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post) {
 
         $scope.comments_positions = [{
           top: 0,
-          bottom: $('div.comment:first-child').position().top - 2
+          bottom: $('div.discussion-posts div.content').height()
         }];
         //console.log(0, $scope.comments_positions[0]);
         $('div.comment').each(function(index) {
@@ -3378,14 +3405,61 @@ boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http'
     }
 }]);
 
-boardApplication.controller('UserController', ['$scope', 'User', '$routeParams', function($scope, User, $routeParams) {
-  $scope.user = null;
+boardApplication.controller('UserController', ['$scope', 'User', '$routeParams', 'fileUpload', 'Feed', function($scope, User, $routeParams, fileUpload, Feed) {
+  $scope.profile = null;
+  $scope.resolving_posts = false;
+  $scope.update = {
+    updating: false,
+    editing_desc: false,
+    myFile: null
+  };
 
   User.get({user_id: $routeParams.id}, function(data){
-    $scope.user = data;
+    $scope.profile = data;
+    $scope.startFeed();
   }, function(response) {
     //window.location = '/';
   });
+
+  $scope.uploadFile = function() {
+    $scope.update.updating = true;
+    var file = $scope.updating.myFile;
+    console.log('file is ' + JSON.stringify(file));
+    var uploadUrl = layer_path + "user/my/avatar";
+    var r = fileUpload.uploadFileToUrl(file, uploadUrl);
+    r.success(function(data){
+      $scope.update.updating = false;
+      $scope.user.info.image = data.url;
+      $scope.profile.image = data.url;
+    })
+    .error(function(){
+    });
+  };
+
+  $scope.use_fb_pic = function() {
+    $scope.user.info.image = 'https://graph.facebook.com/'+$scope.user.info.facebook.id+'/picture?width=128';
+    $scope.profile.image = 'https://graph.facebook.com/'+$scope.user.info.facebook.id+'/picture?width=128';
+  }
+
+  $scope.startFeed = function() {
+    $scope.resolving_posts = true;
+
+    Feed.get({limit: 10, offset: 0, user_id: $scope.profile.id}, function(data) {
+      for(p in data.feed) {
+        for(c in $scope.categories) {
+          if (data.feed[p].categories[0] == $scope.categories[c].slug) {
+            data.feed[p].category = {name: $scope.categories[c].name, color: $scope.categories[c].color, slug: $scope.categories[c].slug}
+            break;
+          }
+        }
+      }
+
+      $scope.posts = data.feed;
+      $scope.resolving_posts = false;
+      $scope.offset = 10;
+    });
+  };
+
 }]);
 
 boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', '$modal', '$timeout', '$firebaseObject', '$firebaseArray', 'Facebook',

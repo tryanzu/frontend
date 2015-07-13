@@ -172,3 +172,28 @@
     text-overflow: ellipsis;
   }
 }
+
+.post-icon {
+  float: left;
+}
+.post-activity {
+  &, & a {
+    color: @brand-primary-light-text;
+  }
+  & a {
+    font-weight: bold;
+  }
+}
+.post-activity-info {
+  font-size: 15px;
+  margin-bottom: 5px;
+  & a {
+    color: #d13e32;
+  }
+}
+.post-discussion-renamed {
+  & .old-title, & .new-title {
+    font-weight: normal;
+    font-style: italic;
+  }
+}

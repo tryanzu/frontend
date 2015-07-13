@@ -229,8 +229,14 @@
 
     &.active {
       background-color: #FFF7E5;
-      border-color: transparent;
       border-radius: 5px;
+      border: 1px solid transparent;
+      transition: background-color 1s;
+
+      &.ack {
+        background-color: white;
+        border: 1px solid @brand-primary-light;
+      }
     }
 
     &:hover .actions ul li a {

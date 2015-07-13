@@ -5,11 +5,14 @@
             <div class="container">
               <div class="user-profile">
                 <h2 class="user-identity">
-                  <div class="avatar-editor dropdown user-avatar" dropdown>
-                    <img class="avatar" title="{{ user.username }}" ng-src="{{ user.image }}" ng-if="user.image">
-                    <span class="avatar" ng-if="!user.image">{{ user.username[0] }}</span>
-                    <a href="" data-toggle="dropdown" class="dropdown-toggle" ng-if="false" dropdown-toggle>
-                      <i class="fa fa-fw fa-pencil icon"></i>
+                  <div class="avatar-editor dropdown user-avatar" ng-class="{'loading': update.updating}" dropdown>
+                    <img class="avatar" title="{{ profile.username }}" ng-src="{{ profile.image }}" ng-if="profile.image">
+                    <span class="avatar" ng-if="!profile.image">{{ profile.username[0] }}</span>
+                    <a href="" data-toggle="dropdown" class="dropdown-toggle" ng-if="profile.id === user.info.id" dropdown-toggle>
+                      <i class="fa fa-fw fa-pencil icon" ng-if="!update.updating"></i>
+                      <div class="loading-indicator" ng-if="update.updating">
+                        <div class="spinner" style="position: absolute; width: 0px; z-index: auto; left: 18%; font-size: 14px;" role="progressbar">Cargando</div>
+                      </div>
                     </a>
                     <ul class="dropdown-menu">
                       <li>
@@ -17,20 +20,26 @@
                           <i class="fa fa-fw fa-upload icon"></i> Subir imagen
                         </a>
                       </li>
+                      <li ng-if="user.info.facebook">
+                        <a href="" ng-click="use_fb_pic()">
+                          <i class="fa fa-fw fa-code-fork icon"></i> Usar foto de FB
+                        </a>
+                      </li>
                       <li>
                         <a href=""><i class="fa fa-fw fa-times icon"></i> Eliminar</a>
                       </li>
                     </ul>
                   </div>
-                  <span class="username">{{ user.username }}</span>
+                  <span class="username">{{ profile.username }}</span>
                 </h2>
                 <ul class="user-badges badges"></ul>
                 <ul class="user-info">
                   <li class="block-item">
-                    <div class="user-bio" ng-class="{'editable': false}">
-                      <div class="bio-content">
-                        <p>{{ user.description || 'Just another Spartan Geek' }}</p>
+                    <div class="user-bio" ng-class="{'editable': profile.id === user.info.id}">
+                      <div class="bio-content" ng-click="update.editing_desc = true" ng-if="!update.editing_desc">
+                        <p>{{ profile.description || 'Escribe una breve descripción' }}</p>
                       </div>
+                      <input name="description" type="text" rows="1" class="form-control" placeholder="Escribe una breve descripción" ng-if="update.editing_desc" ng-model="profile.description">
                     </div>
                   </li>
                   <li class="">
@@ -38,7 +47,7 @@
                       <i class="fa fa-fw fa-circle"></i> Online
                     </span>
                   </li>
-                  <li class="">Es espartano desde hace {{ user.created_at | timeago }}</li>
+                  <li class="">Es espartano desde hace {{ profile.created_at | timeago }}</li>
                 </ul>
               </div>
             </div>
@@ -48,217 +57,258 @@
               <div class="col-md-3">
                 <div class="sidebar-menu">
                   <ul class="nav nav-pills nav-stacked">
-                    <li role="presentation" class="active"><a href="#">Información</a></li>
-                    <li role="presentation"><a href="#">Publicaciones <span class="count">2</span></a></li>
-                    <li role="presentation"><a href="#">Comentarios <span class="count">10</span></a></li>
-                    <li role="presentation"><a href="#">Juegos <span class="count">25</span></a></li>
+                    <li role="presentation" class="">
+                      <a href="">Información</a>
+                    </li>
+                    <li role="presentation" class="active">
+                      <a href="">Publicaciones <span class="count hidden">2</span></a>
+                    </li>
+                    <li role="presentation" class="hidden">
+                      <a href="">Comentarios <span class="count hidden">10</span></a>
+                    </li>
+                    <li role="presentation" class="hidden">
+                      <a href="">Juegos <span class="count hidden">25</span></a>
+                    </li>
                   </ul>
                 </div>
               </div>
               <div class="col-md-9">
-            <div class="offset-content user-content">
-              <div class="row">
-                <div class="col-md-4">
-                  <h3>Nivel</h3>
-                  <div class="rank">
-                    <div class="row">
-                      <div class="col-md-4">
-                        <img src="/images/badge-example.png" alt="" style="width: 75px;">
-                      </div>
-                      <div class="col-md-8">
-                        <div class="description">Extranjero</div>
-                        <div class="progress">
-                          <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
-                            <span class="sr-only">0%</span>
+                <div class="offset-content user-content">
+                  <input type="file" file-model="updating.myFile"/>
+                  <button ng-click="uploadFile()">upload me</button>
+                </div>
+
+                <div class="offset-content user-content">
+                  <div ng-if="posts.length == 0">
+                    <p class="alert alert-info">Este usuario aún no creado ninguna publiación.</p>
+                  </div>
+                  <div class="user-activity" ng-if="posts.length > 0">
+                    <ul class="activity-list">
+                      <li ng-repeat="post in posts">
+                        <div>
+                          <img class="avatar activity-icon" title="{{profile.username}}" src="{{ profile.image }}" ng-if="profile.image">
+                          <span class="avatar activity-icon" ng-if="!profile.image">{{ profile.username[0] }}</span>
+                          <div class="activity-info">
+                            <strong>Escribió una publicación</strong>
+                            <time pubdate="" datetime="2015-07-12T16:11:50-05:00" title="Sunday, July 12, 2015 4:11 PM" data-humantime="">hace {{ post.created_at | timeago }}</time>
+                          </div>
+                          <a href="/p/{{post.slug}}/{{post.id}}" class="activity-content post-activity">
+                            <ul class="list-inline">
+                              <li class="item-title ">
+                                <h3 class="title">{{ post.title }}</h3>
+                              </li>
+                            </ul>
+                            <div class="body"></div>
+                          </a>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div class="offset-content user-content hidden">
+                  <div class="row">
+                    <div class="col-md-4">
+                      <h3>Nivel</h3>
+                      <div class="rank">
+                        <div class="row">
+                          <div class="col-md-4">
+                            <img src="/images/badge-example.png" alt="" style="width: 75px;">
+                          </div>
+                          <div class="col-md-8">
+                            <div class="description">Extranjero</div>
+                            <div class="progress">
+                              <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
+                                <span class="sr-only">0%</span>
+                              </div>
+                            </div>
+                            <div class="experience-points">0 Spartan Points</div>
+                            <div class="next-level cold">300 para el siguiente nivel</div>
                           </div>
                         </div>
-                        <div class="experience-points">0 Spartan Points</div>
-                        <div class="next-level cold">300 para el siguiente nivel</div>
                       </div>
                     </div>
-                  </div>
-                </div>
-                <div class="col-md-4">
-                  <h3>Medallas</h3>
-                  <img src="/images/badges-example.jpg" style="width: 80%; margin-left: -15px;">
-                </div>
-                <div class="col-md-4">
-                  <h3>Id's</h3>
-                  <table class="table table-condensed">
-                    <tbody>
-                      <tr>
-                        <th>Nintendo Wii Code</th>
-                        <td>-</td>
-                      </tr>
-                      <tr>
-                        <th>PS Network</th>
-                        <td>-</td>
-                      </tr>
-                      <tr>
-                        <th>Xbox Live</th>
-                        <td>-</td>
-                      </tr>
-                      <tr>
-                        <th>Steam ID</th>
-                        <td>-</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-              <hr>
-              <div class="row">
-                <div class="col-sm-5 margin-btm40">
-                  <h3>Mi pc actual</h3>
-                  <div class="components">
-                    <div class="component">
-                      <div class="row">
-                        <div class="col-md-2 columns">
-                          <img src="/images/components/cpu.png" alt="CPU">
-                        </div>
-
-                        <div class="col-md-10 columns">
-                          <h6>Procesador <span class="status verified" ng-if="false">Verificado</span></h6>
-                          @{{ user.pc.cpu.fullname }}
-                        </div>
-                      </div>
+                    <div class="col-md-4">
+                      <h3>Medallas</h3>
+                      <img src="/images/badges-example.jpg" style="width: 80%; margin-left: -15px;">
                     </div>
-
-                    <div class="component">
-                      <div class="row">
-                        <div class="col-md-2 columns">
-                          <img src="/images/components/motherboard.png" alt="CPU">
-                        </div>
-
-                        <div class="col-md-10 columns ng-binding">
-                          <h6>Motherboard <span class="status verified" ng-if="true">Verificado</span></h6>
-                          @{{ user.pc.motherboard.fullname }}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="component">
-                      <div class="row">
-                        <div class="col-md-2 columns">
-                          <img src="/images/components/cabinet.png" alt="CPU">
-                        </div>
-
-                        <div class="col-md-10 columns ng-binding">
-                          <h6>Gabinete <span class="status verified" ng-if="false">Verificado</span></h6>
-                          @{{ user.pc.case.fullname }}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="component">
-                      <div class="row">
-                        <div class="col-md-2 columns">
-                          <img src="/images/components/ram.png" alt="CPU">
-                        </div>
-
-                        <div class="col-md-10 columns ng-binding">
-                          <h6>Memoria RAM <span class="status verified" ng-if="false">Verificado</span></h6>
-                          @{{ user.pc.ram.fullname }}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="component">
-                      <div class="row">
-                        <div class="col-md-2 columns">
-                          <img src="/images/components/screen.png" alt="CPU">
-                        </div>
-
-                        <div class="col-md-10 columns ng-binding">
-                          <h6>Monitor <span class="status verified" ng-if="false">Verificado</span></h6>
-                          @{{ user.pc.monitor.fullname }}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="component">
-                      <div class="row">
-                        <div class="col-md-2 columns">
-                          <img src="/images/components/videocard.png" alt="CPU">
-                        </div>
-
-                        <div class="col-md-10 columns ng-binding">
-                          <h6>Tarjeta grafica <span class="status verified" ng-if="false">Verificado</span></h6>
-                          @{{ user.pc.gpu.fullname }}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="component">
-                      <div class="row">
-                        <div class="col-md-2 columns">
-                          <img src="/images/components/power.png" alt="CPU">
-                        </div>
-
-                        <div class="col-md-10 columns ng-binding">
-                          <h6>Fuente de Poder <span class="status verified" ng-if="false">Verificado</span></h6>
-                          @{{ user.pc.psu.fullname }}
-                        </div>
-                      </div>
-
-                    </div>
-
-                    <div class="component">
-                      <div class="row">
-                        <div class="col-md-2 columns">
-                          <img src="/images/components/storage.png" alt="CPU">
-                        </div>
-
-                        <div class="col-md-10 columns ng-binding">
-                          <h6>Almacenamiento <span class="status verified" ng-if="false">Verificado</span></h6>
-                          @{{ user.pc.storage.fullname }}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="component">
-                      <div class="row">
-                        <div class="col-md-2 columns">
-                          <img src="/images/components/cooler.png" alt="CPU">
-                        </div>
-
-                        <div class="col-md-10 columns ng-binding">
-                          <h6>Enfriamento <span class="status verified" ng-if="false">Verificado</span></h6>
-                          @{{ user.pc.cpu_cooler.fullname }}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="col-sm-6 col-sm-offset-1">
-                  <h3>Mis juegos (25)</h3>
-                  <div class="row">
-                    <div class="col-sm-3">
-                      <img src="http://cdn2.pitchfork.com/news/57496/d287b2ab.jpeg" style="max-width: 100px" class="img-responsive">
-                    </div>
-                    <div class="col-sm-9">
-                      <h4>Grand Theft Auto V</h4>
-                      <span class="label label-primary">PC</span>
-                      <br>
-                      <strong>Mi calificación:</strong> 10
+                    <div class="col-md-4">
+                      <h3>Id's</h3>
+                      <table class="table table-condensed">
+                        <tbody>
+                          <tr>
+                            <th>Nintendo Wii Code</th>
+                            <td>-</td>
+                          </tr>
+                          <tr>
+                            <th>PS Network</th>
+                            <td>-</td>
+                          </tr>
+                          <tr>
+                            <th>Xbox Live</th>
+                            <td>-</td>
+                          </tr>
+                          <tr>
+                            <th>Steam ID</th>
+                            <td>-</td>
+                          </tr>
+                        </tbody>
+                      </table>
                     </div>
                   </div>
                   <hr>
                   <div class="row">
-                    <div class="col-sm-3">
-                      <img src="http://www.workingpcgames.com/wp-content/uploads/2014/10/Far-Cry-3.jpg" style="max-width: 100px" class="img-responsive">
+                    <div class="col-sm-5 margin-btm40">
+                      <h3>Mi pc actual</h3>
+                      <div class="components">
+                        <div class="component">
+                          <div class="row">
+                            <div class="col-md-2 columns">
+                              <img src="/images/components/cpu.png" alt="CPU">
+                            </div>
+
+                            <div class="col-md-10 columns">
+                              <h6>Procesador <span class="status verified" ng-if="false">Verificado</span></h6>
+                              @{{ profile.pc.cpu.fullname }}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="component">
+                          <div class="row">
+                            <div class="col-md-2 columns">
+                              <img src="/images/components/motherboard.png" alt="CPU">
+                            </div>
+
+                            <div class="col-md-10 columns ng-binding">
+                              <h6>Motherboard <span class="status verified" ng-if="true">Verificado</span></h6>
+                              @{{ profile.pc.motherboard.fullname }}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="component">
+                          <div class="row">
+                            <div class="col-md-2 columns">
+                              <img src="/images/components/cabinet.png" alt="CPU">
+                            </div>
+
+                            <div class="col-md-10 columns ng-binding">
+                              <h6>Gabinete <span class="status verified" ng-if="false">Verificado</span></h6>
+                              @{{ profile.pc.case.fullname }}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="component">
+                          <div class="row">
+                            <div class="col-md-2 columns">
+                              <img src="/images/components/ram.png" alt="CPU">
+                            </div>
+
+                            <div class="col-md-10 columns ng-binding">
+                              <h6>Memoria RAM <span class="status verified" ng-if="false">Verificado</span></h6>
+                              @{{ profile.pc.ram.fullname }}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="component">
+                          <div class="row">
+                            <div class="col-md-2 columns">
+                              <img src="/images/components/screen.png" alt="CPU">
+                            </div>
+
+                            <div class="col-md-10 columns ng-binding">
+                              <h6>Monitor <span class="status verified" ng-if="false">Verificado</span></h6>
+                              @{{ profile.pc.monitor.fullname }}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="component">
+                          <div class="row">
+                            <div class="col-md-2 columns">
+                              <img src="/images/components/videocard.png" alt="CPU">
+                            </div>
+
+                            <div class="col-md-10 columns ng-binding">
+                              <h6>Tarjeta grafica <span class="status verified" ng-if="false">Verificado</span></h6>
+                              @{{ profile.pc.gpu.fullname }}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="component">
+                          <div class="row">
+                            <div class="col-md-2 columns">
+                              <img src="/images/components/power.png" alt="CPU">
+                            </div>
+
+                            <div class="col-md-10 columns ng-binding">
+                              <h6>Fuente de Poder <span class="status verified" ng-if="false">Verificado</span></h6>
+                              @{{ profile.pc.psu.fullname }}
+                            </div>
+                          </div>
+
+                        </div>
+
+                        <div class="component">
+                          <div class="row">
+                            <div class="col-md-2 columns">
+                              <img src="/images/components/storage.png" alt="CPU">
+                            </div>
+
+                            <div class="col-md-10 columns ng-binding">
+                              <h6>Almacenamiento <span class="status verified" ng-if="false">Verificado</span></h6>
+                              @{{ profile.pc.storage.fullname }}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="component">
+                          <div class="row">
+                            <div class="col-md-2 columns">
+                              <img src="/images/components/cooler.png" alt="CPU">
+                            </div>
+
+                            <div class="col-md-10 columns ng-binding">
+                              <h6>Enfriamento <span class="status verified" ng-if="false">Verificado</span></h6>
+                              @{{ profile.pc.cpu_cooler.fullname }}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <div class="col-sm-9">
-                      <h4>Far Cry 3</h4>
-                      <span class="label label-primary">PC</span>
-                      <br>
-                      <strong>Mi calificación:</strong> 9
+
+                    <div class="col-sm-6 col-sm-offset-1">
+                      <h3>Mis juegos (25)</h3>
+                      <div class="row">
+                        <div class="col-sm-3">
+                          <img src="http://cdn2.pitchfork.com/news/57496/d287b2ab.jpeg" style="max-width: 100px" class="img-responsive">
+                        </div>
+                        <div class="col-sm-9">
+                          <h4>Grand Theft Auto V</h4>
+                          <span class="label label-primary">PC</span>
+                          <br>
+                          <strong>Mi calificación:</strong> 10
+                        </div>
+                      </div>
+                      <hr>
+                      <div class="row">
+                        <div class="col-sm-3">
+                          <img src="http://www.workingpcgames.com/wp-content/uploads/2014/10/Far-Cry-3.jpg" style="max-width: 100px" class="img-responsive">
+                        </div>
+                        <div class="col-sm-9">
+                          <h4>Far Cry 3</h4>
+                          <span class="label label-primary">PC</span>
+                          <br>
+                          <strong>Mi calificación:</strong> 9
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
               </div>
             </div>
           </div>

@@ -159,7 +159,7 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post) {
 
         $scope.comments_positions = [{
           top: 0,
-          bottom: $('div.comment:first-child').position().top - 2
+          bottom: $('div.discussion-posts div.content').height()
         }];
         //console.log(0, $scope.comments_positions[0]);
         $('div.comment').each(function(index) {
