@@ -20,24 +20,24 @@
                           <i class="fa fa-fw fa-upload icon"></i> Subir imagen
                         </a>
                       </li>
-                      <li ng-if="user.info.facebook">
+                      <li ng-if="user.info.facebook" class="hidden">
                         <a href="" ng-click="use_fb_pic()">
                           <i class="fa fa-fw fa-code-fork icon"></i> Usar foto de FB
                         </a>
                       </li>
-                      <li ng-if="user.info.image">
+                      <li ng-if="user.info.image" class="hidden">
                         <a href="" ng-click="remove_pic()"><i class="fa fa-fw fa-times icon"></i> Eliminar</a>
                       </li>
                     </ul>
                   </div>
                   <span class="username" ng-if="!update.editing_username">{{ profile.username }}</span>
-                  <span class="edit" ng-if="!user.info.final_username">
+                  <span class="edit" ng-if="user.info.name_changes < 1 && profile.id === user.info.id">
                     <a href="" ng-click="update.editing_username = true" ng-if="!update.editing_username">Editar nombre de usuario</a>
                     <div class="" ng-if="update.editing_username" style="display: inline-block">
                       <div class="input-group">
-                        <input name="description" type="text" class="form-control" placeholder="Escribe tu nombre de usuario" ng-model="new_data.username" maxlength="32" popover="Sólo puedes cambiar tu nombre de usuario una vez, hazlo sabiamente." popover-placement="bottom">
+                        <input name="description" type="text" class="form-control" placeholder="Escribe tu nombre de usuario" ng-model="new_data.username" maxlength="32" popover="{{ !new_data.username_error?'Sólo puedes cambiar tu nombre de usuario una vez, hazlo sabiamente.':new_data.username_error_message }}" popover-placement="bottom" ng-change="check_username()" ng-class="{'has-error': new_data.username_error}">
                         <span class="input-group-btn">
-                          <button class="btn btn-default btn-sm" type="button" ng-click="saveUsername()">Guardar nombre de usuario</button>
+                          <button class="btn btn-default btn-sm" type="button" ng-click="saveUsername()" ng-disabled="new_data.username_error || new_data.username_saving">Guardar nombre de usuario</button>
                         </span>
                         <span class="input-group-btn">
                           <button class="btn btn-danger btn-sm" type="button" ng-click="update.editing_username = false">Cancelar</button>
@@ -49,8 +49,8 @@
                 <ul class="user-badges badges"></ul>
                 <ul class="user-info">
                   <li class="block-item">
-                    <div class="user-bio" ng-class="{'editable': profile.id === user.info.id}">
-                      <div class="bio-content" ng-click="update.editing_desc = true" ng-if="!update.editing_desc">
+                    <div class="user-bio" ng-class="{'editable': (profile.id === user.info.id && false)}">
+                      <div class="bio-content" ng-click="update.editing_desc = false" ng-if="!update.editing_desc">
                         <p>{{ profile.description || 'Escribe una breve descripción' }}</p>
                       </div>
                       <input name="description" type="text" class="form-control" placeholder="Escribe una breve descripción" ng-if="update.editing_desc" ng-model="profile.description">

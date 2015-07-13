@@ -275,8 +275,8 @@ boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http'
     }
 }]);
 
-boardApplication.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed', 'Upload',
-  function($scope, User, $routeParams, Feed, Upload) {
+boardApplication.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed', 'Upload', '$http',
+  function($scope, User, $routeParams, Feed, Upload, $http) {
 
   $scope.profile = null;
   $scope.resolving_posts = false;
@@ -287,21 +287,39 @@ boardApplication.controller('UserController', ['$scope', 'User', '$routeParams',
   };
 
   $scope.new_data = {
-    username: null
+    username: null,
+    username_saving: false,
+    username_error: false,
+    username_error_message: 'El nombre de usuario sólo puede llevar letras, números y guiones. Debe empezar con letra y terminar con número o letra y tener entre 3 y 32 caracteres.'
   }
 
   $scope.editUsername = function() {
     $scope.update.editing_username = true;
-  }
+  };
   $scope.saveUsername = function() {
-    if(!$scope.user.info.final_username) {
-      $scope.profile.username = $scope.new_data.username;
-      $scope.user.info.username = $scope.new_data.username;
-      $scope.user.info.final_username = true;
+    if($scope.user.info.name_changes < 1) {
+      $scope.new_data.username_saving = true;
+      $http.put(layer_path + "user/my", {username: $scope.new_data.username}).
+      success(function(data) {
+        $scope.profile.username = $scope.new_data.username;
+        $scope.user.info.username = $scope.new_data.username;
+        $scope.user.info.name_changes = 1;
 
-      $scope.update.editing_username = false
+        $scope.update.editing_username = false;
+      }).
+      error(function(data) {
+        $scope.update.editing_username = false;
+        $scope.new_data.username_saving = false;
+      });
     }
-  }
+  };
+  $scope.check_username = function() {
+    if( /^[a-zA-Z][a-zA-Z0-9\-]{1,30}[a-zA-Z0-9]$/.test($scope.new_data.username) ) {
+      $scope.new_data.username_error = false;
+    } else {
+      $scope.new_data.username_error = true;
+    }
+  };
 
   $scope.upload = function(files) {
     if(files.length == 1) {
@@ -354,7 +372,6 @@ boardApplication.controller('UserController', ['$scope', 'User', '$routeParams',
     $scope.startFeed();
 
     $scope.new_data.username = $scope.profile.username;
-    $scope.user.info.final_username = false;
 
   }, function(response) {
     window.location = '/';

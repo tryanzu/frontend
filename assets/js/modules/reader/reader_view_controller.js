@@ -74,7 +74,8 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post) {
           id: $scope.user.info.id,
           username: $scope.user.info.username,
           email: $scope.user.info.email,
-          description: $scope.user.info.description
+          description: $scope.user.info.description,
+          image: $scope.user.info.image
         },
         content: $scope.comment.content,
         created_at: date.toISOString(),
