@@ -151,7 +151,7 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post) {
           $scope.scrollable = 100 - $scope.ratio;
         }
         $scope.surplus = $scope.scrollable;
-        console.log($scope.viewport_h, $scope.total_h, $scope.scrollable_h, $scope.ratio, $scope.surplus);
+        //console.log($scope.viewport_h, $scope.total_h, $scope.scrollable_h, $scope.ratio, $scope.surplus);
 
         $('.scrubber-before').css('height', (100 - $scope.ratio - $scope.surplus) + '%');
         $('.scrubber-slider').css('height', $scope.ratio + '%');

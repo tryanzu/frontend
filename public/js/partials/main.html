@@ -11,22 +11,18 @@
                     <h2>{{ category.name || "Todas las publicaciones" }}</h2>
                   </div>
                   <div class="col-md-5 col-xs-5 text-right">
-                    <a href="/post/create/{{ category.slug }}" class="btn btn-primary btn-sm" ng-if="user.isLogged">Crear publicación</a>
-                    <a href="" ng-click="signIn()" class="btn btn-primary btn-sm" ng-if="!user.isLogged">Crear publicación</a>
+                    <a href="/post/create/{{ category.slug }}" class="btn btn-primary btn-sm" ng-if="user.isLogged"><span class="label">Crear publicación</span></a>
+                    <a href="" ng-click="signIn()" class="btn btn-primary btn-sm" ng-if="!user.isLogged"><span class="label">Crear publicación</span></a>
                   </div>
                 </div>
               </div>
 
-              <div class="new-posts" ng-if="status.pending.$value > 0 && false">
-                <span>Se han publicado {{ status.pending.$value }} mensajes nuevos</span>
+              <div class="new-posts-carlos" ng-cloak ng-if="status.pending.$value > 0" ng-click="get_newer()" ng-class="{'loading': resolving.newer}">
+                <span ng-if="!resolving.newer">Ver {{ status.pending.$value }} {{ status.pending.$value == 1?'publicación nueva':'publicaciones nuevas' }}</span>
+                <span ng-if="resolving.newer">Cargando...</span>
               </div>
 
-              <div class="new-posts-carlos" ng-cloak ng-if="status.pending.$value > 0" ng-click="get_newer()">
-                <span ng-if="user.info.version != 'B'">Cargar {{ status.pending.$value }} {{ status.pending.$value == 1?'publicación nueva':'publicaciones nuevas' }}</span>
-                <span ng-if="user.info.version == 'B'">Ver {{ status.pending.$value }} {{ status.pending.$value == 1?'publicación nueva':'publicaciones nuevas' }}</span>
-              </div>
-
-              <ul class="discussions-list always-visible" scroll-me="walkFeed()" ng-hide="resolving_posts" adjust-height-feed>
+              <ul class="discussions-list always-visible" scroll-me="walkFeed()" ng-hide="resolving.categories" adjust-height-feed>
                 <li data-id="{{ post.id }}" class="discussion-summary" ng-class="{'active': post.id === $parent.activePostId, 'unread': post.unread == true}" ng-repeat="post in posts | orderBy:['pinned','-created_at']" ng-cloak>
                   <div>
                     <a href="/u/{{ post.author.username }}/{{ post.author.id }}" title class="author" data-original-title="Escrito por {{ post.author.username }} hace {{ post.created_at | timeago }}">
@@ -55,10 +51,12 @@
                     <span class="count">{{ post.comments.count }}<span class="label">{{ post.comments.count==1?'Respuesta':'Respuestas'}}</span></span>
                   </div>
                 </li>
-                <div class="resolving" style="position: relative; z-index: 1002;" ng-hide="resolving_posts"><i class="fa fa-circle-o-notch fa-spin"></i></div>
+                <div class="resolving" ng-if="resolving.older">
+                  <i class="fa fa-circle-o-notch fa-spin"></i>
+                </div>
               </ul>
 
-              <div class="resolving" ng-hide="!resolving_posts">
+              <div class="resolving" ng-if="resolving.categories">
                 <i class="fa fa-circle-o-notch fa-spin"></i>
               </div>
 
@@ -127,11 +125,11 @@
               </div>
             </div>
 
-            <div class="resolving" ng-hide="resolving == false">
+            <div class="resolving" ng-hide="!resolving.init">
               <i class="fa fa-circle-o-notch fa-spin"></i>
             </div>
 
-            <div ng-hide="resolving">
+            <div ng-hide="resolving.init">
 
               <nav class="discussion-nav">
                 <ul>
