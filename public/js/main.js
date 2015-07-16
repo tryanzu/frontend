@@ -2356,25 +2356,30 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
   	};
 
   	$scope.walkFeed = function() {
-      $scope.adding_posts = true;
-      var pending = $scope.status.pending.$value==undefined?$scope.status.pending:$scope.status.pending.$value;
-      console.log($scope.offset, pending);
-  		Feed.get({limit: 10, offset: $scope.offset + pending, category: $scope.category.slug}, function(data) {
-        for(p in data.feed) {
-          for(c in $scope.categories) {
-            if (data.feed[p].categories[0] == $scope.categories[c].slug) {
-              data.feed[p].category = {name: $scope.categories[c].name, color: $scope.categories[c].color, slug: $scope.categories[c].slug}
-              break;
+      //console.log($scope.adding_posts);
+      if(!$scope.adding_posts) {
+        $scope.adding_posts = true;
+        var pending = $scope.status.pending.$value==undefined?$scope.status.pending:$scope.status.pending.$value;
+        //console.log($scope.offset, pending);
+    		Feed.get({limit: 10, offset: $scope.offset + pending, category: $scope.category.slug}, function(data) {
+          for(p in data.feed) {
+            for(c in $scope.categories) {
+              if (data.feed[p].categories[0] == $scope.categories[c].slug) {
+                data.feed[p].category = {name: $scope.categories[c].name, color: $scope.categories[c].color, slug: $scope.categories[c].slug}
+                break;
+              }
             }
           }
-        }
-  			$scope.posts = $scope.posts.concat(data.feed);
-  			$scope.offset = $scope.offset + 10;
-        $scope.adding_posts = false;
-  		});
+    			$scope.posts = $scope.posts.concat(data.feed);
+    			$scope.offset = $scope.offset + 10;
+          $scope.adding_posts = false;
+    		});
 
-      mixpanel.track("View feed", {offset: $scope.offset, category: $scope.category.slug});
-  		ga('send', 'pageview', '/feed/' + $scope.category.slug);
+        mixpanel.track("View feed", {offset: $scope.offset, category: $scope.category.slug});
+    		ga('send', 'pageview', '/feed/' + $scope.category.slug);
+      } else {
+        console.log("FeedGet already running...");
+      }
   	};
 
     var get_newer_date = function(posts) {
@@ -2687,7 +2692,7 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post) {
           $scope.scrollable = 100 - $scope.ratio;
         }
         $scope.surplus = $scope.scrollable;
-        console.log($scope.viewport_h, $scope.total_h, $scope.scrollable_h, $scope.ratio, $scope.surplus);
+        //console.log($scope.viewport_h, $scope.total_h, $scope.scrollable_h, $scope.ratio, $scope.surplus);
 
         $('.scrubber-before').css('height', (100 - $scope.ratio - $scope.surplus) + '%');
         $('.scrubber-slider').css('height', $scope.ratio + '%');
@@ -3121,15 +3126,15 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider) {
 
   $routeProvider.when('/', {
-    templateUrl: '/js/partials/main.html?v=123',
+    templateUrl: '/js/partials/main.html?v=124',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/c/:slug', {
-    templateUrl: '/js/partials/main.html?v=123',
+    templateUrl: '/js/partials/main.html?v=124',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/p/:slug/:id/:comment_position?', {
-    templateUrl: '/js/partials/main.html?v=123',
+    templateUrl: '/js/partials/main.html?v=124',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/u/:username/:id', {
@@ -3502,7 +3507,7 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
             $scope.$broadcast('changedContainers');
           }, 100);
 
-          console.log(data);
+          //console.log(data);
 
           mixpanel.identify(data.id);
           mixpanel.people.set({
@@ -3662,7 +3667,7 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
     $http.get(layer_path + 'stats/board').
       success(function(data, status) {
         $scope.status.stats = data;
-        console.log(data);
+        //console.log(data);
       }).
       error(function(data) {
       });

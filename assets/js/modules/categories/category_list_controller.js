@@ -121,25 +121,30 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
   	};
 
   	$scope.walkFeed = function() {
-      $scope.adding_posts = true;
-      var pending = $scope.status.pending.$value==undefined?$scope.status.pending:$scope.status.pending.$value;
-      console.log($scope.offset, pending);
-  		Feed.get({limit: 10, offset: $scope.offset + pending, category: $scope.category.slug}, function(data) {
-        for(p in data.feed) {
-          for(c in $scope.categories) {
-            if (data.feed[p].categories[0] == $scope.categories[c].slug) {
-              data.feed[p].category = {name: $scope.categories[c].name, color: $scope.categories[c].color, slug: $scope.categories[c].slug}
-              break;
+      //console.log($scope.adding_posts);
+      if(!$scope.adding_posts) {
+        $scope.adding_posts = true;
+        var pending = $scope.status.pending.$value==undefined?$scope.status.pending:$scope.status.pending.$value;
+        //console.log($scope.offset, pending);
+    		Feed.get({limit: 10, offset: $scope.offset + pending, category: $scope.category.slug}, function(data) {
+          for(p in data.feed) {
+            for(c in $scope.categories) {
+              if (data.feed[p].categories[0] == $scope.categories[c].slug) {
+                data.feed[p].category = {name: $scope.categories[c].name, color: $scope.categories[c].color, slug: $scope.categories[c].slug}
+                break;
+              }
             }
           }
-        }
-  			$scope.posts = $scope.posts.concat(data.feed);
-  			$scope.offset = $scope.offset + 10;
-        $scope.adding_posts = false;
-  		});
+    			$scope.posts = $scope.posts.concat(data.feed);
+    			$scope.offset = $scope.offset + 10;
+          $scope.adding_posts = false;
+    		});
 
-      mixpanel.track("View feed", {offset: $scope.offset, category: $scope.category.slug});
-  		ga('send', 'pageview', '/feed/' + $scope.category.slug);
+        mixpanel.track("View feed", {offset: $scope.offset, category: $scope.category.slug});
+    		ga('send', 'pageview', '/feed/' + $scope.category.slug);
+      } else {
+        console.log("FeedGet already running...");
+      }
   	};
 
     var get_newer_date = function(posts) {
