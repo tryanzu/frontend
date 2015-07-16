@@ -39,15 +39,15 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider) {
 
   $routeProvider.when('/', {
-    templateUrl: '/js/partials/main.html?v=124',
+    templateUrl: '/js/partials/main.html?v=125',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/c/:slug', {
-    templateUrl: '/js/partials/main.html?v=124',
+    templateUrl: '/js/partials/main.html?v=125',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/p/:slug/:id/:comment_position?', {
-    templateUrl: '/js/partials/main.html?v=124',
+    templateUrl: '/js/partials/main.html?v=125',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/u/:username/:id', {
@@ -420,7 +420,7 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
             $scope.$broadcast('changedContainers');
           }, 100);
 
-          console.log(data);
+          //console.log(data);
 
           mixpanel.identify(data.id);
           mixpanel.people.set({
@@ -580,7 +580,7 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
     $http.get(layer_path + 'stats/board').
       success(function(data, status) {
         $scope.status.stats = data;
-        console.log(data);
+        //console.log(data);
       }).
       error(function(data) {
       });
