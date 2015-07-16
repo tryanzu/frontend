@@ -2288,10 +2288,17 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
   	$scope.categories = [];
   	$scope.resolving  = true;
 
+    $scope.resolving = {
+      categories: true,
+      init: false,
+      older: false,
+      newer: false
+    };
+
   	$scope.category = {};
   	$scope.posts = [];
   	$scope.resolving_posts = true;
-    $scope.adding_posts = false;
+    $scope.resolving.older = false;
   	$scope.offset = 0;
   	$scope.previewStyle = {};
 
@@ -2356,9 +2363,9 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
   	};
 
   	$scope.walkFeed = function() {
-      //console.log($scope.adding_posts);
-      if(!$scope.adding_posts) {
-        $scope.adding_posts = true;
+      //console.log($scope.resolving.older);
+      if(!$scope.resolving.older) {
+        $scope.resolving.older = true;
         var pending = $scope.status.pending.$value==undefined?$scope.status.pending:$scope.status.pending.$value;
         //console.log($scope.offset, pending);
     		Feed.get({limit: 10, offset: $scope.offset + pending, category: $scope.category.slug}, function(data) {
@@ -2372,7 +2379,7 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
           }
     			$scope.posts = $scope.posts.concat(data.feed);
     			$scope.offset = $scope.offset + 10;
-          $scope.adding_posts = false;
+          $scope.resolving.older = false;
     		});
 
         mixpanel.track("View feed", {offset: $scope.offset, category: $scope.category.slug});
@@ -2396,40 +2403,40 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
     }
 
     $scope.get_newer = function() {
-      $scope.adding_new_posts = true;
+      if(!$scope.resolving.newer) {
+        $scope.resolving.newer = true;
 
-      Feed.get({limit: $scope.status.pending.$value, before: $scope.status.newer_post_date, category: $scope.category.slug}, function(data) {
-        for(p in data.feed) {
-          for(c in $scope.categories) {
-            if (data.feed[p].categories[0] == $scope.categories[c].slug) {
-              data.feed[p].category = {name: $scope.categories[c].name, color: $scope.categories[c].color, slug: $scope.categories[c].slug}
-              break;
-            }
-          }
-          data.feed[p].unread = true;
-        }
-        $timeout(function() {
+        Feed.get({limit: $scope.status.pending.$value, before: $scope.status.newer_post_date, category: $scope.category.slug}, function(data) {
           for(p in data.feed) {
-            data.feed[p].unread = false;
+            for(c in $scope.categories) {
+              if (data.feed[p].categories[0] == $scope.categories[c].slug) {
+                data.feed[p].category = {name: $scope.categories[c].name, color: $scope.categories[c].color, slug: $scope.categories[c].slug}
+                break;
+              }
+            }
+            data.feed[p].unread = true;
           }
-        }, 800);
+          $timeout(function() {
+            for(p in data.feed) {
+              data.feed[p].unread = false;
+            }
+          }, 800);
 
-        $scope.status.newer_post_date = get_newer_date(data.feed);
+          $scope.status.newer_post_date = get_newer_date(data.feed);
 
-        $scope.posts = data.feed.concat($scope.posts);
-        $scope.offset = $scope.offset + $scope.status.pending.$value;
+          $scope.posts = data.feed.concat($scope.posts);
+          $scope.offset = $scope.offset + $scope.status.pending.$value;
 
-        $scope.status.pending.$value = 0;
-        $scope.adding_new_posts = false;
-        $('.discussions-list').animate({ scrollTop: 0}, 100);
-      });
+          $scope.status.pending.$value = 0;
+          $scope.resolving.newer = false;
+          $('.discussions-list').animate({ scrollTop: 0}, 100);
+        });
 
-      if($scope.user.info.version == 'A' || $scope.user.info.version == 'B') {
-        mixpanel.track("Load more clicked", {version: $scope.user.info.version});
-      } else {
         mixpanel.track("Load more clicked")
+        ga('send', 'pageview', '/feed/' + $scope.category.slug);
+      } else {
+        console.log("FeedGet already running...");
       }
-      ga('send', 'pageview', '/feed/' + $scope.category.slug);
     };
 
   	$scope.turnCategory = function(category) {
@@ -2473,17 +2480,12 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
 
   	// Resolve categories though
   	Category.query(function(data) {
-  		$scope.resolving = false;
+  		$scope.resolving.categories = false;
   		$scope.categories = data;
 
       $timeout(function() {
         $scope.$broadcast('changedContainers');
       }, 100);
-
-      // Preload the images for each board
-      /*for (var category in $scope.categories) {
-        $("<img />").attr("src", "/images/boards/" + $scope.categories[category].slug + ".png");
-      }*/// Error undefined
 
   		// Once the categories has been resolved then catch the first one and try to fetch the feed for it
   		var path = $location.path();
@@ -2499,7 +2501,6 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
     				if ($scope.categories[category].slug == category_segment) {
     					$scope.category = $scope.categories[category];
     					$scope.startupFeed($scope.category);
-    					/*$scope.$broadcast('changedContainers');*/
     					$scope.$broadcast('scrollMeUpdate');
     					loaded = true;
               break;
@@ -2515,14 +2516,11 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
           }
           else {
             $scope.view_comment.position = -1;
-            //console.log("Not watching comment");
           }
         }
   		}
   		if (loaded == false) {
-  			//$scope.category = $scope.categories[0];
   			$scope.startupFeed($scope.category);
-  			/*$scope.$broadcast('changedContainers');*/
   		}
   	});
   }
@@ -3126,15 +3124,15 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider) {
 
   $routeProvider.when('/', {
-    templateUrl: '/js/partials/main.html?v=124',
+    templateUrl: '/js/partials/main.html?v=125',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/c/:slug', {
-    templateUrl: '/js/partials/main.html?v=124',
+    templateUrl: '/js/partials/main.html?v=125',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/p/:slug/:id/:comment_position?', {
-    templateUrl: '/js/partials/main.html?v=124',
+    templateUrl: '/js/partials/main.html?v=125',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/u/:username/:id', {
