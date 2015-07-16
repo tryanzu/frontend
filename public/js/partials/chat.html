@@ -1,0 +1,35 @@
+<main class="global-content">
+  <div class="container">
+    <nav class="side-nav index-nav">
+      <ul class="affix">
+
+        <li class="title-control">
+          <div class="dropdown dropdown-select class="form-control" btn-group item-count-9 undefined">
+            <a href="#" class="dropdown-toggle btn btn-default" data-toggle="dropdown">
+              <span class="label">Todas las discusiones</span> <i class="fa fa-fw fa-sort icon-caret"></i>
+            </a>
+            <ul class="dropdown-menu undefined">
+              <li ng-class="{active: category.slug === ''}">
+                <a href="#/" ng-click="turnCategory({slug:''})"><i class="fa fa-fw fa-comments-o icon"></i>Todas las discusiones </a>
+              </li>
+              <li class="divider"><span></span></li>
+              <li>
+                <a href="" style="" title="">
+                  <span class="icon category-icon uncategorized"></span> General
+                </a>
+              </li>
+              <li ng-repeat="c in channels" ng-class="{active: false}">
+                <a href="" style title="{{ c.description }}">
+                  <span class="icon category-icon" ng-class="{'uncategorized': !c.color}" ng-style="{background: c.color}"></span> {{ c.name }}
+                </a>
+              </li>
+            </ul>
+          </div>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="offset-content index-results">
+    </div>
+  </div>
+</main>

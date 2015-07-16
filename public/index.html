@@ -76,6 +76,15 @@
         <li><a><i class="fa fa-comments"></i> Comentarios: {{status.stats.comments}}</a></li>
       </ul>
 
+      <ul class="nav navbar-nav" ng-if="user.isLogged">
+        <li>
+          <a href="chat">
+            <span class="icon"><i class="fa fa-comment"></i></span>
+            <span class="label">Chat</span>
+          </a>
+        </li>
+      </ul>
+
       <!-- Collect the nav links, forms, and other content for toggling -->
       <div class="collapse navbar-collapse" collapse="status.menuCollapsed">
 

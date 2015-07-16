@@ -3083,6 +3083,18 @@ UserModule.factory('User', ['$resource', function($resource) {
   return $resource(layer_path + 'users/:user_id', {user_id: '@user_id'});
 }]);
 
+var ChatController = function($scope) {
+  $scope.channels = [
+    {name: '#channel1', description: '', color: ''},
+    {name: '#channel2', description: '', color: ''},
+    {name: '#channel3', description: '', color: ''}
+  ]
+};
+
+var chatModule = angular.module('chatModule', []);
+
+chatModule.controller('ChatController', ChatController);
+
 // @codekit-prepend "common/directives"
 // @codekit-prepend "common/filters"
 // @codekit-prepend "common/active_reader"
@@ -3098,6 +3110,7 @@ UserModule.factory('User', ['$resource', function($resource) {
 // @codekit-prepend "modules/publisher/init"
 // @codekit-prepend "modules/part/init"
 // @codekit-prepend "modules/user/init"
+// @codekit-prepend "modules/chat/chat"
 
 var boardApplication = angular.module('board', [
 	'directivesModule',
@@ -3114,6 +3127,7 @@ var boardApplication = angular.module('board', [
 	'publisherModule',
   'partModule',
   'userModule',
+  'chatModule',
   'angular-jwt',
   'firebase',
   'ngRoute',
@@ -3124,20 +3138,24 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider) {
 
   $routeProvider.when('/', {
-    templateUrl: '/js/partials/main.html?v=125',
+    templateUrl: '/js/partials/main.html?v=125b',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/c/:slug', {
-    templateUrl: '/js/partials/main.html?v=125',
+    templateUrl: '/js/partials/main.html?v=125b',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/p/:slug/:id/:comment_position?', {
-    templateUrl: '/js/partials/main.html?v=125',
+    templateUrl: '/js/partials/main.html?v=125b',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/u/:username/:id', {
     templateUrl: '/js/partials/profile.html',
     controller: 'UserController'
+  });
+  $routeProvider.when('/chat', {
+    templateUrl: '/js/partials/chat.html',
+    controller: 'ChatController'
   });
   $routeProvider.when('/post/create/:cat_slug?', {
     templateUrl: '/js/partials/publish.html',

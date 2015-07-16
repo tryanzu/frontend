@@ -13,6 +13,7 @@
 // @codekit-prepend "modules/publisher/init"
 // @codekit-prepend "modules/part/init"
 // @codekit-prepend "modules/user/init"
+// @codekit-prepend "modules/chat/chat"
 
 var boardApplication = angular.module('board', [
 	'directivesModule',
@@ -29,6 +30,7 @@ var boardApplication = angular.module('board', [
 	'publisherModule',
   'partModule',
   'userModule',
+  'chatModule',
   'angular-jwt',
   'firebase',
   'ngRoute',
@@ -53,6 +55,10 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   $routeProvider.when('/u/:username/:id', {
     templateUrl: '/js/partials/profile.html',
     controller: 'UserController'
+  });
+  $routeProvider.when('/chat', {
+    templateUrl: '/js/partials/chat.html',
+    controller: 'ChatController'
   });
   $routeProvider.when('/post/create/:cat_slug?', {
     templateUrl: '/js/partials/publish.html',
