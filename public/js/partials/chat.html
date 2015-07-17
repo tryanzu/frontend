@@ -6,19 +6,10 @@
         <li class="title-control">
           <div class="dropdown dropdown-select class="form-control" btn-group item-count-9 undefined">
             <a href="#" class="dropdown-toggle btn btn-default" data-toggle="dropdown">
-              <span class="label">Todas las discusiones</span> <i class="fa fa-fw fa-sort icon-caret"></i>
+              <span class="label">Canales disponibles</span> <i class="fa fa-fw fa-sort icon-caret"></i>
             </a>
             <ul class="dropdown-menu undefined">
-              <li ng-class="{active: category.slug === ''}">
-                <a href="#/" ng-click="turnCategory({slug:''})"><i class="fa fa-fw fa-comments-o icon"></i>Todas las discusiones </a>
-              </li>
-              <li class="divider"><span></span></li>
-              <li>
-                <a href="" style="" title="">
-                  <span class="icon category-icon uncategorized"></span> General
-                </a>
-              </li>
-              <li ng-repeat="c in channels" ng-class="{active: false}">
+              <li ng-repeat="c in channels" ng-class="{active: c.name == channel.selected.name}">
                 <a href="" style title="{{ c.description }}">
                   <span class="icon category-icon" ng-class="{'uncategorized': !c.color}" ng-style="{background: c.color}"></span> {{ c.name }}
                 </a>
@@ -30,6 +21,58 @@
     </nav>
 
     <div class="offset-content index-results">
+      <div class="index-toolbar">
+        <div class="index-toolbar-action">
+          <div class="row">
+            <div class="col-md-6">
+              <h3 style="margin-top: 0">{{ channel.selected.name }}</h3>
+            </div>
+            <div class="col-md-6 text-right">
+              <span class="users-details" style="margin-right: 1em;">
+                <i class="fa fa-fw fa-users icon"></i> <span class="label">20</span>
+              </span>
+              <a title="Información de este canal" class="btn btn-default btn-icon">
+                <i class="fa fa-fw fa-info-circle icon"></i>
+                <span class="label">Información de este canal</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+
+        <div class="message-history">
+          <div class="message">
+            <a href="/u/{{ m.author.username }}/{{ m.author.id }}" class="author">
+              <span class="avatar" title="{{ m.author.username }}" ng-if="!m.author.image">{{ post.author.username[0] }}</span>
+              <img class="avatar" ng-src="{{ m.author.image }}" alt="{{ m.author.username }}" ng-if="post.author.image">
+            </a>
+
+            <a href="" class="username">RodrigoCR</a>
+            <span class="timestamp">1:31 AM</span>
+            <span class="star"></span>
+            <span class="content">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Rem molestias incidunt officia animi ducimus nostrum a cum, sunt, minima fugit repellendus assumenda expedita. Eaque autem vero delectus, optio, consequuntur suscipit.</span>
+          </div>
+
+          <div class="message">
+            <a href="/u/{{ m.author.username }}/{{ m.author.id }}" class="author">
+              <span class="avatar" title="{{ m.author.username }}" ng-if="!m.author.image">{{ post.author.username[0] }}</span>
+              <img class="avatar" ng-src="{{ m.author.image }}" alt="{{ m.author.username }}" ng-if="post.author.image">
+            </a>
+            <a href="" class="username">RodrigoCR</a>
+            <span class="timestamp">1:35 AM</span>
+            <span class="star"></span>
+            <span class="content">Lorem ipsum dolor sit amet...</span>
+          </div>
+        </div>
+
+
+        <div class="footer">
+          <div class="input-box">
+            <input type="text" class="input-box_text">
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </main>

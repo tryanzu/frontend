@@ -70,6 +70,7 @@
 @media @desktop, @desktop-hd {
   .offset-content {
     margin-top: 30px;
+    margin-left: 225px;
   }
 }
 
@@ -77,4 +78,20 @@
   background-color: lighten(@brand-danger, 40%);
   color: @brand-danger;
   border-color: @brand-danger;
+}
+
+.category-icon {
+  border-radius: 4px;
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+  vertical-align: -3px;
+  margin-left: 1px;
+}
+.category-icon.uncategorized {
+  border: 1px dotted #8fa4bc;
+}
+
+.btn.btn-default .label {
+  color: @btn-default-color;
 }
