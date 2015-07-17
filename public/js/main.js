@@ -1,5 +1,22 @@
 var directives = angular.module('directivesModule', []);
 
+directives.directive('sgEnter', function() {
+  return {
+    link: function(scope, element, attrs) {
+      var mh_window = $('.message-history');
+      element.bind("keydown keypress", function(event) {
+        if(event.which === 13) {
+          scope.$apply(function(){
+            scope.$eval(attrs.sgEnter, {'event': event});
+          });
+          mh_window.scrollTop(mh_window[0].scrollHeight);
+          event.preventDefault();
+        }
+      });
+    }
+  };
+});
+
 directives.directive('adjustHeight', function($window, $document, $timeout) {
 	return {
 		restrict: 'A',
@@ -3086,23 +3103,37 @@ UserModule.factory('User', ['$resource', function($resource) {
 var ChatController = ['$scope', '$firebase', function($scope, $firebaseObject) {
   $scope.channels = [
     {name: "#General", description: 'Acá se puede hablar de todo', color: '#A8D379'},
-    {name: '#Juegos-de-pc', description: '', color: false},
-    {name: '#Domigo-de-weba', description: '', color: false},
-    {name: '#Bar-spartano', description: '', color: false}
+    {name: '#Juegos-de-pc', description: '', color: 'rgb(111, 92, 128)'},
+    {name: '#Domigo-de-weba', description: '', color: 'rgb(0, 188, 212)'},
+    {name: '#Bar-spartano', description: '', color: 'rgb(239, 94, 166)'}
   ]
 
   $scope.channel = {
     selected: null
   };
 
+  $scope.message = '';
+
+  var date = new Date();
+  $scope.messages = [
+    {author: {username: 'AcidKid', image: null}, content: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Rem molestias incidunt officia animi ducimus nostrum a cum, sunt, minima fugit repellendus assumenda expedita. Eaque autem vero delectus, optio, consequuntur suscipit.', created_at: date.getHours() + ":" + date.getMinutes()}
+  ];
+
   // Initialization
   var ref = new Firebase(firebase_url + 'chat');
   //$scope.messages = $firebaseObject(ref);
 
-  $scope.addMessage = function(e) {
-    if (e.keyCode != 13) return;
-    $scope.messages.$add({from: $scope.name, body: $scope.msg});
-    $scope.msg = "";
+  $scope.usernames = ['AcidKid', 'AcidKid', 'fernandez14']
+  $scope.uindex = 0;
+
+  $scope.addMessage = function() {
+    if($scope.message !== '') {
+      var date = new Date();
+      var new_message = {author: {username: $scope.usernames[$scope.uindex], image: null}, content: $scope.message, created_at: date.getHours() + ":" + date.getMinutes()}
+      $scope.messages.push(new_message);
+      $scope.message = '';
+      $scope.uindex = ($scope.uindex + 1) % 3;
+    }
   }
 
   $scope.channel.selected = $scope.channels[0];

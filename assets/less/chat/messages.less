@@ -3,12 +3,39 @@
   overflow-x: hidden;
   height: 100%;
   padding: 0 18px 1rem 1.5rem;
+  height: 520px;
 
   .message {
     position: relative;
     margin-top: 0.5em;
     padding: 0.25em 2em 0.1em 48px;
     min-height: 48px;
+    border-radius: 4px;
+
+    &.compact {
+      min-height: 30px;
+
+      .timestamp {
+        position: absolute;
+        top: 0.7em;
+        left: 0.4em;
+        display: none;
+      }
+
+      &:hover {
+        .timestamp {
+          display: inline-block;
+        }
+      }
+    }
+
+    &:hover {
+      background-color: @brand-primary-lighter;
+
+      .timestamp {
+        color: @brand-primary-opaque;
+      }
+    }
 
     .avatar {
       .avatar-size(36px);
@@ -34,7 +61,7 @@
       position: relative;
       top: 0;
       left: 0;
-      color: #babbbf;
+      color: @brand-primary-light-text;
       font-size: 12px;
       line-height: 1.2rem;
       width: 36px;
@@ -51,12 +78,12 @@
 }
 
 .input-box {
-
+  margin-bottom: 1em;
+  padding-left: 3.8em;
 }
 
 .input-box_text {
   width: 100%;
-  margin-left: 1em;
   line-height: 1.2rem;
   border: 2px solid #e0e0e0;
   border-radius: 5px;

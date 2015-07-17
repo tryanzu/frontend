@@ -24,16 +24,16 @@
       <div class="index-toolbar">
         <div class="index-toolbar-action">
           <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-6 col-xs-7">
               <h3 style="margin-top: 0">{{ channel.selected.name }}</h3>
             </div>
-            <div class="col-md-6 text-right">
+            <div class="col-md-6 col-xs-5 text-right">
               <span class="users-details" style="margin-right: 1em;">
                 <i class="fa fa-fw fa-users icon"></i> <span class="label">20</span>
               </span>
               <a title="Información de este canal" class="btn btn-default btn-icon">
                 <i class="fa fa-fw fa-info-circle icon"></i>
-                <span class="label">Información de este canal</span>
+                <span class="label hidden-xs">Información de este canal</span>
               </a>
             </div>
           </div>
@@ -42,34 +42,25 @@
       <div>
 
         <div class="message-history">
-          <div class="message">
-            <a href="/u/{{ m.author.username }}/{{ m.author.id }}" class="author">
-              <span class="avatar" title="{{ m.author.username }}" ng-if="!m.author.image">{{ post.author.username[0] }}</span>
+          <div class="message" ng-repeat="m in messages" ng-class="::{'compact':messages[$index-1].author.username == m.author.username}">
+            <a href="/u/{{ m.author.username }}/{{ m.author.id }}" class="author" ng-if=":: messages[$index-1].author.username != m.author.username">
+              <span class="avatar" title="{{ m.author.username }}" ng-if="!m.author.image">{{ m.author.username[0] }}</span>
               <img class="avatar" ng-src="{{ m.author.image }}" alt="{{ m.author.username }}" ng-if="post.author.image">
             </a>
-
-            <a href="" class="username">RodrigoCR</a>
-            <span class="timestamp">1:31 AM</span>
-            <span class="star"></span>
-            <span class="content">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Rem molestias incidunt officia animi ducimus nostrum a cum, sunt, minima fugit repellendus assumenda expedita. Eaque autem vero delectus, optio, consequuntur suscipit.</span>
-          </div>
-
-          <div class="message">
-            <a href="/u/{{ m.author.username }}/{{ m.author.id }}" class="author">
-              <span class="avatar" title="{{ m.author.username }}" ng-if="!m.author.image">{{ post.author.username[0] }}</span>
-              <img class="avatar" ng-src="{{ m.author.image }}" alt="{{ m.author.username }}" ng-if="post.author.image">
-            </a>
-            <a href="" class="username">RodrigoCR</a>
-            <span class="timestamp">1:35 AM</span>
-            <span class="star"></span>
-            <span class="content">Lorem ipsum dolor sit amet...</span>
+            <div class="meta" ng-if=":: messages[$index-1].author.username != m.author.username">
+              <a href="" class="username">{{ m.author.username }}</a>
+              <span class="timestamp">{{ m.created_at }}</span>
+              <span class="star"></span>
+            </div>
+            <span class="timestamp" ng-if=":: messages[$index-1].author.username == m.author.username">{{ m.created_at }}</span>
+            <div class="content">{{ m.content }}</div>
           </div>
         </div>
 
 
         <div class="footer">
           <div class="input-box">
-            <input type="text" class="input-box_text">
+            <input type="text" ng-model="message" class="input-box_text" sg-enter="addMessage()" placeholder="Escribe...">
           </div>
         </div>
       </div>
