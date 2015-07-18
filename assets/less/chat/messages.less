@@ -2,7 +2,7 @@
   overflow-y: auto;
   overflow-x: hidden;
   height: 100%;
-  padding: 0 18px 1rem 1.5rem;
+  padding: 0 0 1em 0;
   height: 520px;
 
   .message {
@@ -30,7 +30,7 @@
     }
 
     &:hover {
-      background-color: @brand-primary-lighter;
+      background-color: lighten(@brand-primary-lighter, 2%);
 
       .timestamp {
         color: @brand-primary-opaque;
@@ -49,7 +49,7 @@
     .username {
       font-weight: 900;
       padding-right: .25rem;
-      color: #3d3c40 !important;
+      color: #555555;
       margin-left: 0;
       font-style: normal;
       text-decoration: none;
@@ -61,7 +61,7 @@
       position: relative;
       top: 0;
       left: 0;
-      color: @brand-primary-light-text;
+      color: #AAA;
       font-size: 12px;
       line-height: 1.2rem;
       width: 36px;
@@ -70,7 +70,7 @@
     }
 
     .content {
-      color: #8b898f;
+      color: #666666;
       display: block;
       min-height: 1em;
     }
@@ -79,7 +79,7 @@
 
 .input-box {
   margin-bottom: 1em;
-  padding-left: 3.8em;
+  padding-left: 2.5em;
 }
 
 .input-box_text {

@@ -3129,7 +3129,7 @@ var ChatController = ['$scope', '$firebase', function($scope, $firebaseObject) {
   $scope.addMessage = function() {
     if($scope.message !== '') {
       var date = new Date();
-      var new_message = {author: {username: $scope.usernames[$scope.uindex], image: null}, content: $scope.message, created_at: date.getHours() + ":" + date.getMinutes()}
+      var new_message = {author: {username: $scope.usernames[$scope.uindex], image: 'http://s3-us-west-1.amazonaws.com/spartan-board/users/55a418ed93e89a050a000006-120x120.jpg'}, content: $scope.message, created_at: date.getHours() + ":" + date.getMinutes()}
       $scope.messages.push(new_message);
       $scope.message = '';
       $scope.uindex = ($scope.uindex + 1) % 3;

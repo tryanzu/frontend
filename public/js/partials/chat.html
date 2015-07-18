@@ -31,7 +31,7 @@
               <span class="users-details" style="margin-right: 1em;">
                 <i class="fa fa-fw fa-users icon"></i> <span class="label">20</span>
               </span>
-              <a title="Información de este canal" class="btn btn-default btn-icon">
+              <a title="Información de este canal" class="btn btn-default btn-icon btn-round">
                 <i class="fa fa-fw fa-info-circle icon"></i>
                 <span class="label hidden-xs">Información de este canal</span>
               </a>
@@ -45,14 +45,14 @@
           <div class="message" ng-repeat="m in messages" ng-class="::{'compact':messages[$index-1].author.username == m.author.username}">
             <a href="/u/{{ m.author.username }}/{{ m.author.id }}" class="author" ng-if=":: messages[$index-1].author.username != m.author.username">
               <span class="avatar" title="{{ m.author.username }}" ng-if="!m.author.image">{{ m.author.username[0] }}</span>
-              <img class="avatar" ng-src="{{ m.author.image }}" alt="{{ m.author.username }}" ng-if="post.author.image">
+              <img class="avatar" ng-src="{{ m.author.image }}" alt="{{ m.author.username }}" ng-if="m.author.image">
             </a>
             <div class="meta" ng-if=":: messages[$index-1].author.username != m.author.username">
               <a href="" class="username">{{ m.author.username }}</a>
-              <span class="timestamp">{{ m.created_at }}</span>
+              <span class="timestamp" tooltip="{{ m.created_at }}" tooltip-popup-delay="500">{{ m.created_at }}</span>
               <span class="star"></span>
             </div>
-            <span class="timestamp" ng-if=":: messages[$index-1].author.username == m.author.username">{{ m.created_at }}</span>
+            <span class="timestamp" ng-if=":: messages[$index-1].author.username == m.author.username" tooltip="{{ m.created_at }}" tooltip-popup-delay="500">{{ m.created_at }}</span>
             <div class="content">{{ m.content }}</div>
           </div>
         </div>
