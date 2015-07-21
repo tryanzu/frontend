@@ -391,7 +391,6 @@ boardApplication.controller('UserController', ['$scope', 'User', '$routeParams',
   }, function(response) {
     window.location = '/';
   });
-
 }]);
 
 boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', '$modal', '$timeout', '$firebaseObject', '$firebaseArray', 'Facebook',

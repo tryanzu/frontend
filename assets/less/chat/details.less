@@ -1,0 +1,57 @@
+.details-nav {
+  width: 220px;
+  position: absolute;
+  top: 60px;
+  right: 0;
+  bottom: 80px;
+  max-height: 100%;
+  border-left: 4px solid @brand-primary-lighter;
+  padding: 10px 0 0 20px;
+
+  overflow-y: scroll;
+
+  .detail-section {
+    margin-bottom: 2em;
+  }
+}
+
+ul.user-status {
+  list-style-type: none;
+  padding-left: 0;
+
+  li {
+    line-height: 28px;
+    margin-bottom: 5px;
+
+    .avatar {
+      .avatar-size(28px);
+    }
+
+    .username {
+      margin-left: 5px;
+      font-weight: 400;
+      font-size: 13px;
+      color: @brand-primary-light-text;
+    }
+
+    .status {
+      width: 8px;
+      height: 8px;
+      border-radius: 4px;
+      background-color: @brand-primary-light-text;
+      display: inline-block;
+      float: right;
+      margin-top: 11px;
+    }
+
+    &.online {
+      .status {
+        background-color: @brand-success;
+      }
+      .username {
+        color: @brand-primary;
+        font-weight: 600;
+      }
+    }
+  }
+}
