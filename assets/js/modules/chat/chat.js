@@ -1,4 +1,4 @@
-var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', function($scope, $firebaseArray, $firebaseObject) {
+var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout', function($scope, $firebaseArray, $firebaseObject, $timeout) {
   $scope.channels = [
     {name: "#General", description: 'Acá se puede hablar de todo', color: '#A8D379'},
     {name: '#Juegos-de-pc', description: '', color: 'rgb(111, 92, 128)'},
@@ -12,29 +12,42 @@ var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', function($s
   $scope.message = '';
   $scope.show_details = true;
 
-  $scope.members = [
-    {username: 'AcidKid', image: null, status:'online'},
-    {username: 'TestUser', image: null, status:'online'},
-    {username: 'fernandez14', image: null, status:'offline'}
-  ];
+  $scope.members = [];
 
   $scope.changeChannel = function(channel) {
     $scope.channel.selected = channel;
     var messagesRef = new Firebase(firebase_url + 'messages/' + channel.$id);
     $scope.messages = $firebaseArray(messagesRef);
 
-    if($scope.user.isLoged) {
+    $scope.messages.$loaded().then(function(x) {
+      $timeout(function(){
+        var mh_window = $('.message-history');
+        mh_window.scrollTop(mh_window[0].scrollHeight);
+      }, 100);
+
+      x.$watch(function(event) {
+        if(event.event === "child_added") {
+          $timeout(function(){
+            var mh_window = $('.message-history');
+            mh_window.scrollTop(mh_window[0].scrollHeight);
+          }, 100);
+        }
+      });
+    });
+
+    var membersRef = new Firebase(firebase_url + 'members/' + channel.$id);
+    $scope.members = $firebaseArray(membersRef);
+
+    if($scope.user.isLogged) {
       var amOnline = new Firebase(firebase_url + '.info/connected');
       var statusRef = new Firebase(firebase_url + 'members/' + channel.$id + '/' + $scope.user.info.id);
 
       amOnline.on('value', function(snapshot) {
         if(snapshot.val()) {
-          statusRef.onDisconnect().set(0);
-          statusRef.set();
+          statusRef.onDisconnect().set({username: $scope.user.info.username, image: $scope.user.info.image, status: "offline"});
+          statusRef.set({username: $scope.user.info.username, image: $scope.user.info.image, status: "online"});
         }
       });
-
-      var temp = $firebaseObject(statusRef);
     }
   };
 
