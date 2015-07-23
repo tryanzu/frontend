@@ -1,3 +1,59 @@
+.button-variant-border(@color; @background; @border) {
+  color: lighten(@color, 10%);
+  background-color: @background;
+  border-color: lighten(@border, 20%);
+
+  &:focus,
+  &.focus {
+    color: @color;
+    background-color: @background;
+        border-color: @border;
+  }
+  &:hover {
+    color: @color;
+    background-color: @background;
+        border-color: @border;
+  }
+  &:active,
+  &.active,
+  .open > .dropdown-toggle& {
+    color: @color;
+    background-color: @background;
+        border-color: @border;
+
+    &:hover,
+    &:focus,
+    &.focus {
+      color: @color;
+      background-color: @background;
+          border-color: @border;
+    }
+  }
+  &:active,
+  &.active,
+  .open > .dropdown-toggle& {
+    background-image: none;
+  }
+  &.disabled,
+  &[disabled],
+  fieldset[disabled] & {
+    &,
+    &:hover,
+    &:focus,
+    &.focus,
+    &:active,
+    &.active {
+      background-color: @background;
+          border-color: @border;
+    }
+  }
+
+  .badge {
+    color: @background;
+    background-color: @color;
+  }
+}
+
 .or-up {
   position: relative;
   left: 50%;
@@ -42,6 +98,18 @@
 
 .btn.btn-sm .label {
   font-size: 85%;
+}
+
+.btn.btn-round {
+  border-radius: 25px;
+
+  i {
+    margin-right: 0.5em;
+  }
+}
+
+.btn-success-border {
+  .button-variant-border(#57ad68; @btn-default-bg; #57ad68);
 }
 
 .sidebar-menu {

@@ -316,6 +316,10 @@
                   </a>
                 </div>
 
+                <div class="post-actions">
+                  <a href="" ng-click="comment_like(post.id, comment)" ng-class="{'liked': comment.liked}" class="btn btn-success-border btn-round"><i class="fa fa-heart-o"></i> Dar tributo</a>
+                </div>
+
                 <div class="answers">
                   <h5 ng-if="!post.comments_blocked || post.comments.count > 0">{{ post.comments.count }} respuesta{{post.comments.count == 1?'':'s'}}</h5>
                 </div>
@@ -362,7 +366,10 @@
                           <span>A {{ comment.votes.up }} {{comment.votes.up==1?'persona le gusta':'personas les gusta'}} este comentario</span>
                         <li>
                         <li>
-                          <a href="" ng-click="comment_like(post.id, comment)" ng-class="{'liked': comment.liked}"><i class="fa fa-thumbs-o-up"></i> Me gusta</a>
+                          <a href="" ng-click="comment_like(post.id, comment)" ng-class="{'liked': comment.liked}"><i class="fa fa-heart-o"></i> Dar tributo</a>
+                        </li>
+                        <li>
+                          <a href="" ng-click="comment_like(post.id, comment)" ng-class="{'liked': comment.liked}"><i class="fa fa-trash"></i> Echar mierda</a>
                         </li>
                         <li>
                           <a href="" ng-click="reply_to(comment.author.username)"><i class="fa fa-reply"></i> Responder</a>
