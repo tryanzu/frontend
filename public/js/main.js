@@ -3101,12 +3101,7 @@ UserModule.factory('User', ['$resource', function($resource) {
 }]);
 
 var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout', function($scope, $firebaseArray, $firebaseObject, $timeout) {
-  $scope.channels = [
-    {name: "#General", description: 'Acá se puede hablar de todo', color: '#A8D379'},
-    {name: '#Juegos-de-pc', description: '', color: 'rgb(111, 92, 128)'},
-    {name: '#Domigo-de-weba', description: '', color: 'rgb(0, 188, 212)'},
-    {name: '#Bar-spartano', description: '', color: 'rgb(239, 94, 166)'}
-  ]
+  $scope.channels = [];
   $scope.channel = {
     selected: null
   };
@@ -3115,6 +3110,20 @@ var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
   $scope.show_details = true;
 
   $scope.members = [];
+
+  $scope.online_members = 0;
+
+  $scope.countOnline = function() {
+    var temp = 0;
+    //console.log("Contando...");
+    for(m in $scope.members) {
+      //console.log($scope.members[m].status);
+      if($scope.members[m].status == 'online') {
+        temp++;
+      }
+    }
+    $scope.online_members = temp;
+  };
 
   $scope.changeChannel = function(channel) {
     $scope.channel.selected = channel;
@@ -3139,6 +3148,13 @@ var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
 
     var membersRef = new Firebase(firebase_url + 'members/' + channel.$id);
     $scope.members = $firebaseArray(membersRef);
+
+    $scope.members.$loaded().then(function(x) {
+      $scope.countOnline();
+      x.$watch(function(event) {
+        $scope.countOnline();
+      });
+    });
 
     if($scope.user.isLogged) {
       var amOnline = new Firebase(firebase_url + '.info/connected');
