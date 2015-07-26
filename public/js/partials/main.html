@@ -321,8 +321,6 @@
                   </a>
                 </div>
 
-                {{ post.liked }}
-
                 <div class="post-actions">
                   <div class="action" ng-if="post.liked != -1">
                     <a href="" ng-click="post_vote(post, 'up')" ng-class="{'liked': post.liked == 1}" class="btn btn-success-border btn-round"><i class="fa fa-thumbs-up"></i> Me gusta</a>
