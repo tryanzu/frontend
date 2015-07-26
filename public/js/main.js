@@ -1,5 +1,22 @@
 var directives = angular.module('directivesModule', []);
 
+directives.directive('sgEnter', function() {
+  return {
+    link: function(scope, element, attrs) {
+      var mh_window = $('.message-history');
+      element.bind("keydown keypress", function(event) {
+        if(event.which === 13) {
+          scope.$apply(function(){
+            scope.$eval(attrs.sgEnter, {'event': event});
+          });
+          mh_window.scrollTop(mh_window[0].scrollHeight);
+          event.preventDefault();
+        }
+      });
+    }
+  };
+});
+
 directives.directive('adjustHeight', function($window, $document, $timeout) {
 	return {
 		restrict: 'A',
@@ -3115,6 +3132,105 @@ UserModule.factory('User', ['$resource', function($resource) {
   return $resource(layer_path + 'users/:user_id', {user_id: '@user_id'});
 }]);
 
+var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout', function($scope, $firebaseArray, $firebaseObject, $timeout) {
+  $scope.channels = [];
+  $scope.channel = {
+    selected: null
+  };
+  $scope.messages = [];
+  $scope.message = '';
+  $scope.show_details = true;
+
+  $scope.members = [];
+
+  $scope.online_members = 0;
+
+  $scope.countOnline = function() {
+    var temp = 0;
+    //console.log("Contando...");
+    for(m in $scope.members) {
+      //console.log($scope.members[m].status);
+      if($scope.members[m].status == 'online') {
+        temp++;
+      }
+    }
+    $scope.online_members = temp;
+  };
+
+  $scope.changeChannel = function(channel) {
+    $scope.channel.selected = channel;
+    var messagesRef = new Firebase(firebase_url + 'messages/' + channel.$id);
+    $scope.messages = $firebaseArray(messagesRef);
+
+    $scope.messages.$loaded().then(function(x) {
+      $timeout(function(){
+        var mh_window = $('.message-history');
+        mh_window.scrollTop(mh_window[0].scrollHeight);
+      }, 100);
+
+      x.$watch(function(event) {
+        if(event.event === "child_added") {
+          $timeout(function(){
+            var mh_window = $('.message-history');
+            mh_window.scrollTop(mh_window[0].scrollHeight);
+          }, 100);
+        }
+      });
+    });
+
+    var membersRef = new Firebase(firebase_url + 'members/' + channel.$id);
+    $scope.members = $firebaseArray(membersRef);
+
+    $scope.members.$loaded().then(function(x) {
+      $scope.countOnline();
+      x.$watch(function(event) {
+        $scope.countOnline();
+      });
+    });
+
+    if($scope.user.isLogged) {
+      var amOnline = new Firebase(firebase_url + '.info/connected');
+      var statusRef = new Firebase(firebase_url + 'members/' + channel.$id + '/' + $scope.user.info.id);
+
+      amOnline.on('value', function(snapshot) {
+        if(snapshot.val()) {
+          statusRef.onDisconnect().set({username: $scope.user.info.username, image: $scope.user.info.image, status: "offline"});
+          statusRef.set({username: $scope.user.info.username, image: $scope.user.info.image, status: "online"});
+        }
+      });
+    }
+  };
+
+  $scope.addMessage = function() {
+    if($scope.message !== '') {
+      date = new Date();
+      var new_message = {author: {username: $scope.user.info.username, image: $scope.user.info.image}, content: $scope.message, created_at: date.getTime()}
+      //console.log(new_message);
+      $scope.messages.$add(new_message);
+      $scope.message = '';
+    }
+  }
+
+  $scope.toggle_details = function() {
+    $scope.show_details = !$scope.show_details;
+  }
+
+  // Initialization
+  var date = new Date();
+  var ref = new Firebase(firebase_url + 'chat');
+  var channelsRef = new Firebase(firebase_url + 'channels');
+
+  $scope.channels = $firebaseArray(channelsRef);
+  $scope.channels.$loaded().then(function() {
+    $scope.changeChannel($scope.channels[0]);
+  });
+
+}];
+
+var chatModule = angular.module('chatModule', ["firebase"]);
+
+chatModule.controller('ChatController', ChatController);
+
 // @codekit-prepend "common/directives"
 // @codekit-prepend "common/filters"
 // @codekit-prepend "common/active_reader"
@@ -3130,6 +3246,7 @@ UserModule.factory('User', ['$resource', function($resource) {
 // @codekit-prepend "modules/publisher/init"
 // @codekit-prepend "modules/part/init"
 // @codekit-prepend "modules/user/init"
+// @codekit-prepend "modules/chat/chat"
 
 var boardApplication = angular.module('board', [
 	'directivesModule',
@@ -3146,6 +3263,7 @@ var boardApplication = angular.module('board', [
 	'publisherModule',
   'partModule',
   'userModule',
+  'chatModule',
   'angular-jwt',
   'firebase',
   'ngRoute',
@@ -3170,6 +3288,10 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   $routeProvider.when('/u/:username/:id', {
     templateUrl: '/js/partials/profile.html',
     controller: 'UserController'
+  });
+  $routeProvider.when('/chat', {
+    templateUrl: '/js/partials/chat.html',
+    controller: 'ChatController'
   });
   $routeProvider.when('/post/create/:cat_slug?', {
     templateUrl: '/js/partials/publish.html',
@@ -3510,7 +3632,6 @@ boardApplication.controller('UserController', ['$scope', 'User', '$routeParams',
   }, function(response) {
     window.location = '/';
   });
-
 }]);
 
 boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', '$modal', '$timeout', '$firebaseObject', '$firebaseArray', 'Facebook',

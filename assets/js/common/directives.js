@@ -1,5 +1,22 @@
 var directives = angular.module('directivesModule', []);
 
+directives.directive('sgEnter', function() {
+  return {
+    link: function(scope, element, attrs) {
+      var mh_window = $('.message-history');
+      element.bind("keydown keypress", function(event) {
+        if(event.which === 13) {
+          scope.$apply(function(){
+            scope.$eval(attrs.sgEnter, {'event': event});
+          });
+          mh_window.scrollTop(mh_window[0].scrollHeight);
+          event.preventDefault();
+        }
+      });
+    }
+  };
+});
+
 directives.directive('adjustHeight', function($window, $document, $timeout) {
 	return {
 		restrict: 'A',

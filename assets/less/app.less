@@ -5,6 +5,8 @@
 @import "lib/dropdowns.less";
 @import "lib/modals.less";
 
+@import "forum/layout.less";
+@import "forum/sidenav.less";
 @import "forum/reader.less";
 @import "forum/components.less";
 @import "forum/publish.less";
@@ -15,6 +17,10 @@
 @import "forum/feed.less";
 @import "forum/discussions.less";
 @import "forum/misc.less";
+
+@import "chat/toolbar.less";
+@import "chat/messages.less";
+@import "chat/details.less";
 
 .row-no-padding {
   margin-left: 0;
@@ -33,6 +39,10 @@
   margin-top: @navbar-height;
 }
 
+.navbar-brand {
+  margin-right: 3em;
+}
+
 .navbar-brand > img {
   max-height: 35px;
   margin-top: -10px;
@@ -43,7 +53,7 @@
   padding-left: 1.5em;
   padding-right: 2em;
   .navbar-brand {
-    margin-left: 5px;
+    margin-left: 10px;
   }
 }
 
