@@ -25,7 +25,7 @@ var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
 
   $scope.changeChannel = function(channel) {
     $scope.channel.selected = channel;
-    var messagesRef = new Firebase(firebase_url + 'messages/' + channel.$id);
+    var messagesRef = new Firebase(firebase_url + 'messages/' + channel.$id).limit(200);
     $scope.messages = $firebaseArray(messagesRef);
 
     $scope.messages.$loaded().then(function(x) {
