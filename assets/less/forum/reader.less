@@ -78,11 +78,74 @@
     margin: -32px -40px;
     padding: 10px 40px;
     margin-bottom: 1em;
+    height: 80px;
+
+    .avatar {
+      margin-top: 5px;
+    }
+
+    .user-info {
+      margin-left: 5em;
+      position: absolute;
+      top: 0;
+
+      .username {
+        color: @brand-primary-normal;
+        display: inline-block;
+        font: inherit;
+        font-size: 14px;
+        line-height: 18px;
+        font-weight: 600;
+        margin-bottom: 2px;
+      }
+
+      .description {
+        color: @brand-primary-normal;
+        font-size: 12px;
+      }
+
+      .level {
+        display: inline-block;
+        font-size: 13px;
+        font-weight: 600;
+      }
+
+      .role-labels {
+        padding-left: 0;
+        list-style-type: none;
+        display: inline-block;
+        margin-bottom: 0;
+        margin-left: 5px;
+
+        li {
+          margin-right: 5px;
+          display: inline-block;
+
+          .label.label-default {
+            background: transparent;
+            border: 1px solid @brand-primary;
+            color: @brand-primary;
+
+            &.Developer {
+              border: 1px solid #44A53C;
+              color: #616161;
+              background-color: #F4F9F3;
+            }
+
+            &.Moderador {
+              border: 1px solid #E0915B;
+              color: #616161;
+              background-color: #FFF9F1;
+            }
+          }
+        }
+      }
+    }
 
     .category-preview {
       margin-right: -40px;
       padding-right: 40px;
-      height: 100%;
+      height: 80px;
       margin-bottom: -10px;
       margin-top: -10px;
       padding-top: 10px;
@@ -94,7 +157,7 @@
     .category-label {
       line-height: 52px;
       margin-bottom: 0;
-      font-size: 18px;
+      font-size: 20px;
       font-weight: 400;
       text-align: right;
       color: white;
@@ -102,33 +165,14 @@
   }
 }
 
-.current-article .author .user-info {
-  margin-left: 0.6em;
-  margin-top: 5px;
-
-  .username {
-    color: @brand-primary-normal;
-    display: inline-block;
-    font: inherit;
-    font-size: 14px;
-    font-weight: 600;
-  }
-
-  .description {
-    color: @brand-primary-normal;
-    font-size: 12px;
-  }
-}
-
 .verified-account {
   display: inline-block;
-  margin-left: 5px;
   background-color: @brand-success;
   color: white;
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   font-size: 11px;
-  line-height: 20px;
+  line-height: 18px;
   text-align: center;
   border-radius: 50%;
 }
@@ -216,7 +260,6 @@
   font-size: 14px;
 }
 
-
 .current-article .comments {
   margin-left: -1em;
 
@@ -224,6 +267,13 @@
     border-bottom: 1px solid #F4F6F8;
     margin-bottom: 2em;
     padding: 1em;
+
+    .comment-author .username {
+      color: @brand-primary-light-text;
+      position: absolute;
+      margin-top: 3px;
+      margin-left: 0.8em;
+    }
 
     .date {
       color: #7C8592;
@@ -266,6 +316,9 @@
             color: @brand-primary-light-text;
             &.liked {
               color: @brand-success;
+            }
+            &.hated {
+              color: @brand-danger;
             }
 
             &:hover, &:active {
@@ -317,6 +370,27 @@
       max-height: 240px;
       width: auto;
       max-width: 100%;
+    }
+  }
+}
+
+.post-actions {
+  margin-top: 2em;
+  margin-bottom: 1.2em;
+
+  .action {
+    display: inline-block;
+    margin-right: 1.5em;
+
+    .count {
+      font-size: 12px;
+      margin-top: 5px;
+      color: #9E9E9E;
+
+      strong {
+        font-weight: 400;
+        color: #222;
+      }
     }
   }
 }

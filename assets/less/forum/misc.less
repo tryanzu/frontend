@@ -1,3 +1,59 @@
+.button-variant-border(@color; @background; @border) {
+  color: lighten(@color, 10%);
+  background-color: @background;
+  border-color: lighten(@border, 20%);
+
+  &:focus,
+  &.focus {
+    color: @color;
+    background-color: @background;
+        border-color: @border;
+  }
+  &:hover {
+    color: @color;
+    background-color: @background;
+        border-color: @border;
+  }
+  &:active,
+  &.active,
+  .open > .dropdown-toggle& {
+    color: @color;
+    background-color: @background;
+        border-color: @border;
+
+    &:hover,
+    &:focus,
+    &.focus {
+      color: @color;
+      background-color: @background;
+          border-color: @border;
+    }
+  }
+  &:active,
+  &.active,
+  .open > .dropdown-toggle& {
+    background-image: none;
+  }
+  &.disabled,
+  &[disabled],
+  fieldset[disabled] & {
+    &,
+    &:hover,
+    &:focus,
+    &.focus,
+    &:active,
+    &.active {
+      background-color: @background;
+          border-color: @border;
+    }
+  }
+
+  .badge {
+    color: @background;
+    background-color: @color;
+  }
+}
+
 .or-up {
   position: relative;
   left: 50%;
@@ -40,6 +96,22 @@
   color: #ffffff;
 }
 
+.btn.btn-sm .label {
+  font-size: 85%;
+}
+
+.btn.btn-round {
+  border-radius: 25px;
+
+  i {
+    margin-right: 0.5em;
+  }
+}
+
+.btn-success-border {
+  .button-variant-border(#57ad68; @btn-default-bg; #57ad68);
+}
+
 .sidebar-menu {
   margin-top: 1.5em;
   padding-right: 2em;
@@ -63,13 +135,18 @@
 
 @media @phone, @tablet {
   .offset-content {
-    margin-top: 15px;
+    margin-top: 40px;
   }
 }
 
 @media @desktop, @desktop-hd {
   .offset-content {
     margin-top: 30px;
+    margin-left: 225px;
+
+    &.details-open {
+      margin-right: 245px;
+    }
   }
 }
 
@@ -77,4 +154,24 @@
   background-color: lighten(@brand-danger, 40%);
   color: @brand-danger;
   border-color: @brand-danger;
+}
+
+.category-icon {
+  border-radius: 4px;
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+  vertical-align: -3px;
+  margin-left: 1px;
+}
+.category-icon.uncategorized {
+  border: 1px dotted #8fa4bc;
+}
+
+.btn.btn-default .label {
+  color: @btn-default-color;
+}
+
+.btn.btn-round {
+  border-radius: 1.5em;
 }

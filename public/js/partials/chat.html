@@ -1,0 +1,91 @@
+<main class="global-content">
+  <div class="container" style="position: relative;">
+    <nav class="side-nav index-nav">
+      <ul class="affix">
+        <li class="title-control">
+          <div class="dropdown dropdown-select class="form-control" btn-group item-count-9" dropdown>
+            <a href="#" class="dropdown-toggle btn btn-default" data-toggle="dropdown" dropdown-toggle>
+              <span class="label">Canales disponibles</span> <i class="fa fa-fw fa-sort icon-caret"></i>
+            </a>
+            <ul class="dropdown-menu">
+              <li class="dropdown-header">Canales públicos</li>
+              <li ng-repeat="c in channels" ng-class="{active: c.name == channel.selected.name}">
+                <a href="" ng-click="changeChannel(c)" title="{{ c.description }}">
+                  <span class="icon category-icon" ng-class="{'uncategorized': !c.color}" ng-style="{background: c.color}"></span> {{ c.name }}
+                </a>
+              </li>
+            </ul>
+          </div>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="offset-content" ng-class="{'details-open': show_details}">
+      <div class="index-toolbar">
+        <div class="index-toolbar-action">
+          <div class="row">
+            <div class="col-md-6 col-xs-7">
+              <h3 style="margin-top: 0">{{ channel.selected.name }}</h3>
+            </div>
+            <div class="col-md-6 col-xs-5 text-right">
+              <span class="users-details" style="margin-right: 1em;">
+                <i class="fa fa-fw fa-users icon"></i> <span class="label">{{ members.length }}</span>
+              </span>
+              <a title="Información de este canal" class="btn btn-default btn-icon btn-round hidden" ng-click="toggle_details()" ng-class="{'active': show_details}">
+                <i class="fa fa-fw fa-info-circle icon"></i>
+                <span class="label hidden-xs">Información de este canal</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="message-history">
+          <div class="message" ng-repeat="m in messages" ng-class="::{'compact':messages[$index-1].author.username == m.author.username}">
+            <a href="/u/{{ m.author.username }}/{{ m.author.id }}" class="author" ng-if=":: messages[$index-1].author.username != m.author.username">
+              <span class="avatar" title="{{ m.author.username }}" ng-if="!m.author.image">{{ m.author.username[0] }}</span>
+              <img class="avatar" ng-src="{{ m.author.image }}" alt="{{ m.author.username }}" ng-if="m.author.image">
+            </a>
+            <div class="meta" ng-if=":: messages[$index-1].author.username != m.author.username">
+              <a href="" class="username">{{ m.author.username }}</a>
+              <span class="timestamp" tooltip="{{ m.created_at | date_at }}" tooltip-popup-delay="500" tooltip-placement="right">{{ m.created_at | date:'H:mm' }}</span>
+              <span class="star"></span>
+            </div>
+            <span class="timestamp" ng-if=":: messages[$index-1].author.username == m.author.username" tooltip="{{ m.created_at | date_at }}" tooltip-popup-delay="500" tooltip-placement="right">{{ m.created_at | date:'H:mm' }}</span>
+            <div class="content">{{ m.content }}</div>
+          </div>
+        </div>
+
+        <div class="footer">
+          <div class="input-box">
+            <input type="text" ng-model="message" class="input-box_text" sg-enter="addMessage()" placeholder="Escribe...">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="details-nav" ng-if="show_details">
+
+      <div class="detail-section">
+        <h4>Información del canal</h4>
+        <p ng-bind="channel.selected.description"></p>
+      </div>
+
+      <div class="detail-section">
+        <h4>{{ online_members }}/{{ members.length }} Spartanos</h4>
+
+        <ul class="user-status">
+          <li ng-repeat="m in members | orderBy:['-status','username']" ng-class="{'online': m.status == 'online'}">
+            <a href="/u/{{ m.username }}/{{ m.id }}" class="">
+              <span class="avatar" title="{{ m.username }}" ng-if="!m.image">{{ m.username[0] }}</span>
+              <img class="avatar" ng-src="{{ m.image }}" alt="{{ m.username }}" ng-if="m.image">
+            </a>
+            <a href="" class="username">{{ m.username }}</a>
+
+            <span class="status"></span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</main>
