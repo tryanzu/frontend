@@ -603,7 +603,7 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
     $http.get(layer_path + 'gamification').
       success(function(data, status) {
         $scope.misc.gaming = data;
-        console.log(data);
+        //console.log(data);
       }).
       error(function(data) {});
   }

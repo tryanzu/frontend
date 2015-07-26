@@ -25,23 +25,55 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post) {
     $('.current-article').animate({ scrollTop: $('.current-article')[0].scrollHeight}, 100);
   }
 
-  $scope.comment_like = function(post_id, comment) {
-    $http.post(layer_path + 'vote/comment/' + post_id, {comment: '' + comment.position}).
+  $scope.comment_vote = function(post_id, comment, direction) {
+    $http.post(layer_path + 'vote/comment/' + post_id, {comment: '' + comment.position, 'direction': direction}).
       success(function(data, status, headers, config) {
-        // this callback will be called asynchronously
-        // when the response is available
-        comment.liked = !comment.liked;
-        if(comment.liked) {
-          comment.votes.up = comment.votes.up + 1;
+        //comment.liked = !comment.liked;
+        var d = {'up': 1, 'down': -1};
+        if(comment.liked == d[direction]) {
+          comment.liked = null;
+          if(direction == 'up') {
+            comment.votes.up = comment.votes.up - 1;
+          } else {
+            comment.votes.down = comment.votes.down - 1;
+          }
         } else {
-          comment.votes.up = comment.votes.up - 1;
+          comment.liked = d[direction];
+          if(direction == 'up') {
+            comment.votes.up = comment.votes.up + 1;
+          } else {
+            comment.votes.down = comment.votes.down + 1;
+          }
         }
-        console.log(data);
+        //console.log(data);
       }).
-      error(function(data, status, headers, config) {
-        // called asynchronously if an error occurs
-        // or server returns response with an error status.
-        console.log(data);
+      error(function(data) {
+        //console.log(data);
+      });
+  }
+
+  $scope.post_vote = function(post, direction) {
+    $http.post(layer_path + 'vote/post/' + post.id, {'direction': direction}).
+      success(function(data) {
+        var d = {'up': 1, 'down': -1};
+        if(post.liked == d[direction]) {
+          post.liked = null;
+          if(direction == 'up') {
+            post.votes.up = post.votes.up - 1;
+          } else {
+            post.votes.down = post.votes.down - 1;
+          }
+        } else {
+          post.liked = d[direction];
+          if(direction == 'up') {
+            post.votes.up = post.votes.up + 1;
+          } else {
+            post.votes.down = post.votes.down + 1;
+          }
+        }
+      }).
+      error(function(data) {
+        //console.log(data);
       });
   }
 
