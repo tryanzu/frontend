@@ -2564,23 +2564,55 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post) {
     $('.current-article').animate({ scrollTop: $('.current-article')[0].scrollHeight}, 100);
   }
 
-  $scope.comment_like = function(post_id, comment) {
-    $http.post(layer_path + 'vote/comment/' + post_id, {comment: '' + comment.position}).
+  $scope.comment_vote = function(post_id, comment, direction) {
+    $http.post(layer_path + 'vote/comment/' + post_id, {comment: '' + comment.position, 'direction': direction}).
       success(function(data, status, headers, config) {
-        // this callback will be called asynchronously
-        // when the response is available
-        comment.liked = !comment.liked;
-        if(comment.liked) {
-          comment.votes.up = comment.votes.up + 1;
+        //comment.liked = !comment.liked;
+        var d = {'up': 1, 'down': -1};
+        if(comment.liked == d[direction]) {
+          comment.liked = null;
+          if(direction == 'up') {
+            comment.votes.up = comment.votes.up - 1;
+          } else {
+            comment.votes.down = comment.votes.down - 1;
+          }
         } else {
-          comment.votes.up = comment.votes.up - 1;
+          comment.liked = d[direction];
+          if(direction == 'up') {
+            comment.votes.up = comment.votes.up + 1;
+          } else {
+            comment.votes.down = comment.votes.down + 1;
+          }
         }
-        console.log(data);
+        //console.log(data);
       }).
-      error(function(data, status, headers, config) {
-        // called asynchronously if an error occurs
-        // or server returns response with an error status.
-        console.log(data);
+      error(function(data) {
+        //console.log(data);
+      });
+  }
+
+  $scope.post_vote = function(post, direction) {
+    $http.post(layer_path + 'vote/post/' + post.id, {'direction': direction}).
+      success(function(data) {
+        var d = {'up': 1, 'down': -1};
+        if(post.liked == d[direction]) {
+          post.liked = null;
+          if(direction == 'up') {
+            post.votes.up = post.votes.up - 1;
+          } else {
+            post.votes.down = post.votes.down - 1;
+          }
+        } else {
+          post.liked = d[direction];
+          if(direction == 'up') {
+            post.votes.up = post.votes.up + 1;
+          } else {
+            post.votes.down = post.votes.down + 1;
+          }
+        }
+      }).
+      error(function(data) {
+        //console.log(data);
       });
   }
 
@@ -3124,15 +3156,15 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider) {
 
   $routeProvider.when('/', {
-    templateUrl: '/js/partials/main.html?v=125',
+    templateUrl: '/js/partials/main.html?v=125b',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/c/:slug', {
-    templateUrl: '/js/partials/main.html?v=125',
+    templateUrl: '/js/partials/main.html?v=125b',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/p/:slug/:id/:comment_position?', {
-    templateUrl: '/js/partials/main.html?v=125',
+    templateUrl: '/js/partials/main.html?v=125b',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/u/:username/:id', {
@@ -3462,10 +3494,18 @@ boardApplication.controller('UserController', ['$scope', 'User', '$routeParams',
   };
 
   User.get({user_id: $routeParams.id}, function(data){
+    //console.log(data);
     $scope.profile = data;
     $scope.startFeed();
-
     $scope.new_data.username = $scope.profile.username;
+
+    // We calculate remaining swords for next level and ratio
+    var rules = $scope.misc.gaming.rules;
+    var remaining = rules[data.gaming.level].swords_end - $scope.profile.gaming.swords;
+    $scope.profile.gaming.remaining = remaining;
+    var ratio = 100 - 100*(remaining/(rules[data.gaming.level].swords_end - rules[data.gaming.level].swords_start));
+    $scope.profile.gaming.ratio = ratio;
+    console.log(rules[data.gaming.level].swords_start, rules[data.gaming.level].swords_end, ratio);
 
   }, function(response) {
     window.location = '/';
@@ -3491,6 +3531,9 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
       menuCollapsed: true
     }
     $scope.user.isLogged = localStorage.getItem('signed_in')==='true'?true:false;
+    $scope.misc = {
+      gaming: null
+    };
 
     $scope.logUser = function() {
       $http.get(layer_path + 'user/my')
@@ -3652,16 +3695,20 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
       $scope.$broadcast('reloadPost');
     };
 
+    // If login action sucessfull anywhere, sign in the user
     $scope.$on('login', function(e) {
       $scope.logUser();
     });
-
+    // If already signed in, sign in the user
     if(localStorage.signed_in === 'true') {
       $scope.logUser();
     }
 
+    // Check for FB Login Status, this is necessary so later calls doesn't make
+    // the pop up to be blocked by the browser
     Facebook.getLoginStatus(function(r){$rootScope.fb_response = r;});
 
+    // Load platform stats
     $http.get(layer_path + 'stats/board').
       success(function(data, status) {
         $scope.status.stats = data;
@@ -3669,6 +3716,13 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
       }).
       error(function(data) {
       });
+    // Load gamification data
+    $http.get(layer_path + 'gamification').
+      success(function(data, status) {
+        $scope.misc.gaming = data;
+        //console.log(data);
+      }).
+      error(function(data) {});
   }
 ]);
 

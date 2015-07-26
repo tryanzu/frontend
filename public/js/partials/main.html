@@ -100,24 +100,29 @@
             </div>
             <div class="author" ng-hide="resolving">
               <div class="row">
-                <div class="col-md-1 col-xs-2">
+                <div class="col-md-7 col-xs-12">
                   <a href="/u/{{ post.author.username }}/{{ post.author.id }}" title="Perfil de {{ post.author.username }}">
                     <span class="avatar" title="{{ post.author.username }}" ng-if="!post.author.image">{{ post.author.username[0] }}</span>
                     <img class="avatar" ng-src="{{ post.author.image }}" alt="{{ post.author.username }}" ng-if="post.author.image">
                   </a>
-                </div>
 
-                <div class="col-md-5 col-xs-10">
                   <div class="user-info">
                     <a href="/u/{{ post.author.username }}/{{ post.author.id }}" title="Perfil de {{ post.author.username }}">
                       <span class="username">{{ post.author.username }}</span>
                     </a>
-                    <span class="verified-account" ng-if="post.author.id === '559af1c501c25d3790000054'" tooltip="Cuenta verificada" tooltip-placement="right"><i class="fa fa-check"></i></span>
-                    <p class="description">{{ post.author.description || "Just another Spartan Geek" }}</p>
+                    <span class="verified-account" ng-if="post.author.id === '559af1c501c25d3790000054' || post.author.facebook.verified" tooltip="Cuenta verificada" tooltip-placement="right"><i class="fa fa-check"></i></span>
+                    <ul class="role-labels" ng-if="post.author.roles.length > 0">
+                      <li ng-repeat="role in post.author.roles" ng-if="role !== 'registered'">
+                        <span class="label label-default" ng-class="role">{{role}}</span>
+                      </li>
+                    </ul>
+                    <div class="description">{{ post.author.description || "Just another Spartan Geek" }}</div>
+                    <div class="level">{{ misc.gaming.rules[post.author.gaming.level].name }}</div>
+
                   </div>
                 </div>
 
-                <div class="col-md-6 hidden-xs">
+                <div class="col-md-5 hidden-xs">
                   <div class="category-preview" ng-style="{'background-image': 'url(/images/boards/' + post.category.slug + '.png)'};">
                     <p class="category-label">{{ post.category.name }}</p>
                   </div>
@@ -316,6 +321,19 @@
                   </a>
                 </div>
 
+                {{ post.liked }}
+
+                <div class="post-actions">
+                  <div class="action" ng-if="post.liked != -1">
+                    <a href="" ng-click="post_vote(post, 'up')" ng-class="{'liked': post.liked == 1}" class="btn btn-success-border btn-round"><i class="fa fa-thumbs-up"></i> Me gusta</a>
+                    <div class="count">A <strong>{{post.votes.up}} personas</strong> le gusta</div>
+                  </div>
+                  <div class="action" ng-if="post.liked != 1">
+                    <a href="" ng-click="post_vote(post, 'down')" ng-class="{'hated': post.liked == -1}" class="btn btn-default btn-round"><i class="fa fa-trash"></i> Esto apesta</a>
+                    <div class="count"><strong>{{post.votes.down}} personas</strong> piensan que apesta</div>
+                  </div>
+                </div>
+
                 <div class="answers">
                   <h5 ng-if="!post.comments_blocked || post.comments.count > 0">{{ post.comments.count }} respuesta{{post.comments.count == 1?'':'s'}}</h5>
                 </div>
@@ -323,15 +341,16 @@
                 <div class="comments">
                   <div class="comment" data-number="{{ comment.position }}" ng-repeat="comment in (post.comments.set | orderBy : 'position')">
                     <div class="comment-author">
-                      <div class="row">
-                        <div class="col-md-12">
-                          <a href="/u/{{ comment.author.username }}/{{ comment.author.id }}" title="Perfil de {{ comment.author.username }}">
-                            <img class="avatar" ng-src="{{ comment.author.image }}" alt="{{ comment.author.username }}" ng-if="comment.author.image">
-                            <span class="avatar" title="{{ comment.author.username }}" ng-if="!comment.author.image">{{ comment.author.username[0] }}</span>
-                          </a>
-                          <span class="username"><a href="/u/{{ comment.author.username }}/{{ comment.author.id }}" title="Perfil de {{ comment.author.username }}"><strong>{{ comment.author.username }}</strong></a> {{ comment.author.description }}</span>
-                        </div>
-                      </div>
+                      <a href="/u/{{ comment.author.username }}/{{ comment.author.id }}" title="Perfil de {{ comment.author.username }}">
+                        <img class="avatar" ng-src="{{ comment.author.image }}" alt="{{ comment.author.username }}" ng-if="comment.author.image">
+                        <span class="avatar" title="{{ comment.author.username }}" ng-if="!comment.author.image">{{ comment.author.username[0] }}</span>
+                      </a>
+                      <span class="username">
+                        <a href="/u/{{ comment.author.username }}/{{ comment.author.id }}" title="Perfil de {{ comment.author.username }}">
+                          <strong>{{ comment.author.username }}</strong>
+                        </a>
+                        <br>{{ comment.author.description }}
+                      </span>
                     </div>
                     <div class="content" marked="comment.content"></div>
 
@@ -355,14 +374,19 @@
                       </div>
                     </span>
 
-
-                    <div class="actions" ng-if="user.isLogged">
+                    <div class="actions" ng-if="user.isLogged && comment.author.id != user.info.id">
                       <ul>
-                        <li ng-if="comment.votes.up > 0">
+                        <li ng-if="comment.votes.up > 0 && comment.liked != -1">
                           <span>A {{ comment.votes.up }} {{comment.votes.up==1?'persona le gusta':'personas les gusta'}} este comentario</span>
                         <li>
+                        <li ng-if="comment.votes.down > 0 && comment.liked == -1">
+                          <span>{{ comment.votes.down }} {{comment.votes.down==1?'persona piensa':'personas piensan'}} que esto apesta</span>
                         <li>
-                          <a href="" ng-click="comment_like(post.id, comment)" ng-class="{'liked': comment.liked}"><i class="fa fa-thumbs-o-up"></i> Me gusta</a>
+                        <li ng-if="comment.liked != -1">
+                          <a href="" ng-click="comment_vote(post.id, comment, 'up')" ng-class="{'liked': comment.liked == 1}"><i class="fa fa-thumbs-up"></i> Me gusta</a>
+                        </li>
+                        <li ng-if="comment.liked != 1">
+                          <a href="" ng-click="comment_vote(post.id, comment, 'down')" ng-class="{'hated': comment.liked == -1}"><i class="fa fa-trash"></i> Esto apesta</a>
                         </li>
                         <li>
                           <a href="" ng-click="reply_to(comment.author.username)"><i class="fa fa-reply"></i> Responder</a>
@@ -391,7 +415,7 @@
                             <em>*Itálica*</em>
                           </li>
                           <li style="margin-left: 3em;">
-                            <a href="" ng-click="publish()" ng-class="{'disabled': waiting_comment == true || comment.content == ''}" class="btn btn-primary btn-sm">Publicar</a>
+                            <a href="" ng-click="publish()" ng-class="{'disabled': waiting_comment == true || comment.content == ''}" class="btn btn-primary"><span class="label">Publicar</span></a>
                           </li>
                         </ul>
                       </div>

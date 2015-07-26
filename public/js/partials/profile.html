@@ -71,10 +71,10 @@
               <div class="col-md-3">
                 <div class="sidebar-menu">
                   <ul class="nav nav-pills nav-stacked">
-                    <li role="presentation" class="">
+                    <li role="presentation" class="active">
                       <a href="">Información</a>
                     </li>
-                    <li role="presentation" class="active">
+                    <li role="presentation" class="">
                       <a href="">Publicaciones <span class="count hidden">2</span></a>
                     </li>
                     <li role="presentation" class="hidden">
@@ -87,8 +87,7 @@
                 </div>
               </div>
               <div class="col-md-9">
-
-                <div class="offset-content user-content">
+                <div class="offset-content user-content hidden">
                   <div ng-if="posts.length == 0">
                     <p class="alert alert-info">Este usuario aún no creado ninguna publiación.</p>
                   </div>
@@ -116,60 +115,41 @@
                   </div>
                 </div>
 
-                <div class="offset-content user-content hidden">
+                <div class="offset-content user-content">
                   <div class="row">
                     <div class="col-md-4">
                       <h3>Nivel</h3>
                       <div class="rank">
                         <div class="row">
-                          <div class="col-md-4">
-                            <img src="/images/badge-example.png" alt="" style="width: 75px;">
+                          <div class="col-md-4 text-center">
+                            <img ng-src="/images/gamification/ranks/{{ profile.gaming.level }}.png" alt="" style="width: 75px;" ng-cloak>
                           </div>
                           <div class="col-md-8">
-                            <div class="description">Extranjero</div>
+                            <div class="description">{{ misc.gaming.rules[profile.gaming.level + 1].name }}</div>
                             <div class="progress">
-                              <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
-                                <span class="sr-only">0%</span>
+                              <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: {{profile.gaming.ratio}}%;">
+                                <span class="sr-only">{{profile.gaming.ratio}}%</span>
                               </div>
                             </div>
-                            <div class="experience-points">0 Spartan Points</div>
-                            <div class="next-level cold">300 para el siguiente nivel</div>
+                            <div class="experience-points">{{ profile.gaming.swords }} Espadas</div>
+                            <div class="next-level cold">{{profile.gaming.remaining}} para el siguiente nivel</div>
                           </div>
                         </div>
                       </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-8">
                       <h3>Medallas</h3>
-                      <img src="/images/badges-example.jpg" style="width: 80%; margin-left: -15px;">
-                    </div>
-                    <div class="col-md-4">
-                      <h3>Id's</h3>
-                      <table class="table table-condensed">
-                        <tbody>
-                          <tr>
-                            <th>Nintendo Wii Code</th>
-                            <td>-</td>
-                          </tr>
-                          <tr>
-                            <th>PS Network</th>
-                            <td>-</td>
-                          </tr>
-                          <tr>
-                            <th>Xbox Live</th>
-                            <td>-</td>
-                          </tr>
-                          <tr>
-                            <th>Steam ID</th>
-                            <td>-</td>
-                          </tr>
-                        </tbody>
-                      </table>
+                      <p class="alert alert-info">Este usuario no tiene medallas.</p>
                     </div>
                   </div>
                   <hr>
+                  <p class="alert alert-success hidden">Tus datos se han actualizado correctamente.</p>
                   <div class="row">
-                    <div class="col-sm-5 margin-btm40">
-                      <h3>Mi pc actual</h3>
+                    <div class="col-md-12">
+                      <h3>Información adicional</h3>
+                    </div>
+                    <div class="col-sm-6 margin-btm40">
+                      <h4>Mi pc actual</h4>
                       <div class="components">
                         <div class="component">
                           <div class="row">
@@ -191,7 +171,7 @@
                             </div>
 
                             <div class="col-md-10 columns ng-binding">
-                              <h6>Motherboard <span class="status verified" ng-if="true">Verificado</span></h6>
+                              <h6>Motherboard <span class="status verified" ng-if="false">Verificado</span></h6>
                               @{{ profile.pc.motherboard.fullname }}
                             </div>
                           </div>
@@ -290,8 +270,33 @@
                         </div>
                       </div>
                     </div>
+                    <div class="col-md-6">
+                      <h4>Gamer Tags</h4>
+                      <table class="table table-condensed">
+                        <tbody>
+                          <tr>
+                            <th>Nintendo Wii Code</th>
+                            <td>-</td>
+                          </tr>
+                          <tr>
+                            <th>PS Network</th>
+                            <td>-</td>
+                          </tr>
+                          <tr>
+                            <th>Xbox Live</th>
+                            <td>-</td>
+                          </tr>
+                          <tr>
+                            <th>Steam ID</th>
+                            <td>-</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
 
-                    <div class="col-sm-6 col-sm-offset-1">
+                  <div class="row hidden">
+                    <div class="col-sm-6">
                       <h3>Mis juegos (25)</h3>
                       <div class="row">
                         <div class="col-sm-3">
