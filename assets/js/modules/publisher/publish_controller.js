@@ -211,6 +211,7 @@ var PublishController = function($scope, $routeParams, $http, Category, Part) {
     } else if($scope.post.content === '') {
       $scope.message = "Te falta el contenido de tu publicación";
     } else {
+      $scope.publishing = true;
   		var components = $scope.computerPost.components;
   		components.budget_type = $scope.computerPost.budget.type;
   		components.budget_flexibility = $scope.computerPost.budget.flexibility;
@@ -242,6 +243,7 @@ var PublishController = function($scope, $routeParams, $http, Category, Part) {
     } else if($scope.post.content === '') {
       $scope.message = "Te falta el contenido de tu publicación";
     } else {
+      $scope.publishing = true;
   		var post = {
   			content: $scope.post.content,
   			name: $scope.post.title,

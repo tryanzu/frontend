@@ -3056,6 +3056,7 @@ var PublishController = function($scope, $routeParams, $http, Category, Part) {
     } else if($scope.post.content === '') {
       $scope.message = "Te falta el contenido de tu publicación";
     } else {
+      $scope.publishing = true;
   		var components = $scope.computerPost.components;
   		components.budget_type = $scope.computerPost.budget.type;
   		components.budget_flexibility = $scope.computerPost.budget.flexibility;
@@ -3087,6 +3088,7 @@ var PublishController = function($scope, $routeParams, $http, Category, Part) {
     } else if($scope.post.content === '') {
       $scope.message = "Te falta el contenido de tu publicación";
     } else {
+      $scope.publishing = true;
   		var post = {
   			content: $scope.post.content,
   			name: $scope.post.title,
@@ -3274,15 +3276,15 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider) {
 
   $routeProvider.when('/', {
-    templateUrl: '/js/partials/main.html?v=131',
+    templateUrl: '/js/partials/main.html?v=132',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/c/:slug', {
-    templateUrl: '/js/partials/main.html?v=131',
+    templateUrl: '/js/partials/main.html?v=132',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/p/:slug/:id/:comment_position?', {
-    templateUrl: '/js/partials/main.html?v=131',
+    templateUrl: '/js/partials/main.html?v=132',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/u/:username/:id', {
@@ -3639,7 +3641,12 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
     $scope.user = {
       isLogged: false,
       info: null,
-      notifications: {count:0, list:null}
+      notifications: {count:0, list:null},
+      gaming: {
+        coins: 0,
+        shit: 0,
+        tribute: 0
+      }
     }
     $scope.status = {
       post_selected: false,
