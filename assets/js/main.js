@@ -41,15 +41,15 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider) {
 
   $routeProvider.when('/', {
-    templateUrl: '/js/partials/main.html?v=130',
+    templateUrl: '/js/partials/main.html?v=131',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/c/:slug', {
-    templateUrl: '/js/partials/main.html?v=130',
+    templateUrl: '/js/partials/main.html?v=131',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/p/:slug/:id/:comment_position?', {
-    templateUrl: '/js/partials/main.html?v=130',
+    templateUrl: '/js/partials/main.html?v=131',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/u/:username/:id', {
@@ -475,6 +475,13 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
                   presenceRef.set(1);
                   categoryRef.set("all");
                 }
+              });
+
+              // Gamification attributes
+              var gamingRef = new Firebase(userUrl + '/gaming');
+              $scope.user.gaming = $firebaseObject(gamingRef);
+              $scope.user.gaming.$loaded(function() {
+                console.log($scope.user.gaming);
               });
 
               var pending = $firebaseObject(pendingRef);

@@ -377,6 +377,13 @@
 .post-actions {
   margin-top: 2em;
   margin-bottom: 1.2em;
+  list-style-type: none;
+  padding-left: 0;
+
+  &.empty {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
 
   .action {
     display: inline-block;
@@ -386,6 +393,7 @@
       font-size: 12px;
       margin-top: 5px;
       color: #9E9E9E;
+      display: table;
 
       strong {
         font-weight: 400;
