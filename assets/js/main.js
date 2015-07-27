@@ -41,15 +41,15 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider) {
 
   $routeProvider.when('/', {
-    templateUrl: '/js/partials/main.html?v=132',
+    templateUrl: '/js/partials/main.html?v=132b',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/c/:slug', {
-    templateUrl: '/js/partials/main.html?v=132',
+    templateUrl: '/js/partials/main.html?v=132b',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/p/:slug/:id/:comment_position?', {
-    templateUrl: '/js/partials/main.html?v=132',
+    templateUrl: '/js/partials/main.html?v=132b',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/u/:username/:id', {
@@ -300,6 +300,7 @@ boardApplication.controller('UserController', ['$scope', 'User', '$routeParams',
     editing_desc: false,
     editing_username: false
   };
+  $scope.current_page = 'info';
 
   $scope.new_data = {
     username: null,
@@ -486,7 +487,7 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
               var gamingRef = new Firebase(userUrl + '/gaming');
               $scope.user.gaming = $firebaseObject(gamingRef);
               $scope.user.gaming.$loaded(function() {
-                console.log($scope.user.gaming);
+                //console.log($scope.user.gaming);
               });
 
               var pending = $firebaseObject(pendingRef);
