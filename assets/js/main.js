@@ -41,15 +41,15 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider) {
 
   $routeProvider.when('/', {
-    templateUrl: '/js/partials/main.html?v=131',
+    templateUrl: '/js/partials/main.html?v=132',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/c/:slug', {
-    templateUrl: '/js/partials/main.html?v=131',
+    templateUrl: '/js/partials/main.html?v=132',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/p/:slug/:id/:comment_position?', {
-    templateUrl: '/js/partials/main.html?v=131',
+    templateUrl: '/js/partials/main.html?v=132',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/u/:username/:id', {
@@ -406,7 +406,12 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
     $scope.user = {
       isLogged: false,
       info: null,
-      notifications: {count:0, list:null}
+      notifications: {count:0, list:null},
+      gaming: {
+        coins: 0,
+        shit: 0,
+        tribute: 0
+      }
     }
     $scope.status = {
       post_selected: false,
