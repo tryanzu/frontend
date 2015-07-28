@@ -59,7 +59,7 @@
         <div class="footer">
           <div class="input-box">
             <div class="input-group">
-              <input type="text" ng-model="message.content" class="input-box_text" sg-enter="addMessage()" placeholder="Escribe...">
+              <input type="text" ng-model="message.content" class="input-box_text" sg-enter="addMessage()" sg-send="message.send_on_enter" placeholder="Escribe...">
               <span class="input-group-btn" ng-if="!message.send_on_enter">
                 <button class="btn btn-primary btn-send" type="button" ng-click="addMessage()">Enviar</button>
               </span>

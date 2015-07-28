@@ -100,10 +100,14 @@ chatModule.controller('ChatController', ChatController);
 
 chatModule.directive('sgEnter', function() {
   return {
+    /*scope: {
+      'sg-send': '='
+    },*/
     link: function(scope, element, attrs) {
       var mh_window = $('.message-history');
+      console.log(scope.message.send_on_enter);
       element.bind("keydown keypress", function(event) {
-        if(event.which === 13) {
+        if(event.which === 13 && scope.message.send_on_enter) {
           scope.$apply(function(){
             scope.$eval(attrs.sgEnter, {'event': event});
           });

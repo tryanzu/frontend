@@ -152,19 +152,19 @@
           <li tooltip="Monedas para comprar medallas" tooltip-placement="bottom">
             <a>
               <span class="icon"><i class="fa fa-usd"></i></span>
-              <span class="label">Monedas: {{ user.gaming.coins }}</span>
+              <span class="label">Monedas: {{ user.gaming.coins || 0 }}</span>
             </a>
           </li>
           <li tooltip="Cantidad de 'Me gusta' que puedes dar" tooltip-placement="bottom">
             <a>
               <span class="icon"><i class="fa fa-thumbs-up"></i></span>
-              <span class="label">Tributo: {{ user.gaming.tribute }}</span>
+              <span class="label">Tributo: {{ user.gaming.tribute || 0 }}</span>
             </a>
           </li>
           <li tooltip="Cantidad de 'Esto apesta' que puedes dar" tooltip-placement="bottom">
             <a>
               <span class="icon"><i class="fa fa-trash"></i></span>
-              <span class="label">Mierda: {{ user.gaming.shit }}</span>
+              <span class="label">Mierda: {{ user.gaming.shit || 0 }}</span>
             </a>
           </li>
         </ul>
