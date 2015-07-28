@@ -94,9 +94,10 @@
         display: inline-block;
         font: inherit;
         font-size: 14px;
-        line-height: 18px;
+        line-height: 22px;
         font-weight: 600;
-        margin-bottom: 2px;
+        vertical-align: middle;
+        margin-right: 5px;
       }
 
       .description {
@@ -108,6 +109,7 @@
         display: inline-block;
         font-size: 13px;
         font-weight: 600;
+        color: @brand-primary;
       }
 
       .role-labels {
@@ -120,6 +122,10 @@
         li {
           margin-right: 5px;
           display: inline-block;
+
+          .label {
+            padding: .1em .6em .2em;
+          }
 
           .label.label-default {
             background: transparent;
@@ -273,6 +279,7 @@
       position: absolute;
       margin-top: 3px;
       margin-left: 0.8em;
+      font-size: 13px;
     }
 
     .date {

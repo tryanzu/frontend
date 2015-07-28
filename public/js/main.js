@@ -1,22 +1,5 @@
 var directives = angular.module('directivesModule', []);
 
-directives.directive('sgEnter', function() {
-  return {
-    link: function(scope, element, attrs) {
-      var mh_window = $('.message-history');
-      element.bind("keydown keypress", function(event) {
-        if(event.which === 13) {
-          scope.$apply(function(){
-            scope.$eval(attrs.sgEnter, {'event': event});
-          });
-          mh_window.scrollTop(mh_window[0].scrollHeight);
-          event.preventDefault();
-        }
-      });
-    }
-  };
-});
-
 directives.directive('adjustHeight', function($window, $document, $timeout) {
 	return {
 		restrict: 'A',
@@ -43,6 +26,35 @@ directives.directive('adjustHeight', function($window, $document, $timeout) {
       });
 		}
 	};
+});
+
+directives.directive('adjustHeightChat', function($window, $document, $timeout) {
+  return {
+    restrict: 'A',
+    link: function(scope, element, attrs) {
+      scope.calculate = function() {
+        var top = $(element).offset().top;
+        var height = $(window).height();
+        var footer = $('div.footer').outerHeight();
+        var neededHeight = height - top - footer;
+        console.log(top, height, footer, neededHeight);
+
+        $(element).css('height', neededHeight);
+      };
+      $timeout(function(){
+        scope.calculate();
+      }, 100);
+
+      $window.addEventListener('resize', function() {
+        scope.calculate();
+      });
+
+      // Listen for possible container size changes
+      scope.$on('changedContainers', function() {
+        scope.calculate();
+      });
+    }
+  };
 });
 
 directives.directive('adjustHeightFeed', function($window, $document) {
@@ -3140,11 +3152,13 @@ var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
     selected: null
   };
   $scope.messages = [];
-  $scope.message = '';
+  $scope.message = {
+    content: '',
+    send_on_enter: true
+  };
   $scope.show_details = true;
 
   $scope.members = [];
-
   $scope.online_members = 0;
 
   $scope.countOnline = function() {
@@ -3161,7 +3175,7 @@ var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
 
   $scope.changeChannel = function(channel) {
     $scope.channel.selected = channel;
-    var messagesRef = new Firebase(firebase_url + 'messages/' + channel.$id).limit(150);
+    var messagesRef = new Firebase(firebase_url + 'messages/' + channel.$id).limitToLast(100);
     $scope.messages = $firebaseArray(messagesRef);
 
     $scope.messages.$loaded().then(function(x) {
@@ -3204,12 +3218,12 @@ var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
   };
 
   $scope.addMessage = function() {
-    if($scope.message !== '') {
+    if($scope.message.content !== '') {
       date = new Date();
-      var new_message = {author: {username: $scope.user.info.username, image: $scope.user.info.image}, content: $scope.message, created_at: date.getTime()}
+      var new_message = {author: {username: $scope.user.info.username, image: $scope.user.info.image}, content: $scope.message.content, created_at: date.getTime()}
       //console.log(new_message);
       $scope.messages.$add(new_message);
-      $scope.message = '';
+      $scope.message.content = '';
     }
   }
 
@@ -3230,8 +3244,24 @@ var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
 }];
 
 var chatModule = angular.module('chatModule', ["firebase"]);
-
 chatModule.controller('ChatController', ChatController);
+
+chatModule.directive('sgEnter', function() {
+  return {
+    link: function(scope, element, attrs) {
+      var mh_window = $('.message-history');
+      element.bind("keydown keypress", function(event) {
+        if(event.which === 13) {
+          scope.$apply(function(){
+            scope.$eval(attrs.sgEnter, {'event': event});
+          });
+          mh_window.scrollTop(mh_window[0].scrollHeight);
+          event.preventDefault();
+        }
+      });
+    }
+  };
+});
 
 // @codekit-prepend "common/directives"
 // @codekit-prepend "common/filters"
