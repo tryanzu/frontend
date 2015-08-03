@@ -243,6 +243,11 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
       $scope.reloadPost();
     });
 
+    // If logged, don't show categories
+    if($scope.user.isLogged) {
+      $scope.status.show_categories = false;
+    }
+
   	// Resolve categories though
   	Category.query(function(data) {
   		$scope.resolving.categories = false;

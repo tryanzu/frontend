@@ -1476,7 +1476,7 @@ marked.defaults = {
   tables: true,
   breaks: false,
   pedantic: false,
-  sanitize: true,
+  sanitize: false,
   sanitizer: null,
   mangle: true,
   smartLists: false,
@@ -2507,6 +2507,11 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
       $scope.reloadPost();
     });
 
+    // If logged, don't show categories
+    if($scope.user.isLogged) {
+      $scope.status.show_categories = false;
+    }
+
   	// Resolve categories though
   	Category.query(function(data) {
   		$scope.resolving.categories = false;
@@ -3205,13 +3210,15 @@ var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
     });
 
     if($scope.user.isLogged) {
+      //console.log($scope.user.info);
       var amOnline = new Firebase(firebase_url + '.info/connected');
       var statusRef = new Firebase(firebase_url + 'members/' + channel.$id + '/' + $scope.user.info.id);
 
       amOnline.on('value', function(snapshot) {
         if(snapshot.val()) {
-          statusRef.onDisconnect().set({username: $scope.user.info.username, image: $scope.user.info.image, status: "offline"});
-          statusRef.set({username: $scope.user.info.username, image: $scope.user.info.image, status: "online"});
+          var image = $scope.user.info.image || "";
+          statusRef.onDisconnect().set({username: $scope.user.info.username, image: image, status: "offline"});
+          statusRef.set({username: $scope.user.info.username, image: image, status: "online"});
         }
       });
     }
@@ -3219,11 +3226,20 @@ var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
 
   $scope.addMessage = function() {
     if($scope.message.content !== '') {
-      date = new Date();
-      var new_message = {author: {username: $scope.user.info.username, image: $scope.user.info.image}, content: $scope.message.content, created_at: date.getTime()}
+      var image = $scope.user.info.image || "";
+      var new_message = {
+        author: {
+          id: $scope.user.info.id,
+          username: $scope.user.info.username,
+          image: image
+        },
+        content: $scope.message.content,
+        created_at: Firebase.ServerValue.TIMESTAMP
+      };
       //console.log(new_message);
-      $scope.messages.$add(new_message);
-      $scope.message.content = '';
+      $scope.messages.$add(new_message).then(function(ref) {
+        $scope.message.content = '';
+      });
     }
   }
 
@@ -3232,7 +3248,6 @@ var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
   }
 
   // Initialization
-  var date = new Date();
   var ref = new Firebase(firebase_url + 'chat');
   var channelsRef = new Firebase(firebase_url + 'channels');
 

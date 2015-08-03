@@ -183,3 +183,51 @@
 .btn.btn-round {
   border-radius: 1.5em;
 }
+
+.sgi {
+  background: url('/images/icons.png') 0 0;
+  background-size: 24px auto;
+  width: 12px;
+  height: 12px;
+  display: inline-block;
+  padding-right: 4px;
+
+  &.gray {
+    background-position: 0 -12px;
+    &.shit {
+      background-position: -12px -12px;
+    }
+  }
+
+  &.shit {
+    background-position: -12px 0;
+  }
+
+  &.big {
+    background-size: 30px auto;
+    width: 15px;
+    height: 15px;
+
+    &.shit {
+      background-position: -15px 0;
+    }
+  }
+}
+
+.liked .sgi {
+  &.gray {
+    background-position: 0 -96px;
+  }
+}
+
+.user-mention {
+  background-color: @brand-primary-lighter;
+  border-radius: 3px;
+  padding: 1px 3px;
+}
+.active {
+  .user-mention {
+    background-color: lighten(@brand-warning, 40%);
+    color: @brand-warning;
+  }
+}

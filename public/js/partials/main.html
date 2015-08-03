@@ -343,13 +343,18 @@
                         <img class="avatar" ng-src="{{ comment.author.image }}" alt="{{ comment.author.username }}" ng-if="comment.author.image">
                         <span class="avatar" title="{{ comment.author.username }}" ng-if="!comment.author.image">{{ comment.author.username[0] }}</span>
                       </a>
-                      <span class="username">
+                      <div class="username">
                         <a href="/u/{{ comment.author.username }}/{{ comment.author.id }}" title="Perfil de {{ comment.author.username }}">
                           <strong>{{ comment.author.username }}</strong>
                         </a>
-                        <span class="hidden">&#8226; Spartan Geek</span>
-                        <br>{{ comment.author.description }}
-                      </span>
+                        <span class="level hidden">&#8226; Spartan Commander</span>
+                        <ul class="role-labels hidden" ng-if="post.author.roles.length > 0">
+                          <li ng-repeat="role in post.author.roles" ng-if="role !== 'registered'">
+                            <span class="label label-default" ng-class="role">{{role}}</span>
+                          </li>
+                        </ul>
+                        <div>{{ comment.author.description }}</div>
+                      </div>
                     </div>
                     <div class="content" marked="comment.content"></div>
 
@@ -382,10 +387,10 @@
                           <span>{{ comment.votes.down }} {{comment.votes.down==1?'persona piensa':'personas piensan'}} que esto apesta</span>
                         <li>
                         <li ng-if="comment.liked != -1 && comment.author.id != user.info.id && user.gaming.tribute > 0">
-                          <a href="" ng-click="comment_vote(post.id, comment, 'up')" ng-class="{'liked': comment.liked == 1}"><i class="fa fa-thumbs-up"></i> Me gusta</a>
+                          <a href="" ng-click="comment_vote(post.id, comment, 'up')" ng-class="{'liked': comment.liked == 1}"><i class="sgi gray"></i> Me gusta</a>
                         </li>
                         <li ng-if="comment.liked != 1 && comment.author.id != user.info.id && user.gaming.shit > 0">
-                          <a href="" ng-click="comment_vote(post.id, comment, 'down')" ng-class="{'hated': comment.liked == -1}"><i class="fa fa-trash"></i> Esto apesta</a>
+                          <a href="" ng-click="comment_vote(post.id, comment, 'down')" ng-class="{'hated': comment.liked == -1}"><i class="sgi gray shit"></i> Esto apesta</a>
                         </li>
                         <li ng-if="comment.author.id != user.info.id">
                           <a href="" ng-click="reply_to(comment.author.username)"><i class="fa fa-reply"></i> Responder</a>
