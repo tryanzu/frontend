@@ -173,25 +173,27 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
         var pending = $scope.status.pending.$value;
 
         Feed.get({limit: pending, before: $scope.status.newer_post_date, category: $scope.category.slug}, function(data) {
-          for(p in data.feed) {
-            for(c in $scope.categories) {
-              if (data.feed[p].categories[0] == $scope.categories[c].slug) {
-                data.feed[p].category = {name: $scope.categories[c].name, color: $scope.categories[c].color, slug: $scope.categories[c].slug}
-                break;
-              }
-            }
-            data.feed[p].unread = true;
-          }
-          $timeout(function() {
+          if(data.feed.length > 0) {
             for(p in data.feed) {
-              data.feed[p].unread = false;
+              for(c in $scope.categories) {
+                if (data.feed[p].categories[0] == $scope.categories[c].slug) {
+                  data.feed[p].category = {name: $scope.categories[c].name, color: $scope.categories[c].color, slug: $scope.categories[c].slug}
+                  break;
+                }
+              }
+              data.feed[p].unread = true;
             }
-          }, 800);
+            $timeout(function() {
+              for(p in data.feed) {
+                data.feed[p].unread = false;
+              }
+            }, 800);
 
-          $scope.status.newer_post_date = get_newer_date(data.feed);
+            $scope.status.newer_post_date = get_newer_date(data.feed);
 
-          $scope.posts = data.feed.concat($scope.posts);
-          $scope.offset = $scope.offset + pending;
+            $scope.posts = data.feed.concat($scope.posts);
+            $scope.offset = $scope.offset + pending;
+          }
 
           $scope.resolving.newer = false;
           $('.discussions-list').animate({ scrollTop: 0}, 100);
