@@ -195,6 +195,7 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
             $scope.offset = $scope.offset + pending;
           }
 
+          $scope.status.pending.$value = 0;
           $scope.resolving.newer = false;
           $('.discussions-list').animate({ scrollTop: 0}, 100);
         });
