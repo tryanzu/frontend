@@ -4,11 +4,13 @@ var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
     selected: null
   };
   $scope.messages = [];
-  $scope.message = '';
+  $scope.message = {
+    content: '',
+    send_on_enter: true
+  };
   $scope.show_details = true;
 
   $scope.members = [];
-
   $scope.online_members = 0;
 
   $scope.countOnline = function() {
@@ -25,7 +27,7 @@ var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
 
   $scope.changeChannel = function(channel) {
     $scope.channel.selected = channel;
-    var messagesRef = new Firebase(firebase_url + 'messages/' + channel.$id).limit(150);
+    var messagesRef = new Firebase(firebase_url + 'messages/' + channel.$id).limitToLast(100);
     $scope.messages = $firebaseArray(messagesRef);
 
     $scope.messages.$loaded().then(function(x) {
@@ -55,25 +57,36 @@ var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
     });
 
     if($scope.user.isLogged) {
+      //console.log($scope.user.info);
       var amOnline = new Firebase(firebase_url + '.info/connected');
       var statusRef = new Firebase(firebase_url + 'members/' + channel.$id + '/' + $scope.user.info.id);
 
       amOnline.on('value', function(snapshot) {
         if(snapshot.val()) {
-          statusRef.onDisconnect().set({username: $scope.user.info.username, image: $scope.user.info.image, status: "offline"});
-          statusRef.set({username: $scope.user.info.username, image: $scope.user.info.image, status: "online"});
+          var image = $scope.user.info.image || "";
+          statusRef.onDisconnect().set({username: $scope.user.info.username, image: image, status: "offline"});
+          statusRef.set({username: $scope.user.info.username, image: image, status: "online"});
         }
       });
     }
   };
 
   $scope.addMessage = function() {
-    if($scope.message !== '') {
-      date = new Date();
-      var new_message = {author: {username: $scope.user.info.username, image: $scope.user.info.image}, content: $scope.message, created_at: date.getTime()}
+    if($scope.message.content !== '') {
+      var image = $scope.user.info.image || "";
+      var new_message = {
+        author: {
+          id: $scope.user.info.id,
+          username: $scope.user.info.username,
+          image: image
+        },
+        content: $scope.message.content,
+        created_at: Firebase.ServerValue.TIMESTAMP
+      };
       //console.log(new_message);
-      $scope.messages.$add(new_message);
-      $scope.message = '';
+      $scope.messages.$add(new_message).then(function(ref) {
+        $scope.message.content = '';
+      });
     }
   }
 
@@ -82,7 +95,6 @@ var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
   }
 
   // Initialization
-  var date = new Date();
   var ref = new Firebase(firebase_url + 'chat');
   var channelsRef = new Firebase(firebase_url + 'channels');
 
@@ -94,5 +106,25 @@ var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
 }];
 
 var chatModule = angular.module('chatModule', ["firebase"]);
-
 chatModule.controller('ChatController', ChatController);
+
+chatModule.directive('sgEnter', function() {
+  return {
+    /*scope: {
+      'sg-send': '='
+    },*/
+    link: function(scope, element, attrs) {
+      var mh_window = $('.message-history');
+      console.log(scope.message.send_on_enter);
+      element.bind("keydown keypress", function(event) {
+        if(event.which === 13 && scope.message.send_on_enter) {
+          scope.$apply(function(){
+            scope.$eval(attrs.sgEnter, {'event': event});
+          });
+          mh_window.scrollTop(mh_window[0].scrollHeight);
+          event.preventDefault();
+        }
+      });
+    }
+  };
+});
