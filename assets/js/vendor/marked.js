@@ -1242,7 +1242,7 @@ marked.defaults = {
   tables: true,
   breaks: false,
   pedantic: false,
-  sanitize: true,
+  sanitize: false,
   sanitizer: null,
   mangle: true,
   smartLists: false,

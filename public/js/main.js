@@ -1,22 +1,5 @@
 var directives = angular.module('directivesModule', []);
 
-directives.directive('sgEnter', function() {
-  return {
-    link: function(scope, element, attrs) {
-      var mh_window = $('.message-history');
-      element.bind("keydown keypress", function(event) {
-        if(event.which === 13) {
-          scope.$apply(function(){
-            scope.$eval(attrs.sgEnter, {'event': event});
-          });
-          mh_window.scrollTop(mh_window[0].scrollHeight);
-          event.preventDefault();
-        }
-      });
-    }
-  };
-});
-
 directives.directive('adjustHeight', function($window, $document, $timeout) {
 	return {
 		restrict: 'A',
@@ -43,6 +26,35 @@ directives.directive('adjustHeight', function($window, $document, $timeout) {
       });
 		}
 	};
+});
+
+directives.directive('adjustHeightChat', function($window, $document, $timeout) {
+  return {
+    restrict: 'A',
+    link: function(scope, element, attrs) {
+      scope.calculate = function() {
+        var top = $(element).offset().top;
+        var height = $(window).height();
+        var footer = $('div.footer').outerHeight();
+        var neededHeight = height - top - footer;
+        console.log(top, height, footer, neededHeight);
+
+        $(element).css('height', neededHeight);
+      };
+      $timeout(function(){
+        scope.calculate();
+      }, 100);
+
+      $window.addEventListener('resize', function() {
+        scope.calculate();
+      });
+
+      // Listen for possible container size changes
+      scope.$on('changedContainers', function() {
+        scope.calculate();
+      });
+    }
+  };
 });
 
 directives.directive('adjustHeightFeed', function($window, $document) {
@@ -1464,7 +1476,7 @@ marked.defaults = {
   tables: true,
   breaks: false,
   pedantic: false,
-  sanitize: true,
+  sanitize: false,
   sanitizer: null,
   mangle: true,
   smartLists: false,
@@ -2495,6 +2507,11 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
       $scope.reloadPost();
     });
 
+    // If logged, don't show categories
+    if($scope.user.isLogged) {
+      $scope.status.show_categories = false;
+    }
+
   	// Resolve categories though
   	Category.query(function(data) {
   		$scope.resolving.categories = false;
@@ -3140,11 +3157,13 @@ var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
     selected: null
   };
   $scope.messages = [];
-  $scope.message = '';
+  $scope.message = {
+    content: '',
+    send_on_enter: true
+  };
   $scope.show_details = true;
 
   $scope.members = [];
-
   $scope.online_members = 0;
 
   $scope.countOnline = function() {
@@ -3161,7 +3180,7 @@ var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
 
   $scope.changeChannel = function(channel) {
     $scope.channel.selected = channel;
-    var messagesRef = new Firebase(firebase_url + 'messages/' + channel.$id).limit(150);
+    var messagesRef = new Firebase(firebase_url + 'messages/' + channel.$id).limitToLast(100);
     $scope.messages = $firebaseArray(messagesRef);
 
     $scope.messages.$loaded().then(function(x) {
@@ -3191,25 +3210,36 @@ var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
     });
 
     if($scope.user.isLogged) {
+      //console.log($scope.user.info);
       var amOnline = new Firebase(firebase_url + '.info/connected');
       var statusRef = new Firebase(firebase_url + 'members/' + channel.$id + '/' + $scope.user.info.id);
 
       amOnline.on('value', function(snapshot) {
         if(snapshot.val()) {
-          statusRef.onDisconnect().set({username: $scope.user.info.username, image: $scope.user.info.image, status: "offline"});
-          statusRef.set({username: $scope.user.info.username, image: $scope.user.info.image, status: "online"});
+          var image = $scope.user.info.image || "";
+          statusRef.onDisconnect().set({username: $scope.user.info.username, image: image, status: "offline"});
+          statusRef.set({username: $scope.user.info.username, image: image, status: "online"});
         }
       });
     }
   };
 
   $scope.addMessage = function() {
-    if($scope.message !== '') {
-      date = new Date();
-      var new_message = {author: {username: $scope.user.info.username, image: $scope.user.info.image}, content: $scope.message, created_at: date.getTime()}
+    if($scope.message.content !== '') {
+      var image = $scope.user.info.image || "";
+      var new_message = {
+        author: {
+          id: $scope.user.info.id,
+          username: $scope.user.info.username,
+          image: image
+        },
+        content: $scope.message.content,
+        created_at: Firebase.ServerValue.TIMESTAMP
+      };
       //console.log(new_message);
-      $scope.messages.$add(new_message);
-      $scope.message = '';
+      $scope.messages.$add(new_message).then(function(ref) {
+        $scope.message.content = '';
+      });
     }
   }
 
@@ -3218,7 +3248,6 @@ var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
   }
 
   // Initialization
-  var date = new Date();
   var ref = new Firebase(firebase_url + 'chat');
   var channelsRef = new Firebase(firebase_url + 'channels');
 
@@ -3230,8 +3259,28 @@ var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
 }];
 
 var chatModule = angular.module('chatModule', ["firebase"]);
-
 chatModule.controller('ChatController', ChatController);
+
+chatModule.directive('sgEnter', function() {
+  return {
+    /*scope: {
+      'sg-send': '='
+    },*/
+    link: function(scope, element, attrs) {
+      var mh_window = $('.message-history');
+      console.log(scope.message.send_on_enter);
+      element.bind("keydown keypress", function(event) {
+        if(event.which === 13 && scope.message.send_on_enter) {
+          scope.$apply(function(){
+            scope.$eval(attrs.sgEnter, {'event': event});
+          });
+          mh_window.scrollTop(mh_window[0].scrollHeight);
+          event.preventDefault();
+        }
+      });
+    }
+  };
+});
 
 // @codekit-prepend "common/directives"
 // @codekit-prepend "common/filters"
@@ -3276,23 +3325,23 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider) {
 
   $routeProvider.when('/', {
-    templateUrl: '/js/partials/main.html?v=132b',
+    templateUrl: '/js/partials/main.html?v=133',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/c/:slug', {
-    templateUrl: '/js/partials/main.html?v=132b',
+    templateUrl: '/js/partials/main.html?v=133',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/p/:slug/:id/:comment_position?', {
-    templateUrl: '/js/partials/main.html?v=132b',
+    templateUrl: '/js/partials/main.html?v=133',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/u/:username/:id', {
-    templateUrl: '/js/partials/profile.html',
+    templateUrl: '/js/partials/profile.html?v=133',
     controller: 'UserController'
   });
   $routeProvider.when('/chat', {
-    templateUrl: '/js/partials/chat.html',
+    templateUrl: '/js/partials/chat.html?v=133',
     controller: 'ChatController'
   });
   $routeProvider.when('/post/create/:cat_slug?', {

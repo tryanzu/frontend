@@ -1,22 +1,5 @@
 var directives = angular.module('directivesModule', []);
 
-directives.directive('sgEnter', function() {
-  return {
-    link: function(scope, element, attrs) {
-      var mh_window = $('.message-history');
-      element.bind("keydown keypress", function(event) {
-        if(event.which === 13) {
-          scope.$apply(function(){
-            scope.$eval(attrs.sgEnter, {'event': event});
-          });
-          mh_window.scrollTop(mh_window[0].scrollHeight);
-          event.preventDefault();
-        }
-      });
-    }
-  };
-});
-
 directives.directive('adjustHeight', function($window, $document, $timeout) {
 	return {
 		restrict: 'A',
@@ -43,6 +26,35 @@ directives.directive('adjustHeight', function($window, $document, $timeout) {
       });
 		}
 	};
+});
+
+directives.directive('adjustHeightChat', function($window, $document, $timeout) {
+  return {
+    restrict: 'A',
+    link: function(scope, element, attrs) {
+      scope.calculate = function() {
+        var top = $(element).offset().top;
+        var height = $(window).height();
+        var footer = $('div.footer').outerHeight();
+        var neededHeight = height - top - footer;
+        console.log(top, height, footer, neededHeight);
+
+        $(element).css('height', neededHeight);
+      };
+      $timeout(function(){
+        scope.calculate();
+      }, 100);
+
+      $window.addEventListener('resize', function() {
+        scope.calculate();
+      });
+
+      // Listen for possible container size changes
+      scope.$on('changedContainers', function() {
+        scope.calculate();
+      });
+    }
+  };
 });
 
 directives.directive('adjustHeightFeed', function($window, $document) {

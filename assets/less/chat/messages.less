@@ -2,8 +2,7 @@
   overflow-y: auto;
   overflow-x: hidden;
   height: 100%;
-  padding: 0 0 1em 0;
-  height: 520px;
+  padding: 0;
 
   .message {
     position: relative;
@@ -77,14 +76,34 @@
   }
 }
 
+.footer {
+  display: inline-block;
+  width: 100%;
+  padding-top: 0.2em;
+}
+
 .input-box {
-  margin-bottom: 1em;
+  margin-bottom: 0.3em;
   padding-left: 2.5em;
+
+  .input-group {
+    width: 100%;
+
+    .btn.btn-send {
+      height: 43px;
+      margin-left: -3px;
+    }
+  }
+
+  label {
+    font-size: 13px;
+    color: @brand-primary-light-text;
+  }
 }
 
 .input-box_text {
   width: 100%;
-  line-height: 1.2rem;
+  line-height: 1.2em;
   border: 2px solid #e0e0e0;
   border-radius: 5px;
   background-clip: padding-box;

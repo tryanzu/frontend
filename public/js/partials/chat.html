@@ -25,7 +25,7 @@
         <div class="index-toolbar-action">
           <div class="row">
             <div class="col-md-6 col-xs-7">
-              <h3 style="margin-top: 0">{{ channel.selected.name }}</h3>
+              <h3 style="margin-top: 0">{{ channel.selected.name || "#" }}</h3>
             </div>
             <div class="col-md-6 col-xs-5 text-right">
               <span class="users-details" style="margin-right: 1em;">
@@ -39,15 +39,15 @@
           </div>
         </div>
       </div>
-      <div>
+      <div adjust-height-chat>
         <div class="message-history">
           <div class="message" ng-repeat="m in messages" ng-class="::{'compact':messages[$index-1].author.username == m.author.username}">
-            <a href="/u/{{ m.author.username }}/{{ m.author.id }}" class="author" ng-if=":: messages[$index-1].author.username != m.author.username">
+            <a href="/u/{{ m.author.username }}/{{ m.author.id }}" class="author" target="_blank" ng-if=":: messages[$index-1].author.username != m.author.username">
               <span class="avatar" title="{{ m.author.username }}" ng-if="!m.author.image">{{ m.author.username[0] }}</span>
               <img class="avatar" ng-src="{{ m.author.image }}" alt="{{ m.author.username }}" ng-if="m.author.image">
             </a>
             <div class="meta" ng-if=":: messages[$index-1].author.username != m.author.username">
-              <a href="" class="username">{{ m.author.username }}</a>
+              <a href="/u/{{ m.author.username }}/{{ m.author.id }}" class="username" target="_blank">{{ m.author.username }}</a>
               <span class="timestamp" tooltip="{{ m.created_at | date_at }}" tooltip-popup-delay="500" tooltip-placement="right">{{ m.created_at | date:'H:mm' }}</span>
               <span class="star"></span>
             </div>
@@ -58,7 +58,17 @@
 
         <div class="footer">
           <div class="input-box">
-            <input type="text" ng-model="message" class="input-box_text" sg-enter="addMessage()" placeholder="Escribe...">
+            <div class="input-group">
+              <input type="text" ng-model="message.content" class="input-box_text" sg-enter="addMessage()" sg-send="message.send_on_enter" placeholder="Escribe...">
+              <span class="input-group-btn" ng-if="!message.send_on_enter">
+                <button class="btn btn-primary btn-send" type="button" ng-click="addMessage()">Enviar</button>
+              </span>
+            </div>
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" ng-model="message.send_on_enter"> Presionar 'Enter' para mandar el mensaje
+              </label>
+            </div>
           </div>
         </div>
       </div>
