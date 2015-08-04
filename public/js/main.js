@@ -3325,23 +3325,23 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider) {
 
   $routeProvider.when('/', {
-    templateUrl: '/js/partials/main.html?v=132b',
+    templateUrl: '/js/partials/main.html?v=133',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/c/:slug', {
-    templateUrl: '/js/partials/main.html?v=132b',
+    templateUrl: '/js/partials/main.html?v=133',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/p/:slug/:id/:comment_position?', {
-    templateUrl: '/js/partials/main.html?v=132b',
+    templateUrl: '/js/partials/main.html?v=133',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/u/:username/:id', {
-    templateUrl: '/js/partials/profile.html',
+    templateUrl: '/js/partials/profile.html?v=133',
     controller: 'UserController'
   });
   $routeProvider.when('/chat', {
-    templateUrl: '/js/partials/chat.html',
+    templateUrl: '/js/partials/chat.html?v=133',
     controller: 'ChatController'
   });
   $routeProvider.when('/post/create/:cat_slug?', {
