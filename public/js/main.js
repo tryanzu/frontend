@@ -2434,8 +2434,9 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
     $scope.get_newer = function() {
       if(!$scope.resolving.newer) {
         $scope.resolving.newer = true;
+        var pending = $scope.status.pending.$value;
 
-        Feed.get({limit: $scope.status.pending.$value, before: $scope.status.newer_post_date, category: $scope.category.slug}, function(data) {
+        Feed.get({limit: pending, before: $scope.status.newer_post_date, category: $scope.category.slug}, function(data) {
           for(p in data.feed) {
             for(c in $scope.categories) {
               if (data.feed[p].categories[0] == $scope.categories[c].slug) {
@@ -2454,9 +2455,8 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
           $scope.status.newer_post_date = get_newer_date(data.feed);
 
           $scope.posts = data.feed.concat($scope.posts);
-          $scope.offset = $scope.offset + $scope.status.pending.$value;
+          $scope.offset = $scope.offset + pending;
 
-          $scope.status.pending.$value = 0;
           $scope.resolving.newer = false;
           $('.discussions-list').animate({ scrollTop: 0}, 100);
         });
