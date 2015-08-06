@@ -121,3 +121,17 @@ directives.directive('myRefresh', ['$location', function($location) {
     }
   }
 }]);
+
+directives.directive('mentions', function () {
+  return {
+    restrict: 'A',
+    link: function (scope, element, attr) {
+      scope.$on('$viewContentLoaded', function() {
+        console.log(element);
+        var mentions = $('element').find('a.user-mention');
+        console.log(mentions);
+        mentions.attr("href", "/u/");
+      });
+    }
+  };
+});

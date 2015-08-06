@@ -347,16 +347,16 @@
                         <a href="/u/{{ comment.author.username }}/{{ comment.author.id }}" title="Perfil de {{ comment.author.username }}">
                           <strong>{{ comment.author.username }}</strong>
                         </a>
-                        <span class="level hidden">&#8226; Spartan Commander</span>
-                        <ul class="role-labels hidden" ng-if="post.author.roles.length > 0">
-                          <li ng-repeat="role in post.author.roles" ng-if="role !== 'registered'">
+                        <span class="level">&#8226; {{ misc.gaming.rules[comment.author.level].name }}</span>
+                        <ul class="role-labels" ng-if="comment.author.roles.length > 0">
+                          <li ng-repeat="role in comment.author.roles" ng-if="role !== 'registered'">
                             <span class="label label-default" ng-class="role">{{role}}</span>
                           </li>
                         </ul>
                         <div>{{ comment.author.description }}</div>
                       </div>
                     </div>
-                    <div class="content" marked="comment.content"></div>
+                    <div class="content" marked="comment.content" mentions></div>
 
                     <div class="img-preview" ng-if="comment.attach">
                       <p>Vista previa</p>
@@ -409,7 +409,7 @@
                 <div class="col-md-9">
                   <div ng-show="(post.comments.count > 0 || force_comment == true || true) && !post.comments_blocked" ng-if="user.isLogged">
                     <div class="idiot-wizzy">
-                      <textarea id="comment-content" placeholder="Escribe tu comentario..." class="form-control flexible-height content" ng-model="comment.content" ng-disabled="waiting_comment"></textarea>
+                      <textarea id="comment-content" placeholder="Escribe tu comentario..." class="form-control flexible-height content" ng-model="comment.content" ng-disabled="waiting_comment" msd-elastic></textarea>
                       <div class="actions">
                         <ul>
                           <li ng-show="comment.content != ''">

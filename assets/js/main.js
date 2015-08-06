@@ -7,6 +7,7 @@
 // @codekit-prepend "vendor/ui-bootstrap-tpls-0.13.0.min"
 // @codekit-prepend "vendor/angular-facebook"
 // @codekit-prepend "vendor/ng-file-upload-all.min.js"
+// @codekit-prepend "vendor/elastic.js"
 // @codekit-prepend "modules/feed/init"
 // @codekit-prepend "modules/categories/init"
 // @codekit-prepend "modules/reader/init"
@@ -34,7 +35,8 @@ var boardApplication = angular.module('board', [
   'angular-jwt',
   'firebase',
   'ngRoute',
-  'ngFileUpload'
+  'ngFileUpload',
+  'monospaced.elastic'
 ]);
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider',
