@@ -5,6 +5,13 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post) {
 	$scope.waiting = true;
   $scope.waiting_comment = false;
 
+  $scope.people = [
+    { label: 'AcidKid', username: 'AcidKid'},
+    { label: 'Alberto', username: 'Alberto'},
+    { label: 'Drak', username: 'Drak'},
+    { label: 'fernandez14', username: 'fernandez14'}
+  ];
+
 	$scope.forceFirstComment = function() {
 		// TO-DO analytics about this trigger
 		// Force to show the comment box
@@ -13,13 +20,14 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post) {
 
   $scope.show_composer = function() {
     $('.current-article').animate({ scrollTop: $('.current-article')[0].scrollHeight}, 100);
+    $('#comment-content').focus();
   }
 
-  $scope.reply_to = function(username) {
+  $scope.reply_to = function(username, comment) {
     if($scope.comment.content == '') {
-      $scope.comment.content = '@' + username + ' ';
+      $scope.comment.content = '@' + username + '#' + comment + ' ';
     } else {
-      $scope.comment.content = $scope.comment.content + '\n@' + username + ' ';
+      $scope.comment.content = $scope.comment.content + '\n\n@' + username + '#' + comment + ' ';
     }
     $('#comment-content').focus();
     $('.current-article').animate({ scrollTop: $('.current-article')[0].scrollHeight}, 100);
@@ -80,7 +88,30 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post) {
   $scope.publish = function() {
     if(!$scope.waiting_comment) {
       $scope.waiting_comment = true;
-      $scope.publishComment().then(function(data) {
+      $scope.publishComment().then(function(response) {
+
+        console.log(response);
+        console.log($scope.user.info);
+
+        var date = new Date();
+        $scope.post.comments.count = $scope.post.comments.count + 1;
+        $scope.post.comments.set.push({
+          user_id: $scope.user.info.id,
+          author: {
+            id: $scope.user.info.id,
+            username: $scope.user.info.username,
+            email: $scope.user.info.email,
+            description: $scope.user.info.description || "Sólo otro Spartan Geek más",
+            image: $scope.user.info.image,
+            roles: $scope.user.info.roles,
+            level: $scope.user.info.gaming.level
+          },
+          content: response.data.message,
+          created_at: date.toISOString(),
+          position: $scope.post.comments.count - 1,
+          votes: {down: 0, up: 0}
+        });
+
         var comment = $scope.post.comments.set[$scope.post.comments.count - 1];
         addImagePreview(comment);
         // Allow to comment once again
@@ -98,23 +129,6 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post) {
 	$scope.publishComment = function() {
     // Check for the post integrity and then send the comment and return the promise
     if ('id' in $scope.post) {
-      var date = new Date();
-      $scope.post.comments.count = $scope.post.comments.count + 1;
-      $scope.post.comments.set.push({
-        user_id: $scope.user.info.id,
-        author: {
-          id: $scope.user.info.id,
-          username: $scope.user.info.username,
-          email: $scope.user.info.email,
-          description: $scope.user.info.description,
-          image: $scope.user.info.image
-        },
-        content: $scope.comment.content,
-        created_at: date.toISOString(),
-        position: $scope.post.comments.count - 1,
-        votes: {down: 0, up: 0}
-      });
-
       return $http.post(layer_path + 'post/comment/' + $scope.post.id, {content: $scope.comment.content});
     }
   };
