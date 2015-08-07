@@ -122,16 +122,57 @@ directives.directive('myRefresh', ['$location', function($location) {
   }
 }]);
 
-directives.directive('mentions', function () {
+directives.directive('markedsg', function () {
   return {
-    restrict: 'A',
-    link: function (scope, element, attr) {
-      scope.$on('$viewContentLoaded', function() {
-        console.log(element);
-        var mentions = $('element').find('a.user-mention');
-        console.log(mentions);
-        mentions.attr("href", "/u/");
-      });
+    restrict: 'AE',
+    replace: true,
+    scope: {
+      markedsg: '='
+    },
+    link: function (scope, element, attrs) {
+      set(scope.markedsg || element.text() || '');
+
+      if (attrs.markedsg) {
+        scope.$watch('markedsg', set);
+      }
+
+      function unindent(text) {
+        if (!text) return text;
+
+        var lines  = text
+          .replace(/\t/g, '  ')
+          .split(/\r?\n/);
+
+        var i, l, min = null, line, len = lines.length;
+        for (i = 0; i < len; i++) {
+          line = lines[i];
+          l = line.match(/^(\s*)/)[0].length;
+          if (l === line.length) { continue; }
+          min = (l < min || min === null) ? l : min;
+        }
+
+        if (min !== null && min > 0) {
+          for (i = 0; i < len; i++) {
+            lines[i] = lines[i].substr(min);
+          }
+        }
+        return lines.join('\n');
+      }
+
+      function set(text) {
+        text = unindent(text || '');
+        var links = $('<div>' + text + '</div>');
+        links.find('a.user-mention').each(function( index ) {
+          $(this).attr("href", "/u/"+ $(this).data('username') +"/"+ $(this).data('id'));
+          if($(this).data('comment') != undefined) {
+            $(this).before('<i class="fa fa-reply comment-response" tooltip="En respuesta a"></i>')
+          }
+        });
+        text = links.html();
+        element.html(marked(text, scope.opts || null));
+      }
+
     }
   };
 });
+
