@@ -2929,6 +2929,7 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
 
   	$scope.category = {};
   	$scope.posts = [];
+    $scope.top_posts = [];
   	$scope.resolving_posts = true;
     $scope.resolving.older = false;
   	$scope.offset = 0;
@@ -2945,6 +2946,10 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
       minimized: false
     };
 
+    $scope.viewing = {
+      top_posts: false
+    };
+
     $scope.$on('status_change', function(e) {
       $scope.startupFeed($scope.category);
     });
@@ -2955,6 +2960,35 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
         $scope.$broadcast('changedContainers');
       }, 50);
     }
+
+    $scope.getTopFeed = function() {
+      $scope.resolving_posts = true;
+      $scope.top_posts = [];
+      var date = new Date();
+
+      var request_vars = {
+        limit: 30,
+        offset: 0,
+        relevant: date.getFullYear() + '-' + ("0" + (date.getMonth() + 1)).slice(-2) + '-' + ("0" + date.getDate()).slice(-2)
+      };
+
+      Feed.get(request_vars, function(response) {
+        for(p in response.feed) {
+          for(c in $scope.categories) {
+            if (response.feed[p].categories[0] == $scope.categories[c].slug) {
+              response.feed[p].category = {name: $scope.categories[c].name, color: $scope.categories[c].color, slug: $scope.categories[c].slug}
+              break;
+            }
+          }
+        }
+
+        $scope.page.title = "SpartanGeek.com | Comunidad de tecnología, geeks y más";
+        $scope.page.description = "Creamos el mejor contenido para Geeks, y lo hacemos con pasión e irreverencia de Spartanos.";
+
+        $scope.top_posts = response.feed;
+        $scope.resolving_posts = false;
+      });
+    };
 
   	$scope.startupFeed = function(category) {
   		$scope.resolving_posts = true;

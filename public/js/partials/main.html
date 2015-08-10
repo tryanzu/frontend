@@ -1,18 +1,26 @@
   <main class="main-reader">
     <div class="row row-no-padding">
-      <div class="col-md-4" ng-class="{'col-md-6': false, 'col-md-4': false, 'hidden-xs': activePostId !== null}">
+      <div class="col-md-4 col-sm-5" ng-class="{'col-md-6': false, 'col-md-4': false, 'hidden-xs': activePostId !== null}">
         <div class="row row-no-padding">
           <div class="col-md-12">
             <div class="current-board">
               <div class="title">
                 <div class="row">
-                  <div class="col-md-7 col-xs-7">
+                  <div class="col-md-7 col-xs-7 hidden">
                     <a href="/" class="btn btn-default btn-sm" ng-if="category.slug != null"><i class="fa fa-chevron-left"></i></a>
                     <h2>{{ category.name || "Todas las publicaciones" }}</h2>
                   </div>
-                  <div class="col-md-5 col-xs-5 text-right">
-                    <a href="/post/create/{{ category.slug }}" class="btn btn-primary btn-sm" ng-if="user.isLogged"><span class="label">Crear publicación</span></a>
-                    <a href="" ng-click="signIn()" class="btn btn-primary btn-sm" ng-if="!user.isLogged"><span class="label">Crear publicación</span></a>
+                  <div class="col-xs-12">
+                    <div class="btn-toolbar">
+                      <div class="btn-group">
+                        <label class="btn btn-default btn-sm" ng-model="viewing.top_posts" btn-radio="false"><span class="hidden-xs hidden-sm hidden-md label">Ver todas</span><span class="hidden-lg label">Todas</span></label>
+                        <label class="btn btn-default btn-sm" ng-model="viewing.top_posts" btn-radio="true" ng-click="getTopFeed()"><span class="hidden-xs hidden-sm hidden-md label">Ver más populares</span><span class="hidden-lg label">Más populares</span></label>
+                      </div>
+                      <a href="" class="btn btn-default btn-sm" ng-click="getTopFeed()" ng-if="viewing.top_posts"><i class="fa fa-refresh"></i></a>
+
+                      <a href="/post/create/{{ category.slug }}" class="btn btn-primary btn-sm" ng-if="user.isLogged"><span class="label">Crear publicación</span></a>
+                      <a href="" ng-click="signIn()" class="btn btn-primary btn-sm" ng-if="!user.isLogged"><span class="label">Crear publicación</span></a>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -22,7 +30,7 @@
                 <span ng-if="resolving.newer">Cargando...</span>
               </div>
 
-              <ul class="discussions-list always-visible" scroll-me="walkFeed()" ng-hide="resolving.categories" adjust-height-feed>
+              <ul class="discussions-list" scroll-me="walkFeed()" ng-hide="resolving.categories || viewing.top_posts" adjust-height-feed>
                 <li data-id="{{ post.id }}" class="discussion-summary" ng-class="{'active': post.id === $parent.activePostId, 'unread': post.unread == true}" ng-repeat="post in posts | orderBy:['pinned','-created_at']" ng-cloak>
                   <div>
                     <a href="/u/{{ post.author.username }}/{{ post.author.id }}" title class="author" data-original-title="Escrito por {{ post.author.username }} hace {{ post.created_at | timeago }}">
@@ -56,11 +64,45 @@
                 </div>
               </ul>
 
+              <ul class="discussions-list" ng-if="!resolving.categories && viewing.top_posts" adjust-height>
+                <li data-id="{{ post.id }}" class="discussion-summary" ng-class="{'active': post.id === $parent.activePostId, 'unread': post.unread == true}" ng-repeat="post in top_posts" ng-cloak>
+                  <div>
+                    <a href="/u/{{ post.author.username }}/{{ post.author.id }}" title class="author" data-original-title="Escrito por {{ post.author.username }} hace {{ post.created_at | timeago }}">
+                      <span class="avatar" title="{{ post.author.username }}" ng-if="!post.author.image">{{ post.author.username[0] }}</span>
+                      <img class="avatar" ng-src="{{ post.author.image }}" alt="{{ post.author.username }}" ng-if="post.author.image">
+                    </a>
+                    <a href="/p/{{ post.slug }}/{{ post.id }}" class="main">
+                      <h3 class="title">{{ post.title }}</h3>
+                      <ul class="info">
+                        <li class="">
+                          <span>
+                            Escrito por <span class="username">{{ post.author.username }}</span> <time>hace {{ post.created_at | timeago }}</time>
+                          </span>
+                        </li>
+                      </ul>
+                      <ul class="extra-info">
+                        <li class="category" ng-if="category.slug === '' || true">
+                          <span class="ball" ng-style="{'background-color': post.category.color}"></span>
+                          <span class="name">{{ post.category.name }}</span>
+                        </li>
+                        <li class="pinned" ng-if="post.pinned">
+                          <i class="fa fa-exclamation-circle"></i> <span>Importante</span>
+                        </li>
+                      </ul>
+                    </a>
+                    <span class="count">{{ post.comments.count }}<span class="label">{{ post.comments.count==1?'Respuesta':'Respuestas'}}</span></span>
+                  </div>
+                </li>
+                <div class="resolving" ng-if="resolving_posts">
+                  <i class="fa fa-circle-o-notch fa-spin"></i>
+                </div>
+              </ul>
+
               <div class="resolving" ng-if="resolving.categories">
                 <i class="fa fa-circle-o-notch fa-spin"></i>
               </div>
 
-              <div class="segments">
+              <div class="segments" ng-if="!viewing.top_posts">
                 <div class="row">
                   <div class="col-xs-8">
                     <h2>Categorías disponibles</h2>
@@ -85,7 +127,7 @@
         </div>
       </div>
 
-      <div class="col-md-8" ng-class="{'col-md-6': false, 'col-md-8': false, 'hidden-xs': activePostId == null}">
+      <div class="col-md-8 col-sm-7" ng-class="{'col-md-6': false, 'col-md-8': false, 'hidden-xs': activePostId == null}">
         <div class="current-article" ng-controller="ReaderViewController" adjust-height>
 
           <div class="waiting" ng-show="waiting">
