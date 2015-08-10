@@ -451,7 +451,7 @@
                 <div class="col-md-9">
                   <div ng-show="(post.comments.count > 0 || force_comment == true || true) && !post.comments_blocked" ng-if="user.isLogged">
                     <div class="idiot-wizzy">
-                      <textarea id="comment-content" placeholder="Escribe tu comentario..." class="form-control flexible-height content" ng-model="comment.content" ng-disabled="waiting_comment" msd-elastic mentio mentio-typed-text="typedTerm" mentio-items="people | filter:name:typedTerm" mentio-template-url="/js/partials/mention.html"></textarea>
+                      <textarea id="comment-content" placeholder="Escribe tu comentario..." class="form-control flexible-height content" ng-model="comment.content" ng-disabled="waiting_comment" msd-elastic></textarea>
                       <div class="actions">
                         <ul>
                           <li ng-show="comment.content != ''">
