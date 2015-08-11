@@ -122,6 +122,62 @@ directives.directive('myRefresh', ['$location', function($location) {
   }
 }]);
 
+directives.directive('markedsg', function () {
+  return {
+    restrict: 'AE',
+    replace: true,
+    scope: {
+      markedsg: '='
+    },
+    link: function (scope, element, attrs) {
+      set(scope.markedsg || element.text() || '');
+
+      if (attrs.markedsg) {
+        scope.$watch('markedsg', set);
+      }
+
+      function unindent(text) {
+        if (!text) return text;
+
+        var lines  = text
+          .replace(/\t/g, '  ')
+          .split(/\r?\n/);
+
+        var i, l, min = null, line, len = lines.length;
+        for (i = 0; i < len; i++) {
+          line = lines[i];
+          l = line.match(/^(\s*)/)[0].length;
+          if (l === line.length) { continue; }
+          min = (l < min || min === null) ? l : min;
+        }
+
+        if (min !== null && min > 0) {
+          for (i = 0; i < len; i++) {
+            lines[i] = lines[i].substr(min);
+          }
+        }
+        return lines.join('\n');
+      }
+
+      function set(text) {
+        text = unindent(text || '');
+        var links = $('<div>' + text + '</div>');
+        links.find('a.user-mention').each(function( index ) {
+          $(this).attr("href", "/u/"+ $(this).data('username') +"/"+ $(this).data('id'));
+          if($(this).data('comment') != undefined) {
+            $(this).before('<i class="fa fa-reply comment-response" tooltip="En respuesta a"></i>')
+          }
+        });
+        text = links.html();
+        element.html(marked(text, scope.opts || null));
+      }
+
+    }
+  };
+});
+
+
+
 var filters = angular.module('filtersModule', []);
 
 filters.filter('date_at', function() {
@@ -1520,11 +1576,334 @@ if (typeof module !== 'undefined' && typeof exports === 'object') {
 
 // @codekit-prepend "marked.js"
 /*
- * angular-marked 0.0.16
- * (c) 2015 J. Harshbarger
+ * angular-marked
+ * (c) 2014 J. Harshbarger
  * Licensed MIT
  */
-!function(){"use strict";"undefined"!=typeof module&&"object"==typeof exports&&(module.exports="hc.marked"),angular.module("hc.marked",[]).provider("marked",function(){var a=this;a.setRenderer=function(a){this.renderer=a},a.setOptions=function(a){this.defaults=a},a.$get=["$window","$log",function(b,c){var d=function(){return"undefined"!=typeof module&&"object"==typeof exports?require("marked"):b.marked||marked}();if(angular.isUndefined(d))return void c.error("angular-marked Error: marked not loaded.  See installation instructions.");if(a.renderer){for(var e=new d.Renderer,f=Object.keys(a.renderer),g=f.length;g--;)e[f[g]]=a.renderer[f[g]];a.defaults=a.defaults?a.defaults.renderer=e:a.defaults={renderer:e}}return d.setOptions(a.defaults),d}]}).directive("marked",["marked",function(a){return{restrict:"AE",replace:!0,scope:{opts:"=",marked:"="},link:function(b,c,d){function e(a){if(!a)return a;var b,c,d,e=a.replace(/\t/g,"  ").split(/\r?\n/),f=null,g=e.length;for(b=0;g>b;b++)d=e[b],c=d.match(/^(\s*)/)[0].length,c!==d.length&&(f=f>c||null===f?c:f);if(null!==f&&f>0)for(b=0;g>b;b++)e[b]=e[b].substr(f);return e.join("\n")}function f(d){d=e(d||""),c.html(a(d,b.opts||null))}f(b.marked||c.text()||""),d.marked&&b.$watch("marked",f)}}}])}();
+
+/* jshint undef: true, unused: true */
+/* global angular:true */
+/* global marked:true */
+/* global module */
+/* global require */
+
+(function () {
+  'use strict';
+
+  /**
+   * @ngdoc overview
+   * @name index
+   *
+   * @description
+   * AngularJS Markdown using [marked](https://github.com/chjj/marked).
+   *
+   * ## Why?
+   *
+   * I wanted to use [marked](https://github.com/chjj/marked) instead of [showdown](https://github.com/coreyti/showdown) as used in [angular-markdown-directive](https://github.com/btford/angular-markdown-directive) as well as expose the option to globally set defaults.
+   *
+   * ## How?
+   *
+   * - {@link hc.marked.directive:marked As a directive}
+   * - {@link hc.marked.service:marked As a service}
+   * - {@link hc.marked.service:markedProvider Set default options}
+   *
+   * @example
+
+      Convert markdown to html at run time.  For example:
+
+      <example module="app">
+        <file name=".html">
+          <form ng-controller="MainController">
+            Markdown:<br />
+            <textarea ng-model="my_markdown" cols="60" rows="5" class="span8" /><br />
+            Output:<br />
+            <div marked="my_markdown" />
+          </form>
+        </file>
+        <file  name=".js">
+          function MainController($scope) {
+            $scope.my_markdown = "*This* **is** [markdown](https://daringfireball.net/projects/markdown/)";
+          }
+          angular.module('app', ['hc.marked']).controller('MainController', MainController);
+        </file>
+      </example>
+
+    *
+    */
+
+    /**
+     * @ngdoc overview
+     * @name hc.marked
+     * @description # angular-marked (core module)
+       # Installation
+      First include angular-marked.js in your HTML:
+
+      ```js
+        <script src="angular-marked.js">
+      ```
+
+      Then load the module in your application by adding it as a dependency:
+
+      ```js
+      angular.module('yourApp', ['hc.marked']);
+      ```
+
+      With that you're ready to get started!
+     */
+
+  if (typeof module !== 'undefined' && typeof exports === 'object') {
+    module.exports = 'hc.marked';
+  }
+
+  angular.module('hc.marked', [])
+
+    /**
+    * @ngdoc service
+    * @name hc.marked.service:marked
+    * @requires $window
+    * @description
+    * A reference to the [marked](https://github.com/chjj/marked) parser.
+    *
+    * @example
+    <example module="app">
+      <file name=".html">
+        <div ng-controller="MainController">
+          html: {{html}}
+        </div>
+      </file>
+      <file  name=".js">
+        function MainController($scope, marked) {
+          $scope.html = marked('#TEST');
+        }
+        angular.module('app', ['hc.marked']).controller('MainController', MainController);
+      </file>
+    </example>
+   **/
+
+   /**
+   * @ngdoc service
+   * @name hc.marked.service:markedProvider
+   * @description
+   * Use `markedProvider` to change the default behavior of the {@link hc.marked.service:marked marked} service.
+   *
+   * @example
+
+    ## Example using [google-code-prettify syntax highlighter](https://code.google.com/p/google-code-prettify/) (must include google-code-prettify.js script).  Also works with [highlight.js Javascript syntax highlighter](http://highlightjs.org/).
+
+    <example module="myApp">
+    <file name=".js">
+    angular.module('myApp', ['hc.marked'])
+      .config(['markedProvider', function(markedProvider) {
+        markedProvider.setOptions({
+          gfm: true,
+          tables: true,
+          highlight: function (code) {
+            return prettyPrintOne(code);
+          }
+        });
+      }]);
+    </file>
+    <file name=".html">
+      <marked>
+      ```js
+      angular.module('myApp', ['hc.marked'])
+        .config(['markedProvider', function(markedProvider) {
+          markedProvider.setOptions({
+            gfm: true,
+            tables: true,
+            highlight: function (code) {
+              return prettyPrintOne(code);
+            }
+          });
+        }]);
+      ```
+      </marked>
+    </file>
+    </example>
+  **/
+
+  .provider('marked', function () {
+
+    var self = this;
+
+    /**
+     * @ngdoc method
+     * @name markedProvider#setOptions
+     * @methodOf hc.marked.service:markedProvider
+     *
+     * @param {object} opts Default options for [marked](https://github.com/chjj/marked#options-1).
+     */
+
+    self.setRenderer = function (opts) {
+      this.renderer = opts;
+    };
+
+    self.setOptions = function(opts) {  // Store options for later
+      this.defaults = opts;
+    };
+
+    self.$get = ['$window', '$log', function ($window, $log) {
+
+      var m =  (function() {
+
+        if (typeof module !== 'undefined' && typeof exports === 'object') {
+          return require('marked');
+        } else {
+          return $window.marked || marked;
+        }
+
+      })();
+
+      if (angular.isUndefined(m)) {
+        $log.error('angular-marked Error: marked not loaded.  See installation instructions.');
+        return;
+      }
+
+      // override rendered markdown html
+      // with custom definitions if defined
+      if (self.renderer) {
+        var r = new m.Renderer();
+        var o = Object.keys(self.renderer),
+            l = o.length;
+
+        while (l--) {
+          r[o[l]] = self.renderer[o[l]];
+        }
+
+        // add the new renderer to the options if need be
+        self.defaults = self.defaults || {};
+        self.defaults.renderer = r;
+      }
+
+      m.setOptions(self.defaults);
+
+      return m;
+    }];
+
+  })
+
+  // TODO: filter tests */
+  //app.filter('marked', ['marked', function(marked) {
+  //  return marked;
+  //}]);
+
+  /**
+   * @ngdoc directive
+   * @name hc.marked.directive:marked
+   * @restrict AE
+   * @element any
+   *
+   * @description
+   * Compiles source test into HTML.
+   *
+   * @param {expression} marked The source text to be compiled.  If blank uses content as the source.
+   * @param {expression=} opts Hash of options that override defaults.
+   *
+   * @example
+
+     ## A simple block of text
+
+      <example module="hc.marked">
+        <file name="exampleA.html">
+         * <marked>
+         *   ### Markdown directive
+         *
+         *   *It works!*
+         *
+         *   *This* **is** [markdown](https://daringfireball.net/projects/markdown/) in the view.
+         * </marked>
+        </file>
+      </example>
+
+     ## Bind to a scope variable
+
+      <example module="app">
+        <file name="exampleB.html">
+          <form ng-controller="MainController">
+            Markdown:<br />
+            <textarea ng-model="my_markdown" class="span8" cols="60" rows="5"></textarea><br />
+            Output:<br />
+            <blockquote marked="my_markdown"></blockquote>
+          </form>
+        </file>
+        <file  name="exampleB.js">
+          * function MainController($scope) {
+          *     $scope.my_markdown = '*This* **is** [markdown](https://daringfireball.net/projects/markdown/)';
+          *     $scope.my_markdown += ' in a scope variable';
+          * }
+          * angular.module('app', ['hc.marked']).controller('MainController', MainController);
+        </file>
+      </example>
+
+      ## Include a markdown file:
+
+       <example module="hc.marked">
+         <file name="exampleC.html">
+           <div marked src="'include.html'" />
+         </file>
+         * <file name="include.html">
+         * *This* **is** [markdown](https://daringfireball.net/projects/markdown/) in a include file.
+         * </file>
+       </example>
+   */
+
+  .directive('marked', ['marked', '$templateRequest', function (marked, $templateRequest) {
+    return {
+      restrict: 'AE',
+      replace: true,
+      scope: {
+        opts: '=',
+        marked: '=',
+        src: '='
+      },
+      link: function (scope, element, attrs) {
+        set(scope.marked || element.text() || '');
+
+        if (attrs.marked) {
+          scope.$watch('marked', set);
+        }
+
+        if (attrs.src) {
+          scope.$watch('src', function(src) {
+            $templateRequest(src, true).then(function(response) {
+              set(response);
+            });
+          });
+        }
+
+        function unindent(text) {
+          if (!text) return text;
+
+          var lines  = text
+            .replace(/\t/g, '  ')
+            .split(/\r?\n/);
+
+          var i, l, min = null, line, len = lines.length;
+          for (i = 0; i < len; i++) {
+            line = lines[i];
+            l = line.match(/^(\s*)/)[0].length;
+            if (l === line.length) { continue; }
+            min = (l < min || min === null) ? l : min;
+          }
+
+          if (min !== null && min > 0) {
+            for (i = 0; i < len; i++) {
+              lines[i] = lines[i].substr(min);
+            }
+          }
+          return lines.join('\n');
+        }
+
+        function set(text) {
+          text = unindent(text || '');
+          element.html(marked(text, scope.opts || null));
+        }
+
+      }
+    };
+  }]);
+
+}());
 
 var iw = angular.module('idiotWizzy', []);
 
@@ -2238,6 +2617,230 @@ angular.module("ui.bootstrap",["ui.bootstrap.tpls","ui.bootstrap.collapse","ui.b
 /*! 5.0.9 */
 !function(){function a(a,b){window.XMLHttpRequest.prototype[a]=b(window.XMLHttpRequest.prototype[a])}function b(a,b,c){try{Object.defineProperty(a,b,{get:c})}catch(d){}}if(window.FileAPI||(window.FileAPI={}),FileAPI.shouldLoad=window.XMLHttpRequest&&!window.FormData||FileAPI.forceLoad,FileAPI.shouldLoad){var c=function(a){if(!a.__listeners){a.upload||(a.upload={}),a.__listeners=[];var b=a.upload.addEventListener;a.upload.addEventListener=function(c,d){a.__listeners[c]=d,b&&b.apply(this,arguments)}}};a("open",function(a){return function(b,d,e){c(this),this.__url=d;try{a.apply(this,[b,d,e])}catch(f){f.message.indexOf("Access is denied")>-1&&(this.__origError=f,a.apply(this,[b,"_fix_for_ie_crossdomain__",e]))}}}),a("getResponseHeader",function(a){return function(b){return this.__fileApiXHR&&this.__fileApiXHR.getResponseHeader?this.__fileApiXHR.getResponseHeader(b):null==a?null:a.apply(this,[b])}}),a("getAllResponseHeaders",function(a){return function(){return this.__fileApiXHR&&this.__fileApiXHR.getAllResponseHeaders?this.__fileApiXHR.getAllResponseHeaders():null==a?null:a.apply(this)}}),a("abort",function(a){return function(){return this.__fileApiXHR&&this.__fileApiXHR.abort?this.__fileApiXHR.abort():null==a?null:a.apply(this)}}),a("setRequestHeader",function(a){return function(b,d){if("__setXHR_"===b){c(this);var e=d(this);e instanceof Function&&e(this)}else this.__requestHeaders=this.__requestHeaders||{},this.__requestHeaders[b]=d,a.apply(this,arguments)}}),a("send",function(a){return function(){var c=this;if(arguments[0]&&arguments[0].__isFileAPIShim){var d=arguments[0],e={url:c.__url,jsonp:!1,cache:!0,complete:function(a,d){c.__completed=!0,!a&&c.__listeners.load&&c.__listeners.load({type:"load",loaded:c.__loaded,total:c.__total,target:c,lengthComputable:!0}),!a&&c.__listeners.loadend&&c.__listeners.loadend({type:"loadend",loaded:c.__loaded,total:c.__total,target:c,lengthComputable:!0}),"abort"===a&&c.__listeners.abort&&c.__listeners.abort({type:"abort",loaded:c.__loaded,total:c.__total,target:c,lengthComputable:!0}),void 0!==d.status&&b(c,"status",function(){return 0===d.status&&a&&"abort"!==a?500:d.status}),void 0!==d.statusText&&b(c,"statusText",function(){return d.statusText}),b(c,"readyState",function(){return 4}),void 0!==d.response&&b(c,"response",function(){return d.response});var e=d.responseText||(a&&0===d.status&&"abort"!==a?a:void 0);b(c,"responseText",function(){return e}),b(c,"response",function(){return e}),a&&b(c,"err",function(){return a}),c.__fileApiXHR=d,c.onreadystatechange&&c.onreadystatechange(),c.onload&&c.onload()},progress:function(a){if(a.target=c,c.__listeners.progress&&c.__listeners.progress(a),c.__total=a.total,c.__loaded=a.loaded,a.total===a.loaded){var b=this;setTimeout(function(){c.__completed||(c.getAllResponseHeaders=function(){},b.complete(null,{status:204,statusText:"No Content"}))},FileAPI.noContentTimeout||1e4)}},headers:c.__requestHeaders};e.data={},e.files={};for(var f=0;f<d.data.length;f++){var g=d.data[f];null!=g.val&&null!=g.val.name&&null!=g.val.size&&null!=g.val.type?e.files[g.key]=g.val:e.data[g.key]=g.val}setTimeout(function(){if(!FileAPI.hasFlash)throw'Adode Flash Player need to be installed. To check ahead use "FileAPI.hasFlash"';c.__fileApiXHR=FileAPI.upload(e)},1)}else{if(this.__origError)throw this.__origError;a.apply(c,arguments)}}}),window.XMLHttpRequest.__isFileAPIShim=!0,window.FormData=FormData=function(){return{append:function(a,b,c){b.__isFileAPIBlobShim&&(b=b.data[0]),this.data.push({key:a,val:b,name:c})},data:[],__isFileAPIShim:!0}},window.Blob=Blob=function(a){return{data:a,__isFileAPIBlobShim:!0}}}}(),function(){function a(a){return"input"===a[0].tagName.toLowerCase()&&a.attr("type")&&"file"===a.attr("type").toLowerCase()}function b(){try{var a=new ActiveXObject("ShockwaveFlash.ShockwaveFlash");if(a)return!0}catch(b){if(void 0!==navigator.mimeTypes["application/x-shockwave-flash"])return!0}return!1}function c(a){var b=0,c=0;if(window.jQuery)return jQuery(a).offset();if(a.offsetParent)do b+=a.offsetLeft-a.scrollLeft,c+=a.offsetTop-a.scrollTop,a=a.offsetParent;while(a);return{left:b,top:c}}if(FileAPI.shouldLoad){if(FileAPI.forceLoad&&(FileAPI.html5=!1),!FileAPI.upload){var d,e,f,g,h,i=document.createElement("script"),j=document.getElementsByTagName("script");if(window.FileAPI.jsUrl)d=window.FileAPI.jsUrl;else if(window.FileAPI.jsPath)e=window.FileAPI.jsPath;else for(f=0;f<j.length;f++)if(h=j[f].src,g=h.search(/\/ng\-file\-upload[\-a-zA-z0-9\.]*\.js/),g>-1){e=h.substring(0,g+1);break}null==FileAPI.staticPath&&(FileAPI.staticPath=e),i.setAttribute("src",d||e+"FileAPI.min.js"),document.getElementsByTagName("head")[0].appendChild(i),FileAPI.hasFlash=b()}FileAPI.ngfFixIE=function(d,e,f,g){if(!b())throw'Adode Flash Player need to be installed. To check ahead use "FileAPI.hasFlash"';var h=function(){if(d.attr("disabled"))d.$$ngfRefElem.removeClass("js-fileapi-wrapper");else{var b=d.$$ngfRefElem;b?f(d.$$ngfRefElem):(b=d.$$ngfRefElem=e(),b.addClass("js-fileapi-wrapper"),!a(d),setTimeout(function(){b.bind("mouseenter",h)},10),b.bind("change",function(a){i.apply(this,[a]),g.apply(this,[a])})),a(d)||b.css("position","absolute").css("top",c(d[0]).top+"px").css("left",c(d[0]).left+"px").css("width",d[0].offsetWidth+"px").css("height",d[0].offsetHeight+"px").css("filter","alpha(opacity=0)").css("display",d.css("display")).css("overflow","hidden").css("z-index","900000").css("visibility","visible")}};d.bind("mouseenter",h);var i=function(a){for(var b=FileAPI.getFiles(a),c=0;c<b.length;c++)void 0===b[c].size&&(b[c].size=0),void 0===b[c].name&&(b[c].name="file"),void 0===b[c].type&&(b[c].type="undefined");a.target||(a.target={}),a.target.files=b,a.target.files!==b&&(a.__files_=b),(a.__files_||a.target.files).item=function(b){return(a.__files_||a.target.files)[b]||null}}},FileAPI.disableFileInput=function(a,b){b?a.removeClass("js-fileapi-wrapper"):a.addClass("js-fileapi-wrapper")}}}(),window.FileReader||(window.FileReader=function(){var a=this,b=!1;this.listeners={},this.addEventListener=function(b,c){a.listeners[b]=a.listeners[b]||[],a.listeners[b].push(c)},this.removeEventListener=function(b,c){a.listeners[b]&&a.listeners[b].splice(a.listeners[b].indexOf(c),1)},this.dispatchEvent=function(b){var c=a.listeners[b.type];if(c)for(var d=0;d<c.length;d++)c[d].call(a,b)},this.onabort=this.onerror=this.onload=this.onloadstart=this.onloadend=this.onprogress=null;var c=function(b,c){var d={type:b,target:a,loaded:c.loaded,total:c.total,error:c.error};return null!=c.result&&(d.target.result=c.result),d},d=function(d){b||(b=!0,a.onloadstart&&a.onloadstart(c("loadstart",d)));var e;"load"===d.type?(a.onloadend&&a.onloadend(c("loadend",d)),e=c("load",d),a.onload&&a.onload(e),a.dispatchEvent(e)):"progress"===d.type?(e=c("progress",d),a.onprogress&&a.onprogress(e),a.dispatchEvent(e)):(e=c("error",d),a.onerror&&a.onerror(e),a.dispatchEvent(e))};this.readAsArrayBuffer=function(a){FileAPI.readAsBinaryString(a,d)},this.readAsBinaryString=function(a){FileAPI.readAsBinaryString(a,d)},this.readAsDataURL=function(a){FileAPI.readAsDataURL(a,d)},this.readAsText=function(a){FileAPI.readAsText(a,d)}}),!window.XMLHttpRequest||window.FileAPI&&FileAPI.shouldLoad||(window.XMLHttpRequest.prototype.setRequestHeader=function(a){return function(b,c){if("__setXHR_"===b){var d=c(this);d instanceof Function&&d(this)}else a.apply(this,arguments)}}(window.XMLHttpRequest.prototype.setRequestHeader));var ngFileUpload=angular.module("ngFileUpload",[]);ngFileUpload.version="5.0.9",ngFileUpload.service("Upload",["$http","$q","$timeout",function(a,b,c){function d(d){d.method=d.method||"POST",d.headers=d.headers||{};var e=b.defer(),f=e.promise;return d.headers.__setXHR_=function(){return function(a){a&&(d.__XHR=a,d.xhrFn&&d.xhrFn(a),a.upload.addEventListener("progress",function(a){a.config=d,e.notify?e.notify(a):f.progressFunc&&c(function(){f.progressFunc(a)})},!1),a.upload.addEventListener("load",function(a){a.lengthComputable&&(a.config=d,e.notify?e.notify(a):f.progressFunc&&c(function(){f.progressFunc(a)}))},!1))}},a(d).then(function(a){e.resolve(a)},function(a){e.reject(a)},function(a){e.notify(a)}),f.success=function(a){return f.then(function(b){a(b.data,b.status,b.headers,d)}),f},f.error=function(a){return f.then(null,function(b){a(b.data,b.status,b.headers,d)}),f},f.progress=function(a){return f.progressFunc=a,f.then(null,null,function(b){a(b)}),f},f.abort=function(){return d.__XHR&&c(function(){d.__XHR.abort()}),f},f.xhr=function(a){return d.xhrFn=function(b){return function(){b&&b.apply(f,arguments),a.apply(f,arguments)}}(d.xhrFn),f},f}this.upload=function(a){function b(c,d,e){if(void 0!==d)if(angular.isDate(d)&&(d=d.toISOString()),angular.isString(d))c.append(e,d);else if("form"===a.sendFieldsAs)if(angular.isObject(d))for(var f in d)d.hasOwnProperty(f)&&b(c,d[f],e+"["+f+"]");else c.append(e,d);else d=angular.isString(d)?d:JSON.stringify(d),"json-blob"===a.sendFieldsAs?c.append(e,new Blob([d],{type:"application/json"})):c.append(e,d)}return a.headers=a.headers||{},a.headers["Content-Type"]=void 0,a.transformRequest=a.transformRequest?angular.isArray(a.transformRequest)?a.transformRequest:[a.transformRequest]:[],a.transformRequest.push(function(c){var d,e=new FormData,f={};for(d in a.fields)a.fields.hasOwnProperty(d)&&(f[d]=a.fields[d]);c&&(f.data=c);for(d in f)if(f.hasOwnProperty(d)){var g=f[d];a.formDataAppender?a.formDataAppender(e,d,g):b(e,g,d)}if(null!=a.file){var h=a.fileFormDataName||"file";if(angular.isArray(a.file))for(var i=angular.isString(h),j=0;j<a.file.length;j++)e.append(i?h:h[j],a.file[j],a.fileName&&a.fileName[j]||a.file[j].name);else e.append(h,a.file,a.fileName||a.file.name)}return e}),d(a)},this.http=function(b){return b.transformRequest=b.transformRequest||function(b){return window.ArrayBuffer&&b instanceof window.ArrayBuffer||b instanceof Blob?b:a.defaults.transformRequest[0](arguments)},d(b)}}]),function(){function a(a,e,f,g,h,i,j){function k(){return"input"===e[0].tagName.toLowerCase()&&f.type&&"file"===f.type.toLowerCase()}function l(b){if(!r){r=!0;try{for(var e=b.__files_||b.target&&b.target.files,j=[],k=[],l=0;l<e.length;l++){var m=e.item(l);c(a,h,f,m,b)?j.push(m):k.push(m)}d(h,i,a,g,f,f.ngfChange||f.ngfSelect,j,k,b),0===j.length&&(b.target.value=j)}finally{r=!1}}}function m(b){f.ngfMultiple&&b.attr("multiple",h(f.ngfMultiple)(a)),f.ngfCapture&&b.attr("capture",h(f.ngfCapture)(a)),f.accept&&b.attr("accept",f.accept);for(var c=0;c<e[0].attributes.length;c++){var d=e[0].attributes[c];(k()&&"type"!==d.name||"type"!==d.name&&"class"!==d.name&&"id"!==d.name&&"style"!==d.name)&&b.attr(d.name,d.value)}}function n(b,c){if(!c&&(b||k()))return e.$$ngfRefElem||e;var d=angular.element('<input type="file">');return m(d),k()?(e.replaceWith(d),e=d,d.attr("__ngf_gen__",!0),j(e)(a)):(d.css("visibility","hidden").css("position","absolute").css("overflow","hidden").css("width","0px").css("height","0px").css("z-index","-100000").css("border","none").css("margin","0px").css("padding","0px").attr("tabindex","-1"),e.$$ngfRefElem&&e.$$ngfRefElem.remove(),e.$$ngfRefElem=d,document.body.appendChild(d[0])),d}function o(b){d(h,i,a,g,f,f.ngfChange||f.ngfSelect,[],[],b,!0)}function p(c){function d(a){a&&i[0].click(),(k()||!a)&&e.bind("click touchend",p)}if(e.attr("disabled")||q)return!1;null!=c&&(c.preventDefault(),c.stopPropagation());var g=h(f.ngfResetOnClick)(a)!==!1,i=n(c,g);return i&&((!c||g)&&i.bind("change",l),c&&g&&h(f.ngfResetModelOnClick)(a)!==!1&&o(c),b(navigator.userAgent)?setTimeout(function(){d(c)},0):d(c)),!1}if(!e.attr("__ngf_gen__")){a.$on("$destroy",function(){e.$$ngfRefElem&&e.$$ngfRefElem.remove()});var q=!1;-1===f.ngfSelect.search(/\W+$files\W+/)&&a.$watch(f.ngfSelect,function(a){q=a===!1});var r=!1;window.FileAPI&&window.FileAPI.ngfFixIE?window.FileAPI.ngfFixIE(e,n,m,l):p()}}function b(a){var b=a.match(/Android[^\d]*(\d+)\.(\d+)/);return b&&b.length>2?parseInt(b[1])<4||4===parseInt(b[1])&&parseInt(b[2])<4:/.*Windows.*Safari.*/.test(a)}ngFileUpload.directive("ngfSelect",["$parse","$timeout","$compile",function(b,c,d){return{restrict:"AEC",require:"?ngModel",link:function(e,f,g,h){a(e,f,g,h,b,c,d)}}}]),ngFileUpload.validate=function(a,b,c,d,e){function f(a){if(a.length>2&&"/"===a[0]&&"/"===a[a.length-1])return a.substring(1,a.length-1);var b=a.split(","),c="";if(b.length>1)for(var d=0;d<b.length;d++)c+="("+f(b[d])+")",d<b.length-1&&(c+="|");else 0===a.indexOf(".")&&(a="*"+a),c="^"+a.replace(new RegExp("[.\\\\+*?\\[\\^\\]$(){}=!<>|:\\-]","g"),"\\$&")+"$",c=c.replace(/\\\*/g,".*").replace(/\\\?/g,".");return c}var g=b(c.ngfAccept)(a,{$file:d,$event:e}),h=b(c.ngfMaxSize)(a,{$file:d,$event:e})||9007199254740991,i=b(c.ngfMinSize)(a,{$file:d,$event:e})||-1;if(null!=g&&angular.isString(g)){var j=new RegExp(f(g),"gi");g=null!=d.type&&j.test(d.type.toLowerCase())||null!=d.name&&j.test(d.name.toLowerCase())}return(null==g||g)&&(null==d.size||d.size<h&&d.size>i)},ngFileUpload.updateModel=function(a,b,c,d,e,f,g,h,i,j){function k(){if(a(e.ngfKeep)(c)===!0){var j=(d.$modelValue||[]).slice(0);if(g&&g.length)if(a(e.ngfKeepDistinct)(c)===!0){for(var k=j.length,l=0;l<g.length;l++){for(var m=0;k>m&&g[l].name!==j[m].name;m++);m===k&&j.push(g[l])}g=j}else g=j.concat(g);else g=j}d&&(a(e.ngModel).assign(c,g),b(function(){d&&d.$setViewValue(null!=g&&0===g.length?null:g)})),e.ngModelRejected&&a(e.ngModelRejected).assign(c,h),f&&a(f)(c,{$files:g,$rejectedFiles:h,$event:i})}j?k():b(function(){k()})};var c=ngFileUpload.validate,d=ngFileUpload.updateModel}(),function(){function a(a,e,f,g,h,i,j){function k(a,b,d){var e=!0,f=d.dataTransfer.items;if(null!=f)for(var g=0;g<f.length&&e;g++)e=e&&("file"===f[g].kind||""===f[g].kind)&&c(a,h,b,f[g],d);var i=h(b.ngfDragOverClass)(a,{$event:d});return i&&(i.delay&&(r=i.delay),i.accept&&(i=e?i.accept:i.reject)),i||b.ngfDragOverClass||"dragover"}function l(b,d,e,g){function k(d){c(a,h,f,d,b)?m.push(d):n.push(d)}function l(a,b,c){if(null!=b)if(b.isDirectory){var d=(c||"")+b.name;k({name:b.name,type:"directory",path:d});var e=b.createReader(),f=[];p++;var g=function(){e.readEntries(function(d){try{if(d.length)f=f.concat(Array.prototype.slice.call(d||[],0)),g();else{for(var e=0;e<f.length;e++)l(a,f[e],(c?c:"")+b.name+"/");p--}}catch(h){p--,console.error(h)}},function(){p--})};g()}else p++,b.file(function(a){try{p--,a.path=(c?c:"")+a.name,k(a)}catch(b){p--,console.error(b)}},function(){p--})}var m=[],n=[],o=b.dataTransfer.items,p=0;if(o&&o.length>0&&"file"!==j.protocol())for(var q=0;q<o.length;q++){if(o[q].webkitGetAsEntry&&o[q].webkitGetAsEntry()&&o[q].webkitGetAsEntry().isDirectory){var r=o[q].webkitGetAsEntry();if(r.isDirectory&&!e)continue;null!=r&&l(m,r)}else{var s=o[q].getAsFile();null!=s&&k(s)}if(!g&&m.length>0)break}else{var t=b.dataTransfer.files;if(null!=t)for(var u=0;u<t.length&&(k(t.item(u)),g||!(m.length>0));u++);}var v=0;!function w(a){i(function(){if(p)10*v++<2e4&&w(10);else{if(!g&&m.length>1){for(q=0;"directory"===m[q].type;)q++;m=[m[q]]}d(m,n)}},a||0)}()}var m=b();if(f.dropAvailable&&i(function(){a[f.dropAvailable]?a[f.dropAvailable].value=m:a[f.dropAvailable]=m}),!m)return void(h(f.ngfHideOnDropNotAvailable)(a)===!0&&e.css("display","none"));var n=!1;-1===f.ngfDrop.search(/\W+$files\W+/)&&a.$watch(f.ngfDrop,function(a){n=a===!1});var o,p=null,q=h(f.ngfStopPropagation),r=1;e[0].addEventListener("dragover",function(b){if(!e.attr("disabled")&&!n){if(b.preventDefault(),q(a)&&b.stopPropagation(),navigator.userAgent.indexOf("Chrome")>-1){var c=b.dataTransfer.effectAllowed;b.dataTransfer.dropEffect="move"===c||"linkMove"===c?"move":"copy"}i.cancel(p),a.actualDragOverClass||(o=k(a,f,b)),e.addClass(o)}},!1),e[0].addEventListener("dragenter",function(b){e.attr("disabled")||n||(b.preventDefault(),q(a)&&b.stopPropagation())},!1),e[0].addEventListener("dragleave",function(){e.attr("disabled")||n||(p=i(function(){e.removeClass(o),o=null},r||1))},!1),e[0].addEventListener("drop",function(b){e.attr("disabled")||n||(b.preventDefault(),q(a)&&b.stopPropagation(),e.removeClass(o),o=null,l(b,function(c,e){d(h,i,a,g,f,f.ngfChange||f.ngfDrop,c,e,b)},h(f.ngfAllowDir)(a)!==!1,f.multiple||h(f.ngfMultiple)(a)))},!1)}function b(){var a=document.createElement("div");return"draggable"in a&&"ondrop"in a}var c=ngFileUpload.validate,d=ngFileUpload.updateModel;ngFileUpload.directive("ngfDrop",["$parse","$timeout","$location",function(b,c,d){return{restrict:"AEC",require:"?ngModel",link:function(e,f,g,h){a(e,f,g,h,b,c,d)}}}]),ngFileUpload.directive("ngfNoFileDrop",function(){return function(a,c){b()&&c.css("display","none")}}),ngFileUpload.directive("ngfDropAvailable",["$parse","$timeout",function(a,c){return function(d,e,f){if(b()){var g=a(f.ngfDropAvailable);c(function(){g(d),g.assign&&g.assign(d,!0)})}}}]),ngFileUpload.directive("ngfSrc",["$parse","$timeout",function(a,b){return{restrict:"AE",link:function(d,e,f){window.FileReader&&d.$watch(f.ngfSrc,function(g){g&&c(d,a,f,g,null)&&(!window.FileAPI||-1===navigator.userAgent.indexOf("MSIE 8")||g.size<2e4)&&(!window.FileAPI||-1===navigator.userAgent.indexOf("MSIE 9")||g.size<4e6)?b(function(){var a=window.URL||window.webkitURL;if(a&&a.createObjectURL)e.attr("src",a.createObjectURL(g));else{var c=new FileReader;c.readAsDataURL(g),c.onload=function(a){b(function(){e.attr("src",a.target.result)})}}}):e.attr("src",f.ngfDefaultSrc||"")})}}}])}();
 
+/*
+ * angular-elastic v2.5.0
+ * (c) 2014 Monospaced http://monospaced.com
+ * License: MIT
+ */
+
+if (typeof module !== 'undefined' &&
+    typeof exports !== 'undefined' &&
+    module.exports === exports){
+  module.exports = 'monospaced.elastic';
+}
+
+angular.module('monospaced.elastic', [])
+
+  .constant('msdElasticConfig', {
+    append: ''
+  })
+
+  .directive('msdElastic', [
+    '$timeout', '$window', 'msdElasticConfig',
+    function($timeout, $window, config) {
+      'use strict';
+
+      return {
+        require: 'ngModel',
+        restrict: 'A, C',
+        link: function(scope, element, attrs, ngModel) {
+
+          // cache a reference to the DOM element
+          var ta = element[0],
+              $ta = element;
+
+          // ensure the element is a textarea, and browser is capable
+          if (ta.nodeName !== 'TEXTAREA' || !$window.getComputedStyle) {
+            return;
+          }
+
+          // set these properties before measuring dimensions
+          $ta.css({
+            'overflow': 'hidden',
+            'overflow-y': 'hidden',
+            'word-wrap': 'break-word'
+          });
+
+          // force text reflow
+          var text = ta.value;
+          ta.value = '';
+          ta.value = text;
+
+          var append = attrs.msdElastic ? attrs.msdElastic.replace(/\\n/g, '\n') : config.append,
+              $win = angular.element($window),
+              mirrorInitStyle = 'position: absolute; top: -999px; right: auto; bottom: auto;' +
+                                'left: 0; overflow: hidden; -webkit-box-sizing: content-box;' +
+                                '-moz-box-sizing: content-box; box-sizing: content-box;' +
+                                'min-height: 0 !important; height: 0 !important; padding: 0;' +
+                                'word-wrap: break-word; border: 0;',
+              $mirror = angular.element('<textarea aria-hidden="true" tabindex="-1" ' +
+                                        'style="' + mirrorInitStyle + '"/>').data('elastic', true),
+              mirror = $mirror[0],
+              taStyle = getComputedStyle(ta),
+              resize = taStyle.getPropertyValue('resize'),
+              borderBox = taStyle.getPropertyValue('box-sizing') === 'border-box' ||
+                          taStyle.getPropertyValue('-moz-box-sizing') === 'border-box' ||
+                          taStyle.getPropertyValue('-webkit-box-sizing') === 'border-box',
+              boxOuter = !borderBox ? {width: 0, height: 0} : {
+                            width:  parseInt(taStyle.getPropertyValue('border-right-width'), 10) +
+                                    parseInt(taStyle.getPropertyValue('padding-right'), 10) +
+                                    parseInt(taStyle.getPropertyValue('padding-left'), 10) +
+                                    parseInt(taStyle.getPropertyValue('border-left-width'), 10),
+                            height: parseInt(taStyle.getPropertyValue('border-top-width'), 10) +
+                                    parseInt(taStyle.getPropertyValue('padding-top'), 10) +
+                                    parseInt(taStyle.getPropertyValue('padding-bottom'), 10) +
+                                    parseInt(taStyle.getPropertyValue('border-bottom-width'), 10)
+                          },
+              minHeightValue = parseInt(taStyle.getPropertyValue('min-height'), 10),
+              heightValue = parseInt(taStyle.getPropertyValue('height'), 10),
+              minHeight = Math.max(minHeightValue, heightValue) - boxOuter.height,
+              maxHeight = parseInt(taStyle.getPropertyValue('max-height'), 10),
+              mirrored,
+              active,
+              copyStyle = ['font-family',
+                           'font-size',
+                           'font-weight',
+                           'font-style',
+                           'letter-spacing',
+                           'line-height',
+                           'text-transform',
+                           'word-spacing',
+                           'text-indent'];
+
+          // exit if elastic already applied (or is the mirror element)
+          if ($ta.data('elastic')) {
+            return;
+          }
+
+          // Opera returns max-height of -1 if not set
+          maxHeight = maxHeight && maxHeight > 0 ? maxHeight : 9e4;
+
+          // append mirror to the DOM
+          if (mirror.parentNode !== document.body) {
+            angular.element(document.body).append(mirror);
+          }
+
+          // set resize and apply elastic
+          $ta.css({
+            'resize': (resize === 'none' || resize === 'vertical') ? 'none' : 'horizontal'
+          }).data('elastic', true);
+
+          /*
+           * methods
+           */
+
+          function initMirror() {
+            var mirrorStyle = mirrorInitStyle;
+
+            mirrored = ta;
+            // copy the essential styles from the textarea to the mirror
+            taStyle = getComputedStyle(ta);
+            angular.forEach(copyStyle, function(val) {
+              mirrorStyle += val + ':' + taStyle.getPropertyValue(val) + ';';
+            });
+            mirror.setAttribute('style', mirrorStyle);
+          }
+
+          function adjust() {
+            var taHeight,
+                taComputedStyleWidth,
+                mirrorHeight,
+                width,
+                overflow;
+
+            if (mirrored !== ta) {
+              initMirror();
+            }
+
+            // active flag prevents actions in function from calling adjust again
+            if (!active) {
+              active = true;
+
+              mirror.value = ta.value + append; // optional whitespace to improve animation
+              mirror.style.overflowY = ta.style.overflowY;
+
+              taHeight = ta.style.height === '' ? 'auto' : parseInt(ta.style.height, 10);
+
+              taComputedStyleWidth = getComputedStyle(ta).getPropertyValue('width');
+
+              // ensure getComputedStyle has returned a readable 'used value' pixel width
+              if (taComputedStyleWidth.substr(taComputedStyleWidth.length - 2, 2) === 'px') {
+                // update mirror width in case the textarea width has changed
+                width = parseInt(taComputedStyleWidth, 10) - boxOuter.width;
+                mirror.style.width = width + 'px';
+              }
+
+              mirrorHeight = mirror.scrollHeight;
+
+              if (mirrorHeight > maxHeight) {
+                mirrorHeight = maxHeight;
+                overflow = 'scroll';
+              } else if (mirrorHeight < minHeight) {
+                mirrorHeight = minHeight;
+              }
+              mirrorHeight += boxOuter.height;
+              ta.style.overflowY = overflow || 'hidden';
+
+              if (taHeight !== mirrorHeight) {
+                scope.$emit('elastic:resize', $ta, taHeight, mirrorHeight);
+                ta.style.height = mirrorHeight + 'px';
+              }
+
+              // small delay to prevent an infinite loop
+              $timeout(function() {
+                active = false;
+              }, 1);
+
+            }
+          }
+
+          function forceAdjust() {
+            active = false;
+            adjust();
+          }
+
+          /*
+           * initialise
+           */
+
+          // listen
+          if ('onpropertychange' in ta && 'oninput' in ta) {
+            // IE9
+            ta['oninput'] = ta.onkeyup = adjust;
+          } else {
+            ta['oninput'] = adjust;
+          }
+
+          $win.bind('resize', forceAdjust);
+
+          scope.$watch(function() {
+            return ngModel.$modelValue;
+          }, function(newValue) {
+            forceAdjust();
+          });
+
+          scope.$on('elastic:adjust', function() {
+            initMirror();
+            forceAdjust();
+          });
+
+          $timeout(adjust);
+
+          /*
+           * destroy
+           */
+
+          scope.$on('$destroy', function() {
+            $mirror.remove();
+            $win.unbind('resize', forceAdjust);
+          });
+        }
+      };
+    }
+  ]);
+
+"use strict";angular.module("mentio",[]).directive("mentio",["mentioUtil","$document","$compile","$log","$timeout",function(e,t,n,r,i){return{restrict:"A",scope:{macros:"=mentioMacros",search:"&mentioSearch",select:"&mentioSelect",items:"=mentioItems",typedTerm:"=mentioTypedTerm",altId:"=mentioId",iframeElement:"=mentioIframeElement",requireLeadingSpace:"=mentioRequireLeadingSpace",selectNotFound:"=mentioSelectNotFound",trimTerm:"=mentioTrimTerm",ngModel:"="},controller:["$scope","$timeout","$attrs",function(n,r,i){n.query=function(e,t){var r=n.triggerCharMap[e];(void 0===n.trimTerm||n.trimTerm)&&(t=t.trim()),r.showMenu(),r.search({term:t}),r.typedTerm=t},n.defaultSearch=function(e){var t=[];angular.forEach(n.items,function(n){n.label.toUpperCase().indexOf(e.term.toUpperCase())>=0&&t.push(n)}),n.localItems=t},n.bridgeSearch=function(e){var t=i.mentioSearch?n.search:n.defaultSearch;t({term:e})},n.defaultSelect=function(e){return n.defaultTriggerChar+e.item.label},n.bridgeSelect=function(e){var t=i.mentioSelect?n.select:n.defaultSelect;return t({item:e})},n.setTriggerText=function(e){n.syncTriggerText&&(n.typedTerm=void 0===n.trimTerm||n.trimTerm?e.trim():e)},n.context=function(){return n.iframeElement?{iframe:n.iframeElement}:void 0},n.replaceText=function(t,i){if(n.hideAll(),e.replaceTriggerText(n.context(),n.targetElement,n.targetElementPath,n.targetElementSelectedOffset,n.triggerCharSet,t,n.requireLeadingSpace,i),!i&&(n.setTriggerText(""),angular.element(n.targetElement).triggerHandler("change"),n.isContentEditable())){n.contentEditableMenuPasted=!0;var o=r(function(){n.contentEditableMenuPasted=!1},200);n.$on("$destroy",function(){r.cancel(o)})}},n.hideAll=function(){for(var e in n.triggerCharMap)n.triggerCharMap.hasOwnProperty(e)&&n.triggerCharMap[e].hideMenu()},n.getActiveMenuScope=function(){for(var e in n.triggerCharMap)if(n.triggerCharMap.hasOwnProperty(e)&&n.triggerCharMap[e].visible)return n.triggerCharMap[e];return null},n.selectActive=function(){for(var e in n.triggerCharMap)n.triggerCharMap.hasOwnProperty(e)&&n.triggerCharMap[e].visible&&n.triggerCharMap[e].selectActive()},n.isActive=function(){for(var e in n.triggerCharMap)if(n.triggerCharMap.hasOwnProperty(e)&&n.triggerCharMap[e].visible)return!0;return!1},n.isContentEditable=function(){return"INPUT"!==n.targetElement.nodeName&&"TEXTAREA"!==n.targetElement.nodeName},n.replaceMacro=function(t,i){i?e.replaceMacroText(n.context(),n.targetElement,n.targetElementPath,n.targetElementSelectedOffset,n.macros,n.macros[t]):(n.replacingMacro=!0,n.timer=r(function(){e.replaceMacroText(n.context(),n.targetElement,n.targetElementPath,n.targetElementSelectedOffset,n.macros,n.macros[t]),angular.element(n.targetElement).triggerHandler("change"),n.replacingMacro=!1},300),n.$on("$destroy",function(){r.cancel(n.timer)}))},n.addMenu=function(e){e.parentScope&&n.triggerCharMap.hasOwnProperty(e.triggerChar)||(n.triggerCharMap[e.triggerChar]=e,void 0===n.triggerCharSet&&(n.triggerCharSet=[]),n.triggerCharSet.push(e.triggerChar),e.setParent(n))},n.$on("menuCreated",function(e,t){(void 0!==i.id||void 0!==i.mentioId)&&(i.id===t.targetElement||void 0!==i.mentioId&&n.altId===t.targetElement)&&n.addMenu(t.scope)}),t.on("click",function(){n.isActive()&&n.$apply(function(){n.hideAll()})}),t.on("keydown keypress paste",function(e){var t=n.getActiveMenuScope();t&&((9===e.which||13===e.which)&&(e.preventDefault(),t.selectActive()),27===e.which&&(e.preventDefault(),t.$apply(function(){t.hideMenu()})),40===e.which&&(e.preventDefault(),t.$apply(function(){t.activateNextItem()}),t.adjustScroll(1)),38===e.which&&(e.preventDefault(),t.$apply(function(){t.activatePreviousItem()}),t.adjustScroll(-1)),(37===e.which||39===e.which)&&e.preventDefault())})}],link:function(t,o,a){function c(e){function n(e){e.preventDefault(),e.stopPropagation(),e.stopImmediatePropagation()}var r=t.getActiveMenuScope();if(r){if(9===e.which||13===e.which)return n(e),r.selectActive(),!1;if(27===e.which)return n(e),r.$apply(function(){r.hideMenu()}),!1;if(40===e.which)return n(e),r.$apply(function(){r.activateNextItem()}),r.adjustScroll(1),!1;if(38===e.which)return n(e),r.$apply(function(){r.activatePreviousItem()}),r.adjustScroll(-1),!1;if(37===e.which||39===e.which)return n(e),!1}}if(t.triggerCharMap={},t.targetElement=o,a.$set("autocomplete","off"),a.mentioItems){t.localItems=[],t.parentScope=t;var l=a.mentioSearch?' mentio-items="items"':' mentio-items="localItems"';t.defaultTriggerChar=a.mentioTriggerChar?t.$eval(a.mentioTriggerChar):"@";var s='<mentio-menu mentio-search="bridgeSearch(term)" mentio-select="bridgeSelect(item)"'+l;a.mentioTemplateUrl&&(s=s+' mentio-template-url="'+a.mentioTemplateUrl+'"'),s=s+" mentio-trigger-char=\"'"+t.defaultTriggerChar+'\'" mentio-parent-scope="parentScope"/>';var m=n(s),u=m(t);o.parent().append(u),t.$on("$destroy",function(){u.remove()})}a.mentioTypedTerm&&(t.syncTriggerText=!0),t.$watch("iframeElement",function(e){if(e){var n=e.contentWindow.document;n.addEventListener("click",function(){t.isActive()&&t.$apply(function(){t.hideAll()})}),n.addEventListener("keydown",c,!0),t.$on("$destroy",function(){n.removeEventListener("keydown",c)})}}),t.$watch("ngModel",function(n){if(n&&""!==n||t.isActive()){if(void 0===t.triggerCharSet)return r.error("Error, no mentio-items attribute was provided, and no separate mentio-menus were specified.  Nothing to do."),void 0;if(t.contentEditableMenuPasted)return t.contentEditableMenuPasted=!1,void 0;t.replacingMacro&&(i.cancel(t.timer),t.replacingMacro=!1);var o=t.isActive(),a=t.isContentEditable(),c=e.getTriggerInfo(t.context(),t.triggerCharSet,t.requireLeadingSpace,o);if(void 0!==c&&(!o||o&&(a&&c.mentionTriggerChar===t.currentMentionTriggerChar||!a&&c.mentionPosition===t.currentMentionPosition)))c.mentionSelectedElement&&(t.targetElement=c.mentionSelectedElement,t.targetElementPath=c.mentionSelectedPath,t.targetElementSelectedOffset=c.mentionSelectedOffset),t.setTriggerText(c.mentionText),t.currentMentionPosition=c.mentionPosition,t.currentMentionTriggerChar=c.mentionTriggerChar,t.query(c.mentionTriggerChar,c.mentionText);else{var l=t.typedTerm;t.setTriggerText(""),t.hideAll();var s=e.getMacroMatch(t.context(),t.macros);if(void 0!==s)t.targetElement=s.macroSelectedElement,t.targetElementPath=s.macroSelectedPath,t.targetElementSelectedOffset=s.macroSelectedOffset,t.replaceMacro(s.macroText,s.macroHasTrailingSpace);else if(t.selectNotFound&&l&&""!==l){var m=t.triggerCharMap[t.currentMentionTriggerChar];if(m){var u=m.select({item:{label:l}});"function"==typeof u.then?u.then(t.replaceText):t.replaceText(u,!0)}}}}})}}}]).directive("mentioMenu",["mentioUtil","$rootScope","$log","$window","$document",function(e,t,n,r,i){return{restrict:"E",scope:{search:"&mentioSearch",select:"&mentioSelect",items:"=mentioItems",triggerChar:"=mentioTriggerChar",forElem:"=mentioFor",parentScope:"=mentioParentScope"},templateUrl:function(e,t){return void 0!==t.mentioTemplateUrl?t.mentioTemplateUrl:"mentio-menu.tpl.html"},controller:["$scope",function(e){e.visible=!1,this.activate=e.activate=function(t){e.activeItem=t},this.isActive=e.isActive=function(t){return e.activeItem===t},this.selectItem=e.selectItem=function(t){var n=e.select({item:t});"function"==typeof n.then?n.then(e.parentMentio.replaceText):e.parentMentio.replaceText(n)},e.activateNextItem=function(){var t=e.items.indexOf(e.activeItem);this.activate(e.items[(t+1)%e.items.length])},e.activatePreviousItem=function(){var t=e.items.indexOf(e.activeItem);this.activate(e.items[0===t?e.items.length-1:t-1])},e.isFirstItemActive=function(){var t=e.items.indexOf(e.activeItem);return 0===t},e.isLastItemActive=function(){var t=e.items.indexOf(e.activeItem);return t===e.items.length-1},e.selectActive=function(){e.selectItem(e.activeItem)},e.isVisible=function(){return e.visible},e.showMenu=function(){e.visible||(e.requestVisiblePendingSearch=!0)},e.setParent=function(t){e.parentMentio=t,e.targetElement=t.targetElement}}],link:function(o,a){if(a[0].parentNode.removeChild(a[0]),i[0].body.appendChild(a[0]),o.menuElement=a,o.parentScope)o.parentScope.addMenu(o);else{if(!o.forElem)return n.error("mentio-menu requires a target element in tbe mentio-for attribute"),void 0;if(!o.triggerChar)return n.error("mentio-menu requires a trigger char"),void 0;t.$broadcast("menuCreated",{targetElement:o.forElem,scope:o})}angular.element(r).bind("resize",function(){if(o.isVisible()){var t=[];t.push(o.triggerChar),e.popUnderMention(o.parentMentio.context(),t,a,o.requireLeadingSpace)}}),o.$watch("items",function(e){e&&e.length>0?(o.activate(e[0]),!o.visible&&o.requestVisiblePendingSearch&&(o.visible=!0,o.requestVisiblePendingSearch=!1)):o.hideMenu()}),o.$watch("isVisible()",function(t){if(t){var n=[];n.push(o.triggerChar),e.popUnderMention(o.parentMentio.context(),n,a,o.requireLeadingSpace)}}),o.parentMentio.$on("$destroy",function(){a.remove()}),o.hideMenu=function(){o.visible=!1,a.css("display","none")},o.adjustScroll=function(e){var t=a[0],n=t.querySelector("ul"),r=t.querySelector("[mentio-menu-item].active");return o.isFirstItemActive()?n.scrollTop=0:o.isLastItemActive()?n.scrollTop=n.scrollHeight:(1===e?n.scrollTop+=r.offsetHeight:n.scrollTop-=r.offsetHeight,void 0)}}}}]).directive("mentioMenuItem",function(){return{restrict:"A",scope:{item:"=mentioMenuItem"},require:"^mentioMenu",link:function(e,t,n,r){e.$watch(function(){return r.isActive(e.item)},function(e){e?t.addClass("active"):t.removeClass("active")}),t.bind("mouseenter",function(){e.$apply(function(){r.activate(e.item)})}),t.bind("click",function(){return r.selectItem(e.item),!1})}}}).filter("unsafe",["$sce",function(e){return function(t){return e.trustAsHtml(t)}}]).filter("mentioHighlight",function(){function e(e){return e.replace(/([.?*+^$[\]\\(){}|-])/g,"\\$1")}return function(t,n,r){if(n){var i=r?'<span class="'+r+'">$&</span>':"<strong>$&</strong>";return(""+t).replace(new RegExp(e(n),"gi"),i)}return t}}),angular.module("mentio").factory("mentioUtil",["$window","$location","$anchorScroll","$timeout",function(e,t,n,r){function i(e,t,n,i){var c,l=h(e,t,i,!1);void 0!==l?(c=a(e)?b(e,v(e).activeElement,l.mentionPosition):S(e,l.mentionPosition),n.css({top:c.top+"px",left:c.left+"px",position:"absolute",zIndex:100,display:"block"}),r(function(){o(e,n)},0)):n.css({display:"none"})}function o(t,n){for(var r,i=20,o=100,a=n[0];void 0===r||0===r.height;)if(r=a.getBoundingClientRect(),0===r.height&&(a=a.childNodes[0],void 0===a||!a.getBoundingClientRect))return;var c=r.top,l=c+r.height;if(0>c)e.scrollTo(0,e.pageYOffset+r.top-i);else if(l>e.innerHeight){var s=e.pageYOffset+r.top-i;s-e.pageYOffset>o&&(s=e.pageYOffset+o);var m=e.pageYOffset-(e.innerHeight-l);m>s&&(m=s),e.scrollTo(0,m)}}function a(e){var t=v(e).activeElement;if(null!==t){var n=t.nodeName,r=t.getAttribute("type");return"INPUT"===n&&"text"===r||"TEXTAREA"===n}return!1}function c(e,t,n,r){var i,o=t;if(n)for(var a=0;a<n.length;a++){if(o=o.childNodes[n[a]],void 0===o)return;for(;o.length<r;)r-=o.length,o=o.nextSibling;0!==o.childNodes.length||o.length||(o=o.previousSibling)}var c=p(e);i=v(e).createRange(),i.setStart(o,r),i.setEnd(o,r),i.collapse(!0);try{c.removeAllRanges()}catch(l){}c.addRange(i),t.focus()}function l(e,t,n,r){var i,o;o=p(e),i=v(e).createRange(),i.setStart(o.anchorNode,n),i.setEnd(o.anchorNode,r),i.deleteContents();var a=v(e).createElement("div");a.innerHTML=t;for(var c,l,s=v(e).createDocumentFragment();c=a.firstChild;)l=s.appendChild(c);i.insertNode(s),l&&(i=i.cloneRange(),i.setStartAfter(l),i.collapse(!0),o.removeAllRanges(),o.addRange(i))}function s(e,t,n,r){var i=t.nodeName;"INPUT"===i||"TEXTAREA"===i?t!==v(e).activeElement&&t.focus():c(e,t,n,r)}function m(e,t,n,r,i,o){s(e,t,n,r);var c=d(e,i);if(c.macroHasTrailingSpace&&(c.macroText=c.macroText+" ",o+=" "),void 0!==c){var m=v(e).activeElement;if(a(e)){var u=c.macroPosition,g=c.macroPosition+c.macroText.length;m.value=m.value.substring(0,u)+o+m.value.substring(g,m.value.length),m.selectionStart=u+o.length,m.selectionEnd=u+o.length}else l(e,o,c.macroPosition,c.macroPosition+c.macroText.length)}}function u(e,t,n,r,i,o,c,m){s(e,t,n,r);var u=h(e,i,c,!0,m);if(void 0!==u)if(a()){var g=v(e).activeElement;o+=" ";var d=u.mentionPosition,f=u.mentionPosition+u.mentionText.length+1;g.value=g.value.substring(0,d)+o+g.value.substring(f,g.value.length),g.selectionStart=d+o.length,g.selectionEnd=d+o.length}else o+=" ",l(e,o,u.mentionPosition,u.mentionPosition+u.mentionText.length+1)}function g(e,t){if(null===t.parentNode)return 0;for(var n=0;n<t.parentNode.childNodes.length;n++){var r=t.parentNode.childNodes[n];if(r===t)return n}}function d(e,t){var n,r,i=[];if(a(e))n=v(e).activeElement;else{var o=f(e);o&&(n=o.selected,i=o.path,r=o.offset)}var c=T(e);if(void 0!==c&&null!==c){var l,s=!1;if(c.length>0&&(" "===c.charAt(c.length-1)||" "===c.charAt(c.length-1))&&(s=!0,c=c.substring(0,c.length-1)),angular.forEach(t,function(e,t){var o=c.toUpperCase().lastIndexOf(t.toUpperCase());if(o>=0&&t.length+o===c.length){var a=o-1;(0===o||" "===c.charAt(a)||" "===c.charAt(a))&&(l={macroPosition:o,macroText:t,macroSelectedElement:n,macroSelectedPath:i,macroSelectedOffset:r,macroHasTrailingSpace:s})}}),l)return l}}function f(e){var t,n=p(e),r=n.anchorNode,i=[];if(null!=r){for(var o,a=r.contentEditable;null!==r&&"true"!==a;)o=g(e,r),i.push(o),r=r.parentNode,null!==r&&(a=r.contentEditable);return i.reverse(),t=n.getRangeAt(0).startOffset,{selected:r,path:i,offset:t}}}function h(e,t,n,r,i){var o,c,l;if(a(e))o=v(e).activeElement;else{var s=f(e);s&&(o=s.selected,c=s.path,l=s.offset)}var m=T(e);if(void 0!==m&&null!==m){var u,g=-1;if(t.forEach(function(e){var t=m.lastIndexOf(e);t>g&&(g=t,u=e)}),g>=0&&(0===g||!n||/[\xA0\s]/g.test(m.substring(g-1,g)))){var d=m.substring(g+1,m.length);u=m.substring(g,g+1);var h=d.substring(0,1),p=d.length>0&&(" "===h||" "===h);if(i&&(d=d.trim()),!p&&(r||!/[\xA0\s]/g.test(d)))return{mentionPosition:g,mentionText:d,mentionSelectedElement:o,mentionSelectedPath:c,mentionSelectedOffset:l,mentionTriggerChar:u}}}}function p(e){return e?e.iframe.contentWindow.getSelection():window.getSelection()}function v(e){return e?e.iframe.contentWindow.document:document}function T(e){var t;if(a(e)){var n=v(e).activeElement,r=n.selectionStart;t=n.value.substring(0,r)}else{var i=p(e).anchorNode;if(null!=i){var o=i.textContent,c=p(e).getRangeAt(0).startOffset;c>=0&&(t=o.substring(0,c))}}return t}function S(e,t){var n,r,i="﻿",o="sel_"+(new Date).getTime()+"_"+Math.random().toString().substr(2),a=p(e),c=a.getRangeAt(0);r=v(e).createRange(),r.setStart(a.anchorNode,t),r.setEnd(a.anchorNode,t),r.collapse(!1),n=v(e).createElement("span"),n.id=o,n.appendChild(v(e).createTextNode(i)),r.insertNode(n),a.removeAllRanges(),a.addRange(c);var l={left:0,top:n.offsetHeight};return E(e,n,l),n.parentNode.removeChild(n),l}function E(e,t,n){for(var r=t,i=e?e.iframe:null;r;)n.left+=r.offsetLeft,n.top+=r.offsetTop,r!==v().body&&(n.top-=r.scrollTop,n.left-=r.scrollLeft),r=r.offsetParent,!r&&i&&(r=i,i=null)}function b(e,t,n){var r=["direction","boxSizing","width","height","overflowX","overflowY","borderTopWidth","borderRightWidth","borderBottomWidth","borderLeftWidth","paddingTop","paddingRight","paddingBottom","paddingLeft","fontStyle","fontVariant","fontWeight","fontStretch","fontSize","fontSizeAdjust","lineHeight","fontFamily","textAlign","textTransform","textIndent","textDecoration","letterSpacing","wordSpacing"],i=null!==window.mozInnerScreenX,o=v(e).createElement("div");o.id="input-textarea-caret-position-mirror-div",v(e).body.appendChild(o);var a=o.style,c=window.getComputedStyle?getComputedStyle(t):t.currentStyle;a.whiteSpace="pre-wrap","INPUT"!==t.nodeName&&(a.wordWrap="break-word"),a.position="absolute",a.visibility="hidden",r.forEach(function(e){a[e]=c[e]}),i?(a.width=parseInt(c.width)-2+"px",t.scrollHeight>parseInt(c.height)&&(a.overflowY="scroll")):a.overflow="hidden",o.textContent=t.value.substring(0,n),"INPUT"===t.nodeName&&(o.textContent=o.textContent.replace(/\s/g," "));var l=v(e).createElement("span");l.textContent=t.value.substring(n)||".",o.appendChild(l);var s={top:l.offsetTop+parseInt(c.borderTopWidth)+parseInt(c.fontSize),left:l.offsetLeft+parseInt(c.borderLeftWidth)};return E(e,t,s),v(e).body.removeChild(o),s}return{popUnderMention:i,replaceMacroText:m,replaceTriggerText:u,getMacroMatch:d,getTriggerInfo:h,selectElement:c,getTextAreaOrInputUnderlinePosition:b,getTextPrecedingCurrentSelection:T,getContentEditableSelectedPath:f,getNodePositionInParent:g,getContentEditableCaretPosition:S,pasteHtml:l,resetSelection:s,scrollIntoView:o}}]),angular.module("mentio").run(["$templateCache",function(e){e.put("mentio-menu.tpl.html",'<style>\n.scrollable-menu {\n    height: auto;\n    max-height: 300px;\n    overflow: auto;\n}\n\n.menu-highlighted {\n    font-weight: bold;\n}\n</style>\n<ul class="dropdown-menu scrollable-menu" style="display:block">\n    <li mentio-menu-item="item" ng-repeat="item in items track by $index">\n        <a class="text-primary" ng-bind-html="item.label | mentioHighlight:typedTerm:\'menu-highlighted\' | unsafe"></a>\n    </li>\n</ul>')}]);
+
 var FeedService = function($resource){
     return $resource(layer_path + 'feed');
 };
@@ -2326,6 +2929,7 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
 
   	$scope.category = {};
   	$scope.posts = [];
+    $scope.top_posts = [];
   	$scope.resolving_posts = true;
     $scope.resolving.older = false;
   	$scope.offset = 0;
@@ -2342,6 +2946,10 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
       minimized: false
     };
 
+    $scope.viewing = {
+      top_posts: false
+    };
+
     $scope.$on('status_change', function(e) {
       $scope.startupFeed($scope.category);
     });
@@ -2352,6 +2960,35 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
         $scope.$broadcast('changedContainers');
       }, 50);
     }
+
+    $scope.getTopFeed = function() {
+      $scope.resolving_posts = true;
+      $scope.top_posts = [];
+      var date = new Date();
+
+      var request_vars = {
+        limit: 30,
+        offset: 0,
+        relevant: date.getFullYear() + '-' + ("0" + (date.getMonth() + 1)).slice(-2) + '-' + ("0" + date.getDate()).slice(-2)
+      };
+
+      Feed.get(request_vars, function(response) {
+        for(p in response.feed) {
+          for(c in $scope.categories) {
+            if (response.feed[p].categories[0] == $scope.categories[c].slug) {
+              response.feed[p].category = {name: $scope.categories[c].name, color: $scope.categories[c].color, slug: $scope.categories[c].slug}
+              break;
+            }
+          }
+        }
+
+        $scope.page.title = "SpartanGeek.com | Comunidad de tecnología, geeks y más";
+        $scope.page.description = "Creamos el mejor contenido para Geeks, y lo hacemos con pasión e irreverencia de Spartanos.";
+
+        $scope.top_posts = response.feed;
+        $scope.resolving_posts = false;
+      });
+    };
 
   	$scope.startupFeed = function(category) {
   		$scope.resolving_posts = true;
@@ -2581,6 +3218,13 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post) {
 	$scope.waiting = true;
   $scope.waiting_comment = false;
 
+  $scope.people = [
+    { label: 'AcidKid', username: 'AcidKid'},
+    { label: 'Alberto', username: 'Alberto'},
+    { label: 'Drak', username: 'Drak'},
+    { label: 'fernandez14', username: 'fernandez14'}
+  ];
+
 	$scope.forceFirstComment = function() {
 		// TO-DO analytics about this trigger
 		// Force to show the comment box
@@ -2589,13 +3233,14 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post) {
 
   $scope.show_composer = function() {
     $('.current-article').animate({ scrollTop: $('.current-article')[0].scrollHeight}, 100);
+    $('#comment-content').focus();
   }
 
-  $scope.reply_to = function(username) {
+  $scope.reply_to = function(username, comment) {
     if($scope.comment.content == '') {
-      $scope.comment.content = '@' + username + ' ';
+      $scope.comment.content = '@' + username + '#' + comment + ' ';
     } else {
-      $scope.comment.content = $scope.comment.content + '\n@' + username + ' ';
+      $scope.comment.content = $scope.comment.content + '\n\n@' + username + '#' + comment + ' ';
     }
     $('#comment-content').focus();
     $('.current-article').animate({ scrollTop: $('.current-article')[0].scrollHeight}, 100);
@@ -2656,7 +3301,30 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post) {
   $scope.publish = function() {
     if(!$scope.waiting_comment) {
       $scope.waiting_comment = true;
-      $scope.publishComment().then(function(data) {
+      $scope.publishComment().then(function(response) {
+
+        console.log(response);
+        console.log($scope.user.info);
+
+        var date = new Date();
+        $scope.post.comments.count = $scope.post.comments.count + 1;
+        $scope.post.comments.set.push({
+          user_id: $scope.user.info.id,
+          author: {
+            id: $scope.user.info.id,
+            username: $scope.user.info.username,
+            email: $scope.user.info.email,
+            description: $scope.user.info.description || "Sólo otro Spartan Geek más",
+            image: $scope.user.info.image,
+            roles: $scope.user.info.roles,
+            level: $scope.user.info.gaming.level
+          },
+          content: response.data.message,
+          created_at: date.toISOString(),
+          position: $scope.post.comments.count - 1,
+          votes: {down: 0, up: 0}
+        });
+
         var comment = $scope.post.comments.set[$scope.post.comments.count - 1];
         addImagePreview(comment);
         // Allow to comment once again
@@ -2674,23 +3342,6 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post) {
 	$scope.publishComment = function() {
     // Check for the post integrity and then send the comment and return the promise
     if ('id' in $scope.post) {
-      var date = new Date();
-      $scope.post.comments.count = $scope.post.comments.count + 1;
-      $scope.post.comments.set.push({
-        user_id: $scope.user.info.id,
-        author: {
-          id: $scope.user.info.id,
-          username: $scope.user.info.username,
-          email: $scope.user.info.email,
-          description: $scope.user.info.description,
-          image: $scope.user.info.image
-        },
-        content: $scope.comment.content,
-        created_at: date.toISOString(),
-        position: $scope.post.comments.count - 1,
-        votes: {down: 0, up: 0}
-      });
-
       return $http.post(layer_path + 'post/comment/' + $scope.post.id, {content: $scope.comment.content});
     }
   };
@@ -3294,6 +3945,8 @@ chatModule.directive('sgEnter', function() {
 // @codekit-prepend "vendor/ui-bootstrap-tpls-0.13.0.min"
 // @codekit-prepend "vendor/angular-facebook"
 // @codekit-prepend "vendor/ng-file-upload-all.min.js"
+// @codekit-prepend "vendor/elastic.js"
+// @codekit-prepend "vendor/mentio.min.js"
 // @codekit-prepend "modules/feed/init"
 // @codekit-prepend "modules/categories/init"
 // @codekit-prepend "modules/reader/init"
@@ -3321,30 +3974,32 @@ var boardApplication = angular.module('board', [
   'angular-jwt',
   'firebase',
   'ngRoute',
-  'ngFileUpload'
+  'ngFileUpload',
+  'monospaced.elastic',
+  'mentio'
 ]);
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider',
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider) {
 
   $routeProvider.when('/', {
-    templateUrl: '/js/partials/main.html?v=133b',
+    templateUrl: '/js/partials/main.html?v=134',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/c/:slug', {
-    templateUrl: '/js/partials/main.html?v=133b',
+    templateUrl: '/js/partials/main.html?v=134',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/p/:slug/:id/:comment_position?', {
-    templateUrl: '/js/partials/main.html?v=133b',
+    templateUrl: '/js/partials/main.html?v=134',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/u/:username/:id', {
-    templateUrl: '/js/partials/profile.html?v=133b',
+    templateUrl: '/js/partials/profile.html?v=134',
     controller: 'UserController'
   });
   $routeProvider.when('/chat', {
-    templateUrl: '/js/partials/chat.html?v=133b',
+    templateUrl: '/js/partials/chat.html?v=134',
     controller: 'ChatController'
   });
   $routeProvider.when('/post/create/:cat_slug?', {

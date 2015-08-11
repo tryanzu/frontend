@@ -28,7 +28,7 @@
   <!-- /Favicon -->
 
   <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
-  <link type="text/css" rel="stylesheet" href="/css/app.css?v=133b">
+  <link type="text/css" rel="stylesheet" href="/css/app.css?v=134">
 
   <script>
     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -39,15 +39,15 @@
     ga('send', 'pageview');
   </script>
   <script src='https://cdn.firebase.com/js/client/2.2.1/firebase.js'></script>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.js"></script>
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular-resource.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.16/angular-route.js"></script>
-  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
   <script type="text/javascript" src="https://cdn.rawgit.com/auth0/angular-jwt/master/dist/angular-jwt.js"></script>
   <script src="https://cdn.firebase.com/libs/angularfire/1.1.1/angularfire.min.js"></script>
   <script type="text/javascript" src="js/config.js"></script>
-  <script type="text/javascript" src="js/main.js?v=133b"></script>
+  <script type="text/javascript" src="js/main.js?v=134"></script>
 
   <!-- start Mixpanel --><script type="text/javascript">(function(f,b){if(!b.__SV){var a,e,i,g;window.mixpanel=b;b._i=[];b.init=function(a,e,d){function f(b,h){var a=h.split(".");2==a.length&&(b=b[a[0]],h=a[1]);b[h]=function(){b.push([h].concat(Array.prototype.slice.call(arguments,0)))}}var c=b;"undefined"!==typeof d?c=b[d]=[]:d="mixpanel";c.people=c.people||[];c.toString=function(b){var a="mixpanel";"mixpanel"!==d&&(a+="."+d);b||(a+=" (stub)");return a};c.people.toString=function(){return c.toString(1)+".people (stub)"};i="disable track track_pageview track_links track_forms register register_once alias unregister identify name_tag set_config people.set people.set_once people.increment people.append people.union people.track_charge people.clear_charges people.delete_user".split(" ");
   for(g=0;g<i.length;g++)f(c,i[g]);b._i.push([a,e,d])};b.__SV=1.2;a=f.createElement("script");a.type="text/javascript";a.async=!0;a.src="undefined"!==typeof MIXPANEL_CUSTOM_LIB_URL?MIXPANEL_CUSTOM_LIB_URL:"//cdn.mxpnl.com/libs/mixpanel-2-latest.min.js";e=f.getElementsByTagName("script")[0];e.parentNode.insertBefore(a,e)}})(document,window.mixpanel||[]);
@@ -114,12 +114,22 @@
               </li>
               <li ng-repeat="n in (user.notifications.list | orderBy:'-created_at')">
                 <a ng-class="{'unread': !n.seen}" href="/p/{{n.related_extra}}/{{n.related_id}}/{{n.position}}" ng-if="n.related ==='comment'" my-refresh="reloadPost()" ng-click="toggle_notification(n)">
+                  <div class="notification-author" ng-if="n.username">
+                    <span class="avatar" title="{{ n.username }}" ng-if="!n.image">{{ n.username[0] }}</span>
+                    <img class="avatar" ng-src="{{ n.image }}" alt="{{ post.author.username }}" ng-if="n.image">
+                  </div>
                   <div class="content" marked="n.title"></div>
                   <div class="description">{{ n.text }}</div>
                   <div class="date">Hace {{ n.created_at | timeago }}</div>
                 </a>
                 <a ng-class="{'unread': !n.seen}" href="/p/{{n.related_extra}}/{{n.related_id}}/{{n.position}}" ng-if="n.related ==='mention'" my-refresh="reloadPost()" ng-click="toggle_notification(n)">
-                  <div class="content" marked="n.title"></div>
+                  <div class="notification-author" ng-if="n.username">
+                    <span class="avatar" title="{{ n.username }}" ng-if="!n.image">{{ n.username[0] }}</span>
+                    <img class="avatar" ng-src="{{ n.image }}" alt="{{ post.author.username }}" ng-if="n.image">
+                  </div>
+
+                  <div class="content" ng-if="n.username"><strong>{{n.username}}</strong> te mencionó en un comentario</div>
+                  <div class="content" marked="n.title" ng-if="n.title"></div>
                   <div class="description">{{ n.text }}</div>
                   <div class="date">Hace {{ n.created_at | timeago }}</div>
                 </a>
