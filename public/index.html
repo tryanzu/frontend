@@ -114,12 +114,22 @@
               </li>
               <li ng-repeat="n in (user.notifications.list | orderBy:'-created_at')">
                 <a ng-class="{'unread': !n.seen}" href="/p/{{n.related_extra}}/{{n.related_id}}/{{n.position}}" ng-if="n.related ==='comment'" my-refresh="reloadPost()" ng-click="toggle_notification(n)">
+                  <div class="notification-author" ng-if="n.username">
+                    <span class="avatar" title="{{ n.username }}" ng-if="!n.image">{{ n.username[0] }}</span>
+                    <img class="avatar" ng-src="{{ n.image }}" alt="{{ post.author.username }}" ng-if="n.image">
+                  </div>
                   <div class="content" marked="n.title"></div>
                   <div class="description">{{ n.text }}</div>
                   <div class="date">Hace {{ n.created_at | timeago }}</div>
                 </a>
                 <a ng-class="{'unread': !n.seen}" href="/p/{{n.related_extra}}/{{n.related_id}}/{{n.position}}" ng-if="n.related ==='mention'" my-refresh="reloadPost()" ng-click="toggle_notification(n)">
-                  <div class="content" marked="n.title"></div>
+                  <div class="notification-author" ng-if="n.username">
+                    <span class="avatar" title="{{ n.username }}" ng-if="!n.image">{{ n.username[0] }}</span>
+                    <img class="avatar" ng-src="{{ n.image }}" alt="{{ post.author.username }}" ng-if="n.image">
+                  </div>
+
+                  <div class="content" ng-if="n.username"><strong>{{n.username}}</strong> te mencionó en un comentario</div>
+                  <div class="content" marked="n.title" ng-if="n.title"></div>
                   <div class="description">{{ n.text }}</div>
                   <div class="date">Hace {{ n.created_at | timeago }}</div>
                 </a>
