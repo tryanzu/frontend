@@ -7,6 +7,8 @@
 // @codekit-prepend "vendor/ui-bootstrap-tpls-0.13.0.min"
 // @codekit-prepend "vendor/angular-facebook"
 // @codekit-prepend "vendor/ng-file-upload-all.min.js"
+// @codekit-prepend "vendor/elastic.js"
+// @codekit-prepend "vendor/mentio.min.js"
 // @codekit-prepend "modules/feed/init"
 // @codekit-prepend "modules/categories/init"
 // @codekit-prepend "modules/reader/init"
@@ -34,30 +36,32 @@ var boardApplication = angular.module('board', [
   'angular-jwt',
   'firebase',
   'ngRoute',
-  'ngFileUpload'
+  'ngFileUpload',
+  'monospaced.elastic',
+  'mentio'
 ]);
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider',
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider) {
 
   $routeProvider.when('/', {
-    templateUrl: '/js/partials/main.html?v=133b',
+    templateUrl: '/js/partials/main.html?v=134',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/c/:slug', {
-    templateUrl: '/js/partials/main.html?v=133b',
+    templateUrl: '/js/partials/main.html?v=134',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/p/:slug/:id/:comment_position?', {
-    templateUrl: '/js/partials/main.html?v=133b',
+    templateUrl: '/js/partials/main.html?v=134',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/u/:username/:id', {
-    templateUrl: '/js/partials/profile.html?v=133b',
+    templateUrl: '/js/partials/profile.html?v=134',
     controller: 'UserController'
   });
   $routeProvider.when('/chat', {
-    templateUrl: '/js/partials/chat.html?v=133b',
+    templateUrl: '/js/partials/chat.html?v=134',
     controller: 'ChatController'
   });
   $routeProvider.when('/post/create/:cat_slug?', {
