@@ -6,7 +6,8 @@ var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
   $scope.messages = [];
   $scope.message = {
     content: '',
-    send_on_enter: true
+    send_on_enter: true,
+    previous: '-'
   };
   $scope.show_details = true;
 
@@ -72,6 +73,12 @@ var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
   };
 
   $scope.addMessage = function() {
+    console.log($scope.message.previous, $scope.message.content);
+    if($scope.message.content === $scope.message.previous || ($scope.message.previous.indexOf($scope.message.content) > -1) || ($scope.message.content.indexOf($scope.message.previous) > -1)) {
+      $scope.message.content = '';
+    } else {
+      $scope.message.previous = $scope.message.content;
+    }
     if($scope.message.content !== '') {
       var image = $scope.user.info.image || "";
       var new_message = {
@@ -110,9 +117,6 @@ chatModule.controller('ChatController', ChatController);
 
 chatModule.directive('sgEnter', function() {
   return {
-    /*scope: {
-      'sg-send': '='
-    },*/
     link: function(scope, element, attrs) {
       var mh_window = $('.message-history');
       console.log(scope.message.send_on_enter);
