@@ -287,6 +287,17 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
 
   	// Resolve categories though
   	Category.query(function(data) {
+
+      for(c in data) {
+        if(!data[c].subcategories) {
+          data[c].subcategories = [
+            {'name': data[c].name + ' sub 1', 'selected': true},
+            {'name': data[c].name + ' sub 2', 'selected': true},
+            {'name': data[c].name + ' sub 3', 'selected': true}
+          ];
+        }
+      }
+
   		$scope.resolving.categories = false;
   		$scope.categories = data;
 

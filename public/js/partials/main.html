@@ -4,6 +4,53 @@
         <div class="row row-no-padding">
           <div class="col-md-12">
             <div class="current-board">
+              <div class="segments" ng-if="!viewing.top_posts">
+                <div class="row" style="padding-bottom:12px;">
+                  <div class="col-xs-8">
+                    <h2>Categorías disponibles</h2>
+                  </div>
+                  <div class="col-xs-4 text-right">
+                    <a class="toggle" href="" ng-click="toggleCategories()" ng-if="status.show_categories"><i class="fa fa-chevron-up"></i> Ocultar</a>
+                    <a class="toggle" href="" ng-click="toggleCategories()" ng-if="!status.show_categories"><i class="fa fa-chevron-down"></i> Mostrar</a>
+                  </div>
+                </div>
+                <div id="category-list" ng-if="status.show_categories">
+                  <ul>
+                    <li ng-repeat="c in categories">
+                      <div class="category-header" ng-style="{'background': 'url(/images/boards/' + c.slug + '.png)'}">
+                        <div class="layer"></div>
+                        <div class="content">
+                          <h4>{{c.name}}</h4>
+                          <p>{{c.description}}</p>
+                        </div>
+                      </div>
+                      <ul class="subcategories">
+                        <li ng-repeat="s in c.subcategories">
+                          <div class="row">
+                            <div class="col-md-6 col-xs-6">
+                              <a href="" tooltip="Haz click para ver sólo esta categoría">{{ s.name }}</a>
+                            </div>
+                            <div class="col-md-6 col-xs-6 text-right">
+                              <span class="see-in-feed">Suscribirme</span>
+                              <switch id="enabled" name="enabled" ng-model="s.selected" on="Si" off="No" class="sg"></switch>
+                            </div>
+                          </div>
+                        </li>
+                      </ul>
+                    </li>
+                  </ul>
+                </div>
+                <div id="tags" class="hidden" ng-if="status.show_categories">
+                  <div ng-repeat="c in categories" ng-class="{'active': category.slug === c.slug}">
+                    <span class="ball" ng-class="{'empty': !c.color}" ng-style="{'background-color': c.color}"></span>
+                    <a href="/c/{{ c.slug }}"><span class="name">{{ c.name }}</span></a>
+                    <span class="count" ng-if="!user.isLogged">{{ c.count }}</span>
+                    <span class="count" ng-if="c.recent > 0 && user.isLogged">{{ c.recent }}</span>
+                    <a href="/"><i class="fa fa-times" ng-if="category.slug === c.slug"></i></a>
+                  </div>
+                </div>
+              </div>
+
               <div class="title">
                 <div class="row">
                   <div class="col-md-7 col-xs-7 hidden">
@@ -100,27 +147,6 @@
 
               <div class="resolving" ng-if="resolving.categories">
                 <i class="fa fa-circle-o-notch fa-spin"></i>
-              </div>
-
-              <div class="segments" ng-if="!viewing.top_posts">
-                <div class="row">
-                  <div class="col-xs-8">
-                    <h2>Categorías disponibles</h2>
-                  </div>
-                  <div class="col-xs-4 text-right">
-                    <a class="toggle" href="" ng-click="toggleCategories()" ng-if="status.show_categories"><i class="fa fa-chevron-down"></i> Ocultar</a>
-                    <a class="toggle" href="" ng-click="toggleCategories()" ng-if="!status.show_categories"><i class="fa fa-chevron-up"></i> Mostrar</a>
-                  </div>
-                </div>
-                <div id="tags" ng-if="status.show_categories">
-                  <div ng-repeat="c in categories" ng-class="{'active': category.slug === c.slug}">
-                    <span class="ball" ng-class="{'empty': !c.color}" ng-style="{'background-color': c.color}"></span>
-                    <a href="/c/{{ c.slug }}"><span class="name">{{ c.name }}</span></a>
-                    <span class="count" ng-if="!user.isLogged">{{ c.count }}</span>
-                    <span class="count" ng-if="c.recent > 0 && user.isLogged">{{ c.recent }}</span>
-                    <a href="/"><i class="fa fa-times" ng-if="category.slug === c.slug"></i></a>
-                  </div>
-                </div>
               </div>
             </div>
           </div>

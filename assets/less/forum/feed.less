@@ -283,7 +283,7 @@
 
   .segments {
     background-color: @brand-primary-lighter;
-    padding: 12px 18px;
+    padding: 12px 18px 0 18px;
     border-top: 1px solid @brand-primary-light;
 
     a.toggle {
@@ -337,6 +337,92 @@
           margin-left: 4px;
           font-size: 11px;
           font-weight: 600;
+        }
+      }
+    }
+
+    #category-list {
+      ul {
+        list-style-type: none;
+        padding-left: 0;
+        margin-left: -18px;
+        margin-right: -18px;
+
+        & > li {
+          display: inline-block;
+          width: 100%;
+
+          .category-header {
+            position: relative;
+          }
+
+          .layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(40, 40, 40, 0.30);
+          }
+
+          .content {
+            position: relative;
+            z-index: 10;
+            color: #c9c9c9;
+            display: inline-block;
+            padding: 0 18px;
+
+            h4 {
+              color: #ddd;
+              font-size: 16px;
+              margin-bottom: 0.3em;
+            }
+            p {
+              font-size: 13px;
+            }
+          }
+
+          ul.subcategories {
+            margin-left: 0;
+            margin-right: 0;
+            background-color: #fff;
+
+            li {
+              padding: 10px 18px;
+              font-size: 12px;
+              border-bottom: 1px solid @brand-primary-light;
+              color: @brand-primary-light-text;
+              display: inline-table;
+
+              .see-in-feed {
+                height: 22px;
+                line-height: 22px;
+                vertical-align: top;
+                font-weight: 600;
+                padding-right: 5px;
+              }
+
+              &:last-child {
+                border-bottom: none;
+              }
+            }
+          }
+
+          &:hover {
+            .layer {
+              background-color: rgba(30, 30, 30, 0.05);
+            }
+            .content {
+              h4 {
+                color: #fff;
+              }
+            }
+            ul.subcategories {
+              li {
+                color: @brand-primary-opaque;
+              }
+            }
+          }
         }
       }
     }

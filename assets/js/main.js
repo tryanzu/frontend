@@ -9,6 +9,7 @@
 // @codekit-prepend "vendor/ng-file-upload-all.min.js"
 // @codekit-prepend "vendor/elastic.js"
 // @codekit-prepend "vendor/mentio.min.js"
+// @codekit-prepend "vendor/angular-ui-switch.min.js"
 // @codekit-prepend "modules/feed/init"
 // @codekit-prepend "modules/categories/init"
 // @codekit-prepend "modules/reader/init"
@@ -38,7 +39,8 @@ var boardApplication = angular.module('board', [
   'ngRoute',
   'ngFileUpload',
   'monospaced.elastic',
-  'mentio'
+  'mentio',
+  'uiSwitch'
 ]);
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider',
