@@ -36,7 +36,7 @@
   -webkit-transition: 0.3s ease-out all;
 }
 .switch.checked {
-  background: @brand-success;//rgb(100, 189, 99);
+  background: lighten(@brand-success, 48%);//rgb(100, 189, 99);
   border-color: @brand-success;//rgb(100, 189, 99);
 }
 .switch.checked small {
@@ -63,10 +63,11 @@
 .switch .on {
   display:none;
   z-index: 0;
-  color:#fff;
+  color: @brand-success;//#fff;
   position: absolute;
-  top: 15%;
+  top: 14%;
   left: 20%;
+  font-weight: 700;
 }
 
 .switch.checked .off {

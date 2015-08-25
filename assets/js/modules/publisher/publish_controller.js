@@ -127,6 +127,7 @@ var PublishController = function($scope, $routeParams, $http, Category, Part) {
     }
   };
 
+  // Load categories
 	Category.query(function(data) {
 		$scope.categories = data;
 		if($routeParams.cat_slug != undefined) {
@@ -137,8 +138,9 @@ var PublishController = function($scope, $routeParams, $http, Category, Part) {
 				}
 			};
 		} else {
-      $scope.post.category = $scope.categories[0];
+      $scope.post.category = $scope.categories[0].subcategories[0];
     }
+    //console.log($scope.post.category);
     $scope.publishing = false;
 	});
 

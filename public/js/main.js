@@ -2886,11 +2886,14 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
           var params = $route.current.params;
           //console.log(loc, params);
           if (loc.indexOf("/c/") >= 0) {
-            for (var category in $scope.categories) {
-              if ($scope.categories[category].slug == params.slug) {
-                $scope.category = $scope.categories[category];
-                $scope.startupFeed($scope.category);
-                break;
+            $scope.status.show_categories = false;
+            for (var i in $scope.categories) {
+              for(var j in $scope.categories[i].subcategories) {
+                if ($scope.categories[i].subcategories[j].slug == params.slug) {
+                  $scope.category = $scope.categories[i].subcategories[j];
+                  $scope.startupFeed($scope.category);
+                  break;
+                }
               }
             }
           }
@@ -2996,19 +2999,27 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
   		$scope.resolving_posts = true;
 
   		Feed.get({limit: 10, offset: 0, category: category.slug}, function(data) {
+        console.log(data);
         $scope.status.pending.$value = 0;
+        // For sync purposes
         if(category.slug == null) {
           $scope.status.viewing.$value = 'all';
         } else {
           $scope.status.viewing.$value = category.slug;
         }
-        for(p in data.feed) {
-          for(c in $scope.categories) {
-            if (data.feed[p].categories[0] == $scope.categories[c].slug) {
-              data.feed[p].category = {name: $scope.categories[c].name, color: $scope.categories[c].color, slug: $scope.categories[c].slug}
-              break;
+
+        if(data.feed.length > 0) {
+          for(p in data.feed) {
+            for(c in $scope.categories) {
+              if (data.feed[p].categories[0] == $scope.categories[c].slug) {
+                data.feed[p].category = {name: $scope.categories[c].name, color: $scope.categories[c].color, slug: $scope.categories[c].slug}
+                break;
+              }
             }
           }
+          $scope.status.newer_post_date = get_newer_date(data.feed);
+          //console.log($scope.status.newer_post_date);
+          $scope.posts = data.feed;
         }
 
         if(category.slug != null) {
@@ -3019,9 +3030,6 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
           $scope.page.description = "Creamos el mejor contenido para Geeks, y lo hacemos con pasión e irreverencia de Spartanos.";
         }
 
-        $scope.status.newer_post_date = get_newer_date(data.feed);
-        //console.log($scope.status.newer_post_date);
-  			$scope.posts = data.feed;
   			$scope.resolving_posts = false;
   			$scope.offset = 10;
 
@@ -3157,16 +3165,6 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
   	// Resolve categories though
   	Category.query(function(data) {
 
-      for(c in data) {
-        if(!data[c].subcategories) {
-          data[c].subcategories = [
-            {'name': data[c].name + ' sub 1', 'selected': true},
-            {'name': data[c].name + ' sub 2', 'selected': true},
-            {'name': data[c].name + ' sub 3', 'selected': true}
-          ];
-        }
-      }
-
   		$scope.resolving.categories = false;
   		$scope.categories = data;
 
@@ -3184,14 +3182,16 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
   			var category_segment = segments[2];
 
         if(section_segment === 'c') {
-    			for (var category in $scope.categories) {
-    				if ($scope.categories[category].slug == category_segment) {
-    					$scope.category = $scope.categories[category];
-    					$scope.startupFeed($scope.category);
-    					$scope.$broadcast('scrollMeUpdate');
-    					loaded = true;
-              break;
-    				}
+    			for (var i in $scope.categories) {
+            for(var j in $scope.categories[i].subcategories) {
+      				if ($scope.categories[i].subcategories[j].slug == category_segment) {
+      					$scope.category = $scope.categories[i].subcategories[j];
+      					$scope.startupFeed($scope.category);
+      					$scope.$broadcast('scrollMeUpdate');
+      					loaded = true;
+                break;
+      				}
+            }
     			}
         } else if(section_segment === 'p') {
           $scope.viewPostID($routeParams.id, $routeParams.slug);
@@ -3490,16 +3490,9 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post) {
 	});
 
   var addImagePreview = function(comment) {
-    //console.log(comment);
-    var regex = new RegExp("(https?:\/\/.*\\.(?:png|jpg|jpeg|JPEG|PNG|JPG|gif|GIF)((\\?|\\&)[a-zA-Z0-9]+\\=[a-zA-Z0-9]+)*)");
-    var res = regex.exec(comment.content);
-    if(res) {
-      // TODO: Create directive and template
-      comment.attach = {
-        url: res[0],
-        type: 'image'
-      };
-    }
+    var regex = new RegExp("(https?:\/\/.*\\.(?:png|jpg|jpeg|JPEG|PNG|JPG|gif|GIF)((\\?|\\&)[a-zA-Z0-9]+\\=[a-zA-Z0-9]+)*)", "g");
+    var to_replace = "<div class=\"img-preview\"><a href=\"$1\" target=\"_blank\"><img src=\"$1\"></a></div>"
+    comment.content = comment.content.replace(regex, to_replace);
   }
 };
 
@@ -3656,6 +3649,7 @@ var PublishController = function($scope, $routeParams, $http, Category, Part) {
     }
   };
 
+  // Load categories
 	Category.query(function(data) {
 		$scope.categories = data;
 		if($routeParams.cat_slug != undefined) {
@@ -3666,8 +3660,9 @@ var PublishController = function($scope, $routeParams, $http, Category, Part) {
 				}
 			};
 		} else {
-      $scope.post.category = $scope.categories[0];
+      $scope.post.category = $scope.categories[0].subcategories[0];
     }
+    //console.log($scope.post.category);
     $scope.publishing = false;
 	});
 

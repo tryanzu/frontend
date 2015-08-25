@@ -295,9 +295,12 @@
     <div class="col-md-3">
       <div class="sidebar" adjust-height>
         <div class="config">
-          <h4>Categoria</h4>
+          <h4>Categoría</h4>
           <div class="category">
-            <select ng-options="category.name for category in categories" ng-model="post.category" ng-disabled="post.components">
+            <select ng-model="post.category" ng-disabled="post.components">
+              <optgroup label="{{::c.name}}" ng-repeat="c in categories">
+                <option value="{{s.name}}" ng-repeat="s in c.subcategories">{{s.name}}</option>
+              </optgroup>
             </select>
           </div>
         </div>

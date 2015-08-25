@@ -264,15 +264,8 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post) {
 	});
 
   var addImagePreview = function(comment) {
-    //console.log(comment);
-    var regex = new RegExp("(https?:\/\/.*\\.(?:png|jpg|jpeg|JPEG|PNG|JPG|gif|GIF)((\\?|\\&)[a-zA-Z0-9]+\\=[a-zA-Z0-9]+)*)");
-    var res = regex.exec(comment.content);
-    if(res) {
-      // TODO: Create directive and template
-      comment.attach = {
-        url: res[0],
-        type: 'image'
-      };
-    }
+    var regex = new RegExp("(https?:\/\/.*\\.(?:png|jpg|jpeg|JPEG|PNG|JPG|gif|GIF)((\\?|\\&)[a-zA-Z0-9]+\\=[a-zA-Z0-9]+)*)", "g");
+    var to_replace = "<div class=\"img-preview\"><a href=\"$1\" target=\"_blank\"><img src=\"$1\"></a></div>"
+    comment.content = comment.content.replace(regex, to_replace);
   }
 };
