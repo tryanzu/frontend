@@ -4105,45 +4105,42 @@ boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http'
     $scope.loginFb = function() {
       $scope.fb_loading = true;
       var response;
-
       if($rootScope.fb_response.status === 'connected') {
         response = $rootScope.fb_response;
         $scope.fb_try(response);
       } else {
         Facebook.login(function(response) {
-          // Do something with response.
-          response = response;
           $scope.fb_try(response);
-        });
+        }, {scope: 'public_profile,email'});
       }
     };
 
     $scope.fb_try = function(response) {
-      $http.get("https://graph.facebook.com/me?access_token="+response.authResponse.accessToken).
-          success(function(data, status, headers, config) {
-            //console.log(data);
-            var info = data;
-            $http.post(layer_path + 'user/get-token/facebook', data).
-              error(function(data, status, headers, config) {
-                $scope.form.error = {message:'No se pudo iniciar sesión.'};
-              })
-              .success(function(data) {
+      $http.get("https://graph.facebook.com/me?access_token=" + response.authResponse.accessToken).
+        success(function(data, status, headers, config) {
+          console.log(data);
+          var info = data;
+          $http.post(layer_path + 'user/get-token/facebook', data).
+            error(function(data, status, headers, config) {
+              $scope.form.error = {message:'No se pudo iniciar sesión.'};
+            })
+            .success(function(data) {
 
-                mixpanel.track("Facebook login");
+              mixpanel.track("Facebook login");
 
-                localStorage.setItem('id_token', data.token);
-                localStorage.setItem('firebase_token', data.firebase);
-                localStorage.setItem('signed_in', true);
-                //console.log(data.token, data.firebase);
-                $modalInstance.dismiss('logged');
-                $rootScope.$broadcast('login');
-                $rootScope.$broadcast('status_change');
-              });
-          }).
-          error(function(data, status, headers, config) {
-            $scope.form.error = {message: 'Error conectando con FB'};
-            return;
-          });
+              localStorage.setItem('id_token', data.token);
+              localStorage.setItem('firebase_token', data.firebase);
+              localStorage.setItem('signed_in', true);
+              //console.log(data.token, data.firebase);
+              $modalInstance.dismiss('logged');
+              $rootScope.$broadcast('login');
+              $rootScope.$broadcast('status_change');
+            });
+        }).
+        error(function(data, status, headers, config) {
+          $scope.form.error = {message: 'Error conectando con FB'};
+          return;
+        });
     }
   }
 ]);
@@ -4213,7 +4210,7 @@ boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http'
           // Do something with response.
           response = response;
           $scope.fb_try(response);
-        });
+        }, {scope: 'public_profile,email'});
       }
     };
 
