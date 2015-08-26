@@ -3007,7 +3007,7 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
         if(category.slug == null) {
           $scope.status.viewing.$value = 'all';
         } else {
-          $scope.status.viewing.$value = category.slug;
+          $scope.status.viewing.$value = category.id;
         }
 
         if(data.feed.length > 0) {
@@ -3097,13 +3097,19 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
         $scope.resolving.newer = true;
         var pending = $scope.status.pending.$value;
 
-        Feed.get({limit: pending, before: $scope.status.newer_post_date, category: $scope.category.slug}, function(data) {
+        Feed.get({limit: pending, before: $scope.status.newer_post_date, category: $scope.category.id}, function(data) {
           if(data.feed.length > 0) {
             for(p in data.feed) {
               for(c in $scope.categories) {
-                if (data.feed[p].categories[0] == $scope.categories[c].slug) {
-                  data.feed[p].category = {name: $scope.categories[c].name, color: $scope.categories[c].color, slug: $scope.categories[c].slug}
-                  break;
+                for(s in $scope.categories[c].subcategories) {
+                  if (data.feed[p].category == $scope.categories[c].subcategories[s].id) {
+                    data.feed[p].category = {
+                      name: $scope.categories[c].subcategories[s].name,
+                      color: $scope.categories[c].color,
+                      slug: $scope.categories[c].subcategories[s].slug
+                    }
+                    break;
+                  }
                 }
               }
               data.feed[p].unread = true;
@@ -3732,7 +3738,7 @@ var PublishController = function($scope, $routeParams, $http, Category, Part, Up
 			for (var i = 0; i < $scope.categories.length; i++) {
         for(var j in $scope.categories[i].subcategories) {
   				if ($scope.categories[i].subcategories[j].slug === $routeParams.cat_slug) {
-  					$scope.post.category = $scope.categories[i].subcategories[j];
+  					$scope.post.category = $scope.categories[i].subcategories[j].id;
             break;
   				}
         }
@@ -4106,23 +4112,23 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider) {
 
   $routeProvider.when('/', {
-    templateUrl: '/js/partials/main.html?v=135',
+    templateUrl: '/js/partials/main.html?v=136',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/c/:slug', {
-    templateUrl: '/js/partials/main.html?v=135',
+    templateUrl: '/js/partials/main.html?v=136',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/p/:slug/:id/:comment_position?', {
-    templateUrl: '/js/partials/main.html?v=135',
+    templateUrl: '/js/partials/main.html?v=136',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/u/:username/:id', {
-    templateUrl: '/js/partials/profile.html?v=135',
+    templateUrl: '/js/partials/profile.html?v=136',
     controller: 'UserController'
   });
   $routeProvider.when('/chat', {
-    templateUrl: '/js/partials/chat.html?v=135',
+    templateUrl: '/js/partials/chat.html?v=136',
     controller: 'ChatController'
   });
   $routeProvider.when('/post/create/:cat_slug?', {

@@ -10,11 +10,11 @@
             <a href="" ng-show="adding_file"><i class="fa fa-camera-retro"></i> Cargando</a>
           </div>
 
-          <div class="block" ng-show="(post.category.slug == 'seleccion-de-componentes' || post.category.slug == 'presento-mi-pc') && !post.components">
+          <div class="block" ng-show="(post.category == '55dc153f3f6ba10071000004' || post.category == '55dc15513f6ba10071000005') && !post.components">
             <a href="" ng-click="activateComponents()" class="publish_components">Quiero publicar una PC</a>
           </div>
 
-          <div class="block helper" ng-show="(post.category.slug == 'seleccion-de-componentes' || post.category.slug == 'presento-mi-pc') && !post.components" tooltip="Podrás cargar todos los componentes de una PC con la que necesites ayuda" tooltip-placement="right">
+          <div class="block helper" ng-show="(post.category == '55dc153f3f6ba10071000004' || post.category == '55dc15513f6ba10071000005') && !post.components" tooltip="Podrás cargar todos los componentes de una PC con la que necesites ayuda" tooltip-placement="right">
             <i class="fa fa-info-circle"></i> ¿Qué es esto?
           </div>
 
@@ -32,7 +32,7 @@
             <a href="" ng-show="adding_file"><i class="fa fa-camera-retro"></i> Cargando</a>
           </div>
 
-          <div class="block" ng-show="(post.category.slug == 'seleccion-de-componentes' || post.category.slug == 'presento-mi-pc') && post.components">
+          <div class="block" ng-show="(post.category == '55dc153f3f6ba10071000004' || post.category == '55dc15513f6ba10071000005') && post.components">
             <a href="" ng-click="deactivateComponents()" class="cancel">Ya no quiero publicar una PC</a>
           </div>
         </div>
@@ -326,8 +326,8 @@
 
           <div class="alert alert-danger" ng-if="message !== ''">{{ message }}</div>
 
-          <a ng-click="computerPostPublish()" class="btn btn-block btn-primary" ng-class="{disabled: publishing}" ng-show="post.components">Publicar PC Ahora</a>
-          <a ng-click="normalPostPublish()" class="btn btn-block btn-primary" ng-class="{disabled: publishing}" ng-hide="post.components">Publicar Ahora</a>
+          <a ng-click="computerPostPublish()" class="btn btn-block btn-primary" ng-class="{disabled: publishing || adding_file}" ng-show="post.components">Publicar PC Ahora</a>
+          <a ng-click="normalPostPublish()" class="btn btn-block btn-primary" ng-class="{disabled: publishing || adding_file}" ng-hide="post.components">Publicar Ahora</a>
         </div>
       </div>
     </div>

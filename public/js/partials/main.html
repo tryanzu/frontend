@@ -1,6 +1,6 @@
   <main class="main-reader">
     <div class="row row-no-padding">
-      <div class="col-md-4 col-sm-5">
+      <div class="col-md-4 col-sm-5" ng-class="{'hidden-xs': activePostId != null}">
         <div class="row row-no-padding">
           <div class="col-md-12">
             <div class="feed-sidebar">
@@ -145,7 +145,7 @@
         </div>
       </div>
 
-      <div class="col-md-8 col-sm-7" ng-class="{'col-md-6': false, 'col-md-8': false, 'hidden-xs': activePostId == null}">
+      <div class="col-md-8 col-sm-7" ng-class="{'hidden-xs': activePostId == null}">
         <div class="current-article" ng-controller="ReaderViewController" adjust-height>
 
           <div class="waiting" ng-show="waiting">
@@ -472,18 +472,18 @@
                       <textarea id="comment-content" placeholder="Escribe tu comentario..." class="form-control flexible-height content" ng-model="comment.content" ng-disabled="waiting_comment" msd-elastic></textarea>
                       <div class="actions">
                         <ul>
-                          <li ng-show="comment.content != ''">
+                          <li ng-show="comment.content != ''" class="hidden-xs">
                             <strong>**Negrita**</strong>
                           </li>
-                          <li ng-show="comment.content != ''">
+                          <li ng-show="comment.content != ''" class="hidden-xs">
                             <em>*Itálica*</em>
                           </li>
                           <li style="margin-left: 2em;">
-                            <a href="" class="btn btn-default" ngf-select ngf-change="uploadPicture($files)" ngf-multiple="false" ngf-accept="'image/*'" ng-show="!adding_file"><i class="fa fa-picture-o"></i> <span class="label">Adjuntar imagen</span></a>
-                            <a href="" class="btn btn-default disabled" ng-show="adding_file"><i class="fa fa-picture-o"></i> <span class="label">Adjuntando imagen...</span></a>
+                            <a href="" class="btn btn-default" ngf-select ngf-change="uploadPicture($files)" ngf-multiple="false" ngf-accept="'image/*'" ng-show="!adding_file"><i class="fa fa-picture-o"></i> <span class="label hidden-xs">Adjuntar imagen</span></a>
+                            <a href="" class="btn btn-default disabled" ng-show="adding_file"><i class="fa fa-picture-o"></i> <span class="label hidden-xs">Adjuntando imagen...</span></a>
                           </li>
                           <li>
-                            <a href="" ng-click="publish()" ng-class="{'disabled': waiting_comment == true || comment.content == ''}" class="btn btn-primary btn-comment"><span class="label">Publicar</span></a>
+                            <a href="" ng-click="publish()" ng-class="{'disabled': waiting_comment == true || comment.content == '' || adding_file}" class="btn btn-primary btn-comment"><span class="label">Publicar</span></a>
                           </li>
                         </ul>
                       </div>
