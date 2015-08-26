@@ -1,5 +1,5 @@
-var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', 'Category', 'Feed', 'Bridge', '$route', '$routeParams',
-  function($scope, $rootScope, $timeout, $location, Category, Feed, Bridge, $route, $routeParams) {
+var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', 'Category', 'Feed', 'Bridge', '$route', '$routeParams', '$http',
+  function($scope, $rootScope, $timeout, $location, Category, Feed, Bridge, $route, $routeParams, $http) {
 
     var lastRoute = $route.current;
     $scope.$on('$locationChangeSuccess', function(event) {
@@ -17,11 +17,14 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
           var params = $route.current.params;
           //console.log(loc, params);
           if (loc.indexOf("/c/") >= 0) {
-            for (var category in $scope.categories) {
-              if ($scope.categories[category].slug == params.slug) {
-                $scope.category = $scope.categories[category];
-                $scope.startupFeed($scope.category);
-                break;
+            $scope.toggleCategories();
+            for (var i in $scope.categories) {
+              for(var j in $scope.categories[i].subcategories) {
+                if ($scope.categories[i].subcategories[j].slug == params.slug) {
+                  $scope.category = $scope.categories[i].subcategories[j];
+                  $scope.startupFeed($scope.category);
+                  break;
+                }
               }
             }
           }
@@ -126,20 +129,36 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
   	$scope.startupFeed = function(category) {
   		$scope.resolving_posts = true;
 
-  		Feed.get({limit: 10, offset: 0, category: category.slug}, function(data) {
+      console.log("Iniciando...", category.id);
+
+  		Feed.get({limit: 10, offset: 0, category: category.id}, function(data) {
+        //console.log(data);
         $scope.status.pending.$value = 0;
+        // For sync purposes
         if(category.slug == null) {
           $scope.status.viewing.$value = 'all';
         } else {
           $scope.status.viewing.$value = category.slug;
         }
-        for(p in data.feed) {
-          for(c in $scope.categories) {
-            if (data.feed[p].categories[0] == $scope.categories[c].slug) {
-              data.feed[p].category = {name: $scope.categories[c].name, color: $scope.categories[c].color, slug: $scope.categories[c].slug}
-              break;
+
+        if(data.feed.length > 0) {
+          for(p in data.feed) {
+            for(c in $scope.categories) {
+              for(s in $scope.categories[c].subcategories) {
+                if (data.feed[p].category == $scope.categories[c].subcategories[s].id) {
+                  data.feed[p].category = {
+                    name: $scope.categories[c].subcategories[s].name,
+                    color: $scope.categories[c].color,
+                    slug: $scope.categories[c].subcategories[s].slug
+                  }
+                  break;
+                }
+              }
             }
           }
+          $scope.status.newer_post_date = get_newer_date(data.feed);
+          //console.log($scope.status.newer_post_date);
+          $scope.posts = data.feed;
         }
 
         if(category.slug != null) {
@@ -150,9 +169,6 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
           $scope.page.description = "Creamos el mejor contenido para Geeks, y lo hacemos con pasión e irreverencia de Spartanos.";
         }
 
-        $scope.status.newer_post_date = get_newer_date(data.feed);
-        //console.log($scope.status.newer_post_date);
-  			$scope.posts = data.feed;
   			$scope.resolving_posts = false;
   			$scope.offset = 10;
 
@@ -170,9 +186,15 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
     		Feed.get({limit: 10, offset: $scope.offset + pending, category: $scope.category.slug}, function(data) {
           for(p in data.feed) {
             for(c in $scope.categories) {
-              if (data.feed[p].categories[0] == $scope.categories[c].slug) {
-                data.feed[p].category = {name: $scope.categories[c].name, color: $scope.categories[c].color, slug: $scope.categories[c].slug}
-                break;
+              for(s in $scope.categories[c].subcategories) {
+                if (data.feed[p].category == $scope.categories[c].subcategories[s].id) {
+                  data.feed[p].category = {
+                    name: $scope.categories[c].subcategories[s].name,
+                    color: $scope.categories[c].color,
+                    slug: $scope.categories[c].subcategories[s].slug
+                  }
+                  break;
+                }
               }
             }
           }
@@ -253,6 +275,26 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
   		ga('send', 'pageview', '/category/' + $scope.category.slug);
   	};
 
+    $scope.toggleSubscription = function(category) {
+      if(category.selected) {
+        $http.put(layer_path + 'category/subscription/' + category.id)
+          .error(function(data) {
+            category.selected = false;
+          })
+          .success(function(data) {
+            console.log("Suscribed...");
+          });
+      } else {
+        $http.delete(layer_path + 'category/subscription/' + category.id)
+          .error(function(data) {
+            category.selected = true;
+          })
+          .success(function(data) {
+            console.log("Unsubscribed...");
+          });
+      }
+    };
+
   	$scope.viewPost = function(post) {
   		$scope.activePostId = post.id;
       $scope.status.post_selected = true;
@@ -287,8 +329,22 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
 
   	// Resolve categories though
   	Category.query(function(data) {
+
   		$scope.resolving.categories = false;
   		$scope.categories = data;
+
+      // For loged users, we match their personal feed current values
+      if($scope.user.isLogged) {
+        if ($scope.user.info.categories) {
+          for (var i in $scope.categories) {
+            for(var j in $scope.categories[i].subcategories) {
+              if ($scope.user.info.categories.indexOf($scope.categories[i].subcategories[j].id) > -1) {
+                $scope.categories[i].subcategories[j].selected = true;
+              }
+            }
+          }
+        }
+      }
 
       $timeout(function() {
         $scope.$broadcast('changedContainers');
@@ -304,14 +360,16 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
   			var category_segment = segments[2];
 
         if(section_segment === 'c') {
-    			for (var category in $scope.categories) {
-    				if ($scope.categories[category].slug == category_segment) {
-    					$scope.category = $scope.categories[category];
-    					$scope.startupFeed($scope.category);
-    					$scope.$broadcast('scrollMeUpdate');
-    					loaded = true;
-              break;
-    				}
+    			for (var i in $scope.categories) {
+            for(var j in $scope.categories[i].subcategories) {
+      				if ($scope.categories[i].subcategories[j].slug == category_segment) {
+      					$scope.category = $scope.categories[i].subcategories[j];
+      					$scope.startupFeed($scope.category);
+      					$scope.$broadcast('scrollMeUpdate');
+      					loaded = true;
+                break;
+      				}
+            }
     			}
         } else if(section_segment === 'p') {
           $scope.viewPostID($routeParams.id, $routeParams.slug);
