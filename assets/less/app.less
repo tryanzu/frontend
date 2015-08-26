@@ -16,6 +16,7 @@
 @import "forum/wizzy.less";
 @import "forum/feed.less";
 @import "forum/discussions.less";
+@import "forum/switch.less";
 @import "forum/misc.less";
 
 @import "chat/toolbar.less";
@@ -330,28 +331,6 @@ body {
 }
 .ball.empty {
   border: 0px solid @brand-primary;
-}
-
-
-.current-board .list .post-item a.title:hover, .current-board .list .post-item.active a.title {
-  color: @link-color;
-  cursor: pointer;
-}
-
-.current-board .list .post-item .author {
-  color: @brand-primary-opaque;
-  display: block;
-  font-size: 12px;
-  margin-bottom: 0.5em;
-
-  a {
-    font-weight: bold;
-    color: @brand-primary-opaque;
-  }
-}
-
-.current-board .list .post-item .author i {
-  font-style: normal;
 }
 
 ul.counters {

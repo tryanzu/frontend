@@ -372,9 +372,20 @@
   }
 
   .img-preview {
-    margin-top: 8px;
-    padding-top: 6px;
-    margin-bottom: 8px;
+    margin-top: 0.3em;
+    margin-bottom: 0.3em;
+
+    a {
+      padding: 0.2em;
+      border: 2px solid #fff;
+      border-radius: 1px;
+      display: inline-block;
+
+      &:hover {
+        border-color: @brand-primary-light;
+        cursor: pointer;
+      }
+    }
 
     p {
       font-size: 11px;
@@ -383,9 +394,10 @@
     }
 
     img {
-      max-height: 240px;
+      max-height: 260px;
       width: auto;
       max-width: 100%;
+      border: 1px solid white;
     }
     video {
       max-height: 240px;
