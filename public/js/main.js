@@ -2886,7 +2886,7 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
           var params = $route.current.params;
           //console.log(loc, params);
           if (loc.indexOf("/c/") >= 0) {
-            $scope.status.show_categories = false;
+            $scope.toggleCategories();
             for (var i in $scope.categories) {
               for(var j in $scope.categories[i].subcategories) {
                 if ($scope.categories[i].subcategories[j].slug == params.slug) {
@@ -2997,6 +2997,8 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
 
   	$scope.startupFeed = function(category) {
   		$scope.resolving_posts = true;
+
+      console.log("Iniciando...", category.id);
 
   		Feed.get({limit: 10, offset: 0, category: category.id}, function(data) {
         //console.log(data);
@@ -3201,10 +3203,14 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
   		$scope.categories = data;
 
       // For loged users, we match their personal feed current values
-      for (var i in $scope.categories) {
-        for(var j in $scope.categories[i].subcategories) {
-          if ($scope.user.info.categories.indexOf($scope.categories[i].subcategories[j].id) > -1) {
-            $scope.categories[i].subcategories[j].selected = true;
+      if($scope.user.isLogged) {
+        if ($scope.user.info.categories) {
+          for (var i in $scope.categories) {
+            for(var j in $scope.categories[i].subcategories) {
+              if ($scope.user.info.categories.indexOf($scope.categories[i].subcategories[j].id) > -1) {
+                $scope.categories[i].subcategories[j].selected = true;
+              }
+            }
           }
         }
       }
@@ -3590,7 +3596,7 @@ ReaderModule.factory('Post', PostService);
 // Reader module controllers
 ReaderModule.controller('ReaderViewController', ReaderViewController);
 
-var PublishController = function($scope, $routeParams, $http, Category, Part) {
+var PublishController = function($scope, $routeParams, $http, Category, Part, Upload) {
 
   $scope.publishing = true;
   $scope.message = "";
@@ -3731,9 +3737,9 @@ var PublishController = function($scope, $routeParams, $http, Category, Part) {
   				}
         }
 			}
-		} else {
-      $scope.post.category = $scope.categories[0].subcategories[0];
-    }
+		} //else {
+      //$scope.post.category = $scope.categories[0].subcategories[0];
+    //}
     //console.log($scope.post.category);
     $scope.publishing = false;
 	});
@@ -3767,6 +3773,29 @@ var PublishController = function($scope, $routeParams, $http, Category, Part) {
       $scope.computerPost.components[component_name_post].value = '';
     })
   }
+
+  $scope.adding_file = false;
+  $scope.uploadPicture = function(files) {
+    if(files.length == 1) {
+      var file = files[0];
+      $scope.adding_file = true;
+      Upload.upload({
+        url: layer_path + "post/image",
+        file: file
+      }).success(function (data) {
+        if($scope.post.content.length > 0) {
+          $scope.post.content += '\n' + data.url;
+        } else {
+          $scope.post.content = data.url;
+        }
+        $scope.post.content += '\n';
+        $scope.adding_file = false;
+        $('.publish-content textarea').focus();
+      }).error(function(data) {
+        $scope.adding_file = false;
+      });
+    }
+  };
 
 	$scope.activateComponents = function() {
 		$scope.post.components = true;
@@ -3806,6 +3835,9 @@ var PublishController = function($scope, $routeParams, $http, Category, Part) {
       $scope.message = "Te falta el nombre de tu PC";
     } else if($scope.post.content === '') {
       $scope.message = "Te falta el contenido de tu publicación";
+    } else if($scope.post.category.length < 1) {
+      $scope.message = "Te falta elegir categoría";
+      console.log($scope.post.category, $scope.post.category.length < 1);
     } else {
       $scope.publishing = true;
   		var components = $scope.computerPost.components;
@@ -3822,6 +3854,7 @@ var PublishController = function($scope, $routeParams, $http, Category, Part) {
   		var post = {
   			kind: "recommendations",
         name: $scope.post.title,
+        category: $scope.post.category,
         content: $scope.post.content,
         components: components
   		};
@@ -3833,17 +3866,19 @@ var PublishController = function($scope, $routeParams, $http, Category, Part) {
     }
 	};
 	$scope.normalPostPublish = function() {
-
     if($scope.post.title === '') {
       $scope.message = "Te falta el título de tu publicación";
     } else if($scope.post.content === '') {
       $scope.message = "Te falta el contenido de tu publicación";
+    } else if($scope.post.category.length < 1) {
+      $scope.message = "Te falta elegir categoría";
+      console.log($scope.post.category, $scope.post.category.length < 1);
     } else {
       $scope.publishing = true;
   		var post = {
   			content: $scope.post.content,
   			name: $scope.post.title,
-  			category: $scope.post.category.id,
+  			category: $scope.post.category,
   			kind: 'category-post',
         isquestion: $scope.post.isQuestion
   		};

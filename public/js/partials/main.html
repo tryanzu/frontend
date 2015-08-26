@@ -6,11 +6,11 @@
             <div class="feed-sidebar">
               <div class="category-selector" style="overflow-y: scroll;">
                 <div id="actions" class="row">
-                  <div class="col-xs-8">
-                    <a href="/" ng-if="category.slug != null" style="margin-right: 1rem;"><h2><i class="fa fa-chevron-left"></i> Regresar</h2></a>
+                  <div class="col-xs-9">
+                    <a href="/" ng-if="category.slug != null" style="margin-right: 1rem;"><h2><i class="fa fa-chevron-left"></i></h2></a>
                     <h2>{{ category.name || "Categorías disponibles" }}</h2>
                   </div>
-                  <div class="col-xs-4 text-right">
+                  <div class="col-xs-3 text-right">
                     <a class="toggle" href="" ng-click="toggleCategories()" ng-if="status.show_categories"><i class="fa fa-chevron-up"></i> Ocultar</a>
                     <a class="toggle" href="" ng-click="toggleCategories()" ng-if="!status.show_categories"><i class="fa fa-chevron-down"></i> Mostrar</a>
                   </div>
@@ -45,10 +45,6 @@
 
               <div class="feed-type-actions" ng-if="!status.show_categories">
                 <div class="row">
-                  <div class="col-md-7 col-xs-7 hidden">
-                    <a href="/" class="btn btn-default btn-sm" ng-if="category.slug != null"><i class="fa fa-chevron-left"></i></a>
-                    <h2>{{ category.name || "Todas las publicaciones" }}</h2>
-                  </div>
                   <div class="col-xs-12">
                     <div class="btn-toolbar">
                       <div class="btn-group">

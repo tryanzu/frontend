@@ -17,7 +17,7 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
           var params = $route.current.params;
           //console.log(loc, params);
           if (loc.indexOf("/c/") >= 0) {
-            $scope.status.show_categories = false;
+            $scope.toggleCategories();
             for (var i in $scope.categories) {
               for(var j in $scope.categories[i].subcategories) {
                 if ($scope.categories[i].subcategories[j].slug == params.slug) {
@@ -128,6 +128,8 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
 
   	$scope.startupFeed = function(category) {
   		$scope.resolving_posts = true;
+
+      console.log("Iniciando...", category.id);
 
   		Feed.get({limit: 10, offset: 0, category: category.id}, function(data) {
         //console.log(data);
@@ -332,10 +334,14 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
   		$scope.categories = data;
 
       // For loged users, we match their personal feed current values
-      for (var i in $scope.categories) {
-        for(var j in $scope.categories[i].subcategories) {
-          if ($scope.user.info.categories.indexOf($scope.categories[i].subcategories[j].id) > -1) {
-            $scope.categories[i].subcategories[j].selected = true;
+      if($scope.user.isLogged) {
+        if ($scope.user.info.categories) {
+          for (var i in $scope.categories) {
+            for(var j in $scope.categories[i].subcategories) {
+              if ($scope.user.info.categories.indexOf($scope.categories[i].subcategories[j].id) > -1) {
+                $scope.categories[i].subcategories[j].selected = true;
+              }
+            }
           }
         }
       }

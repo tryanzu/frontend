@@ -6,22 +6,15 @@
         <input type="text" ng-model="post.title" class="title" placeholder="Ingresa un titulo para tu post" />
         <div class="toolbar">
           <div class="block">
-            <a href=""><i class="fa fa-bold"></i></a>
-            <a href=""><i class="fa fa-italic"></i></a>
-            <a href=""><i class="fa fa-underline"></i></a>
+            <a href="" ngf-select ngf-change="uploadPicture($files)" ngf-multiple="false" ngf-accept="'image/*'" ng-show="!adding_file"><i class="fa fa-camera-retro"></i></a>
+            <a href="" ng-show="adding_file"><i class="fa fa-camera-retro"></i> Cargando</a>
           </div>
 
-          <div class="block">
-            <a href=""><i class="fa fa-list"></i></a>
-            <a href=""><i class="fa fa-link"></i></a>
-            <a href=""><i class="fa fa-camera-retro"></i></a>
-          </div>
-
-          <div class="block" ng-show="post.category.slug == 'recommendations' && !post.components">
+          <div class="block" ng-show="(post.category.slug == 'seleccion-de-componentes' || post.category.slug == 'presento-mi-pc') && !post.components">
             <a href="" ng-click="activateComponents()" class="publish_components">Quiero publicar una PC</a>
           </div>
 
-          <div class="block helper" ng-show="post.category.slug == 'recommendations' && !post.components" tooltip="Podrás cargar todos los componentes de una PC con la que necesites ayuda" tooltip-placement="right">
+          <div class="block helper" ng-show="(post.category.slug == 'seleccion-de-componentes' || post.category.slug == 'presento-mi-pc') && !post.components" tooltip="Podrás cargar todos los componentes de una PC con la que necesites ayuda" tooltip-placement="right">
             <i class="fa fa-info-circle"></i> ¿Qué es esto?
           </div>
 
@@ -35,18 +28,11 @@
         <input type="text" ng-model="post.title" class="title" placeholder="Nombra a tu PC (Agis, Delios, Stelios, Telios, Drak)">
         <div class="toolbar">
           <div class="block">
-            <a href=""><i class="fa fa-bold"></i></a>
-            <a href=""><i class="fa fa-italic"></i></a>
-            <a href=""><i class="fa fa-underline"></i></a>
+            <a href="" ngf-select ngf-change="uploadPicture($files)" ngf-multiple="false" ngf-accept="'image/*'" ng-show="!adding_file"><i class="fa fa-camera-retro"></i></a>
+            <a href="" ng-show="adding_file"><i class="fa fa-camera-retro"></i> Cargando</a>
           </div>
 
-          <div class="block">
-            <a href=""><i class="fa fa-list"></i></a>
-            <a href=""><i class="fa fa-link"></i></a>
-            <a href=""><i class="fa fa-camera-retro"></i></a>
-          </div>
-
-          <div class="block" ng-show="post.category.slug == 'recommendations' && post.components">
+          <div class="block" ng-show="(post.category.slug == 'seleccion-de-componentes' || post.category.slug == 'presento-mi-pc') && post.components">
             <a href="" ng-click="deactivateComponents()" class="cancel">Ya no quiero publicar una PC</a>
           </div>
         </div>
@@ -298,8 +284,9 @@
           <h4>Categoría</h4>
           <div class="category">
             <select ng-model="post.category" ng-disabled="post.components">
+              <option value="">Selecciona</option>
               <optgroup label="{{::c.name}}" ng-repeat="c in categories">
-                <option value="{{s.name}}" ng-repeat="s in c.subcategories">{{s.name}}</option>
+                <option value="{{s.id}}" ng-repeat="s in c.subcategories" ng-selected="s.id == post.category">{{s.name}}</option>
               </optgroup>
             </select>
           </div>
