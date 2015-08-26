@@ -134,7 +134,7 @@ var PublishController = function($scope, $routeParams, $http, Category, Part, Up
 			for (var i = 0; i < $scope.categories.length; i++) {
         for(var j in $scope.categories[i].subcategories) {
   				if ($scope.categories[i].subcategories[j].slug === $routeParams.cat_slug) {
-  					$scope.post.category = $scope.categories[i].subcategories[j];
+  					$scope.post.category = $scope.categories[i].subcategories[j].id;
             break;
   				}
         }

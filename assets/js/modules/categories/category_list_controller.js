@@ -92,6 +92,9 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
 
     $scope.toggleCategories = function() {
       $scope.status.show_categories = !$scope.status.show_categories;
+      if(!$scope.status.show_categories) {
+        $scope.startupFeed($scope.category);
+      }
       $timeout(function() {
         $scope.$broadcast('changedContainers');
       }, 50);
@@ -111,9 +114,15 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
       Feed.get(request_vars, function(response) {
         for(p in response.feed) {
           for(c in $scope.categories) {
-            if (response.feed[p].categories[0] == $scope.categories[c].slug) {
-              response.feed[p].category = {name: $scope.categories[c].name, color: $scope.categories[c].color, slug: $scope.categories[c].slug}
-              break;
+            for(s in $scope.categories[c].subcategories) {
+              if (response.feed[p].category == $scope.categories[c].subcategories[s].id) {
+                response.feed[p].category = {
+                  name: $scope.categories[c].subcategories[s].name,
+                  color: $scope.categories[c].color,
+                  slug: $scope.categories[c].subcategories[s].slug
+                }
+                break;
+              }
             }
           }
         }
@@ -138,7 +147,7 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
         if(category.slug == null) {
           $scope.status.viewing.$value = 'all';
         } else {
-          $scope.status.viewing.$value = category.slug;
+          $scope.status.viewing.$value = category.id;
         }
 
         if(data.feed.length > 0) {
@@ -228,13 +237,19 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
         $scope.resolving.newer = true;
         var pending = $scope.status.pending.$value;
 
-        Feed.get({limit: pending, before: $scope.status.newer_post_date, category: $scope.category.slug}, function(data) {
+        Feed.get({limit: pending, before: $scope.status.newer_post_date, category: $scope.category.id}, function(data) {
           if(data.feed.length > 0) {
             for(p in data.feed) {
               for(c in $scope.categories) {
-                if (data.feed[p].categories[0] == $scope.categories[c].slug) {
-                  data.feed[p].category = {name: $scope.categories[c].name, color: $scope.categories[c].color, slug: $scope.categories[c].slug}
-                  break;
+                for(s in $scope.categories[c].subcategories) {
+                  if (data.feed[p].category == $scope.categories[c].subcategories[s].id) {
+                    data.feed[p].category = {
+                      name: $scope.categories[c].subcategories[s].name,
+                      color: $scope.categories[c].color,
+                      slug: $scope.categories[c].subcategories[s].slug
+                    }
+                    break;
+                  }
                 }
               }
               data.feed[p].unread = true;

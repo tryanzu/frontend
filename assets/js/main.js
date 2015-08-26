@@ -47,27 +47,27 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider) {
 
   $routeProvider.when('/', {
-    templateUrl: '/js/partials/main.html?v=136',
+    templateUrl: '/js/partials/main.html?v=137',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/c/:slug', {
-    templateUrl: '/js/partials/main.html?v=136',
+    templateUrl: '/js/partials/main.html?v=137',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/p/:slug/:id/:comment_position?', {
-    templateUrl: '/js/partials/main.html?v=136',
+    templateUrl: '/js/partials/main.html?v=137',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/u/:username/:id', {
-    templateUrl: '/js/partials/profile.html?v=136',
+    templateUrl: '/js/partials/profile.html?v=137',
     controller: 'UserController'
   });
   $routeProvider.when('/chat', {
-    templateUrl: '/js/partials/chat.html?v=136',
+    templateUrl: '/js/partials/chat.html?v=137',
     controller: 'ChatController'
   });
   $routeProvider.when('/post/create/:cat_slug?', {
-    templateUrl: '/js/partials/publish.html',
+    templateUrl: '/js/partials/publish.html?v=137',
     controller: 'PublishController',
     onEnter: function() {
       if(!$scope.user.isLogged) {
