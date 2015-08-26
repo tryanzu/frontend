@@ -2867,8 +2867,8 @@ var CategoryService = function($resource) {
   );
 };
 
-var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', 'Category', 'Feed', 'Bridge', '$route', '$routeParams',
-  function($scope, $rootScope, $timeout, $location, Category, Feed, Bridge, $route, $routeParams) {
+var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', 'Category', 'Feed', 'Bridge', '$route', '$routeParams', '$http',
+  function($scope, $rootScope, $timeout, $location, Category, Feed, Bridge, $route, $routeParams, $http) {
 
     var lastRoute = $route.current;
     $scope.$on('$locationChangeSuccess', function(event) {
@@ -2998,8 +2998,8 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
   	$scope.startupFeed = function(category) {
   		$scope.resolving_posts = true;
 
-  		Feed.get({limit: 10, offset: 0, category: category.slug}, function(data) {
-        console.log(data);
+  		Feed.get({limit: 10, offset: 0, category: category.id}, function(data) {
+        //console.log(data);
         $scope.status.pending.$value = 0;
         // For sync purposes
         if(category.slug == null) {
@@ -3011,9 +3011,15 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
         if(data.feed.length > 0) {
           for(p in data.feed) {
             for(c in $scope.categories) {
-              if (data.feed[p].categories[0] == $scope.categories[c].slug) {
-                data.feed[p].category = {name: $scope.categories[c].name, color: $scope.categories[c].color, slug: $scope.categories[c].slug}
-                break;
+              for(s in $scope.categories[c].subcategories) {
+                if (data.feed[p].category == $scope.categories[c].subcategories[s].id) {
+                  data.feed[p].category = {
+                    name: $scope.categories[c].subcategories[s].name,
+                    color: $scope.categories[c].color,
+                    slug: $scope.categories[c].subcategories[s].slug
+                  }
+                  break;
+                }
               }
             }
           }
@@ -3047,9 +3053,15 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
     		Feed.get({limit: 10, offset: $scope.offset + pending, category: $scope.category.slug}, function(data) {
           for(p in data.feed) {
             for(c in $scope.categories) {
-              if (data.feed[p].categories[0] == $scope.categories[c].slug) {
-                data.feed[p].category = {name: $scope.categories[c].name, color: $scope.categories[c].color, slug: $scope.categories[c].slug}
-                break;
+              for(s in $scope.categories[c].subcategories) {
+                if (data.feed[p].category == $scope.categories[c].subcategories[s].id) {
+                  data.feed[p].category = {
+                    name: $scope.categories[c].subcategories[s].name,
+                    color: $scope.categories[c].color,
+                    slug: $scope.categories[c].subcategories[s].slug
+                  }
+                  break;
+                }
               }
             }
           }
@@ -3130,6 +3142,26 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
   		ga('send', 'pageview', '/category/' + $scope.category.slug);
   	};
 
+    $scope.toggleSubscription = function(category) {
+      if(category.selected) {
+        $http.put(layer_path + 'category/subscription/' + category.id)
+          .error(function(data) {
+            category.selected = false;
+          })
+          .success(function(data) {
+            console.log("Suscribed...");
+          });
+      } else {
+        $http.delete(layer_path + 'category/subscription/' + category.id)
+          .error(function(data) {
+            category.selected = true;
+          })
+          .success(function(data) {
+            console.log("Unsubscribed...");
+          });
+      }
+    };
+
   	$scope.viewPost = function(post) {
   		$scope.activePostId = post.id;
       $scope.status.post_selected = true;
@@ -3167,6 +3199,15 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
 
   		$scope.resolving.categories = false;
   		$scope.categories = data;
+
+      // For loged users, we match their personal feed current values
+      for (var i in $scope.categories) {
+        for(var j in $scope.categories[i].subcategories) {
+          if ($scope.user.info.categories.indexOf($scope.categories[i].subcategories[j].id) > -1) {
+            $scope.categories[i].subcategories[j].selected = true;
+          }
+        }
+      }
 
       $timeout(function() {
         $scope.$broadcast('changedContainers');
@@ -3224,12 +3265,13 @@ CategoryModule.factory('Category', CategoryService);
 // Category module controllers
 CategoryModule.controller('CategoryListController', CategoryListController);
 
-var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post) {
+var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post, Upload) {
 
   $scope.post = {};
   $scope.comment = {content:''};
 	$scope.waiting = true;
   $scope.waiting_comment = false;
+  $scope.adding_file = false;
 
   $scope.people = [
     { label: 'AcidKid', username: 'AcidKid'},
@@ -3352,6 +3394,28 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post) {
     }
   };
 
+  $scope.uploadPicture = function(files) {
+    if(files.length == 1) {
+      var file = files[0];
+      $scope.adding_file = true;
+      Upload.upload({
+        url: layer_path + "post/image",
+        file: file
+      }).success(function (data) {
+        if($scope.comment.content.length > 0) {
+          $scope.comment.content += '\n' + data.url;
+        } else {
+          $scope.comment.content = data.url;
+        }
+        $scope.comment.content += '\n';
+        $scope.adding_file = false;
+        $('#comment-content').focus();
+      }).error(function(data) {
+        $scope.adding_file = false;
+      });
+    }
+  };
+
 	$scope.publishComment = function() {
     // Check for the post integrity and then send the comment and return the promise
     if ('id' in $scope.post) {
@@ -3373,14 +3437,20 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post) {
 
 		Post.get({id: post.id}, function(data) {
 			$scope.post = data;
-      $scope.post.category = {slug: data.categories[0]};
+      //$scope.post.category = {slug: data.categories[0]};
 
       addImagePreview($scope.post);
 
-      for (var category in $scope.categories) {
-        if($scope.categories[category].slug == $scope.post.category.slug) {
-          $scope.post.category.name = $scope.categories[category].name;
-          break;
+      for (var c in $scope.categories) {
+        for(var s in $scope.categories[c].subcategories) {
+          if($scope.categories[c].subcategories[s].id == $scope.post.category) {
+            $scope.post.category = {
+              name: $scope.categories[c].subcategories[s].name,
+              slug: $scope.categories[c].subcategories[s].slug,
+              parent_slug: $scope.categories[c].slug
+            }
+            break;
+          }
         }
       }
 
@@ -3654,11 +3724,13 @@ var PublishController = function($scope, $routeParams, $http, Category, Part) {
 		$scope.categories = data;
 		if($routeParams.cat_slug != undefined) {
 			for (var i = 0; i < $scope.categories.length; i++) {
-				if ($scope.categories[i].slug === $routeParams.cat_slug) {
-					$scope.post.category = $scope.categories[i];
-          break;
-				}
-			};
+        for(var j in $scope.categories[i].subcategories) {
+  				if ($scope.categories[i].subcategories[j].slug === $routeParams.cat_slug) {
+  					$scope.post.category = $scope.categories[i].subcategories[j];
+            break;
+  				}
+        }
+			}
 		} else {
       $scope.post.category = $scope.categories[0].subcategories[0];
     }
@@ -3771,7 +3843,7 @@ var PublishController = function($scope, $routeParams, $http, Category, Part) {
   		var post = {
   			content: $scope.post.content,
   			name: $scope.post.title,
-  			tag: $scope.post.category.slug,
+  			category: $scope.post.category.id,
   			kind: 'category-post',
         isquestion: $scope.post.isQuestion
   		};
@@ -3779,7 +3851,9 @@ var PublishController = function($scope, $routeParams, $http, Category, Part) {
   		$http.post(layer_path + 'post', post).then(function(data) {
   			// Return to home
         window.location.href = "/";
-  		}, function(err) {});
+  		}, function(err) {
+        console.log(err);
+      });
     }
 	};
 };

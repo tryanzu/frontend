@@ -132,11 +132,13 @@ var PublishController = function($scope, $routeParams, $http, Category, Part) {
 		$scope.categories = data;
 		if($routeParams.cat_slug != undefined) {
 			for (var i = 0; i < $scope.categories.length; i++) {
-				if ($scope.categories[i].slug === $routeParams.cat_slug) {
-					$scope.post.category = $scope.categories[i];
-          break;
-				}
-			};
+        for(var j in $scope.categories[i].subcategories) {
+  				if ($scope.categories[i].subcategories[j].slug === $routeParams.cat_slug) {
+  					$scope.post.category = $scope.categories[i].subcategories[j];
+            break;
+  				}
+        }
+			}
 		} else {
       $scope.post.category = $scope.categories[0].subcategories[0];
     }
@@ -249,7 +251,7 @@ var PublishController = function($scope, $routeParams, $http, Category, Part) {
   		var post = {
   			content: $scope.post.content,
   			name: $scope.post.title,
-  			tag: $scope.post.category.slug,
+  			category: $scope.post.category.id,
   			kind: 'category-post',
         isquestion: $scope.post.isQuestion
   		};
@@ -257,7 +259,9 @@ var PublishController = function($scope, $routeParams, $http, Category, Part) {
   		$http.post(layer_path + 'post', post).then(function(data) {
   			// Return to home
         window.location.href = "/";
-  		}, function(err) {});
+  		}, function(err) {
+        console.log(err);
+      });
     }
 	};
 };

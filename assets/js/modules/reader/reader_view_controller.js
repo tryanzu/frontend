@@ -1,9 +1,10 @@
-var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post) {
+var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post, Upload) {
 
   $scope.post = {};
   $scope.comment = {content:''};
 	$scope.waiting = true;
   $scope.waiting_comment = false;
+  $scope.adding_file = false;
 
   $scope.people = [
     { label: 'AcidKid', username: 'AcidKid'},
@@ -126,6 +127,28 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post) {
     }
   };
 
+  $scope.uploadPicture = function(files) {
+    if(files.length == 1) {
+      var file = files[0];
+      $scope.adding_file = true;
+      Upload.upload({
+        url: layer_path + "post/image",
+        file: file
+      }).success(function (data) {
+        if($scope.comment.content.length > 0) {
+          $scope.comment.content += '\n' + data.url;
+        } else {
+          $scope.comment.content = data.url;
+        }
+        $scope.comment.content += '\n';
+        $scope.adding_file = false;
+        $('#comment-content').focus();
+      }).error(function(data) {
+        $scope.adding_file = false;
+      });
+    }
+  };
+
 	$scope.publishComment = function() {
     // Check for the post integrity and then send the comment and return the promise
     if ('id' in $scope.post) {
@@ -147,14 +170,20 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post) {
 
 		Post.get({id: post.id}, function(data) {
 			$scope.post = data;
-      $scope.post.category = {slug: data.categories[0]};
+      //$scope.post.category = {slug: data.categories[0]};
 
       addImagePreview($scope.post);
 
-      for (var category in $scope.categories) {
-        if($scope.categories[category].slug == $scope.post.category.slug) {
-          $scope.post.category.name = $scope.categories[category].name;
-          break;
+      for (var c in $scope.categories) {
+        for(var s in $scope.categories[c].subcategories) {
+          if($scope.categories[c].subcategories[s].id == $scope.post.category) {
+            $scope.post.category = {
+              name: $scope.categories[c].subcategories[s].name,
+              slug: $scope.categories[c].subcategories[s].slug,
+              parent_slug: $scope.categories[c].slug
+            }
+            break;
+          }
         }
       }
 

@@ -1,5 +1,5 @@
-var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', 'Category', 'Feed', 'Bridge', '$route', '$routeParams',
-  function($scope, $rootScope, $timeout, $location, Category, Feed, Bridge, $route, $routeParams) {
+var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', 'Category', 'Feed', 'Bridge', '$route', '$routeParams', '$http',
+  function($scope, $rootScope, $timeout, $location, Category, Feed, Bridge, $route, $routeParams, $http) {
 
     var lastRoute = $route.current;
     $scope.$on('$locationChangeSuccess', function(event) {
@@ -129,8 +129,8 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
   	$scope.startupFeed = function(category) {
   		$scope.resolving_posts = true;
 
-  		Feed.get({limit: 10, offset: 0, category: category.slug}, function(data) {
-        console.log(data);
+  		Feed.get({limit: 10, offset: 0, category: category.id}, function(data) {
+        //console.log(data);
         $scope.status.pending.$value = 0;
         // For sync purposes
         if(category.slug == null) {
@@ -142,9 +142,15 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
         if(data.feed.length > 0) {
           for(p in data.feed) {
             for(c in $scope.categories) {
-              if (data.feed[p].categories[0] == $scope.categories[c].slug) {
-                data.feed[p].category = {name: $scope.categories[c].name, color: $scope.categories[c].color, slug: $scope.categories[c].slug}
-                break;
+              for(s in $scope.categories[c].subcategories) {
+                if (data.feed[p].category == $scope.categories[c].subcategories[s].id) {
+                  data.feed[p].category = {
+                    name: $scope.categories[c].subcategories[s].name,
+                    color: $scope.categories[c].color,
+                    slug: $scope.categories[c].subcategories[s].slug
+                  }
+                  break;
+                }
               }
             }
           }
@@ -178,9 +184,15 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
     		Feed.get({limit: 10, offset: $scope.offset + pending, category: $scope.category.slug}, function(data) {
           for(p in data.feed) {
             for(c in $scope.categories) {
-              if (data.feed[p].categories[0] == $scope.categories[c].slug) {
-                data.feed[p].category = {name: $scope.categories[c].name, color: $scope.categories[c].color, slug: $scope.categories[c].slug}
-                break;
+              for(s in $scope.categories[c].subcategories) {
+                if (data.feed[p].category == $scope.categories[c].subcategories[s].id) {
+                  data.feed[p].category = {
+                    name: $scope.categories[c].subcategories[s].name,
+                    color: $scope.categories[c].color,
+                    slug: $scope.categories[c].subcategories[s].slug
+                  }
+                  break;
+                }
               }
             }
           }
@@ -261,6 +273,26 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
   		ga('send', 'pageview', '/category/' + $scope.category.slug);
   	};
 
+    $scope.toggleSubscription = function(category) {
+      if(category.selected) {
+        $http.put(layer_path + 'category/subscription/' + category.id)
+          .error(function(data) {
+            category.selected = false;
+          })
+          .success(function(data) {
+            console.log("Suscribed...");
+          });
+      } else {
+        $http.delete(layer_path + 'category/subscription/' + category.id)
+          .error(function(data) {
+            category.selected = true;
+          })
+          .success(function(data) {
+            console.log("Unsubscribed...");
+          });
+      }
+    };
+
   	$scope.viewPost = function(post) {
   		$scope.activePostId = post.id;
       $scope.status.post_selected = true;
@@ -298,6 +330,15 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
 
   		$scope.resolving.categories = false;
   		$scope.categories = data;
+
+      // For loged users, we match their personal feed current values
+      for (var i in $scope.categories) {
+        for(var j in $scope.categories[i].subcategories) {
+          if ($scope.user.info.categories.indexOf($scope.categories[i].subcategories[j].id) > -1) {
+            $scope.categories[i].subcategories[j].selected = true;
+          }
+        }
+      }
 
       $timeout(function() {
         $scope.$broadcast('changedContainers');

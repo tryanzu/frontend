@@ -33,7 +33,7 @@
                             </div>
                             <div class="col-md-6 col-xs-6 text-right" ng-if="user.isLogged">
                               <span class="see-in-feed">Suscribirme</span>
-                              <switch id="enabled" name="enabled" ng-model="s.selected" on="Si" off="No" class="sg"></switch>
+                              <switch id="enabled" name="enabled" ng-model="s.selected" ng-change="toggleSubscription(s)" on="Si" off="No" class="sg"></switch>
                             </div>
                           </div>
                         </li>
@@ -187,7 +187,7 @@
                 </div>
 
                 <div class="col-md-5 hidden-xs">
-                  <div class="category-preview" ng-style="{'background-image': 'url(/images/boards/' + post.category.slug + '.png)'};">
+                  <div class="category-preview" ng-style="{'background-image': 'url(/images/boards/' + post.category.parent_slug + '.png)'};">
                     <p class="category-label">{{ post.category.name }}</p>
                   </div>
                 </div>
@@ -482,8 +482,12 @@
                           <li ng-show="comment.content != ''">
                             <em>*Itálica*</em>
                           </li>
-                          <li style="margin-left: 3em;">
-                            <a href="" ng-click="publish()" ng-class="{'disabled': waiting_comment == true || comment.content == ''}" class="btn btn-primary"><span class="label">Publicar</span></a>
+                          <li style="margin-left: 2em;">
+                            <a href="" class="btn btn-default" ngf-select ngf-change="uploadPicture($files)" ngf-multiple="false" ngf-accept="'image/*'" ng-show="!adding_file"><i class="fa fa-picture-o"></i> <span class="label">Adjuntar imagen</span></a>
+                            <a href="" class="btn btn-default disabled" ng-show="adding_file"><i class="fa fa-picture-o"></i> <span class="label">Adjuntando imagen...</span></a>
+                          </li>
+                          <li>
+                            <a href="" ng-click="publish()" ng-class="{'disabled': waiting_comment == true || comment.content == ''}" class="btn btn-primary btn-comment"><span class="label">Publicar</span></a>
                           </li>
                         </ul>
                       </div>
