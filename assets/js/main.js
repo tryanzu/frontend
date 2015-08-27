@@ -144,7 +144,7 @@ boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http'
         //console.log(data.token, data.firebase);
         $modalInstance.dismiss('logged');
         $rootScope.$broadcast('login');
-        $rootScope.$broadcast('status_change');
+        //$rootScope.$broadcast('status_change');
       });
   	};
 
@@ -166,9 +166,8 @@ boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http'
     };
 
     $scope.fb_try = function(response) {
-      $http.get("https://graph.facebook.com/me?access_token=" + response.authResponse.accessToken).
+      $http.get("https://graph.facebook.com/me?access_token="+response.authResponse.accessToken).
         success(function(data, status, headers, config) {
-          console.log(data);
           var info = data;
           $http.post(layer_path + 'user/get-token/facebook', data).
             error(function(data, status, headers, config) {
@@ -184,7 +183,7 @@ boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http'
               //console.log(data.token, data.firebase);
               $modalInstance.dismiss('logged');
               $rootScope.$broadcast('login');
-              $rootScope.$broadcast('status_change');
+              //$rootScope.$broadcast('status_change');
             });
         }).
         error(function(data, status, headers, config) {
@@ -236,7 +235,7 @@ boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http'
         localStorage.setItem('signed_in', true);
         $modalInstance.dismiss('signed');
         $rootScope.$broadcast('login');
-        $rootScope.$broadcast('status_change');
+        //$rootScope.$broadcast('status_change');
   		});
   	};
 
@@ -251,14 +250,11 @@ boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http'
     $scope.loginFb = function() {
       $scope.fb_loading = true;
       var response;
-
       if($rootScope.fb_response.status === 'connected') {
         response = $rootScope.fb_response;
         $scope.fb_try(response);
       } else {
         Facebook.login(function(response) {
-          // Do something with response.
-          response = response;
           $scope.fb_try(response);
         }, {scope: 'public_profile,email'});
       }
@@ -266,30 +262,29 @@ boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http'
 
     $scope.fb_try = function(response) {
       $http.get("https://graph.facebook.com/me?access_token="+response.authResponse.accessToken).
-          success(function(data, status, headers, config) {
-            //console.log(data);
-            var info = data;
-            $http.post(layer_path + 'user/get-token/facebook', data).
-              error(function(data, status, headers, config) {
-                $scope.form.error = {message:'No se pudo iniciar sesión.'};
-              })
-              .success(function(data) {
+        success(function(data, status, headers, config) {
+          var info = data;
+          $http.post(layer_path + 'user/get-token/facebook', data).
+            error(function(data, status, headers, config) {
+              $scope.form.error = {message:'No se pudo iniciar sesión.'};
+            })
+            .success(function(data) {
 
-                mixpanel.track("Facebook login");
+              mixpanel.track("Facebook login");
 
-                localStorage.setItem('id_token', data.token);
-                localStorage.setItem('firebase_token', data.firebase);
-                localStorage.setItem('signed_in', true);
-                //console.log(data.token, data.firebase);
-                $modalInstance.dismiss('logged');
-                $rootScope.$broadcast('login');
-                $rootScope.$broadcast('status_change');
-              });
-          }).
-          error(function(data, status, headers, config) {
-            $scope.form.error = {message: 'Error conectando con FB'};
-            return;
-          });
+              localStorage.setItem('id_token', data.token);
+              localStorage.setItem('firebase_token', data.firebase);
+              localStorage.setItem('signed_in', true);
+              //console.log(data.token, data.firebase);
+              $modalInstance.dismiss('logged');
+              $rootScope.$broadcast('login');
+              //$rootScope.$broadcast('status_change');
+            });
+        }).
+        error(function(data, status, headers, config) {
+          $scope.form.error = {message: 'Error conectando con FB'};
+          return;
+        });
     }
 }]);
 
@@ -442,10 +437,9 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
           $scope.user.isLogged = true;
 
           $timeout(function() {
+            $scope.$broadcast('userLogged');
             $scope.$broadcast('changedContainers');
           }, 100);
-
-          //console.log(data);
 
           mixpanel.identify(data.id);
           mixpanel.people.set({
@@ -460,7 +454,6 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
           var notificationsCountRef = new Firebase(userUrl + "/notifications/count");
           notificationsCountRef.onAuth(function(authData) {
             if (authData) {
-              //console.log("Authenticated with uid:", authData.uid);
               console.log("Authenticated to Firebase");
             } else {
               console.log("Client unauthenticated.");
@@ -493,6 +486,7 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
                 //console.log($scope.user.gaming);
               });
 
+              // For sync options in newsfeed
               var pending = $firebaseObject(pendingRef);
               pending.$bindTo($scope, "status.pending");
               pending.$loaded(function(){ $scope.status.pending.$value = 0; });
@@ -514,17 +508,14 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
                 var list_ref = new Firebase(userUrl + "/notifications/list");
                 $scope.user.notifications.list = $firebaseArray(list_ref.limitToLast(to_show));
 
+                // We wait till notifications list is loaded
                 $scope.user.notifications.list.$loaded()
                 .then(function(x) {
                   x.$watch(function(event) {
-                    //console.log(event);
+                    // Notification sound
                     if(event.event === "child_added") {
                       var audio = new Audio('/sounds/notification.mp3');
                       audio.play();
-
-                      /*if($scope.user.notifications.count.$value == 1) {
-                        $scope.page.title = "(" + $scope.user.notifications.count.$value + ") " + $scope.page.title;
-                      }*/
                     }
                   });
                 });
