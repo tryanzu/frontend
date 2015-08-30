@@ -168,7 +168,7 @@
       border: 1px solid @brand-primary;
       color: @brand-primary;
 
-      &.Developer {
+      &.developer {
         border: 1px solid #44A53C;
         color: #616161;
         background-color: #F4F9F3;
@@ -279,6 +279,16 @@
     border-bottom: 1px solid #F4F6F8;
     margin-bottom: 2em;
     padding: 1em;
+    position: relative;
+
+    .float-actions {
+      position: absolute;
+      right: 1em;
+
+      .only-on-hover {
+        visibility: hidden;
+      }
+    }
 
     .comment-author .username {
       color: @brand-primary-light-text;
@@ -315,8 +325,13 @@
       }
     }
 
-    &:hover .actions ul li a {
-      color: @brand-primary-opaque;
+    &:hover {
+      .actions ul li a {
+        color: @brand-primary-opaque;
+      }
+      .float-actions .only-on-hover {
+        visibility: visible;
+      }
     }
 
     .actions {
@@ -350,6 +365,12 @@
         }
       }
     }
+  }
+}
+
+@media @phone {
+  .current-article .comments .comment .float-actions {
+    position: relative;
   }
 }
 

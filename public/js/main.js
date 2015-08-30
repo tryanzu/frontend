@@ -114,7 +114,7 @@ directives.directive('myRefresh', ['$location', function($location) {
     link: function(scope, element, attrs) {
       element.bind('click', function() {
         if(element[0] && element[0].href && element[0].href === $location.absUrl()){
-          console.log("Recarga!");
+          //console.log("Recarga!");
           scope.trigger();
         }
       });
@@ -2843,6 +2843,8 @@ angular.module('monospaced.elastic', [])
 
 angular.module("uiSwitch",[]).directive("switch",function(){return{restrict:"AE",replace:!0,transclude:!0,template:function(n,e){var s="";return s+="<span",s+=' class="switch'+(e.class?" "+e.class:"")+'"',s+=e.ngModel?' ng-click="'+e.ngModel+"=!"+e.ngModel+(e.ngChange?"; "+e.ngChange+'()"':'"'):"",s+=' ng-class="{ checked:'+e.ngModel+' }"',s+=">",s+="<small></small>",s+='<input type="checkbox"',s+=e.id?' id="'+e.id+'"':"",s+=e.name?' name="'+e.name+'"':"",s+=e.ngModel?' ng-model="'+e.ngModel+'"':"",s+=' style="display:none" />',s+='<span class="switch-text">',s+=e.on?'<span class="on">'+e.on+"</span>":"",s+=e.off?'<span class="off">'+e.off+"</span>":" ",s+="</span>"}}});
 
+"use strict";angular.module("mm.acl",[]),angular.module("mm.acl").provider("AclService",[function(){function a(){var a;switch(b.storage){case"sessionStorage":a=h("sessionStorage");break;case"localStorage":a=h("localStorage");break;default:a=null}return a?(angular.extend(c,a),!0):!1}Array.prototype.indexOf||(Array.prototype.indexOf=function(a){for(var b=this.length;b--;)if(this[b]===a)return b;return-1});var b={storage:"sessionStorage",storageKey:"AclService"},c={roles:[],abilities:{}},d=function(a){return"object"==typeof c.abilities[a]},e=function(a){return d(a)?c.abilities[a]:[]},f=function(){switch(b.storage){case"sessionStorage":g("sessionStorage");break;case"localStorage":g("localStorage");break;default:return}},g=function(a){window[a].setItem(b.storageKey,JSON.stringify(c))},h=function(a){var c=window[a].getItem(b.storageKey);return c?JSON.parse(c):!1},i={};return i.resume=a,i.attachRole=function(a){-1===c.roles.indexOf(a)&&(c.roles.push(a),f())},i.detachRole=function(a){var b=c.roles.indexOf(a);b>-1&&(c.roles.splice(b,1),f())},i.flushRoles=function(){c.roles=[],f()},i.hasRole=function(a){return c.roles.indexOf(a)>-1},i.getRoles=function(){return c.roles},i.setAbilities=function(a){c.abilities=a,f()},i.addAbility=function(a,b){c.abilities[a]||(c.abilities[a]=[]),c.abilities[a].push(b),f()},i.can=function(a){for(var b,d,f=c.roles.length;f--;)if(b=c.roles[f],d=e(b),d.indexOf(a)>-1)return!0;return!1},{config:function(a){angular.extend(b,a)},resume:a,$get:function(){return i}}}]);
+
 var FeedService = function($resource){
     return $resource(layer_path + 'feed');
 };
@@ -2862,6 +2864,11 @@ var CategoryService = function($resource) {
     {
       'update': {
         method:'PUT'
+      },
+      'writable': {
+        method: 'GET',
+        params: {permissions:'write'},
+        isArray: true
       }
     }
   );
@@ -3006,7 +3013,6 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
       $scope.resolving.loaded = false;
 
   		Feed.get({limit: 10, offset: 0, category: category.id}, function(data) {
-        console.log(category, data);
         $scope.status.pending.$value = 0;
         // For sync purposes
         if(category.slug == null) {
@@ -3016,7 +3022,6 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
         }
 
         if(data.feed.length > 0) {
-          console.log("Si hay!");
           for(p in data.feed) {
             for(c in $scope.categories) {
               for(s in $scope.categories[c].subcategories) {
@@ -3433,7 +3438,7 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post, U
     }
   };
 
-  $scope.uploadPicture = function(files) {
+  $scope.uploadPicture = function(files, comment) {
     if(files.length == 1) {
       var file = files[0];
       $scope.adding_file = true;
@@ -3441,14 +3446,27 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post, U
         url: layer_path + "post/image",
         file: file
       }).success(function (data) {
-        if($scope.comment.content.length > 0) {
-          $scope.comment.content += '\n' + data.url;
+        if(comment) {
+          // Particular comment edition
+          if(comment.content_edit.length > 0) {
+            comment.content_edit += '\n' + data.url;
+          } else {
+            comment.content_edit = data.url;
+          }
+          comment.content_edit += '\n';
+          $scope.adding_file = false;
+          $('*[data-number="' + comment.position + '"] .idiot-wizzy.edit #comment-content').focus();
         } else {
-          $scope.comment.content = data.url;
+          // Global comment edition
+          if($scope.comment.content.length > 0) {
+            $scope.comment.content += '\n' + data.url;
+          } else {
+            $scope.comment.content = data.url;
+          }
+          $scope.comment.content += '\n';
+          $scope.adding_file = false;
+          $('#comment-content').focus();
         }
-        $scope.comment.content += '\n';
-        $scope.adding_file = false;
-        $('#comment-content').focus();
       }).error(function(data) {
         $scope.adding_file = false;
       });
@@ -3461,6 +3479,38 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post, U
       return $http.post(layer_path + 'post/comment/' + $scope.post.id, {content: $scope.comment.content});
     }
   };
+
+  // Comment edition
+  $scope.editCommentShow = function(comment) {
+    var to_edit = $('<div>' + comment.content + '</div>');
+    to_edit.find('a.user-mention').each(function(index) {
+      var text = $(this).html() + $(this).data('comment');
+      $(this).replaceWith(text);
+    });
+    comment.content_edit = to_edit.html();
+    comment.editing = true;
+  }
+  $scope.editComment = function(comment) {
+    // If did not change
+    if(comment.content_edit === comment.content) {
+      comment.editing = false;
+    } else {
+      // Insert promise here...
+      // On success
+      comment.content = comment.content_edit;
+      addImagePreview(comment);
+      comment.editing = false;
+    }
+  }
+
+  // Comment deletion
+  $scope.deleteComment = function(comment) {
+    var position = $scope.post.comments.set.indexOf(comment);
+    if(position > -1) {
+      $scope.post.comments.set.splice(position, 1);
+      $scope.post.comments.count--;
+    }
+  }
 
 	$scope.$on('pushLoggedComment', function(event, comment) {
 		// Push the comment to the main set of comments
@@ -3476,8 +3526,6 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post, U
 
 		Post.get({id: post.id}, function(data) {
 			$scope.post = data;
-      //$scope.post.category = {slug: data.categories[0]};
-
       addImagePreview($scope.post);
 
       for (var c in $scope.categories) {
@@ -3493,19 +3541,21 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post, U
         }
       }
 
+      // Attach title and description for SEO purposes
       $scope.page.title = "SpartanGeek.com | "  + $scope.post.title + " en " + $scope.post.category.name;
-
       if($scope.post.content.length - 1 < 157) {
         $scope.page.description = $scope.post.content;
       } else {
         $scope.page.description = $scope.post.content.substring(0, 157) + '...';
       }
 
+      // Postproccess every comment
       for( var c in $scope.post.comments.set) {
         addImagePreview($scope.post.comments.set[c]);
       }
       $scope.resolving = false;
 
+      // If searching for a comment, move to that comment
       if($scope.view_comment.position >= 0 && $scope.view_comment.position != '') {
         $timeout(function() {
           var elem = $('.comment[data-number='+$scope.view_comment.position+']');
@@ -3513,7 +3563,7 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post, U
             elem.addClass('active');
             $('.current-article').animate({scrollTop: (elem.offset().top - 80)}, 50);
           }
-        }, 100);
+        }, 400);
       }
 
       /* TEMPORAL - TODO: MOVE TO A DIRECTIVE */
@@ -3557,31 +3607,31 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post, U
       $scope.scrubber = {
         current_c: 0
       };
-      $('.current-article').scroll(function() {
+      $('.current-article').scroll( function() {
         from_top = $(this).scrollTop();
 
         if (from_top > lastScrollTop){
           // downscroll code
           if($scope.scrubber.current_c < $scope.comments_positions.length - 1) {
-            if( (from_top + 210) > $scope.comments_positions[$scope.scrubber.current_c].bottom ) {
-              $scope.$apply(function () {
-                $scope.scrubber.current_c++;
-              });
+            while( (from_top + 210) > $scope.comments_positions[$scope.scrubber.current_c].bottom ) {
+              $scope.scrubber.current_c++;
             }
+            $scope.$apply(function () {
+              $scope.scrubber.current_c;
+            });
           }
         } else {
           // upscroll code
           if($scope.scrubber.current_c > 0) {
-            if ( (from_top + 210) < $scope.comments_positions[$scope.scrubber.current_c].top ) {
-              $scope.$apply(function () {
-                $scope.scrubber.current_c--;
-              });
+            while ( (from_top + 210) < $scope.comments_positions[$scope.scrubber.current_c].top ) {
+              $scope.scrubber.current_c--;
             }
+            $scope.$apply(function () {
+              $scope.scrubber.current_c;
+            });
           }
         }
         lastScrollTop = from_top;
-
-        //console.log($scope.scrubber.current_c);
 
         surplus = from_top / $scope.scrollable_h;
         surplus = 100 - surplus * 100;
@@ -3601,7 +3651,7 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post, U
   var addImagePreview = function(comment) {
     var regex = new RegExp("(https?:\/\/.*\\.(?:png|jpg|jpeg|JPEG|PNG|JPG|gif|GIF)((\\?|\\&)[a-zA-Z0-9]+\\=[a-zA-Z0-9]+)*)", "g");
     var to_replace = "<div class=\"img-preview\"><a href=\"$1\" target=\"_blank\"><img src=\"$1\"></a></div>"
-    comment.content = comment.content.replace(regex, to_replace);
+    comment.content_final = comment.content.replace(regex, to_replace);
   }
 };
 
@@ -3758,25 +3808,6 @@ var PublishController = function($scope, $routeParams, $http, Category, Part, Up
     }
   };
 
-  // Load categories
-	Category.query(function(data) {
-		$scope.categories = data;
-		if($routeParams.cat_slug != undefined) {
-			for (var i = 0; i < $scope.categories.length; i++) {
-        for(var j in $scope.categories[i].subcategories) {
-  				if ($scope.categories[i].subcategories[j].slug === $routeParams.cat_slug) {
-  					$scope.post.category = $scope.categories[i].subcategories[j].id;
-            break;
-  				}
-        }
-			}
-		} //else {
-      //$scope.post.category = $scope.categories[0].subcategories[0];
-    //}
-    //console.log($scope.post.category);
-    $scope.publishing = false;
-	});
-
   $scope.changeModels = function(component_name, component_name_post) {
     if(!component_name_post){
       component_name_post = component_name;
@@ -3785,8 +3816,7 @@ var PublishController = function($scope, $routeParams, $http, Category, Part, Up
       type: component_name,
       action:'models',
       manufacturer: $scope.partForm[component_name].model
-    }, function(data){
-      //console.log(data.parts);
+    }, function(data) {
       if(component_name === 'memory') {
         for(var i = 0; i<data.parts.length; i++) {
           data.parts[i].full_name = data.parts[i].name + ' ' + data.parts[i].size + ' ' + data.parts[i].speed + ' ' + data.parts[i].memory_type;
@@ -3831,8 +3861,9 @@ var PublishController = function($scope, $routeParams, $http, Category, Part, Up
   };
 
 	$scope.activateComponents = function() {
+    // Show the components selection form
 		$scope.post.components = true;
-
+    // If we haven't load Pc Parts Brands List, get them from API
     if(!$scope.partForm.motherboard.brand_list) {
       Part.get({type:'motherboard', action:'manufacturers'}, function(data){
         $scope.partForm.motherboard.brand_list = data.manufacturers;
@@ -3924,6 +3955,22 @@ var PublishController = function($scope, $routeParams, $http, Category, Part, Up
       });
     }
 	};
+
+  // Load categories
+  Category.writable(function(data) {
+    $scope.categories = data;
+    if($routeParams.cat_slug != undefined) {
+      for (var i = 0; i < $scope.categories.length; i++) {
+        for(var j in $scope.categories[i].subcategories) {
+          if ($scope.categories[i].subcategories[j].slug === $routeParams.cat_slug) {
+            $scope.post.category = $scope.categories[i].subcategories[j].id;
+            break;
+          }
+        }
+      }
+    }
+    $scope.publishing = false;
+  });
 };
 
 // @codekit-prepend "publish_controller"
@@ -4102,6 +4149,7 @@ chatModule.directive('sgEnter', function() {
 // @codekit-prepend "vendor/elastic.js"
 // @codekit-prepend "vendor/mentio.min.js"
 // @codekit-prepend "vendor/angular-ui-switch.min.js"
+// @codekit-prepend "vendor/angular-acl.min.js"
 // @codekit-prepend "modules/feed/init"
 // @codekit-prepend "modules/categories/init"
 // @codekit-prepend "modules/reader/init"
@@ -4111,6 +4159,7 @@ chatModule.directive('sgEnter', function() {
 // @codekit-prepend "modules/chat/chat"
 
 var boardApplication = angular.module('board', [
+  'ngRoute',
 	'directivesModule',
 	'filtersModule',
 	'activeReader',
@@ -4128,15 +4177,15 @@ var boardApplication = angular.module('board', [
   'chatModule',
   'angular-jwt',
   'firebase',
-  'ngRoute',
   'ngFileUpload',
   'monospaced.elastic',
   'mentio',
-  'uiSwitch'
+  'uiSwitch',
+  'mm.acl'
 ]);
 
-boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider',
-  function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider) {
+boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider', 'AclServiceProvider',
+  function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider, AclServiceProvider) {
 
   $routeProvider.when('/', {
     templateUrl: '/js/partials/main.html?v=138',
@@ -4203,6 +4252,9 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   $httpProvider.interceptors.push('jwtInterceptor');
 
   FacebookProvider.init(fb_api_key);
+
+  // ACL Configuration
+  AclServiceProvider.config({storage: false});
 }]);
 
 boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http', '$modalInstance', 'Facebook',
@@ -4380,6 +4432,7 @@ boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http'
     }
 }]);
 
+// TODO: Move to external file
 boardApplication.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed', 'Upload', '$http',
   function($scope, User, $routeParams, Feed, Upload, $http) {
 
@@ -4492,8 +4545,8 @@ boardApplication.controller('UserController', ['$scope', 'User', '$routeParams',
   });
 }]);
 
-boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', '$modal', '$timeout', '$firebaseObject', '$firebaseArray', 'Facebook',
-  function($scope, $rootScope, $http, $modal, $timeout, $firebaseObject, $firebaseArray, Facebook) {
+boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', '$modal', '$timeout', '$firebaseObject', '$firebaseArray', 'Facebook', 'AclService',
+  function($scope, $rootScope, $http, $modal, $timeout, $firebaseObject, $firebaseArray, Facebook, AclService) {
     $scope.user = {
       isLogged: false,
       info: null,
@@ -4532,6 +4585,12 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
             $scope.$broadcast('userLogged');
             $scope.$broadcast('changedContainers');
           }, 100);
+
+          // Attach the member roles to the current user
+          for(var i in data.roles) {
+            //console.log("Adding " + data.roles[i] + " as role");
+            AclService.attachRole(data.roles[i]);
+          }
 
           mixpanel.identify(data.id);
           mixpanel.people.set({
@@ -4713,22 +4772,46 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
   }
 ]);
 
-boardApplication.run(['$rootScope', '$http', function($rootScope, $http) {
-    // TEST PURPOSES
-    if(false) {
-      localStorage.removeItem('signed_in');
-      localStorage.removeItem('id_token');
-      localStorage.removeItem('firebase_token');
-    }
-
-    // Initialize the local storage
-    if(!localStorage.signed_in)
-      localStorage.signed_in = false;
-
-    $rootScope.page = {
-      title: "SpartanGeek.com | Comunidad de tecnología, geeks y más",
-      description: "Creamos el mejor contenido para Geeks, y lo hacemos con pasión e irreverencia de Spartanos."
-    };
+boardApplication.run(['$rootScope', '$http', 'AclService', function($rootScope, $http, AclService) {
+  // TEST PURPOSES
+  if(false) {
+    localStorage.removeItem('signed_in');
+    localStorage.removeItem('id_token');
+    localStorage.removeItem('firebase_token');
   }
-]);
+
+  // Initialize the local storage
+  if(!localStorage.signed_in)
+    localStorage.signed_in = false;
+
+  $rootScope.page = {
+    title: "SpartanGeek.com | Comunidad de tecnología, geeks y más",
+    description: "Creamos el mejor contenido para Geeks, y lo hacemos con pasión e irreverencia de Spartanos."
+  };
+
+  // Set the ACL data.
+  // The data should have the roles as the property names,
+  // with arrays listing their permissions as their value.
+  var aclData = {}
+  $http.get(layer_path + 'permissions')
+    .error(function(data) {}) // How should we proceed if no data?
+    .success(function(data) {
+      //console.log(data);
+      // Proccess de roles and permissions iteratively
+      for(var r in data.rules) {
+        aclData[r] = data.rules[r].permissions;
+        //aclData[r] = [];
+        var current = data.rules[r];
+        //console.log(current);
+        while(current.parents.length > 0) {
+          //console.log(current);
+          aclData[r] = aclData[r].concat(data.rules[current.parents[0]].permissions);
+          current = data.rules[current.parents[0]];
+        }
+      }
+      //console.log('ACL', aclData);
+    });
+  AclService.setAbilities(aclData);
+  $rootScope.can = AclService.can;
+}]);
 

@@ -4,6 +4,10 @@
   border-radius: 6px;
   font: 14px "Open Sans", sans-serif;
 
+  &.edit {
+    margin-top: 1em;
+  }
+
   .content {
     color: #666F7D;
     background-color: #fafafa;
@@ -38,6 +42,13 @@
     .btn.btn-comment {
       padding-left: 3em;
       padding-right: 3em;
+    }
+    .btn-danger {
+      background-color: lighten(@brand-danger, 35%);
+      color: @brand-danger !important;
+      .label {
+        color: @brand-danger !important;
+      }
     }
 
     ul {

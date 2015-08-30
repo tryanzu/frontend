@@ -127,25 +127,6 @@ var PublishController = function($scope, $routeParams, $http, Category, Part, Up
     }
   };
 
-  // Load categories
-	Category.query(function(data) {
-		$scope.categories = data;
-		if($routeParams.cat_slug != undefined) {
-			for (var i = 0; i < $scope.categories.length; i++) {
-        for(var j in $scope.categories[i].subcategories) {
-  				if ($scope.categories[i].subcategories[j].slug === $routeParams.cat_slug) {
-  					$scope.post.category = $scope.categories[i].subcategories[j].id;
-            break;
-  				}
-        }
-			}
-		} //else {
-      //$scope.post.category = $scope.categories[0].subcategories[0];
-    //}
-    //console.log($scope.post.category);
-    $scope.publishing = false;
-	});
-
   $scope.changeModels = function(component_name, component_name_post) {
     if(!component_name_post){
       component_name_post = component_name;
@@ -154,8 +135,7 @@ var PublishController = function($scope, $routeParams, $http, Category, Part, Up
       type: component_name,
       action:'models',
       manufacturer: $scope.partForm[component_name].model
-    }, function(data){
-      //console.log(data.parts);
+    }, function(data) {
       if(component_name === 'memory') {
         for(var i = 0; i<data.parts.length; i++) {
           data.parts[i].full_name = data.parts[i].name + ' ' + data.parts[i].size + ' ' + data.parts[i].speed + ' ' + data.parts[i].memory_type;
@@ -200,8 +180,9 @@ var PublishController = function($scope, $routeParams, $http, Category, Part, Up
   };
 
 	$scope.activateComponents = function() {
+    // Show the components selection form
 		$scope.post.components = true;
-
+    // If we haven't load Pc Parts Brands List, get them from API
     if(!$scope.partForm.motherboard.brand_list) {
       Part.get({type:'motherboard', action:'manufacturers'}, function(data){
         $scope.partForm.motherboard.brand_list = data.manufacturers;
@@ -293,4 +274,20 @@ var PublishController = function($scope, $routeParams, $http, Category, Part, Up
       });
     }
 	};
+
+  // Load categories
+  Category.writable(function(data) {
+    $scope.categories = data;
+    if($routeParams.cat_slug != undefined) {
+      for (var i = 0; i < $scope.categories.length; i++) {
+        for(var j in $scope.categories[i].subcategories) {
+          if ($scope.categories[i].subcategories[j].slug === $routeParams.cat_slug) {
+            $scope.post.category = $scope.categories[i].subcategories[j].id;
+            break;
+          }
+        }
+      }
+    }
+    $scope.publishing = false;
+  });
 };

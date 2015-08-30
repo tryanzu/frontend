@@ -17,10 +17,17 @@
           <div class="block helper" ng-show="(post.category == '55dc153f3f6ba10071000004' || post.category == '55dc15513f6ba10071000005') && !post.components" tooltip="Podrás cargar todos los componentes de una PC con la que necesites ayuda" tooltip-placement="right">
             <i class="fa fa-info-circle"></i> ¿Qué es esto?
           </div>
-
         </div>
 
-        <textarea ng-model="post.content" class="editable-content" placeholder="Escribe el contenido de tu publicación..."></textarea>
+        <div class="row">
+          <div class="col-sm-6">
+            <textarea ng-model="post.content" class="editable-content" placeholder="Escribe el contenido de tu publicación..."></textarea>
+          </div>
+          <div class="col-sm-6 post-preview">
+            <p class="description">Previsualización de tu publicación (Las imágenes no se previsualizan)</p>
+            <div marked="post.content"></div>
+          </div>
+        </div>
 
       </div>
 
