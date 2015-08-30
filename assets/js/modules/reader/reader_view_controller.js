@@ -197,12 +197,15 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post, U
 
   // Comment deletion
   $scope.deleteComment = function(comment) {
-    var position = $scope.post.comments.set.indexOf(comment);
-    if(position > -1) {
-      $scope.post.comments.set.splice(position, 1);
-      $scope.post.comments.count--;
-    }
-    $scope.$broadcast('scrubberRecalculate');
+    $http.delete(layer_path + 'post/comment/' + $scope.post.id + '/' + comment.position)
+    .then(function() {
+      var position = $scope.post.comments.set.indexOf(comment);
+      if(position > -1) {
+        $scope.post.comments.set.splice(position, 1);
+        $scope.post.comments.count--;
+      }
+      $scope.$broadcast('scrubberRecalculate');
+    });
   }
 
 	$scope.$on('pushLoggedComment', function(event, comment) {
