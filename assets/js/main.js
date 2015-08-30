@@ -425,7 +425,7 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
       viewing: 'all',
       pending: 0,
       newer_post_date: null,
-      show_categories: true,
+      show_categories: false,
       menuCollapsed: true
     }
     $scope.user.isLogged = localStorage.getItem('signed_in')==='true'?true:false;

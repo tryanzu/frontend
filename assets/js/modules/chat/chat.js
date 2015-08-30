@@ -66,14 +66,18 @@ var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
         if(snapshot.val()) {
           var image = $scope.user.info.image || "";
           statusRef.onDisconnect().set({username: $scope.user.info.username, image: image, status: "offline"});
-          statusRef.set({username: $scope.user.info.username, image: image, status: "online"});
+          statusRef.set({
+            id: $scope.user.info.id,
+            username: $scope.user.info.username,
+            image: image,
+            status: "online"
+          });
         }
       });
     }
   };
 
   $scope.addMessage = function() {
-    console.log($scope.message.previous, $scope.message.content);
     if($scope.message.content === $scope.message.previous || ($scope.message.previous.indexOf($scope.message.content) > -1) || ($scope.message.content.indexOf($scope.message.previous) > -1)) {
       $scope.message.content = '';
     } else {

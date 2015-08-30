@@ -199,6 +199,7 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post, U
       $scope.post.comments.set.splice(position, 1);
       $scope.post.comments.count--;
     }
+    $scope.$broadcast('scrubberRecalculate');
   }
 
 	$scope.$on('pushLoggedComment', function(event, comment) {
@@ -296,6 +297,7 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post, U
       $scope.scrubber = {
         current_c: 0
       };
+      // Scrolling responses
       $('.current-article').scroll( function() {
         from_top = $(this).scrollTop();
 
@@ -336,6 +338,35 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post, U
 
 		});
 	});
+
+  $scope.$on('scrubberRecalculate', function(event) {
+    $timeout(function() {
+      $scope.total_h = $('.current-article')[0].scrollHeight;
+      $scope.viewport_h = $('.current-article').height();
+
+      $scope.ratio = $scope.viewport_h/$scope.total_h*100;
+      $scope.scrollable = 0;
+      $scope.scrollable_h = $scope.total_h - $scope.viewport_h;
+      if($scope.ratio < 15) {
+        $scope.ratio = 15;
+        $scope.scrollable = 85;
+      } else {
+        $scope.scrollable = 100 - $scope.ratio;
+      }
+
+      $scope.comments_positions = [{
+        top: 0,
+        bottom: $('div.discussion-posts div.content').height()
+      }];
+      $('div.comment').each(function(index) {
+        var t = $(this);
+        $scope.comments_positions[index + 1] = {
+          top: t.position().top,
+          bottom: t.position().top + t.height()
+        };
+      });
+    }, 500);
+  });
 
   var addImagePreview = function(comment) {
     var regex = new RegExp("(https?:\/\/.*\\.(?:png|jpg|jpeg|JPEG|PNG|JPG|gif|GIF)((\\?|\\&)[a-zA-Z0-9]+\\=[a-zA-Z0-9]+)*)", "g");

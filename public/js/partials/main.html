@@ -7,7 +7,7 @@
               <div class="category-selector">
                 <div id="actions" class="row" ng-if="user.isLogged">
                   <div class="" ng-class="{'col-xs-12': category.slug != null, 'col-xs-8': category.slug == null}">
-                    <a href="/" ng-if="category.slug != null" style="margin-right: 1rem;"><h2><i class="fa fa-chevron-left"></i></h2></a>
+                    <a href="/" ng-if="category.slug != null" style="margin-right: 1rem;" ng-click="toggleCategories()"><h2><i class="fa fa-chevron-left"></i></h2></a>
                     <h2>{{ category.name || "Mi Feed personal" }}</h2>
                   </div>
                   <div class="col-xs-4 text-right" ng-if="category.id == null">
@@ -17,7 +17,7 @@
                 </div>
                 <div id="actions" class="row" ng-if="!user.isLogged">
                   <div class="" ng-class="{'col-xs-12': category.slug != null, 'col-xs-8': category.slug == null}">
-                    <a href="/" ng-if="category.slug != null" style="margin-right: 1rem;"><h2><i class="fa fa-chevron-left"></i></h2></a>
+                    <a href="/" ng-if="category.slug != null" style="margin-right: 1rem;" ng-click="toggleCategories()"><h2><i class="fa fa-chevron-left"></i></h2></a>
                     <h2>{{ category.name || "Categorías disponibles" }}</h2>
                   </div>
                   <div class="col-xs-4 text-right" ng-if="category.id == null">
@@ -414,12 +414,17 @@
                   </li>
                 </ul>
 
+                <div class="text-right">
+                  <a href="" class="btn btn-sm btn-default"><span class="label">Editar publicación</span></a>
+                  <a href="" class="btn btn-sm btn-default"><span class="label">Eliminar publicación</span></a>
+                </div>
+
                 <div class="answers">
                   <h5 ng-if="!post.comments_blocked || post.comments.count > 0">{{ post.comments.count }} respuesta{{post.comments.count == 1?'':'s'}}</h5>
                 </div>
 
                 <div class="comments">
-                  <div class="comment" data-number="{{ comment.position }}" ng-repeat="comment in (post.comments.set | orderBy:'position')">
+                  <div class="comment" data-number="{{ comment.position }}" ng-repeat="comment in (post.comments.set | orderBy:'position')" ng-class="{editing: comment.editing}">
                     <div class="float-actions text-right">
                       <a href="" class="btn btn-xs btn-default only-on-hover" ng-if="comment.author.id != user.info.id"><i class="fa fa-flag-o"></i> Reportar</a>
                       <a href="" class="btn btn-xs btn-default" ng-class="{disabled: comment.editing}" ng-if="(can('delete-own-comments') && comment.author.id === user.info.id)" ng-click="deleteComment(comment)"><i class="fa fa-trash-o"></i> Eliminar</a>
