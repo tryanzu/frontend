@@ -1,4 +1,4 @@
-var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post, Upload) {
+var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post, Upload, modalService) {
 
   $scope.post = {};
   $scope.comment = {content:''};
@@ -197,14 +197,23 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post, U
 
   // Comment deletion
   $scope.deleteComment = function(comment) {
-    $http.delete(layer_path + 'post/comment/' + $scope.post.id + '/' + comment.position)
-    .then(function() {
-      var position = $scope.post.comments.set.indexOf(comment);
-      if(position > -1) {
-        $scope.post.comments.set.splice(position, 1);
-        $scope.post.comments.count--;
-      }
-      $scope.$broadcast('scrubberRecalculate');
+    var modalOptions = {
+      closeButtonText: 'Cancelar',
+      actionButtonText: 'Eliminar comentario',
+      headerText: '¿Eliminar comentario?',
+      bodyText: 'Una vez que se elimine, no podrás recuperarlo.'
+    };
+
+    modalService.showModal({}, modalOptions).then(function (result) {
+      $http.delete(layer_path + 'post/comment/' + $scope.post.id + '/' + comment.position)
+        .then(function() {
+          var position = $scope.post.comments.set.indexOf(comment);
+          if(position > -1) {
+            $scope.post.comments.set.splice(position, 1);
+            $scope.post.comments.count--;
+          }
+          $scope.$broadcast('scrubberRecalculate');
+        });
     });
   }
 
