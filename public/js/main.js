@@ -3496,10 +3496,13 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post, U
       comment.editing = false;
     } else {
       // Insert promise here...
-      // On success
-      comment.content = comment.content_edit;
-      addImagePreview(comment);
-      comment.editing = false;
+      $http.put(layer_path + 'post/comment/' + $scope.post.id + '/' + comment.position, {content: comment.content_edit})
+        .then(function() {
+          // On success
+          comment.content = comment.content_edit;
+          addImagePreview(comment);
+          comment.editing = false;
+        })
     }
   }
 
