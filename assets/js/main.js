@@ -10,6 +10,7 @@
 // @codekit-prepend "vendor/elastic.js"
 // @codekit-prepend "vendor/mentio.min.js"
 // @codekit-prepend "vendor/angular-ui-switch.min.js"
+// @codekit-prepend "vendor/angular-acl.min.js"
 // @codekit-prepend "modules/feed/init"
 // @codekit-prepend "modules/categories/init"
 // @codekit-prepend "modules/reader/init"
@@ -19,6 +20,7 @@
 // @codekit-prepend "modules/chat/chat"
 
 var boardApplication = angular.module('board', [
+  'ngRoute',
 	'directivesModule',
 	'filtersModule',
 	'activeReader',
@@ -36,15 +38,15 @@ var boardApplication = angular.module('board', [
   'chatModule',
   'angular-jwt',
   'firebase',
-  'ngRoute',
   'ngFileUpload',
   'monospaced.elastic',
   'mentio',
-  'uiSwitch'
+  'uiSwitch',
+  'mm.acl'
 ]);
 
-boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider',
-  function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider) {
+boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider', 'AclServiceProvider',
+  function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider, AclServiceProvider) {
 
   $routeProvider.when('/', {
     templateUrl: '/js/partials/main.html?v=138',
@@ -111,6 +113,9 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   $httpProvider.interceptors.push('jwtInterceptor');
 
   FacebookProvider.init(fb_api_key);
+
+  // ACL Configuration
+  AclServiceProvider.config({storage: false});
 }]);
 
 boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http', '$modalInstance', 'Facebook',
@@ -288,6 +293,7 @@ boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http'
     }
 }]);
 
+// TODO: Move to external file
 boardApplication.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed', 'Upload', '$http',
   function($scope, User, $routeParams, Feed, Upload, $http) {
 
@@ -400,8 +406,8 @@ boardApplication.controller('UserController', ['$scope', 'User', '$routeParams',
   });
 }]);
 
-boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', '$modal', '$timeout', '$firebaseObject', '$firebaseArray', 'Facebook',
-  function($scope, $rootScope, $http, $modal, $timeout, $firebaseObject, $firebaseArray, Facebook) {
+boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', '$modal', '$timeout', '$firebaseObject', '$firebaseArray', 'Facebook', 'AclService',
+  function($scope, $rootScope, $http, $modal, $timeout, $firebaseObject, $firebaseArray, Facebook, AclService) {
     $scope.user = {
       isLogged: false,
       info: null,
@@ -419,7 +425,7 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
       viewing: 'all',
       pending: 0,
       newer_post_date: null,
-      show_categories: true,
+      show_categories: false,
       menuCollapsed: true
     }
     $scope.user.isLogged = localStorage.getItem('signed_in')==='true'?true:false;
@@ -440,6 +446,12 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
             $scope.$broadcast('userLogged');
             $scope.$broadcast('changedContainers');
           }, 100);
+
+          // Attach the member roles to the current user
+          for(var i in data.roles) {
+            //console.log("Adding " + data.roles[i].name + " as role");
+            AclService.attachRole(data.roles[i].name);
+          }
 
           mixpanel.identify(data.id);
           mixpanel.people.set({
@@ -607,7 +619,6 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
     $http.get(layer_path + 'stats/board').
       success(function(data, status) {
         $scope.status.stats = data;
-        //console.log(data);
       }).
       error(function(data) {
       });
@@ -615,27 +626,100 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
     $http.get(layer_path + 'gamification').
       success(function(data, status) {
         $scope.misc.gaming = data;
-        //console.log(data);
       }).
       error(function(data) {});
   }
 ]);
 
-boardApplication.run(['$rootScope', '$http', function($rootScope, $http) {
-    // TEST PURPOSES
-    if(false) {
-      localStorage.removeItem('signed_in');
-      localStorage.removeItem('id_token');
-      localStorage.removeItem('firebase_token');
+boardApplication.service('modalService', ['$modal', function ($modal) {
+  var modalDefaults = {
+    backdrop: true,
+    keyboard: true,
+    modalFade: true,
+    windowClass: 'modal-confirm',
+    size: 'sm',
+    templateUrl: '/js/partials/modal.html'
+  };
+
+  var modalOptions = {
+    closeButtonText: 'Cerrar',
+    actionButtonText: 'Aceptar',
+    headerText: '¿Estás seguro?',
+    bodyText: '¿Quieres realizar esta acción?'
+  };
+
+  this.showModal = function (customModalDefaults, customModalOptions) {
+    if (!customModalDefaults) customModalDefaults = {};
+    customModalDefaults.backdrop = 'static';
+    return this.show(customModalDefaults, customModalOptions);
+  };
+
+  this.show = function (customModalDefaults, customModalOptions) {
+    //Create temp objects to work with since we're in a singleton service
+    var tempModalDefaults = {};
+    var tempModalOptions = {};
+
+    //Map angular-ui modal custom defaults to modal defaults defined in service
+    angular.extend(tempModalDefaults, modalDefaults, customModalDefaults);
+
+    //Map modal.html $scope custom properties to defaults defined in service
+    angular.extend(tempModalOptions, modalOptions, customModalOptions);
+
+    if (!tempModalDefaults.controller) {
+      tempModalDefaults.controller = function ($scope, $modalInstance) {
+        $scope.modalOptions = tempModalOptions;
+        $scope.modalOptions.ok = function (result) {
+          $modalInstance.close(result);
+        };
+        $scope.modalOptions.close = function (result) {
+          $modalInstance.dismiss('cancel');
+        };
+      }
     }
 
-    // Initialize the local storage
-    if(!localStorage.signed_in)
-      localStorage.signed_in = false;
+    return $modal.open(tempModalDefaults).result;
+  };
+}]);
 
-    $rootScope.page = {
-      title: "SpartanGeek.com | Comunidad de tecnología, geeks y más",
-      description: "Creamos el mejor contenido para Geeks, y lo hacemos con pasión e irreverencia de Spartanos."
-    };
+boardApplication.run(['$rootScope', '$http', 'AclService', function($rootScope, $http, AclService) {
+  // TEST PURPOSES
+  if(false) {
+    localStorage.removeItem('signed_in');
+    localStorage.removeItem('id_token');
+    localStorage.removeItem('firebase_token');
   }
-]);
+
+  // Initialize the local storage
+  if(!localStorage.signed_in)
+    localStorage.signed_in = false;
+
+  $rootScope.page = {
+    title: "SpartanGeek.com | Comunidad de tecnología, geeks y más",
+    description: "Creamos el mejor contenido para Geeks, y lo hacemos con pasión e irreverencia de Spartanos."
+  };
+
+  // Set the ACL data.
+  // The data should have the roles as the property names,
+  // with arrays listing their permissions as their value.
+  var aclData = {}
+  $http.get(layer_path + 'permissions')
+    .error(function(data) {}) // How should we proceed if no data?
+    .success(function(data) {
+      //console.log(data);
+      // Proccess de roles and permissions iteratively
+      for(var r in data.rules) {
+        aclData[r] = data.rules[r].permissions;
+        //aclData[r] = [];
+        var current = data.rules[r];
+        //console.log(current);
+        while(current.parents.length > 0) {
+          //console.log(current);
+          aclData[r] = aclData[r].concat(data.rules[current.parents[0]].permissions);
+          current = data.rules[current.parents[0]];
+        }
+      }
+      //console.log('ACL', aclData);
+    });
+  AclService.setAbilities(aclData);
+  $rootScope.can = AclService.can;
+}]);

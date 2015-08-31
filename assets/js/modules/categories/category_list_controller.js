@@ -137,7 +137,6 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
       $scope.resolving.loaded = false;
 
   		Feed.get({limit: 10, offset: 0, category: category.id}, function(data) {
-        console.log(category, data);
         $scope.status.pending.$value = 0;
         // For sync purposes
         if(category.slug == null) {
@@ -147,7 +146,6 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
         }
 
         if(data.feed.length > 0) {
-          console.log("Si hay!");
           for(p in data.feed) {
             for(c in $scope.categories) {
               for(s in $scope.categories[c].subcategories) {
@@ -251,6 +249,10 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
               }
               data.feed[p].unread = true;
             }
+            // return to feed if in top posts
+            $scope.viewing.top_posts = false;
+
+            // Visual helper in posts
             $timeout(function() {
               for(p in data.feed) {
                 data.feed[p].unread = false;
@@ -366,6 +368,10 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
 
     $scope.$on('reloadPost', function(e) {
       $scope.reloadPost();
+    });
+
+    $scope.$on('postDeleted', function(e) {
+
     });
 
     // If logged, don't show categories

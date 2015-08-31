@@ -90,7 +90,7 @@
               <span class="avatar" title="{{ m.username }}" ng-if="!m.image">{{ m.username[0] }}</span>
               <img class="avatar" ng-src="{{ m.image }}" alt="{{ m.username }}" ng-if="m.image">
             </a>
-            <a href="" class="username">{{ m.username }}</a>
+            <a href="/u/{{ m.username }}/{{ m.id }}" class="username">{{ m.username }}</a>
 
             <span class="status"></span>
           </li>

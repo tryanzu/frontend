@@ -1,4 +1,4 @@
-var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post, Upload) {
+var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post, Upload, modalService) {
 
   $scope.post = {};
   $scope.comment = {content:''};
@@ -90,10 +90,6 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post, U
     if(!$scope.waiting_comment) {
       $scope.waiting_comment = true;
       $scope.publishComment().then(function(response) {
-
-        console.log(response);
-        console.log($scope.user.info);
-
         var date = new Date();
         $scope.post.comments.count = $scope.post.comments.count + 1;
         $scope.post.comments.set.push({
@@ -109,7 +105,7 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post, U
           },
           content: response.data.message,
           created_at: date.toISOString(),
-          position: $scope.post.comments.count - 1,
+          position: parseInt(response.data.position),
           votes: {down: 0, up: 0}
         });
 
@@ -127,7 +123,7 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post, U
     }
   };
 
-  $scope.uploadPicture = function(files) {
+  $scope.uploadPicture = function(files, comment) {
     if(files.length == 1) {
       var file = files[0];
       $scope.adding_file = true;
@@ -135,14 +131,27 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post, U
         url: layer_path + "post/image",
         file: file
       }).success(function (data) {
-        if($scope.comment.content.length > 0) {
-          $scope.comment.content += '\n' + data.url;
+        if(comment) {
+          // Particular comment edition
+          if(comment.content_edit.length > 0) {
+            comment.content_edit += '\n' + data.url;
+          } else {
+            comment.content_edit = data.url;
+          }
+          comment.content_edit += '\n';
+          $scope.adding_file = false;
+          $('*[data-number="' + comment.position + '"] .idiot-wizzy.edit #comment-content').focus();
         } else {
-          $scope.comment.content = data.url;
+          // Global comment edition
+          if($scope.comment.content.length > 0) {
+            $scope.comment.content += '\n' + data.url;
+          } else {
+            $scope.comment.content = data.url;
+          }
+          $scope.comment.content += '\n';
+          $scope.adding_file = false;
+          $('#comment-content').focus();
         }
-        $scope.comment.content += '\n';
-        $scope.adding_file = false;
-        $('#comment-content').focus();
       }).error(function(data) {
         $scope.adding_file = false;
       });
@@ -155,6 +164,76 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post, U
       return $http.post(layer_path + 'post/comment/' + $scope.post.id, {content: $scope.comment.content});
     }
   };
+
+  // Comment edition
+  $scope.editCommentShow = function(comment) {
+    var to_edit = $('<div>' + comment.content + '</div>');
+    to_edit.find('a.user-mention').each(function(index) {
+      var text = $(this).html()
+      if($(this).data('comment')) {
+        text += $(this).data('comment');
+      }
+      $(this).replaceWith(text);
+    });
+    comment.content_edit = to_edit.html();
+    comment.editing = true;
+  }
+  $scope.editComment = function(comment) {
+    // If did not change
+    if(comment.content_edit === comment.content) {
+      comment.editing = false;
+    } else {
+      // Insert promise here...
+      $http.put(layer_path + 'post/comment/' + $scope.post.id + '/' + comment.position, {content: comment.content_edit})
+        .then(function() {
+          // On success
+          comment.content = comment.content_edit;
+          addImagePreview(comment);
+          comment.editing = false;
+        })
+    }
+  }
+
+  // Comment deletion
+  $scope.deleteComment = function(comment) {
+    var modalOptions = {
+      closeButtonText: 'Cancelar',
+      actionButtonText: 'Eliminar comentario',
+      headerText: '¿Eliminar comentario?',
+      bodyText: 'Una vez que se elimine, no podrás recuperarlo.'
+    };
+
+    modalService.showModal({}, modalOptions).then(function(result) {
+      $http.delete(layer_path + 'post/comment/' + $scope.post.id + '/' + comment.position)
+        .then(function() {
+          var position = $scope.post.comments.set.indexOf(comment);
+          if(position > -1) {
+            $scope.post.comments.set.splice(position, 1);
+            $scope.post.comments.count--;
+          }
+          $scope.$broadcast('scrubberRecalculate');
+        });
+    });
+  }
+
+  // Delete post
+  $scope.deletePost = function() {
+    var modalOptions = {
+      closeButtonText: 'Cancelar',
+      actionButtonText: 'Eliminar publicación',
+      headerText: '¿Eliminar publicación?',
+      bodyText: 'Una vez que se elimine, no podrás recuperarla.'
+    };
+
+    modalService.showModal({}, modalOptions).then(function(result) {
+      $http.delete(layer_path + 'posts/' + $scope.post.id)
+        .then(function() {
+          //$scope.$emit('postDeleted');
+          // Return to home
+          window.location.href = "/";
+        });
+    });
+  }
 
 	$scope.$on('pushLoggedComment', function(event, comment) {
 		// Push the comment to the main set of comments
@@ -170,8 +249,6 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post, U
 
 		Post.get({id: post.id}, function(data) {
 			$scope.post = data;
-      //$scope.post.category = {slug: data.categories[0]};
-
       addImagePreview($scope.post);
 
       for (var c in $scope.categories) {
@@ -187,19 +264,21 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post, U
         }
       }
 
+      // Attach title and description for SEO purposes
       $scope.page.title = "SpartanGeek.com | "  + $scope.post.title + " en " + $scope.post.category.name;
-
       if($scope.post.content.length - 1 < 157) {
         $scope.page.description = $scope.post.content;
       } else {
         $scope.page.description = $scope.post.content.substring(0, 157) + '...';
       }
 
+      // Postproccess every comment
       for( var c in $scope.post.comments.set) {
         addImagePreview($scope.post.comments.set[c]);
       }
       $scope.resolving = false;
 
+      // If searching for a comment, move to that comment
       if($scope.view_comment.position >= 0 && $scope.view_comment.position != '') {
         $timeout(function() {
           var elem = $('.comment[data-number='+$scope.view_comment.position+']');
@@ -207,7 +286,7 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post, U
             elem.addClass('active');
             $('.current-article').animate({scrollTop: (elem.offset().top - 80)}, 50);
           }
-        }, 100);
+        }, 400);
       }
 
       /* TEMPORAL - TODO: MOVE TO A DIRECTIVE */
@@ -251,31 +330,32 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post, U
       $scope.scrubber = {
         current_c: 0
       };
-      $('.current-article').scroll(function() {
+      // Scrolling responses
+      $('.current-article').scroll( function() {
         from_top = $(this).scrollTop();
 
         if (from_top > lastScrollTop){
           // downscroll code
           if($scope.scrubber.current_c < $scope.comments_positions.length - 1) {
-            if( (from_top + 210) > $scope.comments_positions[$scope.scrubber.current_c].bottom ) {
-              $scope.$apply(function () {
-                $scope.scrubber.current_c++;
-              });
+            while( (from_top + 210) > $scope.comments_positions[$scope.scrubber.current_c].bottom ) {
+              $scope.scrubber.current_c++;
             }
+            $scope.$apply(function () {
+              $scope.scrubber.current_c;
+            });
           }
         } else {
           // upscroll code
           if($scope.scrubber.current_c > 0) {
-            if ( (from_top + 210) < $scope.comments_positions[$scope.scrubber.current_c].top ) {
-              $scope.$apply(function () {
-                $scope.scrubber.current_c--;
-              });
+            while ( (from_top + 210) < $scope.comments_positions[$scope.scrubber.current_c].top ) {
+              $scope.scrubber.current_c--;
             }
+            $scope.$apply(function () {
+              $scope.scrubber.current_c;
+            });
           }
         }
         lastScrollTop = from_top;
-
-        //console.log($scope.scrubber.current_c);
 
         surplus = from_top / $scope.scrollable_h;
         surplus = 100 - surplus * 100;
@@ -292,9 +372,38 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post, U
 		});
 	});
 
+  $scope.$on('scrubberRecalculate', function(event) {
+    $timeout(function() {
+      $scope.total_h = $('.current-article')[0].scrollHeight;
+      $scope.viewport_h = $('.current-article').height();
+
+      $scope.ratio = $scope.viewport_h/$scope.total_h*100;
+      $scope.scrollable = 0;
+      $scope.scrollable_h = $scope.total_h - $scope.viewport_h;
+      if($scope.ratio < 15) {
+        $scope.ratio = 15;
+        $scope.scrollable = 85;
+      } else {
+        $scope.scrollable = 100 - $scope.ratio;
+      }
+
+      $scope.comments_positions = [{
+        top: 0,
+        bottom: $('div.discussion-posts div.content').height()
+      }];
+      $('div.comment').each(function(index) {
+        var t = $(this);
+        $scope.comments_positions[index + 1] = {
+          top: t.position().top,
+          bottom: t.position().top + t.height()
+        };
+      });
+    }, 500);
+  });
+
   var addImagePreview = function(comment) {
     var regex = new RegExp("(https?:\/\/.*\\.(?:png|jpg|jpeg|JPEG|PNG|JPG|gif|GIF)((\\?|\\&)[a-zA-Z0-9]+\\=[a-zA-Z0-9]+)*)", "g");
     var to_replace = "<div class=\"img-preview\"><a href=\"$1\" target=\"_blank\"><img src=\"$1\"></a></div>"
-    comment.content = comment.content.replace(regex, to_replace);
+    comment.content_final = comment.content.replace(regex, to_replace);
   }
 };

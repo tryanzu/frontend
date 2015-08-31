@@ -168,7 +168,7 @@
       border: 1px solid @brand-primary;
       color: @brand-primary;
 
-      &.Developer {
+      &.developer {
         border: 1px solid #44A53C;
         color: #616161;
         background-color: #F4F9F3;
@@ -272,6 +272,14 @@
   font-size: 14px;
 }
 
+.float-actions {
+  float: right;
+
+  .only-on-hover {
+    visibility: hidden;
+  }
+}
+
 .current-article .comments {
   margin-left: -1em;
 
@@ -279,6 +287,11 @@
     border-bottom: 1px solid #F4F6F8;
     margin-bottom: 2em;
     padding: 1em;
+    position: relative;
+
+    &.editing {
+      background-color: @brand-primary-lighter;
+    }
 
     .comment-author .username {
       color: @brand-primary-light-text;
@@ -315,8 +328,13 @@
       }
     }
 
-    &:hover .actions ul li a {
-      color: @brand-primary-opaque;
+    &:hover {
+      .actions ul li a {
+        color: @brand-primary-opaque;
+      }
+      .float-actions .only-on-hover {
+        visibility: visible;
+      }
     }
 
     .actions {
@@ -350,6 +368,12 @@
         }
       }
     }
+  }
+}
+
+@media @phone {
+  .current-article .float-actions {
+    position: relative;
   }
 }
 

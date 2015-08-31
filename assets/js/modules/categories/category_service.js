@@ -6,6 +6,11 @@ var CategoryService = function($resource) {
     {
       'update': {
         method:'PUT'
+      },
+      'writable': {
+        method: 'GET',
+        params: {permissions:'write'},
+        isArray: true
       }
     }
   );
