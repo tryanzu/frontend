@@ -173,7 +173,10 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post, U
   $scope.editCommentShow = function(comment) {
     var to_edit = $('<div>' + comment.content + '</div>');
     to_edit.find('a.user-mention').each(function(index) {
-      var text = $(this).html() + $(this).data('comment');
+      var text = $(this).html()
+      if($(this).data('comment')) {
+        text += $(this).data('comment');
+      }
       $(this).replaceWith(text);
     });
     comment.content_edit = to_edit.html();
@@ -204,7 +207,7 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post, U
       bodyText: 'Una vez que se elimine, no podrás recuperarlo.'
     };
 
-    modalService.showModal({}, modalOptions).then(function (result) {
+    modalService.showModal({}, modalOptions).then(function(result) {
       $http.delete(layer_path + 'post/comment/' + $scope.post.id + '/' + comment.position)
         .then(function() {
           var position = $scope.post.comments.set.indexOf(comment);

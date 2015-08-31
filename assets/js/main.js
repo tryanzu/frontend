@@ -638,6 +638,7 @@ boardApplication.service('modalService', ['$modal', function ($modal) {
     backdrop: true,
     keyboard: true,
     modalFade: true,
+    windowClass: 'modal-confirm',
     size: 'sm',
     templateUrl: '/js/partials/modal.html'
   };

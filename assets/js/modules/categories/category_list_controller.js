@@ -249,6 +249,10 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
               }
               data.feed[p].unread = true;
             }
+            // return to feed if in top posts
+            $scope.viewing.top_posts = false;
+
+            // Visual helper in posts
             $timeout(function() {
               for(p in data.feed) {
                 data.feed[p].unread = false;

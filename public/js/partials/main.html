@@ -426,9 +426,19 @@
                 <div class="comments">
                   <div class="comment" data-number="{{ comment.position }}" ng-repeat="comment in (post.comments.set | orderBy:'position')" ng-class="{editing: comment.editing}">
                     <div class="float-actions text-right">
-                      <a href="" class="btn btn-xs btn-default only-on-hover" ng-if="comment.author.id != user.info.id"><i class="fa fa-flag-o"></i> Reportar</a>
-                      <a href="" class="btn btn-xs btn-link" ng-class="{disabled: comment.editing}" ng-if="(can('delete-own-comments') && comment.author.id === user.info.id)" ng-click="deleteComment(comment)"><i class="fa fa-trash-o"></i></a>
-                      <a href="" class="btn btn-xs btn-link" ng-class="{disabled: comment.editing}" ng-if="(can('edit-own-comments') && comment.author.id === user.info.id)" ng-click="editCommentShow(comment)"><i class="fa fa-pencil"></i> Editar</a>
+                      <div class="btn-group" ng-if="(can('edit-own-comments') && comment.author.id === user.info.id)" dropdown>
+                        <button type="button" class="btn btn-link btn-sm" ng-hide="comment.editing" dropdown-toggle>
+                          <i class="fa fa-pencil"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-right">
+                          <li>
+                            <a href="" ng-class="{disabled: comment.editing}" ng-if="(can('edit-own-comments') && comment.author.id === user.info.id)" ng-click="editCommentShow(comment)"><i class="fa fa-pencil"></i> Editar comentario</a>
+                          </li>
+                          <li>
+                            <a href="" ng-class="{disabled: comment.editing}" ng-if="(can('delete-own-comments') && comment.author.id === user.info.id)" ng-click="deleteComment(comment)"><i class="fa fa-trash-o"></i> Eliminar comentario</a>
+                          </li>
+                        </ul>
+                      </div>
                     </div>
                     <div class="comment-author">
                       <a href="/u/{{ comment.author.username }}/{{ comment.author.id }}" title="Perfil de {{ comment.author.username }}">
