@@ -3,66 +3,75 @@
           <div class="user-card hero user-hero" style="">
             <div class="darken-overlay"></div>
             <div class="container">
-              <div class="user-profile">
-                <h2 class="user-identity">
-                  <div class="avatar-editor dropdown user-avatar" ng-class="{'loading': update.updating}" dropdown>
-                    <img class="avatar" title="{{ profile.username }}" ng-src="{{ profile.image }}" ng-if="profile.image">
-                    <span class="avatar" ng-if="!profile.image">{{ profile.username[0] }}</span>
-                    <a href="" data-toggle="dropdown" class="dropdown-toggle" ng-if="profile.id === user.info.id" dropdown-toggle ngf-drop ngf-change="upload($files)" ngf-accept="'image/*'" ngf-drag-over-class="dragover">
-                      <i class="fa fa-fw fa-pencil icon" ng-if="!update.updating"></i>
-                      <div class="loading-indicator" ng-if="update.updating">
-                        <div class="spinner" style="position: absolute; width: 0px; z-index: auto; left: 18%; font-size: 14px;" role="progressbar">Cargando</div>
+              <div class="row">
+                <div class="col-md-9 col-xs-12">
+                  <div class="user-profile">
+                    <h2 class="user-identity">
+                      <div class="avatar-editor dropdown user-avatar" ng-class="{'loading': update.updating}" dropdown>
+                        <img class="avatar" title="{{ profile.username }}" ng-src="{{ profile.image }}" ng-if="profile.image">
+                        <span class="avatar" ng-if="!profile.image">{{ profile.username[0] }}</span>
+                        <a href="" data-toggle="dropdown" class="dropdown-toggle" ng-if="profile.id === user.info.id" dropdown-toggle ngf-drop ngf-change="upload($files)" ngf-accept="'image/*'" ngf-drag-over-class="dragover">
+                          <i class="fa fa-fw fa-pencil icon" ng-if="!update.updating"></i>
+                          <div class="loading-indicator" ng-if="update.updating">
+                            <div class="spinner" style="position: absolute; width: 0px; z-index: auto; left: 18%; font-size: 14px;" role="progressbar">Cargando</div>
+                          </div>
+                        </a>
+                        <ul class="dropdown-menu">
+                          <li>
+                            <a href="" ngf-select ngf-change="upload($files)" ngf-multiple="false" ngf-accept="'image/*'">
+                              <i class="fa fa-fw fa-upload icon"></i> Subir imagen
+                            </a>
+                          </li>
+                          <li ng-if="user.info.facebook" class="hidden">
+                            <a href="" ng-click="use_fb_pic()">
+                              <i class="fa fa-fw fa-code-fork icon"></i> Usar foto de FB
+                            </a>
+                          </li>
+                          <li ng-if="user.info.image" class="hidden">
+                            <a href="" ng-click="remove_pic()"><i class="fa fa-fw fa-times icon"></i> Eliminar</a>
+                          </li>
+                        </ul>
                       </div>
-                    </a>
-                    <ul class="dropdown-menu">
-                      <li>
-                        <a href="" ngf-select ngf-change="upload($files)" ngf-multiple="false" ngf-accept="'image/*'">
-                          <i class="fa fa-fw fa-upload icon"></i> Subir imagen
-                        </a>
+                      <span class="username" ng-if="!update.editing_username">{{ profile.username }}</span>
+                      <span class="edit" ng-if="user.info.name_changes < 1 && profile.id === user.info.id">
+                        <a href="" ng-click="update.editing_username = true" ng-if="!update.editing_username">Editar nombre de usuario</a>
+                        <div class="" ng-if="update.editing_username" style="display: inline-block">
+                          <div class="input-group">
+                            <input name="description" type="text" class="form-control" placeholder="Escribe tu nombre de usuario" ng-model="new_data.username" maxlength="32" popover="{{ !new_data.username_error?'Sólo puedes cambiar tu nombre de usuario una vez, hazlo sabiamente.':new_data.username_error_message }}" popover-placement="bottom" ng-change="check_username()" ng-class="{'has-error': new_data.username_error}">
+                            <span class="input-group-btn">
+                              <button class="btn btn-default btn-sm" type="button" ng-click="saveUsername()" ng-disabled="new_data.username_error || new_data.username_saving">Guardar nombre de usuario</button>
+                            </span>
+                            <span class="input-group-btn">
+                              <button class="btn btn-danger btn-sm" type="button" ng-click="update.editing_username = false">Cancelar</button>
+                            </span>
+                          </div>
+                        </div>
+                      </span>
+                    </h2>
+                    <ul class="user-info">
+                      <li class="block-item">
+                        <div class="user-bio" ng-class="{'editable': (profile.id === user.info.id && false)}">
+                          <div class="bio-content" ng-click="update.editing_desc = false" ng-if="!update.editing_desc">
+                            <p>{{ profile.description || 'Escribe una breve descripción' }}</p>
+                          </div>
+                          <input name="description" type="text" class="form-control" placeholder="Escribe una breve descripción" ng-if="update.editing_desc" ng-model="profile.description">
+                        </div>
                       </li>
-                      <li ng-if="user.info.facebook" class="hidden">
-                        <a href="" ng-click="use_fb_pic()">
-                          <i class="fa fa-fw fa-code-fork icon"></i> Usar foto de FB
-                        </a>
+                      <li class="hidden">
+                        <span class="user-last-seen online">
+                          <i class="fa fa-fw fa-circle"></i> Online
+                        </span>
                       </li>
-                      <li ng-if="user.info.image" class="hidden">
-                        <a href="" ng-click="remove_pic()"><i class="fa fa-fw fa-times icon"></i> Eliminar</a>
-                      </li>
+                      <li class="">Es espartano desde hace {{ profile.created_at | timeago }}</li>
                     </ul>
                   </div>
-                  <span class="username" ng-if="!update.editing_username">{{ profile.username }}</span>
-                  <span class="edit" ng-if="user.info.name_changes < 1 && profile.id === user.info.id">
-                    <a href="" ng-click="update.editing_username = true" ng-if="!update.editing_username">Editar nombre de usuario</a>
-                    <div class="" ng-if="update.editing_username" style="display: inline-block">
-                      <div class="input-group">
-                        <input name="description" type="text" class="form-control" placeholder="Escribe tu nombre de usuario" ng-model="new_data.username" maxlength="32" popover="{{ !new_data.username_error?'Sólo puedes cambiar tu nombre de usuario una vez, hazlo sabiamente.':new_data.username_error_message }}" popover-placement="bottom" ng-change="check_username()" ng-class="{'has-error': new_data.username_error}">
-                        <span class="input-group-btn">
-                          <button class="btn btn-default btn-sm" type="button" ng-click="saveUsername()" ng-disabled="new_data.username_error || new_data.username_saving">Guardar nombre de usuario</button>
-                        </span>
-                        <span class="input-group-btn">
-                          <button class="btn btn-danger btn-sm" type="button" ng-click="update.editing_username = false">Cancelar</button>
-                        </span>
-                      </div>
-                    </div>
-                  </span>
-                </h2>
-                <ul class="user-badges badges"></ul>
-                <ul class="user-info">
-                  <li class="block-item">
-                    <div class="user-bio" ng-class="{'editable': (profile.id === user.info.id && false)}">
-                      <div class="bio-content" ng-click="update.editing_desc = false" ng-if="!update.editing_desc">
-                        <p>{{ profile.description || 'Escribe una breve descripción' }}</p>
-                      </div>
-                      <input name="description" type="text" class="form-control" placeholder="Escribe una breve descripción" ng-if="update.editing_desc" ng-model="profile.description">
-                    </div>
-                  </li>
-                  <li class="hidden">
-                    <span class="user-last-seen online">
-                      <i class="fa fa-fw fa-circle"></i> Online
-                    </span>
-                  </li>
-                  <li class="">Es espartano desde hace {{ profile.created_at | timeago }}</li>
-                </ul>
+                </div>
+                <div class="col-md-3 col-xs-12 text-right">
+                  <div ng-if="can('block-user')">
+                    <a href="" class="btn btn-sm btn-default">Bloquear</a>
+                    <a href="" class="btn btn-sm btn-default">Suspender</a>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -90,7 +99,8 @@
               <div class="col-md-9">
                 <div class="offset-content user-content" ng-if="current_page == 'feed'">
                   <div ng-if="posts.length == 0">
-                    <p class="alert alert-info">Este usuario aún no creado ninguna publiación.</p>
+                    <p class="alert alert-info" ng-if="user.info.id !== profile.id">Este usuario aún no creado ninguna publiación.</p>
+                    <p class="alert alert-info" ng-if="user.info.id === profile.id">Aún no has creado ninguna publicación. ¿Qué esperas?</p>
                   </div>
                   <div class="user-activity" ng-if="posts.length > 0">
                     <ul class="activity-list">
@@ -134,13 +144,17 @@
                             </div>
                             <div class="experience-points">{{ profile.gaming.swords }} Espadas</div>
                             <div class="next-level cold" ng-if="profile.gaming.level < 16">{{profile.gaming.remaining}} para el siguiente nivel</div>
+                            <div class="text-right">
+                              <img ng-src="/images/gamification/ranks/{{ profile.gaming.level + 1 }}.png" alt="" style="width: 30px;" ng-cloak>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
                     <div class="col-md-8">
                       <h3>Medallas</h3>
-                      <p class="alert alert-info">Este usuario no tiene medallas.</p>
+                      <p class="alert alert-info" ng-if="user.info.id !== profile.id">Este usuario no tiene medallas.</p>
+                      <p class="alert alert-info" ng-if="user.info.id === profile.id">Aún no tienes medallas, pero podrás conseguirlas con monedas. <strong>Muy pronto</strong> estará la sección de medallas.</p>
                     </div>
                   </div>
                   <hr>

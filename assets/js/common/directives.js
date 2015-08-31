@@ -114,7 +114,7 @@ directives.directive('myRefresh', ['$location', function($location) {
     link: function(scope, element, attrs) {
       element.bind('click', function() {
         if(element[0] && element[0].href && element[0].href === $location.absUrl()){
-          console.log("Recarga!");
+          //console.log("Recarga!");
           scope.trigger();
         }
       });

@@ -7,7 +7,7 @@
               <div class="category-selector">
                 <div id="actions" class="row" ng-if="user.isLogged">
                   <div class="" ng-class="{'col-xs-12': category.slug != null, 'col-xs-8': category.slug == null}">
-                    <a href="/" ng-if="category.slug != null" style="margin-right: 1rem;"><h2><i class="fa fa-chevron-left"></i></h2></a>
+                    <a href="/" ng-if="category.slug != null" style="margin-right: 1rem;" ng-click="toggleCategories()"><h2><i class="fa fa-chevron-left"></i></h2></a>
                     <h2>{{ category.name || "Mi Feed personal" }}</h2>
                   </div>
                   <div class="col-xs-4 text-right" ng-if="category.id == null">
@@ -17,7 +17,7 @@
                 </div>
                 <div id="actions" class="row" ng-if="!user.isLogged">
                   <div class="" ng-class="{'col-xs-12': category.slug != null, 'col-xs-8': category.slug == null}">
-                    <a href="/" ng-if="category.slug != null" style="margin-right: 1rem;"><h2><i class="fa fa-chevron-left"></i></h2></a>
+                    <a href="/" ng-if="category.slug != null" style="margin-right: 1rem;" ng-click="toggleCategories()"><h2><i class="fa fa-chevron-left"></i></h2></a>
                     <h2>{{ category.name || "Categorías disponibles" }}</h2>
                   </div>
                   <div class="col-xs-4 text-right" ng-if="category.id == null">
@@ -81,7 +81,7 @@
                 </div>
               </div>
 
-              <div class="new-posts-carlos" ng-cloak ng-if="status.pending.$value > 0" ng-click="get_newer()" ng-class="{'loading': resolving.newer}">
+              <div class="new-posts-carlos" ng-cloak ng-if="status.pending.$value > 0 && !status.show_categories" ng-click="get_newer()" ng-class="{'loading': resolving.newer}">
                 <span ng-if="!resolving.newer">Ver {{ status.pending.$value }} {{ status.pending.$value == 1?'publicación nueva':'publicaciones nuevas' }}</span>
                 <span ng-if="resolving.newer">Cargando...</span>
               </div>
@@ -181,6 +181,7 @@
             <img src="/images/head.png" />
             <h4>Únete a la conversación</h4>
             <p>Puedes ver a la <strong>izquierda</strong> las publicaciones de otros espartanos, nuestros foros y nuestras recomendaciones, empieza viendo y únete a la conversación.</p>
+            <p ng-if="can('debug')">Bienvenido <strong>Developer</strong></p>
           </div>
 
           <div ng-hide="waiting">
@@ -201,8 +202,8 @@
                     </a>
                     <span class="verified-account" ng-if="post.author.id === '559af1c501c25d3790000054' || post.author.facebook.verified" tooltip="Cuenta verificada" tooltip-placement="right"><i class="fa fa-check"></i></span>
                     <ul class="role-labels" ng-if="post.author.roles.length > 0">
-                      <li ng-repeat="role in post.author.roles" ng-if="role !== 'registered'">
-                        <span class="label label-default" ng-class="role">{{role}}</span>
+                      <li ng-repeat="role in post.author.roles" ng-if="role.name !== 'user'">
+                        <span class="label label-default" ng-class="role.name">{{role.name}}</span>
                       </li>
                     </ul>
                     <div class="description">{{ post.author.description || "Just another Spartan Geek" }}</div>
@@ -268,15 +269,29 @@
               </nav>
 
               <div class="discussion-posts">
-                <h2 class="discussion-title">{{ post.title }}</h2>
-
-                <span class="label label-default label-date">Escrito hace {{ post.created_at | timeago }}</span>
-
-                <div class="content" ng-if="post.type !== 'recommendations'" marked="post.content">
+                <div class="float-actions text-right">
+                  <div class="btn-group" ng-if="(can('edit-own-posts') && post.author.id === user.info.id)" dropdown>
+                    <button type="button" class="btn btn-link btn-sm" dropdown-toggle>
+                      <i class="fa fa-pencil"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-right">
+                      <li ng-if="false">
+                        <a href="" ng-if="(can('edit-own-posts') && post.author.id === user.info.id)" ng-click="editCommentShow(comment)"><i class="fa fa-pencil"></i> Editar publicación</a>
+                      </li>
+                      <li>
+                        <a href="" ng-if="(can('delete-own-posts') && post.author.id === user.info.id)" ng-click="deletePost()"><i class="fa fa-trash-o"></i> Eliminar publicación</a>
+                      </li>
+                    </ul>
+                  </div>
                 </div>
 
+                <h2 class="discussion-title">{{ post.title }}</h2>
+                <span class="label label-default label-date">Escrito hace {{ post.created_at | timeago }}</span>
+
+                <div class="content" ng-if="post.type !== 'recommendations'" marked="post.content_final"></div>
+
                 <div class="recommendations" ng-if="post.type === 'recommendations'">
-                  <div class="content" marked="post.content"></div>
+                  <div class="content" marked="post.content_final"></div>
 
                   <div class="components">
                     <div ng-if="post.components.cpu.content" class="component">
@@ -403,16 +418,9 @@
                   </div>
                 </div>
 
-                <div class="img-preview" ng-if="post.attach && false">
-                  <p>Vista previa</p>
-                  <a href="{{ post.attach.url }}" target="_blank" ng-if="post.attach.type === 'image'">
-                    <img ng-src="{{ post.attach.url }}">
-                  </a>
-                </div>
-
                 <ul class="post-actions" ng-class="{empty: post.author.id == user.info.id && post.votes.up == 0 && post.votes.down == 0}">
                   <li class="action" ng-if="post.liked != -1">
-                    <a href="" ng-click="post_vote(post, 'up')" ng-class="{'liked': post.liked == 1}" class="btn btn-success-border btn-round" ng-if="post.author.id != user.info.id && user.gaming.tribute > 0"><i class="fa fa-thumbs-up"></i> Me gusta</a>
+                    <a href="" ng-click="post_vote(post, 'up')" class="btn btn-success-border btn-round" ng-class="{'liked': post.liked == 1}" ng-if="post.author.id != user.info.id && user.gaming.tribute > 0"><i class="fa fa-thumbs-up"></i> Me gusta</a>
                     <div class="count" ng-if="post.votes.up > 0">A <strong>{{post.votes.up}} personas</strong> le gusta</div>
                   </li>
                   <li class="action" ng-if="post.liked != 1">
@@ -426,7 +434,22 @@
                 </div>
 
                 <div class="comments">
-                  <div class="comment" data-number="{{ comment.position }}" ng-repeat="comment in (post.comments.set | orderBy : 'position')">
+                  <div class="comment" data-number="{{ comment.position }}" ng-repeat="comment in (post.comments.set | orderBy:'position')" ng-class="{editing: comment.editing}">
+                    <div class="float-actions text-right">
+                      <div class="btn-group" ng-if="(can('edit-own-comments') && comment.author.id === user.info.id)" dropdown>
+                        <button type="button" class="btn btn-link btn-sm" ng-hide="comment.editing" dropdown-toggle>
+                          <i class="fa fa-pencil"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-right">
+                          <li>
+                            <a href="" ng-class="{disabled: comment.editing}" ng-if="(can('edit-own-comments') && comment.author.id === user.info.id)" ng-click="editCommentShow(comment)"><i class="fa fa-pencil"></i> Editar comentario</a>
+                          </li>
+                          <li>
+                            <a href="" ng-class="{disabled: comment.editing}" ng-if="(can('delete-own-comments') && comment.author.id === user.info.id)" ng-click="deleteComment(comment)"><i class="fa fa-trash-o"></i> Eliminar comentario</a>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
                     <div class="comment-author">
                       <a href="/u/{{ comment.author.username }}/{{ comment.author.id }}" title="Perfil de {{ comment.author.username }}">
                         <img class="avatar" ng-src="{{ comment.author.image }}" alt="{{ comment.author.username }}" ng-if="comment.author.image">
@@ -438,36 +461,27 @@
                         </a>
                         <span class="level">&#8226; {{ misc.gaming.rules[comment.author.level].name }}</span>
                         <ul class="role-labels" ng-if="comment.author.roles.length > 0">
-                          <li ng-repeat="role in comment.author.roles" ng-if="role !== 'registered'">
-                            <span class="label label-default" ng-class="role">{{role}}</span>
+                          <li ng-repeat="role in comment.author.roles" ng-if="role.name !== 'user'">
+                            <span class="label label-default" ng-class="role.name">{{role.name}}</span>
                           </li>
                         </ul>
                         <div>{{ comment.author.description }}</div>
                       </div>
                     </div>
-                    <div class="content" markedsg="comment.content"></div>
-
-                    <div class="img-preview" ng-if="comment.attach">
-                      <p>Vista previa</p>
-                      <a href="{{ comment.attach.url }}" target="_blank" ng-if="comment.attach.type === 'image'">
-                        <img ng-src="{{ comment.attach.url }}">
-                      </a>
-                    </div>
-
-                    <span class="date dropdown" dropdown auto-close="outsideClick">
+                    <div class="content" markedsg="comment.content_final" ng-if="!comment.editing"></div>
+                    <span class="date dropdown" dropdown auto-close="outsideClick" ng-if="!comment.editing">
                       <a href="" class="dropdown-toggle" dropdown-toggle>
                         <time pubdate="" datetime="{{ comment.created_at }}" title="{{ comment.created_at | date_at}}">Escrito hace {{ comment.created_at | timeago}}</time>
                       </a>
                       <div class="dropdown-menu post-meta">
-                        <span class="number">Comentario #{{ comment.position + 1 }}</span>
+                        <span class="number">Comentario #{{ 1 + comment.position }}</span>
                         <span class="time">
                           <time pubdate="" datetime="{{ comment.created_at }}"> publicado el {{ comment.created_at | date_at}}</time>
                         </span>
                         <input class="form-control permalink" value="http://spartangeek.com/p/{{ post.slug }}/{{ post.id }}/{{ comment.position }}">
                       </div>
                     </span>
-
-                    <div class="actions" ng-if="user.isLogged">
+                    <div class="actions" ng-if="user.isLogged && !comment.editing">
                       <ul>
                         <li ng-if="comment.votes.up > 0 && (comment.liked != -1 || comment.author.id == user.info.id)">
                           <span>A {{ comment.votes.up }} {{comment.votes.up==1?'persona le gusta':'personas les gusta'}} este comentario</span>
@@ -486,6 +500,24 @@
                         </li>
                       </ul>
                     </div>
+
+                    <div class="idiot-wizzy edit" ng-if="comment.editing">
+                      <textarea id="comment-content" placeholder="Escribe tu comentario..." class="form-control flexible-height content" ng-model="comment.content_edit" ng-disabled="waiting_comment" msd-elastic></textarea>
+                      <div class="actions">
+                        <ul>
+                          <li style="margin-left: 1.5em;">
+                            <a href="" class="btn btn-sm btn-danger" ng-click="comment.editing = false"><span class="label">Cancelar</span></a>
+                          </li>
+                          <li>
+                            <a href="" class="btn btn-sm btn-default" ngf-select ngf-change="uploadPicture($files, comment)" ngf-multiple="false" ngf-accept="'image/*'" ng-show="!adding_file"><i class="fa fa-picture-o"></i> <span class="label hidden-xs">Adjuntar imagen</span></a>
+                            <a href="" class="btn btn-sm btn-default disabled" ng-show="adding_file"><i class="fa fa-picture-o"></i> <span class="label hidden-xs">Adjuntando imagen...</span></a>
+                          </li>
+                          <li>
+                            <a href="" ng-click="editComment(comment)" ng-class="{'disabled': waiting_comment == true || comment.content == '' || adding_file}" class="btn btn-sm btn-primary btn-comment"><span class="label">Editar</span></a>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
@@ -496,7 +528,7 @@
 
               <div class="row">
                 <div class="col-md-9">
-                  <div ng-show="(post.comments.count > 0 || force_comment == true || true) && !post.comments_blocked" ng-if="user.isLogged">
+                  <div ng-if="!post.comments_blocked && user.isLogged">
                     <div class="idiot-wizzy">
                       <textarea id="comment-content" placeholder="Escribe tu comentario..." class="form-control flexible-height content" ng-model="comment.content" ng-disabled="waiting_comment" msd-elastic></textarea>
                       <div class="actions">
@@ -507,7 +539,7 @@
                           <li ng-show="comment.content != ''" class="hidden-xs">
                             <em>*Itálica*</em>
                           </li>
-                          <li style="margin-left: 2em;">
+                          <li style="margin-left: 1.5em;">
                             <a href="" class="btn btn-default" ngf-select ngf-change="uploadPicture($files)" ngf-multiple="false" ngf-accept="'image/*'" ng-show="!adding_file"><i class="fa fa-picture-o"></i> <span class="label hidden-xs">Adjuntar imagen</span></a>
                             <a href="" class="btn btn-default disabled" ng-show="adding_file"><i class="fa fa-picture-o"></i> <span class="label hidden-xs">Adjuntando imagen...</span></a>
                           </li>
