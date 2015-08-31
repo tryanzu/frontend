@@ -449,8 +449,8 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
 
           // Attach the member roles to the current user
           for(var i in data.roles) {
-            //console.log("Adding " + data.roles[i] + " as role");
-            AclService.attachRole(data.roles[i]);
+            //console.log("Adding " + data.roles[i].name + " as role");
+            AclService.attachRole(data.roles[i].name);
           }
 
           mixpanel.identify(data.id);
@@ -619,7 +619,6 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
     $http.get(layer_path + 'stats/board').
       success(function(data, status) {
         $scope.status.stats = data;
-        //console.log(data);
       }).
       error(function(data) {
       });
@@ -627,7 +626,6 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
     $http.get(layer_path + 'gamification').
       success(function(data, status) {
         $scope.misc.gaming = data;
-        //console.log(data);
       }).
       error(function(data) {});
   }

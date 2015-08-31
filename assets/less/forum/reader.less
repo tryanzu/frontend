@@ -272,6 +272,14 @@
   font-size: 14px;
 }
 
+.float-actions {
+  float: right;
+
+  .only-on-hover {
+    visibility: hidden;
+  }
+}
+
 .current-article .comments {
   margin-left: -1em;
 
@@ -283,15 +291,6 @@
 
     &.editing {
       background-color: @brand-primary-lighter;
-    }
-
-    .float-actions {
-      position: absolute;
-      right: 1em;
-
-      .only-on-hover {
-        visibility: hidden;
-      }
     }
 
     .comment-author .username {
@@ -373,7 +372,7 @@
 }
 
 @media @phone {
-  .current-article .comments .comment .float-actions {
+  .current-article .float-actions {
     position: relative;
   }
 }

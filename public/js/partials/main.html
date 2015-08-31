@@ -202,8 +202,8 @@
                     </a>
                     <span class="verified-account" ng-if="post.author.id === '559af1c501c25d3790000054' || post.author.facebook.verified" tooltip="Cuenta verificada" tooltip-placement="right"><i class="fa fa-check"></i></span>
                     <ul class="role-labels" ng-if="post.author.roles.length > 0">
-                      <li ng-repeat="role in post.author.roles" ng-if="role !== 'user'">
-                        <span class="label label-default" ng-class="role">{{role}}</span>
+                      <li ng-repeat="role in post.author.roles" ng-if="role.name !== 'user'">
+                        <span class="label label-default" ng-class="role.name">{{role.name}}</span>
                       </li>
                     </ul>
                     <div class="description">{{ post.author.description || "Just another Spartan Geek" }}</div>
@@ -269,8 +269,23 @@
               </nav>
 
               <div class="discussion-posts">
-                <h2 class="discussion-title">{{ post.title }}</h2>
+                <div class="float-actions text-right">
+                  <div class="btn-group" ng-if="(can('edit-own-posts') && post.author.id === user.info.id)" dropdown>
+                    <button type="button" class="btn btn-link btn-sm" dropdown-toggle>
+                      <i class="fa fa-pencil"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-right">
+                      <li ng-if="false">
+                        <a href="" ng-if="(can('edit-own-posts') && post.author.id === user.info.id)" ng-click="editCommentShow(comment)"><i class="fa fa-pencil"></i> Editar publicación</a>
+                      </li>
+                      <li>
+                        <a href="" ng-if="(can('delete-own-posts') && post.author.id === user.info.id)" ng-click="deletePost()"><i class="fa fa-trash-o"></i> Eliminar publicación</a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
 
+                <h2 class="discussion-title">{{ post.title }}</h2>
                 <span class="label label-default label-date">Escrito hace {{ post.created_at | timeago }}</span>
 
                 <div class="content" ng-if="post.type !== 'recommendations'" marked="post.content_final"></div>
@@ -414,11 +429,6 @@
                   </li>
                 </ul>
 
-                <div class="text-right">
-                  <a href="" class="btn btn-sm btn-default"><span class="label">Editar publicación</span></a>
-                  <a href="" class="btn btn-sm btn-default"><span class="label">Eliminar publicación</span></a>
-                </div>
-
                 <div class="answers">
                   <h5 ng-if="!post.comments_blocked || post.comments.count > 0">{{ post.comments.count }} respuesta{{post.comments.count == 1?'':'s'}}</h5>
                 </div>
@@ -451,8 +461,8 @@
                         </a>
                         <span class="level">&#8226; {{ misc.gaming.rules[comment.author.level].name }}</span>
                         <ul class="role-labels" ng-if="comment.author.roles.length > 0">
-                          <li ng-repeat="role in comment.author.roles" ng-if="role !== 'user'">
-                            <span class="label label-default" ng-class="role">{{role}}</span>
+                          <li ng-repeat="role in comment.author.roles" ng-if="role.name !== 'user'">
+                            <span class="label label-default" ng-class="role.name">{{role.name}}</span>
                           </li>
                         </ul>
                         <div>{{ comment.author.description }}</div>
@@ -464,7 +474,7 @@
                         <time pubdate="" datetime="{{ comment.created_at }}" title="{{ comment.created_at | date_at}}">Escrito hace {{ comment.created_at | timeago}}</time>
                       </a>
                       <div class="dropdown-menu post-meta">
-                        <span class="number">Comentario #{{ comment.position + 1 }}</span>
+                        <span class="number">Comentario #{{ 1 + comment.position }}</span>
                         <span class="time">
                           <time pubdate="" datetime="{{ comment.created_at }}"> publicado el {{ comment.created_at | date_at}}</time>
                         </span>

@@ -90,10 +90,6 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post, U
     if(!$scope.waiting_comment) {
       $scope.waiting_comment = true;
       $scope.publishComment().then(function(response) {
-
-        console.log(response);
-        console.log($scope.user.info);
-
         var date = new Date();
         $scope.post.comments.count = $scope.post.comments.count + 1;
         $scope.post.comments.set.push({
@@ -109,7 +105,7 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post, U
           },
           content: response.data.message,
           created_at: date.toISOString(),
-          position: $scope.post.comments.count - 1,
+          position: parseInt(response.data.position),
           votes: {down: 0, up: 0}
         });
 
@@ -216,6 +212,25 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post, U
             $scope.post.comments.count--;
           }
           $scope.$broadcast('scrubberRecalculate');
+        });
+    });
+  }
+
+  // Delete post
+  $scope.deletePost = function() {
+    var modalOptions = {
+      closeButtonText: 'Cancelar',
+      actionButtonText: 'Eliminar publicación',
+      headerText: '¿Eliminar publicación?',
+      bodyText: 'Una vez que se elimine, no podrás recuperarla.'
+    };
+
+    modalService.showModal({}, modalOptions).then(function(result) {
+      $http.delete(layer_path + 'posts/' + $scope.post.id)
+        .then(function() {
+          //$scope.$emit('postDeleted');
+          // Return to home
+          window.location.href = "/";
         });
     });
   }

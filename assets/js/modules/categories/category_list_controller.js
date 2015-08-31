@@ -370,6 +370,10 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
       $scope.reloadPost();
     });
 
+    $scope.$on('postDeleted', function(e) {
+
+    });
+
     // If logged, don't show categories
     if($scope.user.isLogged) {
       $scope.status.show_categories = false;

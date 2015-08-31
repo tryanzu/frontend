@@ -3246,6 +3246,10 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
       $scope.reloadPost();
     });
 
+    $scope.$on('postDeleted', function(e) {
+
+    });
+
     // If logged, don't show categories
     if($scope.user.isLogged) {
       $scope.status.show_categories = false;
@@ -3405,10 +3409,6 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post, U
     if(!$scope.waiting_comment) {
       $scope.waiting_comment = true;
       $scope.publishComment().then(function(response) {
-
-        console.log(response);
-        console.log($scope.user.info);
-
         var date = new Date();
         $scope.post.comments.count = $scope.post.comments.count + 1;
         $scope.post.comments.set.push({
@@ -3424,7 +3424,7 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post, U
           },
           content: response.data.message,
           created_at: date.toISOString(),
-          position: $scope.post.comments.count - 1,
+          position: parseInt(response.data.position),
           votes: {down: 0, up: 0}
         });
 
@@ -3531,6 +3531,25 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post, U
             $scope.post.comments.count--;
           }
           $scope.$broadcast('scrubberRecalculate');
+        });
+    });
+  }
+
+  // Delete post
+  $scope.deletePost = function() {
+    var modalOptions = {
+      closeButtonText: 'Cancelar',
+      actionButtonText: 'Eliminar publicación',
+      headerText: '¿Eliminar publicación?',
+      bodyText: 'Una vez que se elimine, no podrás recuperarla.'
+    };
+
+    modalService.showModal({}, modalOptions).then(function(result) {
+      $http.delete(layer_path + 'posts/' + $scope.post.id)
+        .then(function() {
+          //$scope.$emit('postDeleted');
+          // Return to home
+          window.location.href = "/";
         });
     });
   }
@@ -4645,8 +4664,8 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
 
           // Attach the member roles to the current user
           for(var i in data.roles) {
-            //console.log("Adding " + data.roles[i] + " as role");
-            AclService.attachRole(data.roles[i]);
+            //console.log("Adding " + data.roles[i].name + " as role");
+            AclService.attachRole(data.roles[i].name);
           }
 
           mixpanel.identify(data.id);
@@ -4815,7 +4834,6 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
     $http.get(layer_path + 'stats/board').
       success(function(data, status) {
         $scope.status.stats = data;
-        //console.log(data);
       }).
       error(function(data) {
       });
@@ -4823,7 +4841,6 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
     $http.get(layer_path + 'gamification').
       success(function(data, status) {
         $scope.misc.gaming = data;
-        //console.log(data);
       }).
       error(function(data) {});
   }
