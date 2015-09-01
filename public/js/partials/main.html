@@ -459,7 +459,6 @@
                         <a href="/u/{{ comment.author.username }}/{{ comment.author.id }}" title="Perfil de {{ comment.author.username }}">
                           <strong>{{ comment.author.username }}</strong>
                         </a>
-                        <span class="level">&#8226; {{ misc.gaming.rules[comment.author.level].name }}</span>
                         <span class="date dropdown" dropdown auto-close="outsideClick" ng-if="!comment.editing">
                           <a href="" class="dropdown-toggle" dropdown-toggle>
                             <time time-ago from-time='{{ comment.created_at}}'></time>
@@ -476,7 +475,7 @@
                         </span>
 
                         <div>
-                          {{ comment.author.description }}
+                          <span class="level">{{ misc.gaming.rules[comment.author.level].name }} &#8226;</span> {{ comment.author.description }}
                           <ul class="role-labels" ng-if="comment.author.roles.length > 0">
                             <li ng-repeat="role in comment.author.roles" ng-if="role.name !== 'user'">
                               <span class="label label-default" ng-class="role.name">{{role.name}}</span>
@@ -487,11 +486,10 @@
                     </div>
                     <div class="content" markedsg="comment.content_final" ng-if="!comment.editing"></div>
 
-                    <div class="actions-count" ng-if="comment.votes.up > 0">
-                      <span>A {{ comment.votes.up }} {{comment.votes.up == 1 ? 'persona le gusta':'personas les gusta'}} este comentario</span>
-                    </div>
-                    <div class="actions-count" ng-if="comment.votes.down > 0">
-                      <span>{{ comment.votes.down }} {{comment.votes.down == 1 ? 'persona piensa':'personas piensan'}} que esto apesta</span>
+                    <div class="actions-count">
+                      <span ng-if="comment.votes.up > 0">A {{ comment.votes.up }} {{comment.votes.up == 1 ? 'persona le gusta':'personas les gusta'}} este comentario</span>
+                      <span ng-if="comment.votes.up > 0 && comment.votes.down > 0"> y </span>
+                      <span ng-if="comment.votes.down > 0">{{ comment.votes.down }} {{comment.votes.down == 1 ? 'persona piensa':'personas piensan'}} que esto apesta</span>
                     </div>
                     <div class="actions" ng-if="user.isLogged && !comment.editing">
                       <ul>
