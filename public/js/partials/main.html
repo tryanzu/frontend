@@ -501,7 +501,7 @@
                         <li ng-if="comment.liked != 1 && comment.author.id != user.info.id && user.gaming.shit > 0">
                           <a href="" ng-click="comment_vote(post.id, comment, 'down')" ng-class="{'hated': comment.liked == -1}"><i class="sgi gray shit"></i> Esto apesta</a>
                         </li>
-                        <li ng-if="comment.author.id != user.info.id">
+                        <li ng-if="comment.author.id != user.info.id && !post.comments_blocked">
                           <a href="" ng-click="reply_to(comment.author.username, comment.position)"><i class="fa fa-reply"></i> Responder</a>
                         </li>
                       </ul>

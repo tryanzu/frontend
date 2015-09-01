@@ -335,8 +335,11 @@
     }
 
     &:hover {
-      .actions ul li a {
-        color: @brand-primary-opaque;
+      .actions {
+        opacity: 1;
+        ul li a {
+          color: @brand-primary-opaque;
+        }
       }
       .float-actions .only-on-hover {
         visibility: visible;
@@ -347,15 +350,16 @@
       position: relative;
       font-size: 12px;
       margin-top: 0.5em;
+      opacity: 0;
+      transition: opacity .2s;
 
       ul {
         list-style-type: none;
         padding-left: 0;
-        text-align: right;
 
         li {
           display: inline-block;
-          margin-left: 1em;
+          margin-right: 1em;
 
           a {
             color: @brand-primary-light-text;
