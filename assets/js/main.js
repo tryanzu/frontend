@@ -11,6 +11,7 @@
 // @codekit-prepend "vendor/mentio.min.js"
 // @codekit-prepend "vendor/angular-ui-switch.min.js"
 // @codekit-prepend "vendor/angular-acl.min.js"
+// @codekit-prepend "vendor/angular-timeago.js"
 // @codekit-prepend "modules/feed/init"
 // @codekit-prepend "modules/categories/init"
 // @codekit-prepend "modules/reader/init"
@@ -42,7 +43,8 @@ var boardApplication = angular.module('board', [
   'monospaced.elastic',
   'mentio',
   'uiSwitch',
-  'mm.acl'
+  'mm.acl',
+  'yaru22.angular-timeago'
 ]);
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider', 'AclServiceProvider',
