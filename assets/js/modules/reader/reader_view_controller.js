@@ -406,5 +406,9 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
     var regex = new RegExp("(https?:\/\/.*\\.(?:png|jpg|jpeg|JPEG|PNG|JPG|gif|GIF)((\\?|\\&)[a-zA-Z0-9]+\\=[a-zA-Z0-9]+)*)", "g");
     var to_replace = "<div class=\"img-preview\"><a href=\"$1\" target=\"_blank\"><img src=\"$1\"></a></div>"
     comment.content_final = comment.content.replace(regex, to_replace);
+
+    var yt_re = /.*(?:youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=)([^#\&\?]{11}).*/g;
+    var to_replace = "<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/$1\" frameborder=\"0\" allowfullscreen></iframe>";
+    comment.content_final = comment.content_final.replace(yt_re, to_replace);
   }
 }];
