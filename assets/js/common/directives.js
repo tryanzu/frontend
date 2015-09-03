@@ -57,35 +57,6 @@ directives.directive('adjustHeightChat', function($window, $document, $timeout) 
   };
 });
 
-directives.directive('adjustHeightFeed', function($window, $document) {
-  return {
-    restrict: 'A',
-    link: function(scope, element, attrs) {
-      scope.calculate = function() {
-        var height = $($window).height();
-        var top = $(element).offset().top;
-        top = 106;
-        var tagsHeight = jQuery('.segments').outerHeight();
-        var neededHeight = height - top - tagsHeight;
-        //console.log(top, height, tagsHeight, neededHeight, element);
-
-        $(element).css('min-height', neededHeight);
-        $(element).css('height', neededHeight);
-      };
-      //scope.calculate();
-
-      $window.addEventListener('resize', function() {
-        scope.calculate();
-      });
-
-      // Listen for possible container size changes
-      scope.$on('changedContainers', function() {
-        scope.calculate();
-      });
-    }
-  };
-});
-
 directives.directive('scrollMe', function() {
   return {
     restrict: 'A',
@@ -93,6 +64,7 @@ directives.directive('scrollMe', function() {
       trigger: '&scrollMe'
     },
     link: function(scope, element, attrs) {
+      // If space is bigger, load more items
       element.on('scroll', function() {
         if($(this).scrollTop() + $(this).innerHeight() >= this.scrollHeight) {
           scope.$apply(function() {
@@ -119,7 +91,7 @@ directives.directive('myRefresh', ['$location', function($location) {
         }
       });
     }
-  }
+  };
 }]);
 
 directives.directive('markedsg', function () {
@@ -139,7 +111,7 @@ directives.directive('markedsg', function () {
       function unindent(text) {
         if (!text) return text;
 
-        var lines  = text
+        var lines = text
           .replace(/\t/g, '  ')
           .split(/\r?\n/);
 
@@ -161,11 +133,12 @@ directives.directive('markedsg', function () {
 
       function set(text) {
         text = unindent(text || '');
+        // Parse mentions links
         var links = $('<div>' + text + '</div>');
         links.find('a.user-mention').each(function( index ) {
           $(this).attr("href", "/u/"+ $(this).data('username') +"/"+ $(this).data('id'));
           if($(this).data('comment') != undefined) {
-            $(this).before('<i class="fa fa-reply comment-response" tooltip="En respuesta a"></i>')
+            $(this).before('<i class="fa fa-reply comment-response"></i>')
           }
         });
         text = links.html();

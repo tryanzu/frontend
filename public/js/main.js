@@ -57,35 +57,6 @@ directives.directive('adjustHeightChat', function($window, $document, $timeout) 
   };
 });
 
-directives.directive('adjustHeightFeed', function($window, $document) {
-  return {
-    restrict: 'A',
-    link: function(scope, element, attrs) {
-      scope.calculate = function() {
-        var height = $($window).height();
-        var top = $(element).offset().top;
-        top = 106;
-        var tagsHeight = jQuery('.segments').outerHeight();
-        var neededHeight = height - top - tagsHeight;
-        //console.log(top, height, tagsHeight, neededHeight, element);
-
-        $(element).css('min-height', neededHeight);
-        $(element).css('height', neededHeight);
-      };
-      //scope.calculate();
-
-      $window.addEventListener('resize', function() {
-        scope.calculate();
-      });
-
-      // Listen for possible container size changes
-      scope.$on('changedContainers', function() {
-        scope.calculate();
-      });
-    }
-  };
-});
-
 directives.directive('scrollMe', function() {
   return {
     restrict: 'A',
@@ -93,6 +64,7 @@ directives.directive('scrollMe', function() {
       trigger: '&scrollMe'
     },
     link: function(scope, element, attrs) {
+      // If space is bigger, load more items
       element.on('scroll', function() {
         if($(this).scrollTop() + $(this).innerHeight() >= this.scrollHeight) {
           scope.$apply(function() {
@@ -119,7 +91,7 @@ directives.directive('myRefresh', ['$location', function($location) {
         }
       });
     }
-  }
+  };
 }]);
 
 directives.directive('markedsg', function () {
@@ -139,7 +111,7 @@ directives.directive('markedsg', function () {
       function unindent(text) {
         if (!text) return text;
 
-        var lines  = text
+        var lines = text
           .replace(/\t/g, '  ')
           .split(/\r?\n/);
 
@@ -161,11 +133,12 @@ directives.directive('markedsg', function () {
 
       function set(text) {
         text = unindent(text || '');
+        // Parse mentions links
         var links = $('<div>' + text + '</div>');
         links.find('a.user-mention').each(function( index ) {
           $(this).attr("href", "/u/"+ $(this).data('username') +"/"+ $(this).data('id'));
           if($(this).data('comment') != undefined) {
-            $(this).before('<i class="fa fa-reply comment-response" tooltip="En respuesta a"></i>')
+            $(this).before('<i class="fa fa-reply comment-response"></i>')
           }
         });
         text = links.html();
@@ -199,6 +172,97 @@ activeReader.factory('Bridge', function($rootScope) {
 	};
 	return bridge;
 });
+
+'use strict';
+
+var services = angular.module('sg.services', []);
+
+services.factory('AdvancedAcl', ['$rootScope', function($rootScope) {
+  return {
+    can_edit_post: function(user_id, author_id) {
+      var can = false;
+
+      // If own post
+      can = can || ($rootScope.can('edit-own-posts') && user_id === author_id);
+
+      // Or supreme power
+      can = can || $rootScope.can('edit-board-posts');
+
+      return can;
+    },
+    can_delete_post: function(user_id, author_id) {
+      var can = false;
+
+      // If own post
+      can = can || ($rootScope.can('delete-own-posts') && user_id === author_id);
+
+      // Or supreme power
+      can = can || $rootScope.can('delete-board-posts');
+
+      return can;
+    },
+    can: function(action, object, user_id, author_id) {
+      var can = false;
+      // If own object
+      can = can || ($rootScope.can(action + '-own-' + object) && user_id === author_id);
+
+      // Or supreme power
+      can = can || $rootScope.can(action + '-board-' + object);
+
+      return can;
+    }
+  };
+}]);
+
+services.service('modalService', ['$modal', function ($modal) {
+  var modalDefaults = {
+    backdrop: true,
+    keyboard: true,
+    modalFade: true,
+    windowClass: 'modal-confirm',
+    size: 'sm',
+    templateUrl: '/js/partials/modal.html'
+  };
+
+  var modalOptions = {
+    closeButtonText: 'Cerrar',
+    actionButtonText: 'Aceptar',
+    headerText: '¿Estás seguro?',
+    bodyText: '¿Quieres realizar esta acción?'
+  };
+
+  this.showModal = function (customModalDefaults, customModalOptions) {
+    if (!customModalDefaults) customModalDefaults = {};
+    customModalDefaults.backdrop = 'static';
+    return this.show(customModalDefaults, customModalOptions);
+  };
+
+  this.show = function (customModalDefaults, customModalOptions) {
+    //Create temp objects to work with since we're in a singleton service
+    var tempModalDefaults = {};
+    var tempModalOptions = {};
+
+    //Map angular-ui modal custom defaults to modal defaults defined in service
+    angular.extend(tempModalDefaults, modalDefaults, customModalDefaults);
+
+    //Map modal.html $scope custom properties to defaults defined in service
+    angular.extend(tempModalOptions, modalOptions, customModalOptions);
+
+    if (!tempModalDefaults.controller) {
+      tempModalDefaults.controller = function ($scope, $modalInstance) {
+        $scope.modalOptions = tempModalOptions;
+        $scope.modalOptions.ok = function (result) {
+          $modalInstance.close(result);
+        };
+        $scope.modalOptions.close = function (result) {
+          $modalInstance.dismiss('cancel');
+        };
+      }
+    }
+
+    return $modal.open(tempModalDefaults).result;
+  };
+}]);
 
 /**
  * marked - a markdown parser
@@ -4286,6 +4350,7 @@ chatModule.directive('sgEnter', function() {
 // @codekit-prepend "common/directives"
 // @codekit-prepend "common/filters"
 // @codekit-prepend "common/active_reader"
+// @codekit-prepend "common/services"
 // @codekit-prepend "vendor/angular-marked"
 // @codekit-prepend "vendor/wizzy"
 // @codekit-prepend "vendor/infinite-scroll"
@@ -4309,6 +4374,7 @@ var boardApplication = angular.module('board', [
   'ngRoute',
 	'directivesModule',
 	'filtersModule',
+  'sg.services',
 	'activeReader',
   'hc.marked',
   'idiotWizzy',
@@ -4870,10 +4936,10 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
       }, 50);
     };
 
-    $scope.toggle_notification = function(elem) {
+    $scope.toggle_notification = function( elem ) {
       if(!elem.seen) {
         $scope.user.notifications.count.$value = $scope.user.notifications.count.$value - 1;
-        if($scope.user.notifications.count.$value < 0){
+        if($scope.user.notifications.count.$value < 0) {
           $scope.user.notifications.count.$value = 0;
         }
         elem.seen = true;
@@ -4893,14 +4959,15 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
     $scope.$on('login', function(e) {
       $scope.logUser();
     });
-    // If already signed in, sign in the user
-    if(localStorage.signed_in === 'true') {
-      $scope.logUser();
-    }
 
     // Check for FB Login Status, this is necessary so later calls doesn't make
     // the pop up to be blocked by the browser
     Facebook.getLoginStatus(function(r){$rootScope.fb_response = r;});
+
+    // If already signed in, sign in the user
+    if(localStorage.signed_in === 'true') {
+      $scope.logUser();
+    }
 
     // Load platform stats
     $http.get(layer_path + 'stats/board').
@@ -4918,57 +4985,7 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
   }
 ]);
 
-boardApplication.service('modalService', ['$modal', function ($modal) {
-  var modalDefaults = {
-    backdrop: true,
-    keyboard: true,
-    modalFade: true,
-    windowClass: 'modal-confirm',
-    size: 'sm',
-    templateUrl: '/js/partials/modal.html'
-  };
-
-  var modalOptions = {
-    closeButtonText: 'Cerrar',
-    actionButtonText: 'Aceptar',
-    headerText: '¿Estás seguro?',
-    bodyText: '¿Quieres realizar esta acción?'
-  };
-
-  this.showModal = function (customModalDefaults, customModalOptions) {
-    if (!customModalDefaults) customModalDefaults = {};
-    customModalDefaults.backdrop = 'static';
-    return this.show(customModalDefaults, customModalOptions);
-  };
-
-  this.show = function (customModalDefaults, customModalOptions) {
-    //Create temp objects to work with since we're in a singleton service
-    var tempModalDefaults = {};
-    var tempModalOptions = {};
-
-    //Map angular-ui modal custom defaults to modal defaults defined in service
-    angular.extend(tempModalDefaults, modalDefaults, customModalDefaults);
-
-    //Map modal.html $scope custom properties to defaults defined in service
-    angular.extend(tempModalOptions, modalOptions, customModalOptions);
-
-    if (!tempModalDefaults.controller) {
-      tempModalDefaults.controller = function ($scope, $modalInstance) {
-        $scope.modalOptions = tempModalOptions;
-        $scope.modalOptions.ok = function (result) {
-          $modalInstance.close(result);
-        };
-        $scope.modalOptions.close = function (result) {
-          $modalInstance.dismiss('cancel');
-        };
-      }
-    }
-
-    return $modal.open(tempModalDefaults).result;
-  };
-}]);
-
-boardApplication.run(['$rootScope', '$http', 'AclService', function($rootScope, $http, AclService) {
+boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', function($rootScope, $http, AclService, AdvancedAcl) {
   // TEST PURPOSES
   if(false) {
     localStorage.removeItem('signed_in');
@@ -4992,22 +5009,18 @@ boardApplication.run(['$rootScope', '$http', 'AclService', function($rootScope, 
   $http.get(layer_path + 'permissions')
     .error(function(data) {}) // How should we proceed if no data?
     .success(function(data) {
-      //console.log(data);
       // Proccess de roles and permissions iteratively
       for(var r in data.rules) {
         aclData[r] = data.rules[r].permissions;
-        //aclData[r] = [];
         var current = data.rules[r];
-        //console.log(current);
         while(current.parents.length > 0) {
-          //console.log(current);
           aclData[r] = aclData[r].concat(data.rules[current.parents[0]].permissions);
           current = data.rules[current.parents[0]];
         }
       }
-      //console.log('ACL', aclData);
+      AclService.setAbilities(aclData);
     });
-  AclService.setAbilities(aclData);
   $rootScope.can = AclService.can;
+  $rootScope.aacl = AdvancedAcl;
 }]);
 

@@ -270,16 +270,16 @@
 
               <div class="discussion-posts">
                 <div class="float-actions text-right">
-                  <div class="btn-group" ng-if="(can('edit-own-posts') && post.author.id === user.info.id)" dropdown>
+                  <div class="btn-group" ng-if="aacl.can('delete', 'posts', user.info.id, post.author.id)" dropdown>
                     <button type="button" class="button button-icon button-flat" dropdown-toggle>
                       <i class="fa fa-pencil"></i>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-right">
                       <li ng-if="false">
-                        <a href="" ng-if="(can('edit-own-posts') && post.author.id === user.info.id)" ng-click="editCommentShow(comment)"><i class="fa fa-pencil"></i> Editar publicación</a>
+                        <a href="" ng-if="aacl.can('edit', 'posts', user.info.id, post.author.id)" ng-click=""><i class="fa fa-pencil"></i> Editar publicación</a>
                       </li>
                       <li>
-                        <a href="" ng-if="(can('delete-own-posts') && post.author.id === user.info.id)" ng-click="deletePost()"><i class="fa fa-trash-o"></i> Eliminar publicación</a>
+                        <a href="" ng-if="aacl.can('delete', 'posts', user.info.id, post.author.id)" ng-click="deletePost()"><i class="fa fa-trash-o"></i> Eliminar publicación</a>
                       </li>
                     </ul>
                   </div>
@@ -436,16 +436,16 @@
                 <div class="comments">
                   <div class="comment" data-number="{{ comment.position }}" ng-repeat="comment in (post.comments.set | orderBy:'position')" ng-class="{editing: comment.editing}">
                     <div class="float-actions text-right">
-                      <div class="btn-group" ng-if="(can('edit-own-comments') && comment.author.id === user.info.id)" dropdown>
+                      <div class="btn-group" ng-if="aacl.can('edit', 'comments', user.info.id, comment.author.id)" dropdown>
                         <button type="button" class="button button-icon button-flat" ng-hide="comment.editing" dropdown-toggle>
                           <i class="fa fa-pencil"></i>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-right">
                           <li>
-                            <a href="" ng-class="{disabled: comment.editing}" ng-if="(can('edit-own-comments') && comment.author.id === user.info.id)" ng-click="editCommentShow(comment)"><i class="fa fa-pencil"></i> Editar comentario</a>
+                            <a href="" ng-class="{disabled: comment.editing}" ng-if="aacl.can('edit', 'comments', user.info.id, comment.author.id)" ng-click="editCommentShow(comment)"><i class="fa fa-pencil"></i> Editar comentario</a>
                           </li>
                           <li>
-                            <a href="" ng-class="{disabled: comment.editing}" ng-if="(can('delete-own-comments') && comment.author.id === user.info.id)" ng-click="deleteComment(comment)"><i class="fa fa-trash-o"></i> Eliminar comentario</a>
+                            <a href="" ng-class="{disabled: comment.editing}" ng-if="aacl.can('delete', 'comments', user.info.id, comment.author.id)" ng-click="deleteComment(comment)"><i class="fa fa-trash-o"></i> Eliminar comentario</a>
                           </li>
                         </ul>
                       </div>
@@ -486,12 +486,12 @@
                     </div>
                     <div class="content" markedsg="comment.content_final" ng-if="!comment.editing"></div>
 
-                    <div class="actions-count">
+                    <div class="actions-count text-right">
                       <span ng-if="comment.votes.up > 0">A {{ comment.votes.up }} {{comment.votes.up == 1 ? 'persona le gusta':'personas les gusta'}} este comentario</span>
                       <span ng-if="comment.votes.up > 0 && comment.votes.down > 0"> y </span>
                       <span ng-if="comment.votes.down > 0">{{ comment.votes.down }} {{comment.votes.down == 1 ? 'persona piensa':'personas piensan'}} que esto apesta</span>
                     </div>
-                    <div class="actions" ng-if="user.isLogged && !comment.editing">
+                    <div class="actions text-right" ng-if="user.isLogged && !comment.editing">
                       <ul>
                         <li ng-if="comment.liked != -1 && comment.author.id != user.info.id && user.gaming.tribute > 0">
                           <a href="" ng-click="comment_vote(post.id, comment, 'up')" ng-class="{'liked': comment.liked == 1}"><i class="sgi gray"></i> Me gusta</a>
