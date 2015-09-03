@@ -270,16 +270,16 @@
 
               <div class="discussion-posts">
                 <div class="float-actions text-right">
-                  <div class="btn-group" ng-if="aacl.can('delete', 'posts', user.info.id, post.author.id)" dropdown>
+                  <div class="btn-group" ng-if="aacl.can('delete', 'posts', user.info, post.author.id, post.category.id)" dropdown>
                     <button type="button" class="button button-icon button-flat" dropdown-toggle>
                       <i class="fa fa-pencil"></i>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-right">
                       <li ng-if="false">
-                        <a href="" ng-if="aacl.can('edit', 'posts', user.info.id, post.author.id)" ng-click=""><i class="fa fa-pencil"></i> Editar publicación</a>
+                        <a href="" ng-if="aacl.can('edit', 'posts', user.info, post.author.id, post.category.id)" ng-click=""><i class="fa fa-pencil"></i> Editar publicación</a>
                       </li>
                       <li>
-                        <a href="" ng-if="aacl.can('delete', 'posts', user.info.id, post.author.id)" ng-click="deletePost()"><i class="fa fa-trash-o"></i> Eliminar publicación</a>
+                        <a href="" ng-if="aacl.can('delete', 'posts', user.info, post.author.id, post.category.id)" ng-click="deletePost()"><i class="fa fa-trash-o"></i> Eliminar publicación</a>
                       </li>
                     </ul>
                   </div>
@@ -436,16 +436,16 @@
                 <div class="comments">
                   <div class="comment" data-number="{{ comment.position }}" ng-repeat="comment in (post.comments.set | orderBy:'position')" ng-class="{editing: comment.editing}">
                     <div class="float-actions text-right">
-                      <div class="btn-group" ng-if="aacl.can('edit', 'comments', user.info.id, comment.author.id)" dropdown>
+                      <div class="btn-group" ng-if="aacl.can('edit', 'comments', user.info, comment.author.id, post.category.id)" dropdown>
                         <button type="button" class="button button-icon button-flat" ng-hide="comment.editing" dropdown-toggle>
                           <i class="fa fa-pencil"></i>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-right">
                           <li>
-                            <a href="" ng-class="{disabled: comment.editing}" ng-if="aacl.can('edit', 'comments', user.info.id, comment.author.id)" ng-click="editCommentShow(comment)"><i class="fa fa-pencil"></i> Editar comentario</a>
+                            <a href="" ng-class="{disabled: comment.editing}" ng-if="aacl.can('edit', 'comments', user.info, comment.author.id, post.category.id)" ng-click="editCommentShow(comment)"><i class="fa fa-pencil"></i> Editar comentario</a>
                           </li>
                           <li>
-                            <a href="" ng-class="{disabled: comment.editing}" ng-if="aacl.can('delete', 'comments', user.info.id, comment.author.id)" ng-click="deleteComment(comment)"><i class="fa fa-trash-o"></i> Eliminar comentario</a>
+                            <a href="" ng-class="{disabled: comment.editing}" ng-if="aacl.can('delete', 'comments', user.info, comment.author.id, post.category.id)" ng-click="deleteComment(comment)"><i class="fa fa-trash-o"></i> Eliminar comentario</a>
                           </li>
                         </ul>
                       </div>

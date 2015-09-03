@@ -255,6 +255,7 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post, U
         for(var s in $scope.categories[c].subcategories) {
           if($scope.categories[c].subcategories[s].id == $scope.post.category) {
             $scope.post.category = {
+              id: $scope.categories[c].subcategories[s].id,
               name: $scope.categories[c].subcategories[s].name,
               slug: $scope.categories[c].subcategories[s].slug,
               parent_slug: $scope.categories[c].slug

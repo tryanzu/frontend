@@ -4,32 +4,20 @@ var services = angular.module('sg.services', []);
 
 services.factory('AdvancedAcl', ['$rootScope', function($rootScope) {
   return {
-    can_edit_post: function(user_id, author_id) {
+    can: function(action, object, user_info, author_id, category_id) {
       var can = false;
 
-      // If own post
-      can = can || ($rootScope.can('edit-own-posts') && user_id === author_id);
-
-      // Or supreme power
-      can = can || $rootScope.can('edit-board-posts');
-
-      return can;
-    },
-    can_delete_post: function(user_id, author_id) {
-      var can = false;
-
-      // If own post
-      can = can || ($rootScope.can('delete-own-posts') && user_id === author_id);
-
-      // Or supreme power
-      can = can || $rootScope.can('delete-board-posts');
-
-      return can;
-    },
-    can: function(action, object, user_id, author_id) {
-      var can = false;
       // If own object
-      can = can || ($rootScope.can(action + '-own-' + object) && user_id === author_id);
+      can = can || ( $rootScope.can(action + '-own-' + object) && user_info.id === author_id );
+
+      // Or some category moderator
+      var category_owner = false;
+      if(user_info != null) {
+        if('categories' in user_info.roles[0]) {
+          category_owner = (user_info.roles[0].categories).indexOf(category_id) > -1;
+        }
+      }
+      can = can || ( $rootScope.can(action + '-category-' + object) && category_owner);
 
       // Or supreme power
       can = can || $rootScope.can(action + '-board-' + object);
