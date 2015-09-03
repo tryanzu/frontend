@@ -1,4 +1,4 @@
-var PostService = function($resource) {
+var PostService = ['$resource', function($resource) {
   return $resource(layer_path + 'posts/:id',
     {
       postId: '@id'
@@ -9,4 +9,4 @@ var PostService = function($resource) {
       }
     }
   );
-};
+}];

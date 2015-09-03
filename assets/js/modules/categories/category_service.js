@@ -1,4 +1,4 @@
-var CategoryService = function($resource) {
+var CategoryService = ['$resource', function($resource) {
   return $resource(layer_path + 'category/:categoryId',
     {
       categoryId: '@categoryId'
@@ -14,4 +14,4 @@ var CategoryService = function($resource) {
       }
     }
   );
-};
+}];

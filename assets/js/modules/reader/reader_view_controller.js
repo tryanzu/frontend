@@ -1,4 +1,5 @@
-var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post, Upload, modalService) {
+var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post', 'Upload', 'modalService',
+  function($scope, $rootScope, $http, $timeout, Post, Upload, modalService) {
 
   $scope.post = {};
   $scope.comment = {content:''};
@@ -367,7 +368,6 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post, U
         $('.scrubber-slider').css('height', $scope.ratio + '%');
         $('.scrubber-after').css('height', $scope.surplus + '%');
       });
-
       /* End TODO */
 
 		});
@@ -407,4 +407,4 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post, U
     var to_replace = "<div class=\"img-preview\"><a href=\"$1\" target=\"_blank\"><img src=\"$1\"></a></div>"
     comment.content_final = comment.content.replace(regex, to_replace);
   }
-};
+}];

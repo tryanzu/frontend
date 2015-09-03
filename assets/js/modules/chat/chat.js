@@ -1,4 +1,5 @@
-var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout', function($scope, $firebaseArray, $firebaseObject, $timeout) {
+var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
+  function($scope, $firebaseArray, $firebaseObject, $timeout) {
   $scope.channels = [];
   $scope.channel = {
     selected: null

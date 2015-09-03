@@ -275,8 +275,8 @@
                       <i class="fa fa-pencil"></i>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-right">
-                      <li ng-if="false">
-                        <a href="" ng-if="aacl.can('edit', 'posts', user.info, post.author.id, post.category.id)" ng-click=""><i class="fa fa-pencil"></i> Editar publicación</a>
+                      <li>
+                        <a href="/p/{{post.slug}}/{{post.id}}/edit" ng-if="aacl.can('edit', 'posts', user.info, post.author.id, post.category.id)" ng-click=""><i class="fa fa-pencil"></i> Editar publicación</a>
                       </li>
                       <li>
                         <a href="" ng-if="aacl.can('delete', 'posts', user.info, post.author.id, post.category.id)" ng-click="deletePost()"><i class="fa fa-trash-o"></i> Eliminar publicación</a>
