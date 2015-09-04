@@ -111,7 +111,7 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
         });
 
         var comment = $scope.post.comments.set[$scope.post.comments.count - 1];
-        addImagePreview(comment);
+        addMediaEmbed(comment);
         // Allow to comment once again
         $scope.waiting_comment = false;
         $scope.comment.content = '';
@@ -189,7 +189,7 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
         .then(function() {
           // On success
           comment.content = comment.content_edit;
-          addImagePreview(comment);
+          addMediaEmbed(comment);
           comment.editing = false;
         })
     }
@@ -238,7 +238,7 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
 
 	$scope.$on('pushLoggedComment', function(event, comment) {
 		// Push the comment to the main set of comments
-    addImagePreview(comment);
+    addMediaEmbed(comment);
 		$scope.post.comments.set.push(comment);
 	});
 
@@ -250,7 +250,7 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
 
 		Post.get({id: post.id}, function(data) {
 			$scope.post = data;
-      addImagePreview($scope.post);
+      addMediaEmbed($scope.post);
 
       for (var c in $scope.categories) {
         for(var s in $scope.categories[c].subcategories) {
@@ -276,7 +276,7 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
 
       // Postproccess every comment
       for( var c in $scope.post.comments.set) {
-        addImagePreview($scope.post.comments.set[c]);
+        addMediaEmbed($scope.post.comments.set[c]);
       }
       $scope.resolving = false;
 
@@ -402,13 +402,15 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
     }, 500);
   });
 
-  var addImagePreview = function(comment) {
+  var addMediaEmbed = function(comment) {
+    // Replace any image
     var regex = new RegExp("(https?:\/\/.*\\.(?:png|jpg|jpeg|JPEG|PNG|JPG|gif|GIF)((\\?|\\&)[a-zA-Z0-9]+\\=[a-zA-Z0-9]+)*)", "g");
     var to_replace = "<div class=\"img-preview\"><a href=\"$1\" target=\"_blank\"><img src=\"$1\"></a></div>"
     comment.content_final = comment.content.replace(regex, to_replace);
 
-    var yt_re = /.*(?:youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=)([^#\&\?]{11}).*/g;
-    var to_replace = "<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/$1\" frameborder=\"0\" allowfullscreen></iframe>";
+    // Replace Youtube videos
+    var yt_re = /(https?:\/\/)?(www\.)?(youtu\.be\/|youtube\.com\/)(?:v\/|u\/\w\/|embed\/|watch\?v=)([^#\&\?]{11})\S*/g;
+    var to_replace = "<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/$4\" frameborder=\"0\" allowfullscreen></iframe>";
     comment.content_final = comment.content_final.replace(yt_re, to_replace);
   }
 }];
