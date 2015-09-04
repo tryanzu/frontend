@@ -51,39 +51,41 @@ var boardApplication = angular.module('board', [
   'yaru22.angular-timeago'
 ]);
 
+var version = '141';
+
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider', 'AclServiceProvider',
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider, AclServiceProvider) {
 
   $routeProvider.when('/', {
-    templateUrl: '/js/partials/main.html?v=140',
+    templateUrl: '/js/partials/main.html?v=' + version,
     controller: 'CategoryListController'
   });
   $routeProvider.when('/ranks', {
-    templateUrl: '/js/partials/ranks.html?v=140',
+    templateUrl: '/js/partials/ranks.html?v=' + version,
     controller: 'RanksController'
   });
   $routeProvider.when('/c/:slug', {
-    templateUrl: '/js/partials/main.html?v=140',
+    templateUrl: '/js/partials/main.html?v=' + version,
     controller: 'CategoryListController'
   });
   $routeProvider.when('/p/:slug/:id/edit', {
-    templateUrl: '/js/partials/edit.html?v=140',
+    templateUrl: '/js/partials/edit.html?v=' + version,
     controller: 'EditPostController'
   });
   $routeProvider.when('/p/:slug/:id/:comment_position?', {
-    templateUrl: '/js/partials/main.html?v=140',
+    templateUrl: '/js/partials/main.html?v=' + version,
     controller: 'CategoryListController'
   });
   $routeProvider.when('/u/:username/:id', {
-    templateUrl: '/js/partials/profile.html?v=140',
+    templateUrl: '/js/partials/profile.html?v=' + version,
     controller: 'UserController'
   });
   $routeProvider.when('/chat', {
-    templateUrl: '/js/partials/chat.html?v=140',
+    templateUrl: '/js/partials/chat.html?v=' + version,
     controller: 'ChatController'
   });
   $routeProvider.when('/post/create/:cat_slug?', {
-    templateUrl: '/js/partials/publish.html?v=140',
+    templateUrl: '/js/partials/publish.html?v=' + version,
     controller: 'PublishController',
     onEnter: function() {
       if(!$scope.user.isLogged) {
