@@ -8,3 +8,12 @@ filters.filter('date_at', function() {
     return date.getDate() + ' de ' + months[date.getMonth()] + ' de ' + date.getFullYear();
 	};
 });
+
+filters.filter('range', function() {
+  return function(input, total) {
+    total = parseInt(total);
+    for (var i=0; i<total; i++)
+      input.push(i);
+    return input;
+  };
+});

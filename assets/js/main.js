@@ -19,6 +19,7 @@
 // @codekit-prepend "modules/publisher/init"
 // @codekit-prepend "modules/part/init"
 // @codekit-prepend "modules/user/init"
+// @codekit-prepend "modules/rank/init"
 // @codekit-prepend "modules/chat/chat"
 
 var boardApplication = angular.module('board', [
@@ -38,6 +39,7 @@ var boardApplication = angular.module('board', [
 	'publisherModule',
   'partModule',
   'userModule',
+  'rankModule',
   'chatModule',
   'angular-jwt',
   'firebase',
@@ -58,7 +60,7 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   });
   $routeProvider.when('/ranks', {
     templateUrl: '/js/partials/ranks.html?v=140',
-    //controller: 'RanksController'
+    controller: 'RanksController'
   });
   $routeProvider.when('/c/:slug', {
     templateUrl: '/js/partials/main.html?v=140',

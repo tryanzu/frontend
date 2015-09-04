@@ -162,6 +162,15 @@ filters.filter('date_at', function() {
 	};
 });
 
+filters.filter('range', function() {
+  return function(input, total) {
+    total = parseInt(total);
+    for (var i=0; i<total; i++)
+      input.push(i);
+    return input;
+  };
+});
+
 var activeReader = angular.module('activeReader', []);
 
 activeReader.factory('Bridge', function($rootScope) {
@@ -4397,6 +4406,13 @@ UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed
   });
 }]);
 
+var RankModule = angular.module('rankModule', []);
+
+// Rank module controllers
+RankModule.controller('RanksController', [function() {
+
+}]);
+
 var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
   function($scope, $firebaseArray, $firebaseObject, $timeout) {
   $scope.channels = [];
@@ -4558,6 +4574,7 @@ chatModule.directive('sgEnter', function() {
 // @codekit-prepend "modules/publisher/init"
 // @codekit-prepend "modules/part/init"
 // @codekit-prepend "modules/user/init"
+// @codekit-prepend "modules/rank/init"
 // @codekit-prepend "modules/chat/chat"
 
 var boardApplication = angular.module('board', [
@@ -4577,6 +4594,7 @@ var boardApplication = angular.module('board', [
 	'publisherModule',
   'partModule',
   'userModule',
+  'rankModule',
   'chatModule',
   'angular-jwt',
   'firebase',
@@ -4597,7 +4615,7 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   });
   $routeProvider.when('/ranks', {
     templateUrl: '/js/partials/ranks.html?v=140',
-    //controller: 'RanksController'
+    controller: 'RanksController'
   });
   $routeProvider.when('/c/:slug', {
     templateUrl: '/js/partials/main.html?v=140',
