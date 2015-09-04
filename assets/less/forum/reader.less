@@ -10,6 +10,12 @@
   color: desaturate( lighten(@brand-primary, 18%), 20%);
 }
 
+.actions-count {
+  font-size: 12px;
+  font-weight: 400;
+  color: @brand-primary-light-text;
+}
+
 .back-to-list {
   position: fixed;
   bottom: 0;
@@ -329,8 +335,11 @@
     }
 
     &:hover {
-      .actions ul li a {
-        color: @brand-primary-opaque;
+      .actions {
+        opacity: 1;
+        ul li a {
+          color: @brand-primary-opaque;
+        }
       }
       .float-actions .only-on-hover {
         visibility: visible;
@@ -341,11 +350,12 @@
       position: relative;
       font-size: 12px;
       margin-top: 0.5em;
+      opacity: 0;
+      transition: opacity .2s;
 
       ul {
         list-style-type: none;
         padding-left: 0;
-        text-align: right;
 
         li {
           display: inline-block;

@@ -1,3 +1,3 @@
-var FeedService = function($resource){
-    return $resource(layer_path + 'feed');
-};
+var FeedService = ['$resource', function($resource) {
+  return $resource(layer_path + 'feed');
+}];

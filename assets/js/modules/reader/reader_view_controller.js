@@ -1,4 +1,5 @@
-var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post, Upload, modalService) {
+var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post', 'Upload', 'modalService',
+  function($scope, $rootScope, $http, $timeout, Post, Upload, modalService) {
 
   $scope.post = {};
   $scope.comment = {content:''};
@@ -255,6 +256,7 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post, U
         for(var s in $scope.categories[c].subcategories) {
           if($scope.categories[c].subcategories[s].id == $scope.post.category) {
             $scope.post.category = {
+              id: $scope.categories[c].subcategories[s].id,
               name: $scope.categories[c].subcategories[s].name,
               slug: $scope.categories[c].subcategories[s].slug,
               parent_slug: $scope.categories[c].slug
@@ -366,7 +368,6 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post, U
         $('.scrubber-slider').css('height', $scope.ratio + '%');
         $('.scrubber-after').css('height', $scope.surplus + '%');
       });
-
       /* End TODO */
 
 		});
@@ -405,5 +406,9 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post, U
     var regex = new RegExp("(https?:\/\/.*\\.(?:png|jpg|jpeg|JPEG|PNG|JPG|gif|GIF)((\\?|\\&)[a-zA-Z0-9]+\\=[a-zA-Z0-9]+)*)", "g");
     var to_replace = "<div class=\"img-preview\"><a href=\"$1\" target=\"_blank\"><img src=\"$1\"></a></div>"
     comment.content_final = comment.content.replace(regex, to_replace);
+
+    var yt_re = /.*(?:youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=)([^#\&\?]{11}).*/g;
+    var to_replace = "<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/$1\" frameborder=\"0\" allowfullscreen></iframe>";
+    comment.content_final = comment.content_final.replace(yt_re, to_replace);
   }
-};
+}];
