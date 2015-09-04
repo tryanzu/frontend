@@ -4592,35 +4592,35 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider, AclServiceProvider) {
 
   $routeProvider.when('/', {
-    templateUrl: '/js/partials/main.html?v=139',
+    templateUrl: '/js/partials/main.html?v=140',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/ranks', {
-    templateUrl: '/js/partials/ranks.html?v=139',
+    templateUrl: '/js/partials/ranks.html?v=140',
     //controller: 'RanksController'
   });
   $routeProvider.when('/c/:slug', {
-    templateUrl: '/js/partials/main.html?v=139',
+    templateUrl: '/js/partials/main.html?v=140',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/p/:slug/:id/edit', {
-    templateUrl: '/js/partials/edit.html?v=139',
+    templateUrl: '/js/partials/edit.html?v=140',
     controller: 'EditPostController'
   });
   $routeProvider.when('/p/:slug/:id/:comment_position?', {
-    templateUrl: '/js/partials/main.html?v=139',
+    templateUrl: '/js/partials/main.html?v=140',
     controller: 'CategoryListController'
   });
   $routeProvider.when('/u/:username/:id', {
-    templateUrl: '/js/partials/profile.html?v=139',
+    templateUrl: '/js/partials/profile.html?v=140',
     controller: 'UserController'
   });
   $routeProvider.when('/chat', {
-    templateUrl: '/js/partials/chat.html?v=139',
+    templateUrl: '/js/partials/chat.html?v=140',
     controller: 'ChatController'
   });
   $routeProvider.when('/post/create/:cat_slug?', {
-    templateUrl: '/js/partials/publish.html?v=139',
+    templateUrl: '/js/partials/publish.html?v=140',
     controller: 'PublishController',
     onEnter: function() {
       if(!$scope.user.isLogged) {
