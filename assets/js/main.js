@@ -1,6 +1,7 @@
 // @codekit-prepend "common/directives"
 // @codekit-prepend "common/filters"
 // @codekit-prepend "common/active_reader"
+// @codekit-prepend "common/services"
 // @codekit-prepend "vendor/angular-marked"
 // @codekit-prepend "vendor/wizzy"
 // @codekit-prepend "vendor/infinite-scroll"
@@ -11,6 +12,7 @@
 // @codekit-prepend "vendor/mentio.min.js"
 // @codekit-prepend "vendor/angular-ui-switch.min.js"
 // @codekit-prepend "vendor/angular-acl.min.js"
+// @codekit-prepend "vendor/angular-timeago.js"
 // @codekit-prepend "modules/feed/init"
 // @codekit-prepend "modules/categories/init"
 // @codekit-prepend "modules/reader/init"
@@ -23,6 +25,7 @@ var boardApplication = angular.module('board', [
   'ngRoute',
 	'directivesModule',
 	'filtersModule',
+  'sg.services',
 	'activeReader',
   'hc.marked',
   'idiotWizzy',
@@ -42,7 +45,8 @@ var boardApplication = angular.module('board', [
   'monospaced.elastic',
   'mentio',
   'uiSwitch',
-  'mm.acl'
+  'mm.acl',
+  'yaru22.angular-timeago'
 ]);
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider', 'AclServiceProvider',
@@ -52,9 +56,17 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
     templateUrl: '/js/partials/main.html?v=139',
     controller: 'CategoryListController'
   });
+  $routeProvider.when('/ranks', {
+    templateUrl: '/js/partials/ranks.html?v=139',
+    //controller: 'RanksController'
+  });
   $routeProvider.when('/c/:slug', {
     templateUrl: '/js/partials/main.html?v=139',
     controller: 'CategoryListController'
+  });
+  $routeProvider.when('/p/:slug/:id/edit', {
+    templateUrl: '/js/partials/edit.html?v=139',
+    controller: 'EditPostController'
   });
   $routeProvider.when('/p/:slug/:id/:comment_position?', {
     templateUrl: '/js/partials/main.html?v=139',
@@ -293,119 +305,6 @@ boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http'
     }
 }]);
 
-// TODO: Move to external file
-boardApplication.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed', 'Upload', '$http',
-  function($scope, User, $routeParams, Feed, Upload, $http) {
-
-  $scope.profile = null;
-  $scope.resolving_posts = false;
-  $scope.update = {
-    updating: false,
-    editing_desc: false,
-    editing_username: false
-  };
-  $scope.current_page = 'info';
-
-  $scope.new_data = {
-    username: null,
-    username_saving: false,
-    username_error: false,
-    username_error_message: 'El nombre de usuario sólo puede llevar letras, números y guiones. Debe empezar con letra y terminar con número o letra y tener entre 3 y 32 caracteres.'
-  }
-
-  $scope.editUsername = function() {
-    $scope.update.editing_username = true;
-  };
-  $scope.saveUsername = function() {
-    if($scope.user.info.name_changes < 1) {
-      $scope.new_data.username_saving = true;
-      $http.put(layer_path + "user/my", {username: $scope.new_data.username}).
-      success(function(data) {
-        $scope.profile.username = $scope.new_data.username;
-        $scope.user.info.username = $scope.new_data.username;
-        $scope.user.info.name_changes = 1;
-
-        $scope.update.editing_username = false;
-      }).
-      error(function(data) {
-        $scope.update.editing_username = false;
-        $scope.new_data.username_saving = false;
-      });
-    }
-  };
-  $scope.check_username = function() {
-    if( /^[a-zA-Z][a-zA-Z0-9\-]{1,30}[a-zA-Z0-9]$/.test($scope.new_data.username) ) {
-      $scope.new_data.username_error = false;
-    } else {
-      $scope.new_data.username_error = true;
-    }
-  };
-
-  $scope.upload = function(files) {
-    if(files.length == 1) {
-      var file = files[0];
-      $scope.update.updating = true;
-      Upload.upload({
-        url: layer_path + "user/my/avatar",
-        file: file
-      }).success(function (data) {
-        $scope.user.info.image = data.url;
-        $scope.profile.image = data.url;
-        $scope.update.updating = false;
-      }).error(function(data) {
-        $scope.update.updating = false;
-      });
-    }
-  };
-
-  $scope.use_fb_pic = function() {
-    $scope.user.info.image = 'https://graph.facebook.com/'+$scope.user.info.facebook.id+'/picture?width=128';
-    $scope.profile.image = 'https://graph.facebook.com/'+$scope.user.info.facebook.id+'/picture?width=128';
-  }
-
-  $scope.remove_pic = function() {
-    $scope.user.info.image = null;
-    $scope.profile.image = null;
-  }
-
-  $scope.startFeed = function() {
-    $scope.resolving_posts = true;
-
-    Feed.get({limit: 10, offset: 0, user_id: $scope.profile.id}, function(data) {
-      for(p in data.feed) {
-        for(c in $scope.categories) {
-          if (data.feed[p].categories[0] == $scope.categories[c].slug) {
-            data.feed[p].category = {name: $scope.categories[c].name, color: $scope.categories[c].color, slug: $scope.categories[c].slug}
-            break;
-          }
-        }
-      }
-
-      $scope.posts = data.feed;
-      $scope.resolving_posts = false;
-      $scope.offset = 10;
-    });
-  };
-
-  User.get({user_id: $routeParams.id}, function(data){
-    //console.log(data);
-    $scope.profile = data;
-    $scope.startFeed();
-    $scope.new_data.username = $scope.profile.username;
-
-    // We calculate remaining swords for next level and ratio
-    var rules = $scope.misc.gaming.rules;
-    var remaining = rules[data.gaming.level].swords_end - $scope.profile.gaming.swords;
-    $scope.profile.gaming.remaining = remaining;
-    var ratio = 100 - 100*(remaining/(rules[data.gaming.level].swords_end - rules[data.gaming.level].swords_start));
-    $scope.profile.gaming.ratio = ratio;
-    console.log(rules[data.gaming.level].swords_start, rules[data.gaming.level].swords_end, ratio);
-
-  }, function(response) {
-    window.location = '/';
-  });
-}]);
-
 boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', '$modal', '$timeout', '$firebaseObject', '$firebaseArray', 'Facebook', 'AclService',
   function($scope, $rootScope, $http, $modal, $timeout, $firebaseObject, $firebaseArray, Facebook, AclService) {
     $scope.user = {
@@ -583,10 +482,10 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
       }, 50);
     };
 
-    $scope.toggle_notification = function(elem) {
+    $scope.toggle_notification = function( elem ) {
       if(!elem.seen) {
         $scope.user.notifications.count.$value = $scope.user.notifications.count.$value - 1;
-        if($scope.user.notifications.count.$value < 0){
+        if($scope.user.notifications.count.$value < 0) {
           $scope.user.notifications.count.$value = 0;
         }
         elem.seen = true;
@@ -606,14 +505,15 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
     $scope.$on('login', function(e) {
       $scope.logUser();
     });
-    // If already signed in, sign in the user
-    if(localStorage.signed_in === 'true') {
-      $scope.logUser();
-    }
 
     // Check for FB Login Status, this is necessary so later calls doesn't make
     // the pop up to be blocked by the browser
     Facebook.getLoginStatus(function(r){$rootScope.fb_response = r;});
+
+    // If already signed in, sign in the user
+    if(localStorage.signed_in === 'true') {
+      $scope.logUser();
+    }
 
     // Load platform stats
     $http.get(layer_path + 'stats/board').
@@ -631,57 +531,7 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
   }
 ]);
 
-boardApplication.service('modalService', ['$modal', function ($modal) {
-  var modalDefaults = {
-    backdrop: true,
-    keyboard: true,
-    modalFade: true,
-    windowClass: 'modal-confirm',
-    size: 'sm',
-    templateUrl: '/js/partials/modal.html'
-  };
-
-  var modalOptions = {
-    closeButtonText: 'Cerrar',
-    actionButtonText: 'Aceptar',
-    headerText: '¿Estás seguro?',
-    bodyText: '¿Quieres realizar esta acción?'
-  };
-
-  this.showModal = function (customModalDefaults, customModalOptions) {
-    if (!customModalDefaults) customModalDefaults = {};
-    customModalDefaults.backdrop = 'static';
-    return this.show(customModalDefaults, customModalOptions);
-  };
-
-  this.show = function (customModalDefaults, customModalOptions) {
-    //Create temp objects to work with since we're in a singleton service
-    var tempModalDefaults = {};
-    var tempModalOptions = {};
-
-    //Map angular-ui modal custom defaults to modal defaults defined in service
-    angular.extend(tempModalDefaults, modalDefaults, customModalDefaults);
-
-    //Map modal.html $scope custom properties to defaults defined in service
-    angular.extend(tempModalOptions, modalOptions, customModalOptions);
-
-    if (!tempModalDefaults.controller) {
-      tempModalDefaults.controller = function ($scope, $modalInstance) {
-        $scope.modalOptions = tempModalOptions;
-        $scope.modalOptions.ok = function (result) {
-          $modalInstance.close(result);
-        };
-        $scope.modalOptions.close = function (result) {
-          $modalInstance.dismiss('cancel');
-        };
-      }
-    }
-
-    return $modal.open(tempModalDefaults).result;
-  };
-}]);
-
-boardApplication.run(['$rootScope', '$http', 'AclService', function($rootScope, $http, AclService) {
+boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', function($rootScope, $http, AclService, AdvancedAcl) {
   // TEST PURPOSES
   if(false) {
     localStorage.removeItem('signed_in');
@@ -705,21 +555,17 @@ boardApplication.run(['$rootScope', '$http', 'AclService', function($rootScope, 
   $http.get(layer_path + 'permissions')
     .error(function(data) {}) // How should we proceed if no data?
     .success(function(data) {
-      //console.log(data);
       // Proccess de roles and permissions iteratively
       for(var r in data.rules) {
         aclData[r] = data.rules[r].permissions;
-        //aclData[r] = [];
         var current = data.rules[r];
-        //console.log(current);
         while(current.parents.length > 0) {
-          //console.log(current);
           aclData[r] = aclData[r].concat(data.rules[current.parents[0]].permissions);
           current = data.rules[current.parents[0]];
         }
       }
-      //console.log('ACL', aclData);
+      AclService.setAbilities(aclData);
     });
-  AclService.setAbilities(aclData);
   $rootScope.can = AclService.can;
+  $rootScope.aacl = AdvancedAcl;
 }]);

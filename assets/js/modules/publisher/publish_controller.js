@@ -1,4 +1,5 @@
-var PublishController = function($scope, $routeParams, $http, Category, Part, Upload) {
+var PublishController = ['$scope', '$routeParams', '$http', 'Category', 'Part', 'Upload',
+  function($scope, $routeParams, $http, Category, Part, Upload) {
 
   $scope.publishing = true;
   $scope.message = "";
@@ -290,4 +291,4 @@ var PublishController = function($scope, $routeParams, $http, Category, Part, Up
     }
     $scope.publishing = false;
   });
-};
+}];

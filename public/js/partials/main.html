@@ -101,7 +101,7 @@
                 </li>
                 <li data-id="{{ post.id }}" class="discussion-summary" ng-class="{'active': post.id === $parent.activePostId, 'unread': post.unread == true}" ng-repeat="post in posts | orderBy:['pinned','-created_at']" ng-cloak>
                   <div>
-                    <a href="/u/{{ post.author.username }}/{{ post.author.id }}" title class="author" data-original-title="Escrito por {{ post.author.username }} hace {{ post.created_at | timeago }}">
+                    <a href="/u/{{ post.author.username }}/{{ post.author.id }}" class="author" title="Escrito por {{ post.author.username }}">
                       <span class="avatar" title="{{ post.author.username }}" ng-if="!post.author.image">{{ post.author.username[0] }}</span>
                       <img class="avatar" ng-src="{{ post.author.image }}" alt="{{ post.author.username }}" ng-if="post.author.image">
                     </a>
@@ -110,7 +110,7 @@
                       <ul class="info">
                         <li class="">
                           <span>
-                            Escrito por <span class="username">{{ post.author.username }}</span> <time>hace {{ post.created_at | timeago }}</time>
+                            Escrito por <span class="username">{{ post.author.username }}</span> <time time-ago from-time='{{ post.created_at }}'></time>
                           </span>
                         </li>
                       </ul>
@@ -135,7 +135,7 @@
               <ul class="discussions-list" ng-if="!resolving.categories && viewing.top_posts" adjust-height>
                 <li data-id="{{ post.id }}" class="discussion-summary" ng-class="{'active': post.id === $parent.activePostId, 'unread': post.unread == true}" ng-repeat="post in top_posts" ng-cloak>
                   <div>
-                    <a href="/u/{{ post.author.username }}/{{ post.author.id }}" title class="author" data-original-title="Escrito por {{ post.author.username }} hace {{ post.created_at | timeago }}">
+                    <a href="/u/{{ post.author.username }}/{{ post.author.id }}" class="author" title="Escrito por {{ post.author.username }}">
                       <span class="avatar" title="{{ post.author.username }}" ng-if="!post.author.image">{{ post.author.username[0] }}</span>
                       <img class="avatar" ng-src="{{ post.author.image }}" alt="{{ post.author.username }}" ng-if="post.author.image">
                     </a>
@@ -144,7 +144,7 @@
                       <ul class="info">
                         <li class="">
                           <span>
-                            Escrito por <span class="username">{{ post.author.username }}</span> <time>hace {{ post.created_at | timeago }}</time>
+                            Escrito por <span class="username">{{ post.author.username }}</span> <time time-ago from-time="{{ post.created_at}}"></time>
                           </span>
                         </li>
                       </ul>
@@ -270,23 +270,23 @@
 
               <div class="discussion-posts">
                 <div class="float-actions text-right">
-                  <div class="btn-group" ng-if="(can('edit-own-posts') && post.author.id === user.info.id)" dropdown>
-                    <button type="button" class="btn btn-link btn-sm" dropdown-toggle>
+                  <div class="btn-group" ng-if="aacl.can('delete', 'posts', user.info, post.author.id, post.category.id)" dropdown>
+                    <button type="button" class="button button-icon button-flat" dropdown-toggle>
                       <i class="fa fa-pencil"></i>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-right">
-                      <li ng-if="false">
-                        <a href="" ng-if="(can('edit-own-posts') && post.author.id === user.info.id)" ng-click="editCommentShow(comment)"><i class="fa fa-pencil"></i> Editar publicación</a>
+                      <li>
+                        <a href="/p/{{post.slug}}/{{post.id}}/edit" ng-if="aacl.can('edit', 'posts', user.info, post.author.id, post.category.id)" ng-click=""><i class="fa fa-pencil"></i> Editar publicación</a>
                       </li>
                       <li>
-                        <a href="" ng-if="(can('delete-own-posts') && post.author.id === user.info.id)" ng-click="deletePost()"><i class="fa fa-trash-o"></i> Eliminar publicación</a>
+                        <a href="" ng-if="aacl.can('delete', 'posts', user.info, post.author.id, post.category.id)" ng-click="deletePost()"><i class="fa fa-trash-o"></i> Eliminar publicación</a>
                       </li>
                     </ul>
                   </div>
                 </div>
 
                 <h2 class="discussion-title">{{ post.title }}</h2>
-                <span class="label label-default label-date">Escrito hace {{ post.created_at | timeago }}</span>
+                <span class="label label-default label-date">Escrito {{ post.created_at | timeAgo }}</span>
 
                 <div class="content" ng-if="post.type !== 'recommendations'" marked="post.content_final"></div>
 
@@ -436,16 +436,16 @@
                 <div class="comments">
                   <div class="comment" data-number="{{ comment.position }}" ng-repeat="comment in (post.comments.set | orderBy:'position')" ng-class="{editing: comment.editing}">
                     <div class="float-actions text-right">
-                      <div class="btn-group" ng-if="(can('edit-own-comments') && comment.author.id === user.info.id)" dropdown>
-                        <button type="button" class="btn btn-link btn-sm" ng-hide="comment.editing" dropdown-toggle>
+                      <div class="btn-group" ng-if="aacl.can('edit', 'comments', user.info, comment.author.id, post.category.id)" dropdown>
+                        <button type="button" class="button button-icon button-flat" ng-hide="comment.editing" dropdown-toggle>
                           <i class="fa fa-pencil"></i>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-right">
                           <li>
-                            <a href="" ng-class="{disabled: comment.editing}" ng-if="(can('edit-own-comments') && comment.author.id === user.info.id)" ng-click="editCommentShow(comment)"><i class="fa fa-pencil"></i> Editar comentario</a>
+                            <a href="" ng-class="{disabled: comment.editing}" ng-if="aacl.can('edit', 'comments', user.info, comment.author.id, post.category.id)" ng-click="editCommentShow(comment)"><i class="fa fa-pencil"></i> Editar comentario</a>
                           </li>
                           <li>
-                            <a href="" ng-class="{disabled: comment.editing}" ng-if="(can('delete-own-comments') && comment.author.id === user.info.id)" ng-click="deleteComment(comment)"><i class="fa fa-trash-o"></i> Eliminar comentario</a>
+                            <a href="" ng-class="{disabled: comment.editing}" ng-if="aacl.can('delete', 'comments', user.info, comment.author.id, post.category.id)" ng-click="deleteComment(comment)"><i class="fa fa-trash-o"></i> Eliminar comentario</a>
                           </li>
                         </ul>
                       </div>
@@ -459,43 +459,47 @@
                         <a href="/u/{{ comment.author.username }}/{{ comment.author.id }}" title="Perfil de {{ comment.author.username }}">
                           <strong>{{ comment.author.username }}</strong>
                         </a>
-                        <span class="level">&#8226; {{ misc.gaming.rules[comment.author.level].name }}</span>
-                        <ul class="role-labels" ng-if="comment.author.roles.length > 0">
-                          <li ng-repeat="role in comment.author.roles" ng-if="role.name !== 'user'">
-                            <span class="label label-default" ng-class="role.name">{{role.name}}</span>
-                          </li>
-                        </ul>
-                        <div>{{ comment.author.description }}</div>
+                        <span class="date dropdown" dropdown auto-close="outsideClick" ng-if="!comment.editing">
+                          <a href="" class="dropdown-toggle" dropdown-toggle>
+                            <time time-ago from-time='{{ comment.created_at}}'></time>
+                          </a>
+                          <div class="dropdown-menu post-meta">
+                            <span class="number">Comentario #{{ 1 + comment.position }}</span>
+                            <span class="time">
+                              <time datetime="{{ comment.created_at }}">
+                                publicado el {{ comment.created_at | date_at}}
+                              </time>
+                            </span>
+                            <input class="form-control permalink" value="http://spartangeek.com/p/{{ post.slug }}/{{ post.id }}/{{ comment.position }}">
+                          </div>
+                        </span>
+
+                        <div>
+                          <span class="level">{{ misc.gaming.rules[comment.author.level].name }} &#8226;</span> {{ comment.author.description }}
+                          <ul class="role-labels" ng-if="comment.author.roles.length > 0">
+                            <li ng-repeat="role in comment.author.roles" ng-if="role.name !== 'user'">
+                              <span class="label label-default" ng-class="role.name">{{role.name}}</span>
+                            </li>
+                          </ul>
+                        </div>
                       </div>
                     </div>
                     <div class="content" markedsg="comment.content_final" ng-if="!comment.editing"></div>
-                    <span class="date dropdown" dropdown auto-close="outsideClick" ng-if="!comment.editing">
-                      <a href="" class="dropdown-toggle" dropdown-toggle>
-                        <time pubdate="" datetime="{{ comment.created_at }}" title="{{ comment.created_at | date_at}}">Escrito hace {{ comment.created_at | timeago}}</time>
-                      </a>
-                      <div class="dropdown-menu post-meta">
-                        <span class="number">Comentario #{{ 1 + comment.position }}</span>
-                        <span class="time">
-                          <time pubdate="" datetime="{{ comment.created_at }}"> publicado el {{ comment.created_at | date_at}}</time>
-                        </span>
-                        <input class="form-control permalink" value="http://spartangeek.com/p/{{ post.slug }}/{{ post.id }}/{{ comment.position }}">
-                      </div>
-                    </span>
-                    <div class="actions" ng-if="user.isLogged && !comment.editing">
+
+                    <div class="actions-count text-right">
+                      <span ng-if="comment.votes.up > 0">A {{ comment.votes.up }} {{comment.votes.up == 1 ? 'persona le gusta':'personas les gusta'}} este comentario</span>
+                      <span ng-if="comment.votes.up > 0 && comment.votes.down > 0"> y </span>
+                      <span ng-if="comment.votes.down > 0">{{ comment.votes.down }} {{comment.votes.down == 1 ? 'persona piensa':'personas piensan'}} que esto apesta</span>
+                    </div>
+                    <div class="actions text-right" ng-if="user.isLogged && !comment.editing">
                       <ul>
-                        <li ng-if="comment.votes.up > 0 && (comment.liked != -1 || comment.author.id == user.info.id)">
-                          <span>A {{ comment.votes.up }} {{comment.votes.up==1?'persona le gusta':'personas les gusta'}} este comentario</span>
-                        <li>
-                        <li ng-if="comment.votes.down > 0 && (comment.liked == -1 || comment.author.id == user.info.id)">
-                          <span>{{ comment.votes.down }} {{comment.votes.down==1?'persona piensa':'personas piensan'}} que esto apesta</span>
-                        <li>
                         <li ng-if="comment.liked != -1 && comment.author.id != user.info.id && user.gaming.tribute > 0">
                           <a href="" ng-click="comment_vote(post.id, comment, 'up')" ng-class="{'liked': comment.liked == 1}"><i class="sgi gray"></i> Me gusta</a>
                         </li>
                         <li ng-if="comment.liked != 1 && comment.author.id != user.info.id && user.gaming.shit > 0">
                           <a href="" ng-click="comment_vote(post.id, comment, 'down')" ng-class="{'hated': comment.liked == -1}"><i class="sgi gray shit"></i> Esto apesta</a>
                         </li>
-                        <li ng-if="comment.author.id != user.info.id">
+                        <li ng-if="comment.author.id != user.info.id && !post.comments_blocked">
                           <a href="" ng-click="reply_to(comment.author.username, comment.position)"><i class="fa fa-reply"></i> Responder</a>
                         </li>
                       </ul>

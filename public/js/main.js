@@ -57,35 +57,6 @@ directives.directive('adjustHeightChat', function($window, $document, $timeout) 
   };
 });
 
-directives.directive('adjustHeightFeed', function($window, $document) {
-  return {
-    restrict: 'A',
-    link: function(scope, element, attrs) {
-      scope.calculate = function() {
-        var height = $($window).height();
-        var top = $(element).offset().top;
-        top = 106;
-        var tagsHeight = jQuery('.segments').outerHeight();
-        var neededHeight = height - top - tagsHeight;
-        //console.log(top, height, tagsHeight, neededHeight, element);
-
-        $(element).css('min-height', neededHeight);
-        $(element).css('height', neededHeight);
-      };
-      //scope.calculate();
-
-      $window.addEventListener('resize', function() {
-        scope.calculate();
-      });
-
-      // Listen for possible container size changes
-      scope.$on('changedContainers', function() {
-        scope.calculate();
-      });
-    }
-  };
-});
-
 directives.directive('scrollMe', function() {
   return {
     restrict: 'A',
@@ -93,6 +64,7 @@ directives.directive('scrollMe', function() {
       trigger: '&scrollMe'
     },
     link: function(scope, element, attrs) {
+      // If space is bigger, load more items
       element.on('scroll', function() {
         if($(this).scrollTop() + $(this).innerHeight() >= this.scrollHeight) {
           scope.$apply(function() {
@@ -119,7 +91,7 @@ directives.directive('myRefresh', ['$location', function($location) {
         }
       });
     }
-  }
+  };
 }]);
 
 directives.directive('markedsg', function () {
@@ -139,7 +111,7 @@ directives.directive('markedsg', function () {
       function unindent(text) {
         if (!text) return text;
 
-        var lines  = text
+        var lines = text
           .replace(/\t/g, '  ')
           .split(/\r?\n/);
 
@@ -161,11 +133,12 @@ directives.directive('markedsg', function () {
 
       function set(text) {
         text = unindent(text || '');
+        // Parse mentions links
         var links = $('<div>' + text + '</div>');
         links.find('a.user-mention').each(function( index ) {
           $(this).attr("href", "/u/"+ $(this).data('username') +"/"+ $(this).data('id'));
           if($(this).data('comment') != undefined) {
-            $(this).before('<i class="fa fa-reply comment-response" tooltip="En respuesta a"></i>')
+            $(this).before('<i class="fa fa-reply comment-response"></i>')
           }
         });
         text = links.html();
@@ -189,94 +162,6 @@ filters.filter('date_at', function() {
 	};
 });
 
-filters.filter('timeago', function () {
-  return function(input, uppercase) {
-
-    // Start time from unix php time
-    var date = new Date(input);
-    var now  = new Date();
-
-    // Diff
-    var diff = now.getTime() - date.getTime();
-    var diff = Math.abs(diff / 1000);
-
-    // Just seconds
-    if (diff < 60) {
-      if(Math.floor(diff) == 1 || Math.floor(diff) == 0)
-        return '1 segundo'
-      else
-        return Math.floor(diff) + ' segundos';
-    }
-
-    // Just minutes
-    if (diff >= 60 && diff < 3600)
-    {
-      var minutes = diff / 60;
-      var minutes = Math.floor(minutes);
-
-      if(minutes == 1)
-        return '1 minuto'
-      else
-        return minutes + ' minutos';
-    }
-
-    // Just hours
-    if (diff >= 3600 && diff < (86400))
-    {
-      var hours = diff / 3600;
-      var hours = Math.floor(hours);
-
-      if(hours == 1)
-        return '1 hora'
-      else
-        return hours + ' horas';
-    }
-
-    // Days
-    if (diff >= 86400 && diff < 2592000)
-    {
-      var days = diff / 86400;
-      var days = Math.floor(days);
-
-      if(days == 1)
-        return '1 día'
-      else
-        return days + ' días';
-    }
-
-    // Months
-    if (diff >= 2592000 && diff < 31104000)
-    {
-      var months = diff / 2592000;
-      var months = Math.floor(months);
-
-      if(months == 1)
-        return '1 mes'
-      else
-        return months + ' meses';
-    }
-
-    // Years
-    if (diff >= 31104000)
-    {
-      var years = diff / 31104000;
-      var years = Math.floor(years);
-
-      if(years == 1)
-        return '1 año'
-      else
-        return years + 'años';
-    }
-  };
-});
-
-filters.filter('toArray', function() { return function(obj) {
-  if (!(obj instanceof Object)) return obj;
-  return _.map(obj, function(val, key) {
-    return Object.defineProperty(val, '$key', {__proto__: null, value: key});
-  });
-}});
-
 var activeReader = angular.module('activeReader', []);
 
 activeReader.factory('Bridge', function($rootScope) {
@@ -287,6 +172,85 @@ activeReader.factory('Bridge', function($rootScope) {
 	};
 	return bridge;
 });
+
+'use strict';
+
+var services = angular.module('sg.services', []);
+
+services.factory('AdvancedAcl', ['$rootScope', function($rootScope) {
+  return {
+    can: function(action, object, user_info, author_id, category_id) {
+      var can = false;
+
+      // If own object
+      can = can || ( $rootScope.can(action + '-own-' + object) && user_info.id === author_id );
+
+      // Or some category moderator
+      var category_owner = false;
+      if(user_info != null) {
+        if('categories' in user_info.roles[0]) {
+          category_owner = (user_info.roles[0].categories).indexOf(category_id) > -1;
+        }
+      }
+      can = can || ( $rootScope.can(action + '-category-' + object) && category_owner);
+
+      // Or supreme power
+      can = can || $rootScope.can(action + '-board-' + object);
+
+      return can;
+    }
+  };
+}]);
+
+services.service('modalService', ['$modal', function ($modal) {
+  var modalDefaults = {
+    backdrop: true,
+    keyboard: true,
+    modalFade: true,
+    windowClass: 'modal-confirm',
+    size: 'sm',
+    templateUrl: '/js/partials/modal.html'
+  };
+
+  var modalOptions = {
+    closeButtonText: 'Cerrar',
+    actionButtonText: 'Aceptar',
+    headerText: '¿Estás seguro?',
+    bodyText: '¿Quieres realizar esta acción?'
+  };
+
+  this.showModal = function (customModalDefaults, customModalOptions) {
+    if (!customModalDefaults) customModalDefaults = {};
+    customModalDefaults.backdrop = 'static';
+    return this.show(customModalDefaults, customModalOptions);
+  };
+
+  this.show = function (customModalDefaults, customModalOptions) {
+    //Create temp objects to work with since we're in a singleton service
+    var tempModalDefaults = {};
+    var tempModalOptions = {};
+
+    //Map angular-ui modal custom defaults to modal defaults defined in service
+    angular.extend(tempModalDefaults, modalDefaults, customModalDefaults);
+
+    //Map modal.html $scope custom properties to defaults defined in service
+    angular.extend(tempModalOptions, modalOptions, customModalOptions);
+
+    if (!tempModalDefaults.controller) {
+      tempModalDefaults.controller = function ($scope, $modalInstance) {
+        $scope.modalOptions = tempModalOptions;
+        $scope.modalOptions.ok = function (result) {
+          $modalInstance.close(result);
+        };
+        $scope.modalOptions.close = function (result) {
+          $modalInstance.dismiss('cancel');
+        };
+      }
+    }
+
+    return $modal.open(tempModalDefaults).result;
+  };
+}]);
 
 /**
  * marked - a markdown parser
@@ -2845,9 +2809,189 @@ angular.module("uiSwitch",[]).directive("switch",function(){return{restrict:"AE"
 
 "use strict";angular.module("mm.acl",[]),angular.module("mm.acl").provider("AclService",[function(){function a(){var a;switch(b.storage){case"sessionStorage":a=h("sessionStorage");break;case"localStorage":a=h("localStorage");break;default:a=null}return a?(angular.extend(c,a),!0):!1}Array.prototype.indexOf||(Array.prototype.indexOf=function(a){for(var b=this.length;b--;)if(this[b]===a)return b;return-1});var b={storage:"sessionStorage",storageKey:"AclService"},c={roles:[],abilities:{}},d=function(a){return"object"==typeof c.abilities[a]},e=function(a){return d(a)?c.abilities[a]:[]},f=function(){switch(b.storage){case"sessionStorage":g("sessionStorage");break;case"localStorage":g("localStorage");break;default:return}},g=function(a){window[a].setItem(b.storageKey,JSON.stringify(c))},h=function(a){var c=window[a].getItem(b.storageKey);return c?JSON.parse(c):!1},i={};return i.resume=a,i.attachRole=function(a){-1===c.roles.indexOf(a)&&(c.roles.push(a),f())},i.detachRole=function(a){var b=c.roles.indexOf(a);b>-1&&(c.roles.splice(b,1),f())},i.flushRoles=function(){c.roles=[],f()},i.hasRole=function(a){return c.roles.indexOf(a)>-1},i.getRoles=function(){return c.roles},i.setAbilities=function(a){c.abilities=a,f()},i.addAbility=function(a,b){c.abilities[a]||(c.abilities[a]=[]),c.abilities[a].push(b),f()},i.can=function(a){for(var b,d,f=c.roles.length;f--;)if(b=c.roles[f],d=e(b),d.indexOf(a)>-1)return!0;return!1},{config:function(a){angular.extend(b,a)},resume:a,$get:function(){return i}}}]);
 
-var FeedService = function($resource){
-    return $resource(layer_path + 'feed');
-};
+/**
+ * Angular directive/filter/service for formatting date so that it displays how long ago the given time was compared to now.
+ * @version v0.2.4 - 2015-08-30
+ * @link https://github.com/yaru22/angular-timeago
+ * @author Brian Park <yaru22@gmail.com>
+ * @license MIT License, http://www.opensource.org/licenses/MIT
+ */
+/* global angular */
+'use strict';
+angular.module('yaru22.angular-timeago', []).directive('timeAgo', [
+  'timeAgo',
+  'nowTime',
+  function (timeAgo, nowTime) {
+    return {
+      scope: {
+        fromTime: '@',
+        format: '@'
+      },
+      restrict: 'EA',
+      link: function (scope, elem) {
+        var fromTime = timeAgo.parse(scope.fromTime);
+        // Track changes to time difference
+        scope.$watch(function () {
+          return nowTime() - fromTime;
+        }, function (value) {
+          angular.element(elem).text(timeAgo.inWords(value, fromTime, scope.format));
+        });
+      }
+    };
+  }
+]).factory('nowTime', [
+  '$window',
+  '$rootScope',
+  function ($window, $rootScope) {
+    var nowTime = Date.now();
+    var updateTime = function () {
+      $window.setTimeout(function () {
+        $rootScope.$apply(function () {
+          nowTime = Date.now();
+          updateTime();
+        });
+      }, 1000);
+    };
+    updateTime();
+    return function () {
+      return nowTime;
+    };
+  }
+]).factory('timeAgo', [
+  '$filter',
+  function ($filter) {
+    var service = {};
+    service.settings = {
+      refreshMillis: 60000,
+      allowFuture: false,
+      overrideLang: null,
+      fullDateAfterSeconds: null,
+      strings: {
+        'en_US': {
+          prefixAgo: null,
+          prefixFromNow: null,
+          suffixAgo: 'ago',
+          suffixFromNow: 'from now',
+          seconds: 'less than a minute',
+          minute: 'about a minute',
+          minutes: '%d minutes',
+          hour: 'about an hour',
+          hours: 'about %d hours',
+          day: 'a day',
+          days: '%d days',
+          month: 'about a month',
+          months: '%d months',
+          year: 'about a year',
+          years: '%d years',
+          numbers: []
+        },
+        'es_LA': {
+          prefixAgo: 'hace',
+          prefixFromNow: 'en',
+          suffixAgo: null,
+          suffixFromNow: null,
+          seconds: 'unos segundos',
+          minute: 'un minuto',
+          minutes: '%d minutos',
+          hour: 'una hora',
+          hours: '%d horas',
+          day: 'un d\xeda',
+          days: '%d d\xedas',
+          month: 'un mes',
+          months: '%d meses',
+          year: 'un a\xf1o',
+          years: '%d a\xf1os',
+          numbers: []
+        }
+      }
+    };
+    service.inWords = function (distanceMillis, fromTime, format, timezone) {
+      var fullDateAfterSeconds = parseInt(service.settings.fullDateAfterSeconds, 10);
+      if (!isNaN(fullDateAfterSeconds)) {
+        var fullDateAfterMillis = fullDateAfterSeconds * 1000;
+        if (distanceMillis >= 0 && fullDateAfterMillis <= distanceMillis || distanceMillis < 0 && fullDateAfterMillis >= distanceMillis) {
+          if (format) {
+            return $filter('date')(fromTime, format, timezone);
+          }
+          return fromTime;
+        }
+      }
+      var overrideLang = service.settings.overrideLang;
+      var documentLang = document.documentElement.lang;
+      var sstrings = service.settings.strings;
+      var lang, $l;
+      if (typeof sstrings[overrideLang] !== 'undefined') {
+        lang = overrideLang;
+        $l = sstrings[overrideLang];
+      } else if (typeof sstrings[documentLang] !== 'undefined') {
+        lang = documentLang;
+        $l = sstrings[documentLang];
+      } else {
+        lang = 'es_LA';
+        $l = sstrings[lang];
+      }
+      var prefix = $l.prefixAgo;
+      var suffix = $l.suffixAgo;
+      if (service.settings.allowFuture) {
+        if (distanceMillis < 0) {
+          prefix = $l.prefixFromNow;
+          suffix = $l.suffixFromNow;
+        }
+      }
+      var seconds = Math.abs(distanceMillis) / 1000;
+      var minutes = seconds / 60;
+      var hours = minutes / 60;
+      var days = hours / 24;
+      var years = days / 365;
+      function substitute(stringOrFunction, number) {
+        var string = angular.isFunction(stringOrFunction) ? stringOrFunction(number, distanceMillis) : stringOrFunction;
+        var value = $l.numbers && $l.numbers[number] || number;
+        return string.replace(/%d/i, value);
+      }
+      var words = seconds < 45 && substitute($l.seconds, Math.round(seconds)) || seconds < 90 && substitute($l.minute, 1) || minutes < 45 && substitute($l.minutes, Math.round(minutes)) || minutes < 90 && substitute($l.hour, 1) || hours < 24 && substitute($l.hours, Math.round(hours)) || hours < 42 && substitute($l.day, 1) || days < 30 && substitute($l.days, Math.round(days)) || days < 45 && substitute($l.month, 1) || days < 365 && substitute($l.months, Math.round(days / 30)) || years < 1.5 && substitute($l.year, 1) || substitute($l.years, Math.round(years));
+      var separator = $l.wordSeparator === undefined ? ' ' : $l.wordSeparator;
+
+      return [
+        prefix,
+        words,
+        suffix
+      ].join(separator).trim();
+    };
+    service.parse = function (input) {
+      if (input instanceof Date) {
+        return input;
+      } else if (angular.isNumber(input)) {
+        return new Date(input);
+      } else if (/^\d+$/.test(input)) {
+        return new Date(parseInt(input, 10));
+      } else {
+        var s = (input || '').trim();
+        s = s.replace(/\.\d+/, '');
+        // remove milliseconds
+        s = s.replace(/-/, '/').replace(/-/, '/');
+        s = s.replace(/T/, ' ').replace(/Z/, ' UTC');
+        s = s.replace(/([\+\-]\d\d)\:?(\d\d)/, ' $1$2');
+        // -04:00 -> -0400
+        return new Date(s);
+      }
+    };
+    return service;
+  }
+]).filter('timeAgo', [
+  'nowTime',
+  'timeAgo',
+  function (nowTime, timeAgo) {
+    return function (value, format, timezone) {
+      var fromTime = timeAgo.parse(value);
+      var diff = nowTime() - fromTime;
+      return timeAgo.inWords(diff, fromTime, format, timezone);
+    };
+  }
+]);
+
+var FeedService = ['$resource', function($resource) {
+  return $resource(layer_path + 'feed');
+}];
 
 // @codekit-prepend "feed_service"
 
@@ -2856,7 +3000,7 @@ var FeedModule = angular.module('feedModule', ['ngResource']);
 // Service of the feed module
 FeedModule.factory('Feed', FeedService);
 
-var CategoryService = function($resource) {
+var CategoryService = ['$resource', function($resource) {
   return $resource(layer_path + 'category/:categoryId',
     {
       categoryId: '@categoryId'
@@ -2872,11 +3016,316 @@ var CategoryService = function($resource) {
       }
     }
   );
-};
+}];
 
 var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', 'Category', 'Feed', 'Bridge', '$route', '$routeParams', '$http',
   function($scope, $rootScope, $timeout, $location, Category, Feed, Bridge, $route, $routeParams, $http) {
 
+  	$scope.categories = [];
+  	//$scope.resolving  = true;
+
+    $scope.resolving = {
+      categories: true,
+      init: false,
+      older: false,
+      newer: false,
+      loaded: false,
+    };
+
+  	$scope.category = {};
+  	$scope.posts = []; // General feed
+    $scope.top_posts = []; // Top feed
+  	//$scope.resolving_posts = true;
+    //$scope.resolving.older = false;
+  	$scope.offset = 0; // We use this to know how many posts have we loaded
+  	//$scope.previewStyle = {};
+
+    // Auxiliar variable to know what comment to show
+    $scope.view_comment = {
+      position: -1
+    };
+
+    $scope.activePostId = null;
+
+    // Flarum like composer helper vars
+    /*$scope.composer = {
+      open: false,
+      minimized: false
+    };*/
+
+    $scope.viewing = {
+      top_posts: false
+    };
+
+    $scope.toggleCategories = function() {
+      $scope.status.show_categories = !$scope.status.show_categories;
+      if(!$scope.status.show_categories) {
+        $scope.startupFeed($scope.category);
+      }
+      $timeout(function() {
+        $scope.$broadcast('changedContainers');
+      }, 50);
+    }
+
+    $scope.appendCategories = function(data, mark_as_unread) {
+      mark_as_unread = typeof mark_as_unread !== 'undefined' ? mark_as_unread : false;
+      for(p in data) {
+        for(c in $scope.categories) {
+          for(s in $scope.categories[c].subcategories) {
+            if (data[p].category == $scope.categories[c].subcategories[s].id) {
+              data[p].category = {
+                name: $scope.categories[c].subcategories[s].name,
+                color: $scope.categories[c].color,
+                slug: $scope.categories[c].subcategories[s].slug
+              }
+              break;
+            }
+          }
+        }
+        if(mark_as_unread) {
+          data[p].unread = true;
+        }
+      }
+    };
+
+    $scope.getTopFeed = function() {
+      $scope.resolving_posts = true;
+      $scope.top_posts = [];
+      var date = new Date();
+
+      var request_vars = {
+        limit: 30,
+        offset: 0,
+        relevant: date.getFullYear() + '-' + ("0" + (date.getMonth() + 1)).slice(-2) + '-' + ("0" + date.getDate()).slice(-2)
+      };
+
+      Feed.get(request_vars, function(response) {
+        $scope.appendCategories(response.feed);
+
+        $scope.top_posts = response.feed;
+        $scope.page.title = "SpartanGeek.com | Comunidad de tecnología, geeks y más";
+        $scope.page.description = "Creamos el mejor contenido para Geeks, y lo hacemos con pasión e irreverencia de Spartanos.";
+        $scope.resolving_posts = false;
+      });
+    };
+
+  	$scope.startupFeed = function(category) {
+  		$scope.resolving_posts = true;
+      $scope.posts = [];
+      $scope.resolving.loaded = false;
+
+  		Feed.get({limit: 10, offset: 0, category: category.id}, function(data) {
+
+        // For logged users, sync the feed position for new messages notifications
+        if($scope.user.isLogged) {
+          $scope.status.pending.$value = 0;
+          // For sync purposes
+          if(category.slug == null) {
+            $scope.status.viewing.$value = 'all';
+          } else {
+            $scope.status.viewing.$value = category.id;
+          }
+        }
+
+        if(data.feed.length > 0) {
+          $scope.appendCategories(data.feed);
+          $scope.status.newer_post_date = get_newer_date(data.feed);
+          $scope.posts = data.feed;
+        }
+
+        // Title... ToDo: Use a service to update this
+        if(category.slug != null) {
+          $scope.page.title = "SpartanGeek.com | " + category.name;
+          $scope.page.description = category.description;
+        } else {
+          $scope.page.title = "SpartanGeek.com | Comunidad de tecnología, geeks y más";
+          $scope.page.description = "Creamos el mejor contenido para Geeks, y lo hacemos con pasión e irreverencia de Spartanos.";
+        }
+
+  			$scope.resolving_posts = false;
+  			$scope.offset = data.feed.length;
+        $scope.resolving.loaded = true;
+
+        // Category track
+        mixpanel.track("View category", {offset: 0, category: category.slug});
+  		});
+  	};
+
+  	$scope.walkFeed = function() {
+      //console.log($scope.resolving.older);
+      if(!$scope.resolving.older) {
+        $scope.resolving.older = true;
+        var pending = $scope.status.pending.$value==undefined?$scope.status.pending:$scope.status.pending.$value;
+        //console.log($scope.offset, pending);
+    		Feed.get({limit: 10, offset: $scope.offset + pending, category: $scope.category.slug}, function(data) {
+          $scope.appendCategories(data.feed);
+    			$scope.posts = $scope.posts.concat(data.feed);
+    			$scope.offset = $scope.offset + data.feed.length;
+          $scope.resolving.older = false;
+    		});
+
+        mixpanel.track("View feed", {offset: $scope.offset, category: $scope.category.slug});
+    		ga('send', 'pageview', '/feed/' + $scope.category.slug);
+      } else {
+        console.log("FeedGet already running...");
+      }
+  	};
+
+    var get_newer_date = function(posts) {
+      var newer_d = new Date(posts[0].created_at);
+      var newer_i = 0;
+      for(var i = 1; i < posts.length; i++) {
+        var test = new Date(posts[i].created_at);
+        if(newer_d < test) {
+          newer_d = test;
+          newer_i = i;
+        }
+      }
+      return posts[newer_i].created_at;
+    }
+
+    $scope.get_newer = function() {
+      if(!$scope.resolving.newer) {
+        $scope.resolving.newer = true;
+        var pending = $scope.status.pending.$value;
+
+        Feed.get({limit: pending, before: $scope.status.newer_post_date, category: $scope.category.id}, function(data) {
+          if(data.feed.length > 0) {
+            // append and mark as unread
+            $scope.appendCategories(data.feed, true);
+            // return to feed if in top posts
+            $scope.viewing.top_posts = false;
+
+            // Visual helper in posts
+            $timeout(function() {
+              for(p in data.feed) {
+                data.feed[p].unread = false;
+              }
+            }, 1000);
+
+            $scope.status.newer_post_date = get_newer_date(data.feed);
+
+            $scope.posts = data.feed.concat($scope.posts);
+            $scope.offset = $scope.offset + pending;
+          }
+          if($scope.user.isLogged) {
+            $scope.status.pending.$value = 0;
+          }
+          $scope.resolving.newer = false;
+          // return to the top of the feed
+          $('.discussions-list').animate({ scrollTop: 0}, 100);
+        });
+
+        mixpanel.track("Load more clicked")
+        ga('send', 'pageview', '/feed/' + $scope.category.slug);
+      } else {
+        console.log("FeedGet already running...");
+      }
+    };
+
+  	$scope.turnCategory = function( category ) {
+  		$scope.category = category;
+  		$scope.startupFeed(category);
+  		//$scope.previewStyle = {'background-image': 'url(/images/boards/'+$scope.category.slug+'.png)'};
+
+  		// Reset counters if exists though
+  		//$scope.category.recent = 0;
+
+      mixpanel.track("View category", {category: $scope.category.id});
+  		ga('send', 'pageview', '/category/' + $scope.category.slug);
+  	};
+
+    /*
+     * Toggle individual category switch, if error, invert switch
+     */
+    $scope.toggleSubscription = function(category) {
+      if(category.selected) {
+        $http.put(layer_path + 'category/subscription/' + category.id)
+          .error(function(data) {
+            category.selected = false;
+          })
+          .success(function(data) {
+            if($scope.user.info.categories.indexOf(category.id) == -1) {
+              $scope.user.info.categories.push(category.id);
+            }
+          });
+      } else {
+        $http.delete(layer_path + 'category/subscription/' + category.id)
+          .error(function(data) {
+            category.selected = true;
+          })
+          .success(function(data) {
+            if($scope.user.info.categories.indexOf(category.id) > -1) {
+              $scope.user.info.categories.splice($scope.user.info.categories.indexOf(category.id),1);
+            }
+          });
+      }
+    };
+
+    /*
+     * Toggle all upper switch
+     */
+    $scope.subscribeToAll = function() {
+      for(c in $scope.categories) {
+        for(s in $scope.categories[c].subcategories) {
+          if(!$scope.categories[c].subcategories[s].selected) {
+            $scope.categories[c].subcategories[s].selected = true;
+            $scope.toggleSubscription($scope.categories[c].subcategories[s]);
+          }
+        }
+      }
+    }
+
+  	$scope.viewPost = function( post ) {
+  		$scope.activePostId = post.id;
+      $scope.status.post_selected = true;
+  		Bridge.changePost(post);
+
+      mixpanel.track("View post", {id: post.id, category: $scope.category.id});
+  		ga('send', 'pageview', '/post/' + $scope.category.slug + '/' + post.id);
+  	};
+
+    $scope.viewPostID = function( postId, slug ) {
+      $scope.activePostId = postId;
+      $scope.status.post_selected = true;
+      Bridge.changePost({id: postId, slug: slug, name: ""});
+
+      mixpanel.track("View post", {id: postId, category: $scope.category.id});
+      ga('send', 'pageview', '/post/' + slug + '/' + postId);
+    };
+
+    $scope.reloadPost = function() {
+      $scope.viewPostID($scope.activePostId, "");
+    }
+
+    $scope.matchCategories = function() {
+      // For loged users, we match their personal feed current values
+      if($scope.user.isLogged) {
+        if ($scope.user.info.categories) {
+          for (var i in $scope.categories) {
+            for(var j in $scope.categories[i].subcategories) {
+              if ($scope.user.info.categories.indexOf($scope.categories[i].subcategories[j].id) > -1) {
+                $scope.categories[i].subcategories[j].selected = true;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    $scope.$on('userLogged', function(e) {
+      $scope.matchCategories();
+    });
+
+    $scope.$on('reloadPost', function(e) {
+      $scope.reloadPost();
+    });
+
+    $scope.$on('postDeleted', function(e) {
+      // Doing...
+    });
+
+    // Hack, so we don't have to reload the controller if the route uses the same controller
     var lastRoute = $route.current;
     $scope.$on('$locationChangeSuccess', function(event) {
       if($location.path() !== '/') {
@@ -2927,333 +3376,6 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
         $scope.status.post_selected = false;
       }
     });
-
-  	$scope.categories = [];
-  	$scope.resolving  = true;
-
-    $scope.resolving = {
-      categories: true,
-      init: false,
-      older: false,
-      newer: false,
-      loaded: false,
-    };
-
-  	$scope.category = {};
-  	$scope.posts = [];
-    $scope.top_posts = [];
-  	$scope.resolving_posts = true;
-    $scope.resolving.older = false;
-  	$scope.offset = 0;
-  	$scope.previewStyle = {};
-
-    $scope.view_comment = {
-      position: -1
-    };
-
-    $scope.activePostId = null;
-
-    $scope.composer = {
-      open: false,
-      minimized: false
-    };
-
-    $scope.viewing = {
-      top_posts: false
-    };
-
-    $scope.toggleCategories = function() {
-      $scope.status.show_categories = !$scope.status.show_categories;
-      if(!$scope.status.show_categories) {
-        $scope.startupFeed($scope.category);
-      }
-      $timeout(function() {
-        $scope.$broadcast('changedContainers');
-      }, 50);
-    }
-
-    $scope.getTopFeed = function() {
-      $scope.resolving_posts = true;
-      $scope.top_posts = [];
-      var date = new Date();
-
-      var request_vars = {
-        limit: 30,
-        offset: 0,
-        relevant: date.getFullYear() + '-' + ("0" + (date.getMonth() + 1)).slice(-2) + '-' + ("0" + date.getDate()).slice(-2)
-      };
-
-      Feed.get(request_vars, function(response) {
-        for(p in response.feed) {
-          for(c in $scope.categories) {
-            for(s in $scope.categories[c].subcategories) {
-              if (response.feed[p].category == $scope.categories[c].subcategories[s].id) {
-                response.feed[p].category = {
-                  name: $scope.categories[c].subcategories[s].name,
-                  color: $scope.categories[c].color,
-                  slug: $scope.categories[c].subcategories[s].slug
-                }
-                break;
-              }
-            }
-          }
-        }
-
-        $scope.page.title = "SpartanGeek.com | Comunidad de tecnología, geeks y más";
-        $scope.page.description = "Creamos el mejor contenido para Geeks, y lo hacemos con pasión e irreverencia de Spartanos.";
-
-        $scope.top_posts = response.feed;
-        $scope.resolving_posts = false;
-      });
-    };
-
-  	$scope.startupFeed = function(category) {
-  		$scope.resolving_posts = true;
-      $scope.posts = [];
-      $scope.resolving.loaded = false;
-
-  		Feed.get({limit: 10, offset: 0, category: category.id}, function(data) {
-        $scope.status.pending.$value = 0;
-        // For sync purposes
-        if(category.slug == null) {
-          $scope.status.viewing.$value = 'all';
-        } else {
-          $scope.status.viewing.$value = category.id;
-        }
-
-        if(data.feed.length > 0) {
-          for(p in data.feed) {
-            for(c in $scope.categories) {
-              for(s in $scope.categories[c].subcategories) {
-                if (data.feed[p].category == $scope.categories[c].subcategories[s].id) {
-                  data.feed[p].category = {
-                    name: $scope.categories[c].subcategories[s].name,
-                    color: $scope.categories[c].color,
-                    slug: $scope.categories[c].subcategories[s].slug
-                  }
-                  break;
-                }
-              }
-            }
-          }
-          $scope.status.newer_post_date = get_newer_date(data.feed);
-          $scope.posts = data.feed;
-        }
-
-        if(category.slug != null) {
-          $scope.page.title = "SpartanGeek.com | " + category.name;
-          $scope.page.description = category.description;
-        } else {
-          $scope.page.title = "SpartanGeek.com | Comunidad de tecnología, geeks y más";
-          $scope.page.description = "Creamos el mejor contenido para Geeks, y lo hacemos con pasión e irreverencia de Spartanos.";
-        }
-
-  			$scope.resolving_posts = false;
-  			$scope.offset = 10;
-        $scope.resolving.loaded = true;
-
-        // Category track
-        mixpanel.track("View category", {offset: 0, category: category.slug});
-  		});
-  	};
-
-  	$scope.walkFeed = function() {
-      //console.log($scope.resolving.older);
-      if(!$scope.resolving.older) {
-        $scope.resolving.older = true;
-        var pending = $scope.status.pending.$value==undefined?$scope.status.pending:$scope.status.pending.$value;
-        //console.log($scope.offset, pending);
-    		Feed.get({limit: 10, offset: $scope.offset + pending, category: $scope.category.slug}, function(data) {
-          for(p in data.feed) {
-            for(c in $scope.categories) {
-              for(s in $scope.categories[c].subcategories) {
-                if (data.feed[p].category == $scope.categories[c].subcategories[s].id) {
-                  data.feed[p].category = {
-                    name: $scope.categories[c].subcategories[s].name,
-                    color: $scope.categories[c].color,
-                    slug: $scope.categories[c].subcategories[s].slug
-                  }
-                  break;
-                }
-              }
-            }
-          }
-    			$scope.posts = $scope.posts.concat(data.feed);
-    			$scope.offset = $scope.offset + 10;
-          $scope.resolving.older = false;
-    		});
-
-        mixpanel.track("View feed", {offset: $scope.offset, category: $scope.category.slug});
-    		ga('send', 'pageview', '/feed/' + $scope.category.slug);
-      } else {
-        console.log("FeedGet already running...");
-      }
-  	};
-
-    var get_newer_date = function(posts) {
-      var newer_d = new Date(posts[0].created_at);
-      var newer_i = 0;
-      for(var i = 1; i < posts.length; i++) {
-        var test = new Date(posts[i].created_at);
-        if(newer_d < test) {
-          newer_d = test;
-          newer_i = i;
-        }
-      }
-      return posts[newer_i].created_at;
-    }
-
-    $scope.get_newer = function() {
-      if(!$scope.resolving.newer) {
-        $scope.resolving.newer = true;
-        var pending = $scope.status.pending.$value;
-
-        Feed.get({limit: pending, before: $scope.status.newer_post_date, category: $scope.category.id}, function(data) {
-          if(data.feed.length > 0) {
-            for(p in data.feed) {
-              for(c in $scope.categories) {
-                for(s in $scope.categories[c].subcategories) {
-                  if (data.feed[p].category == $scope.categories[c].subcategories[s].id) {
-                    data.feed[p].category = {
-                      name: $scope.categories[c].subcategories[s].name,
-                      color: $scope.categories[c].color,
-                      slug: $scope.categories[c].subcategories[s].slug
-                    }
-                    break;
-                  }
-                }
-              }
-              data.feed[p].unread = true;
-            }
-            // return to feed if in top posts
-            $scope.viewing.top_posts = false;
-
-            // Visual helper in posts
-            $timeout(function() {
-              for(p in data.feed) {
-                data.feed[p].unread = false;
-              }
-            }, 800);
-
-            $scope.status.newer_post_date = get_newer_date(data.feed);
-
-            $scope.posts = data.feed.concat($scope.posts);
-            $scope.offset = $scope.offset + pending;
-          }
-
-          $scope.status.pending.$value = 0;
-          $scope.resolving.newer = false;
-          $('.discussions-list').animate({ scrollTop: 0}, 100);
-        });
-
-        mixpanel.track("Load more clicked")
-        ga('send', 'pageview', '/feed/' + $scope.category.slug);
-      } else {
-        console.log("FeedGet already running...");
-      }
-    };
-
-  	$scope.turnCategory = function(category) {
-  		$scope.category = category;
-  		$scope.startupFeed(category);
-  		$scope.previewStyle = {'background-image': 'url(/images/boards/'+$scope.category.slug+'.png)'};
-
-  		// Reset counters if exists though
-  		$scope.category.recent = 0;
-
-      mixpanel.track("View category", {category: $scope.category.id});
-  		ga('send', 'pageview', '/category/' + $scope.category.slug);
-  	};
-
-    $scope.toggleSubscription = function(category) {
-      if(category.selected) {
-        $http.put(layer_path + 'category/subscription/' + category.id)
-          .error(function(data) {
-            category.selected = false;
-          })
-          .success(function(data) {
-            if($scope.user.info.categories.indexOf(category.id) == -1) {
-              $scope.user.info.categories.push(category.id);
-            }
-          });
-      } else {
-        $http.delete(layer_path + 'category/subscription/' + category.id)
-          .error(function(data) {
-            category.selected = true;
-          })
-          .success(function(data) {
-            if($scope.user.info.categories.indexOf(category.id) > -1) {
-              $scope.user.info.categories.splice($scope.user.info.categories.indexOf(category.id),1);
-            }
-          });
-      }
-    };
-    $scope.subscribeToAll = function() {
-      for(c in $scope.categories) {
-        for(s in $scope.categories[c].subcategories) {
-          if(!$scope.categories[c].subcategories[s].selected) {
-            $scope.categories[c].subcategories[s].selected = true;
-            $scope.toggleSubscription($scope.categories[c].subcategories[s]);
-          }
-        }
-      }
-    }
-
-  	$scope.viewPost = function(post) {
-  		$scope.activePostId = post.id;
-      $scope.status.post_selected = true;
-  		Bridge.changePost(post);
-      //$(window).scrollTop(0);
-
-      mixpanel.track("View post", {id: post.id, category: $scope.category.id});
-  		ga('send', 'pageview', '/post/' + $scope.category.slug + '/' + post.id);
-  	};
-
-    $scope.viewPostID = function(postId, slug) {
-      $scope.activePostId = postId;
-      $scope.status.post_selected = true;
-      Bridge.changePost({id: postId, slug: slug, name: ""});
-
-      mixpanel.track("View post", {id: postId, category: $scope.category.id});
-      ga('send', 'pageview', '/post/' + slug + '/' + postId);
-    };
-
-    $scope.reloadPost = function() {
-      $scope.viewPostID($scope.activePostId, "");
-    }
-
-    $scope.matchCategories = function() {
-      // For loged users, we match their personal feed current values
-      if($scope.user.isLogged) {
-        if ($scope.user.info.categories) {
-          for (var i in $scope.categories) {
-            for(var j in $scope.categories[i].subcategories) {
-              if ($scope.user.info.categories.indexOf($scope.categories[i].subcategories[j].id) > -1) {
-                $scope.categories[i].subcategories[j].selected = true;
-              }
-            }
-          }
-        }
-      }
-    }
-
-    $scope.$on('userLogged', function(e) {
-      $scope.matchCategories();
-      //$scope.startupFeed($scope.category);
-    });
-
-    $scope.$on('reloadPost', function(e) {
-      $scope.reloadPost();
-    });
-
-    $scope.$on('postDeleted', function(e) {
-
-    });
-
-    // If logged, don't show categories
-    if($scope.user.isLogged) {
-      $scope.status.show_categories = false;
-    }
 
   	// Resolve categories though
   	Category.query(function(data) {
@@ -3317,7 +3439,8 @@ CategoryModule.factory('Category', CategoryService);
 // Category module controllers
 CategoryModule.controller('CategoryListController', CategoryListController);
 
-var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post, Upload, modalService) {
+var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post', 'Upload', 'modalService',
+  function($scope, $rootScope, $http, $timeout, Post, Upload, modalService) {
 
   $scope.post = {};
   $scope.comment = {content:''};
@@ -3574,6 +3697,7 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post, U
         for(var s in $scope.categories[c].subcategories) {
           if($scope.categories[c].subcategories[s].id == $scope.post.category) {
             $scope.post.category = {
+              id: $scope.categories[c].subcategories[s].id,
               name: $scope.categories[c].subcategories[s].name,
               slug: $scope.categories[c].subcategories[s].slug,
               parent_slug: $scope.categories[c].slug
@@ -3685,7 +3809,6 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post, U
         $('.scrubber-slider').css('height', $scope.ratio + '%');
         $('.scrubber-after').css('height', $scope.surplus + '%');
       });
-
       /* End TODO */
 
 		});
@@ -3724,10 +3847,14 @@ var ReaderViewController = function($scope, $rootScope, $http, $timeout, Post, U
     var regex = new RegExp("(https?:\/\/.*\\.(?:png|jpg|jpeg|JPEG|PNG|JPG|gif|GIF)((\\?|\\&)[a-zA-Z0-9]+\\=[a-zA-Z0-9]+)*)", "g");
     var to_replace = "<div class=\"img-preview\"><a href=\"$1\" target=\"_blank\"><img src=\"$1\"></a></div>"
     comment.content_final = comment.content.replace(regex, to_replace);
-  }
-};
 
-var PostService = function($resource) {
+    var yt_re = /.*(?:youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=)([^#\&\?]{11}).*/g;
+    var to_replace = "<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/$1\" frameborder=\"0\" allowfullscreen></iframe>";
+    comment.content_final = comment.content_final.replace(yt_re, to_replace);
+  }
+}];
+
+var PostService = ['$resource', function($resource) {
   return $resource(layer_path + 'posts/:id',
     {
       postId: '@id'
@@ -3738,7 +3865,7 @@ var PostService = function($resource) {
       }
     }
   );
-};
+}];
 
 // @codekit-prepend "reader_view_controller"
 // @codekit-prepend "post_service"
@@ -3751,7 +3878,8 @@ ReaderModule.factory('Post', PostService);
 // Reader module controllers
 ReaderModule.controller('ReaderViewController', ReaderViewController);
 
-var PublishController = function($scope, $routeParams, $http, Category, Part, Upload) {
+var PublishController = ['$scope', '$routeParams', '$http', 'Category', 'Part', 'Upload',
+  function($scope, $routeParams, $http, Category, Part, Upload) {
 
   $scope.publishing = true;
   $scope.message = "";
@@ -4043,22 +4171,105 @@ var PublishController = function($scope, $routeParams, $http, Category, Part, Up
     }
     $scope.publishing = false;
   });
-};
+}];
+
+var EditPostController = ['$scope', '$routeParams', '$http', 'Category', 'Part', 'Upload', 'Post', '$routeParams',
+  function($scope, $routeParams, $http, Category, Part, Upload, Post, $routeParams) {
+
+  $scope.publishing = true;
+  $scope.message = "";
+	$scope.categories = [];
+
+  $scope.post_edit = {
+    title: '',
+    content: '',
+    category: '',
+    isQuestion: false
+  };
+
+  $scope.adding_file = false;
+  $scope.uploadPicture = function(files) {
+    if(files.length == 1) {
+      var file = files[0];
+      $scope.adding_file = true;
+      Upload.upload({
+        url: layer_path + "post/image",
+        file: file
+      }).success(function (data) {
+        if($scope.post_edit.content.length > 0) {
+          $scope.post_edit.content += '\n' + data.url;
+        } else {
+          $scope.post_edit.content = data.url;
+        }
+        $scope.post_edit.content += '\n';
+        $scope.adding_file = false;
+        $('.publish-content textarea').focus();
+      }).error(function(data) {
+        $scope.adding_file = false;
+      });
+    }
+  };
+
+	$scope.editPost = function() {
+    if($scope.post_edit.title === '') {
+      $scope.message = "Te falta el título de tu publicación";
+    } else if($scope.post_edit.content === '') {
+      $scope.message = "Te falta el contenido de tu publicación";
+    } else if($scope.post_edit.category.length < 1) {
+      $scope.message = "Te falta elegir categoría";
+      console.log($scope.post_edit.category, $scope.post_edit.category.length < 1);
+    } else {
+      $scope.publishing = true;
+
+      $scope.post_edit.name = $scope.post_edit.title;
+
+  		$http.put(layer_path + 'posts/' + $scope.post.id, $scope.post_edit).then(function(data) {
+  			// Return to home
+        window.location.href = "/";
+  		}, function(err) {
+        console.log(err);
+      });
+    }
+	};
+
+  if(!$scope.user.isLogged) {
+    window.location = '/';
+  }
+
+  // Load categories
+  Category.writable(function(data) {
+    $scope.categories = data;
+
+    Post.get({id: $routeParams.id}, function(data) {
+      $scope.post = data;
+      $scope.post_edit = {
+        title: data.title,
+        content: data.content,
+        category: data.category,
+        kind: 'category-post',
+        isQuestion: data.is_question
+      };
+      $scope.publishing = false;
+    });
+  });
+}];
 
 // @codekit-prepend "publish_controller"
+// @codekit-prepend "edit_controller"
 
 var PublisherModule = angular.module('publisherModule', ['ngResource']);
 // Publisher module controllers
 PublisherModule.controller('PublishController', PublishController);
+PublisherModule.controller('EditPostController', EditPostController);
 
-var PartService = function($resource) {
+var PartService = ['$resource', function($resource) {
   return $resource(layer_path + 'part/:type/:action',
     {
       type: '@type',
       action: '@action'
     }
   );
-};
+}];
 
 // @codekit-prepend "part_service"
 
@@ -4074,7 +4285,120 @@ UserModule.factory('User', ['$resource', function($resource) {
   return $resource(layer_path + 'users/:user_id', {user_id: '@user_id'});
 }]);
 
-var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout', function($scope, $firebaseArray, $firebaseObject, $timeout) {
+// User Profile controller
+UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed', 'Upload', '$http',
+  function($scope, User, $routeParams, Feed, Upload, $http) {
+
+  $scope.profile = null;
+  $scope.resolving_posts = false;
+  $scope.update = {
+    updating: false,
+    editing_desc: false,
+    editing_username: false
+  };
+  $scope.current_page = 'info';
+
+  $scope.new_data = {
+    username: null,
+    username_saving: false,
+    username_error: false,
+    username_error_message: 'El nombre de usuario sólo puede llevar letras, números y guiones. Debe empezar con letra y terminar con número o letra y tener entre 3 y 32 caracteres.'
+  }
+
+  $scope.editUsername = function() {
+    $scope.update.editing_username = true;
+  };
+  $scope.saveUsername = function() {
+    if($scope.user.info.name_changes < 1) {
+      $scope.new_data.username_saving = true;
+      $http.put(layer_path + "user/my", {username: $scope.new_data.username}).
+      success(function(data) {
+        $scope.profile.username = $scope.new_data.username;
+        $scope.user.info.username = $scope.new_data.username;
+        $scope.user.info.name_changes = 1;
+
+        $scope.update.editing_username = false;
+      }).
+      error(function(data) {
+        $scope.update.editing_username = false;
+        $scope.new_data.username_saving = false;
+      });
+    }
+  };
+  $scope.check_username = function() {
+    if( /^[a-zA-Z][a-zA-Z0-9\-]{1,30}[a-zA-Z0-9]$/.test($scope.new_data.username) ) {
+      $scope.new_data.username_error = false;
+    } else {
+      $scope.new_data.username_error = true;
+    }
+  };
+
+  $scope.upload = function(files) {
+    if(files.length == 1) {
+      var file = files[0];
+      $scope.update.updating = true;
+      Upload.upload({
+        url: layer_path + "user/my/avatar",
+        file: file
+      }).success(function (data) {
+        $scope.user.info.image = data.url;
+        $scope.profile.image = data.url;
+        $scope.update.updating = false;
+      }).error(function(data) {
+        $scope.update.updating = false;
+      });
+    }
+  };
+
+  $scope.use_fb_pic = function() {
+    $scope.user.info.image = 'https://graph.facebook.com/'+$scope.user.info.facebook.id+'/picture?width=128';
+    $scope.profile.image = 'https://graph.facebook.com/'+$scope.user.info.facebook.id+'/picture?width=128';
+  }
+
+  $scope.remove_pic = function() {
+    $scope.user.info.image = null;
+    $scope.profile.image = null;
+  }
+
+  $scope.startFeed = function() {
+    $scope.resolving_posts = true;
+
+    Feed.get({limit: 10, offset: 0, user_id: $scope.profile.id}, function(data) {
+      for(p in data.feed) {
+        for(c in $scope.categories) {
+          if (data.feed[p].categories[0] == $scope.categories[c].slug) {
+            data.feed[p].category = {name: $scope.categories[c].name, color: $scope.categories[c].color, slug: $scope.categories[c].slug}
+            break;
+          }
+        }
+      }
+
+      $scope.posts = data.feed;
+      $scope.resolving_posts = false;
+      $scope.offset = 10;
+    });
+  };
+
+  User.get({user_id: $routeParams.id}, function(data) {
+    $scope.profile = data;
+    $scope.startFeed();
+    $scope.new_data.username = $scope.profile.username;
+
+    // We calculate remaining swords for next level and ratio
+    var rules = $scope.misc.gaming.rules;
+    var remaining = rules[data.gaming.level].swords_end - $scope.profile.gaming.swords;
+    $scope.profile.gaming.remaining = remaining;
+    var ratio = 100 - 100*(remaining/(rules[data.gaming.level].swords_end - rules[data.gaming.level].swords_start));
+    $scope.profile.gaming.ratio = ratio;
+    console.log(rules[data.gaming.level].swords_start, rules[data.gaming.level].swords_end, ratio);
+
+  }, function(response) {
+    window.location = '/';
+  });
+}]);
+
+var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
+  function($scope, $firebaseArray, $firebaseObject, $timeout) {
   $scope.channels = [];
   $scope.channel = {
     selected: null
@@ -4216,6 +4540,7 @@ chatModule.directive('sgEnter', function() {
 // @codekit-prepend "common/directives"
 // @codekit-prepend "common/filters"
 // @codekit-prepend "common/active_reader"
+// @codekit-prepend "common/services"
 // @codekit-prepend "vendor/angular-marked"
 // @codekit-prepend "vendor/wizzy"
 // @codekit-prepend "vendor/infinite-scroll"
@@ -4226,6 +4551,7 @@ chatModule.directive('sgEnter', function() {
 // @codekit-prepend "vendor/mentio.min.js"
 // @codekit-prepend "vendor/angular-ui-switch.min.js"
 // @codekit-prepend "vendor/angular-acl.min.js"
+// @codekit-prepend "vendor/angular-timeago.js"
 // @codekit-prepend "modules/feed/init"
 // @codekit-prepend "modules/categories/init"
 // @codekit-prepend "modules/reader/init"
@@ -4238,6 +4564,7 @@ var boardApplication = angular.module('board', [
   'ngRoute',
 	'directivesModule',
 	'filtersModule',
+  'sg.services',
 	'activeReader',
   'hc.marked',
   'idiotWizzy',
@@ -4257,7 +4584,8 @@ var boardApplication = angular.module('board', [
   'monospaced.elastic',
   'mentio',
   'uiSwitch',
-  'mm.acl'
+  'mm.acl',
+  'yaru22.angular-timeago'
 ]);
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider', 'AclServiceProvider',
@@ -4267,9 +4595,17 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
     templateUrl: '/js/partials/main.html?v=139',
     controller: 'CategoryListController'
   });
+  $routeProvider.when('/ranks', {
+    templateUrl: '/js/partials/ranks.html?v=139',
+    //controller: 'RanksController'
+  });
   $routeProvider.when('/c/:slug', {
     templateUrl: '/js/partials/main.html?v=139',
     controller: 'CategoryListController'
+  });
+  $routeProvider.when('/p/:slug/:id/edit', {
+    templateUrl: '/js/partials/edit.html?v=139',
+    controller: 'EditPostController'
   });
   $routeProvider.when('/p/:slug/:id/:comment_position?', {
     templateUrl: '/js/partials/main.html?v=139',
@@ -4508,119 +4844,6 @@ boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http'
     }
 }]);
 
-// TODO: Move to external file
-boardApplication.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed', 'Upload', '$http',
-  function($scope, User, $routeParams, Feed, Upload, $http) {
-
-  $scope.profile = null;
-  $scope.resolving_posts = false;
-  $scope.update = {
-    updating: false,
-    editing_desc: false,
-    editing_username: false
-  };
-  $scope.current_page = 'info';
-
-  $scope.new_data = {
-    username: null,
-    username_saving: false,
-    username_error: false,
-    username_error_message: 'El nombre de usuario sólo puede llevar letras, números y guiones. Debe empezar con letra y terminar con número o letra y tener entre 3 y 32 caracteres.'
-  }
-
-  $scope.editUsername = function() {
-    $scope.update.editing_username = true;
-  };
-  $scope.saveUsername = function() {
-    if($scope.user.info.name_changes < 1) {
-      $scope.new_data.username_saving = true;
-      $http.put(layer_path + "user/my", {username: $scope.new_data.username}).
-      success(function(data) {
-        $scope.profile.username = $scope.new_data.username;
-        $scope.user.info.username = $scope.new_data.username;
-        $scope.user.info.name_changes = 1;
-
-        $scope.update.editing_username = false;
-      }).
-      error(function(data) {
-        $scope.update.editing_username = false;
-        $scope.new_data.username_saving = false;
-      });
-    }
-  };
-  $scope.check_username = function() {
-    if( /^[a-zA-Z][a-zA-Z0-9\-]{1,30}[a-zA-Z0-9]$/.test($scope.new_data.username) ) {
-      $scope.new_data.username_error = false;
-    } else {
-      $scope.new_data.username_error = true;
-    }
-  };
-
-  $scope.upload = function(files) {
-    if(files.length == 1) {
-      var file = files[0];
-      $scope.update.updating = true;
-      Upload.upload({
-        url: layer_path + "user/my/avatar",
-        file: file
-      }).success(function (data) {
-        $scope.user.info.image = data.url;
-        $scope.profile.image = data.url;
-        $scope.update.updating = false;
-      }).error(function(data) {
-        $scope.update.updating = false;
-      });
-    }
-  };
-
-  $scope.use_fb_pic = function() {
-    $scope.user.info.image = 'https://graph.facebook.com/'+$scope.user.info.facebook.id+'/picture?width=128';
-    $scope.profile.image = 'https://graph.facebook.com/'+$scope.user.info.facebook.id+'/picture?width=128';
-  }
-
-  $scope.remove_pic = function() {
-    $scope.user.info.image = null;
-    $scope.profile.image = null;
-  }
-
-  $scope.startFeed = function() {
-    $scope.resolving_posts = true;
-
-    Feed.get({limit: 10, offset: 0, user_id: $scope.profile.id}, function(data) {
-      for(p in data.feed) {
-        for(c in $scope.categories) {
-          if (data.feed[p].categories[0] == $scope.categories[c].slug) {
-            data.feed[p].category = {name: $scope.categories[c].name, color: $scope.categories[c].color, slug: $scope.categories[c].slug}
-            break;
-          }
-        }
-      }
-
-      $scope.posts = data.feed;
-      $scope.resolving_posts = false;
-      $scope.offset = 10;
-    });
-  };
-
-  User.get({user_id: $routeParams.id}, function(data){
-    //console.log(data);
-    $scope.profile = data;
-    $scope.startFeed();
-    $scope.new_data.username = $scope.profile.username;
-
-    // We calculate remaining swords for next level and ratio
-    var rules = $scope.misc.gaming.rules;
-    var remaining = rules[data.gaming.level].swords_end - $scope.profile.gaming.swords;
-    $scope.profile.gaming.remaining = remaining;
-    var ratio = 100 - 100*(remaining/(rules[data.gaming.level].swords_end - rules[data.gaming.level].swords_start));
-    $scope.profile.gaming.ratio = ratio;
-    console.log(rules[data.gaming.level].swords_start, rules[data.gaming.level].swords_end, ratio);
-
-  }, function(response) {
-    window.location = '/';
-  });
-}]);
-
 boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', '$modal', '$timeout', '$firebaseObject', '$firebaseArray', 'Facebook', 'AclService',
   function($scope, $rootScope, $http, $modal, $timeout, $firebaseObject, $firebaseArray, Facebook, AclService) {
     $scope.user = {
@@ -4798,10 +5021,10 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
       }, 50);
     };
 
-    $scope.toggle_notification = function(elem) {
+    $scope.toggle_notification = function( elem ) {
       if(!elem.seen) {
         $scope.user.notifications.count.$value = $scope.user.notifications.count.$value - 1;
-        if($scope.user.notifications.count.$value < 0){
+        if($scope.user.notifications.count.$value < 0) {
           $scope.user.notifications.count.$value = 0;
         }
         elem.seen = true;
@@ -4821,14 +5044,15 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
     $scope.$on('login', function(e) {
       $scope.logUser();
     });
-    // If already signed in, sign in the user
-    if(localStorage.signed_in === 'true') {
-      $scope.logUser();
-    }
 
     // Check for FB Login Status, this is necessary so later calls doesn't make
     // the pop up to be blocked by the browser
     Facebook.getLoginStatus(function(r){$rootScope.fb_response = r;});
+
+    // If already signed in, sign in the user
+    if(localStorage.signed_in === 'true') {
+      $scope.logUser();
+    }
 
     // Load platform stats
     $http.get(layer_path + 'stats/board').
@@ -4846,57 +5070,7 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
   }
 ]);
 
-boardApplication.service('modalService', ['$modal', function ($modal) {
-  var modalDefaults = {
-    backdrop: true,
-    keyboard: true,
-    modalFade: true,
-    windowClass: 'modal-confirm',
-    size: 'sm',
-    templateUrl: '/js/partials/modal.html'
-  };
-
-  var modalOptions = {
-    closeButtonText: 'Cerrar',
-    actionButtonText: 'Aceptar',
-    headerText: '¿Estás seguro?',
-    bodyText: '¿Quieres realizar esta acción?'
-  };
-
-  this.showModal = function (customModalDefaults, customModalOptions) {
-    if (!customModalDefaults) customModalDefaults = {};
-    customModalDefaults.backdrop = 'static';
-    return this.show(customModalDefaults, customModalOptions);
-  };
-
-  this.show = function (customModalDefaults, customModalOptions) {
-    //Create temp objects to work with since we're in a singleton service
-    var tempModalDefaults = {};
-    var tempModalOptions = {};
-
-    //Map angular-ui modal custom defaults to modal defaults defined in service
-    angular.extend(tempModalDefaults, modalDefaults, customModalDefaults);
-
-    //Map modal.html $scope custom properties to defaults defined in service
-    angular.extend(tempModalOptions, modalOptions, customModalOptions);
-
-    if (!tempModalDefaults.controller) {
-      tempModalDefaults.controller = function ($scope, $modalInstance) {
-        $scope.modalOptions = tempModalOptions;
-        $scope.modalOptions.ok = function (result) {
-          $modalInstance.close(result);
-        };
-        $scope.modalOptions.close = function (result) {
-          $modalInstance.dismiss('cancel');
-        };
-      }
-    }
-
-    return $modal.open(tempModalDefaults).result;
-  };
-}]);
-
-boardApplication.run(['$rootScope', '$http', 'AclService', function($rootScope, $http, AclService) {
+boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', function($rootScope, $http, AclService, AdvancedAcl) {
   // TEST PURPOSES
   if(false) {
     localStorage.removeItem('signed_in');
@@ -4920,22 +5094,18 @@ boardApplication.run(['$rootScope', '$http', 'AclService', function($rootScope, 
   $http.get(layer_path + 'permissions')
     .error(function(data) {}) // How should we proceed if no data?
     .success(function(data) {
-      //console.log(data);
       // Proccess de roles and permissions iteratively
       for(var r in data.rules) {
         aclData[r] = data.rules[r].permissions;
-        //aclData[r] = [];
         var current = data.rules[r];
-        //console.log(current);
         while(current.parents.length > 0) {
-          //console.log(current);
           aclData[r] = aclData[r].concat(data.rules[current.parents[0]].permissions);
           current = data.rules[current.parents[0]];
         }
       }
-      //console.log('ACL', aclData);
+      AclService.setAbilities(aclData);
     });
-  AclService.setAbilities(aclData);
   $rootScope.can = AclService.can;
+  $rootScope.aacl = AdvancedAcl;
 }]);
 
