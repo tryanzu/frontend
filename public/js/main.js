@@ -162,6 +162,15 @@ filters.filter('date_at', function() {
 	};
 });
 
+filters.filter('range', function() {
+  return function(input, total) {
+    total = parseInt(total);
+    for (var i=0; i<total; i++)
+      input.push(i);
+    return input;
+  };
+});
+
 var activeReader = angular.module('activeReader', []);
 
 activeReader.factory('Bridge', function($rootScope) {
@@ -4397,6 +4406,13 @@ UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed
   });
 }]);
 
+var RankModule = angular.module('rankModule', []);
+
+// Rank module controllers
+RankModule.controller('RanksController', [function() {
+
+}]);
+
 var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
   function($scope, $firebaseArray, $firebaseObject, $timeout) {
   $scope.channels = [];
@@ -4558,6 +4574,7 @@ chatModule.directive('sgEnter', function() {
 // @codekit-prepend "modules/publisher/init"
 // @codekit-prepend "modules/part/init"
 // @codekit-prepend "modules/user/init"
+// @codekit-prepend "modules/rank/init"
 // @codekit-prepend "modules/chat/chat"
 
 var boardApplication = angular.module('board', [
@@ -4577,6 +4594,7 @@ var boardApplication = angular.module('board', [
 	'publisherModule',
   'partModule',
   'userModule',
+  'rankModule',
   'chatModule',
   'angular-jwt',
   'firebase',
@@ -4588,39 +4606,41 @@ var boardApplication = angular.module('board', [
   'yaru22.angular-timeago'
 ]);
 
+var version = '141';
+
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider', 'AclServiceProvider',
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider, AclServiceProvider) {
 
   $routeProvider.when('/', {
-    templateUrl: '/js/partials/main.html?v=140',
+    templateUrl: '/js/partials/main.html?v=' + version,
     controller: 'CategoryListController'
   });
   $routeProvider.when('/ranks', {
-    templateUrl: '/js/partials/ranks.html?v=140',
-    //controller: 'RanksController'
+    templateUrl: '/js/partials/ranks.html?v=' + version,
+    controller: 'RanksController'
   });
   $routeProvider.when('/c/:slug', {
-    templateUrl: '/js/partials/main.html?v=140',
+    templateUrl: '/js/partials/main.html?v=' + version,
     controller: 'CategoryListController'
   });
   $routeProvider.when('/p/:slug/:id/edit', {
-    templateUrl: '/js/partials/edit.html?v=140',
+    templateUrl: '/js/partials/edit.html?v=' + version,
     controller: 'EditPostController'
   });
   $routeProvider.when('/p/:slug/:id/:comment_position?', {
-    templateUrl: '/js/partials/main.html?v=140',
+    templateUrl: '/js/partials/main.html?v=' + version,
     controller: 'CategoryListController'
   });
   $routeProvider.when('/u/:username/:id', {
-    templateUrl: '/js/partials/profile.html?v=140',
+    templateUrl: '/js/partials/profile.html?v=' + version,
     controller: 'UserController'
   });
   $routeProvider.when('/chat', {
-    templateUrl: '/js/partials/chat.html?v=140',
+    templateUrl: '/js/partials/chat.html?v=' + version,
     controller: 'ChatController'
   });
   $routeProvider.when('/post/create/:cat_slug?', {
-    templateUrl: '/js/partials/publish.html?v=140',
+    templateUrl: '/js/partials/publish.html?v=' + version,
     controller: 'PublishController',
     onEnter: function() {
       if(!$scope.user.isLogged) {
