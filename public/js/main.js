@@ -4415,6 +4415,13 @@ RankModule.controller('RanksController', [function() {
 
 }]);
 
+var MedalModule = angular.module('sg.module.medal', []);
+
+// Rank module controllers
+MedalModule.controller('MedalController', [function() {
+
+}]);
+
 var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
   function($scope, $firebaseArray, $firebaseObject, $timeout) {
   $scope.channels = [];
@@ -4577,6 +4584,7 @@ chatModule.directive('sgEnter', function() {
 // @codekit-prepend "modules/part/init"
 // @codekit-prepend "modules/user/init"
 // @codekit-prepend "modules/rank/init"
+// @codekit-prepend "modules/medal/init"
 // @codekit-prepend "modules/chat/chat"
 
 var boardApplication = angular.module('board', [
@@ -4597,6 +4605,7 @@ var boardApplication = angular.module('board', [
   'partModule',
   'userModule',
   'rankModule',
+  'sg.module.medal',
   'chatModule',
   'angular-jwt',
   'firebase',

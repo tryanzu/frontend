@@ -1,0 +1,485 @@
+[
+  {
+    "type":"Especial",
+    "name":"Benefactor",
+    "description":"Contribuir con $2.99 USD al desarrollo y mantenimiento de SpartanGeek.com",
+    "required_medal":"",
+    "required_level":""
+  },
+  {
+    "type":"Especial",
+    "name":"Filántropo",
+    "description":"Contribuir con $10 USD al desarrollo y mantenimiento de SpartanGeek.com",
+    "required_medal":"",
+    "required_level":""
+  },
+  {
+    "type":"Especial",
+    "name":"Visionario",
+    "description":"Contribuir con $100 USD o más al desarrollo y mantenimiento de SpartanGeek.com",
+    "required_medal":"",
+    "required_level":""
+  },
+  {
+    "type":"Especial",
+    "name":"Legión 300",
+    "description":"Contribuir mensualmente con $29 USD al desarrollo y mantenimiento de SpartanGeek.com",
+    "required_medal":"",
+    "required_level":""
+  },
+  {
+    "type":"Especial",
+    "name":"Brazalete de Fundador",
+    "description":"Primeros registrados que tuvieron más de 10 comentarios",
+    "required_medal":"",
+    "required_level":""
+  },
+  {
+    "type":"Especial",
+    "name":"Spartan PC Owner",
+    "description":"Dueño verificado de una PC Spartana",
+    "required_medal":"",
+    "required_level":""
+  },
+  {
+    "type":"Especial",
+    "name":"Spartan T-Shirt Owner",
+    "description":"Dueño verificado de una Playera Spartana",
+    "required_medal":"",
+    "required_level":""
+  },
+  {
+    "type":"Ropa",
+    "name":"Ropa Usada",
+    "description":"20",
+    "required_medal":"Ninguno",
+    "required_level":"Ninguno"
+  },
+  {
+    "type":"Ropa",
+    "name":"Ropa de Lana",
+    "description":"70",
+    "required_medal":"Ropa Usada",
+    "required_level":"Habitante"
+  },
+  {
+    "type":"Arma",
+    "name":"Garrote",
+    "description":"70",
+    "required_medal":"Ninguno",
+    "required_level":"Habitante"
+  },
+  {
+    "type":"Ropa",
+    "name":"Casaca de Cuero",
+    "description":"150",
+    "required_medal":"Ropa de Lana",
+    "required_level":"Recluta"
+  },
+  {
+    "type":"Arma",
+    "name":"Daga",
+    "description":"150",
+    "required_medal":"Palo",
+    "required_level":"Recluta"
+  },
+  {
+    "type":"Ropa",
+    "name":"Ropa de Lino",
+    "description":"300",
+    "required_medal":"Casaca de Cuero",
+    "required_level":"Spartan "
+  },
+  {
+    "type":"Armadura",
+    "name":"Escudo de Cuero",
+    "description":"300",
+    "required_medal":"Ninguno",
+    "required_level":"Spartan Hoplita"
+  },
+  {
+    "type":"Arma",
+    "name":"Combate Físico",
+    "description":"400",
+    "required_medal":"Daga",
+    "required_level":"Spartan Fighter"
+  },
+  {
+    "type":"Arma",
+    "name":"Espada",
+    "description":"500",
+    "required_medal":"Daga",
+    "required_level":"Spartan Hoplita"
+  },
+  {
+    "type":"Ropa",
+    "name":"Ropa de Seda",
+    "description":"500",
+    "required_medal":"Ropa de Lino",
+    "required_level":"Spartan Elite "
+  },
+  {
+    "type":"Arma",
+    "name":"Lanza",
+    "description":"750",
+    "required_medal":"Espada",
+    "required_level":"Spartan Warrior"
+  },
+  {
+    "type":"Armadura",
+    "name":"Escudo Reforzado con Bronce",
+    "description":"750",
+    "required_medal":"Escudo de Cuero",
+    "required_level":"Spartan Warrior"
+  },
+  {
+    "type":"Poder",
+    "name":"Estrategia Militar",
+    "description":"1,000",
+    "required_medal":"Lanza",
+    "required_level":"Spartan Warrior"
+  },
+  {
+    "type":"Ropa",
+    "name":"Túnica de Seda con Capa",
+    "description":"1,000",
+    "required_medal":"Ropa de Seda",
+    "required_level":"Spartan Commander"
+  },
+  {
+    "type":"Poder",
+    "name":"Idiomas",
+    "description":"1,000",
+    "required_medal":"Ninguno",
+    "required_level":"Spartan Warrior"
+  },
+  {
+    "type":"Poder",
+    "name":"Educación Matemática",
+    "description":"1,500",
+    "required_medal":"Idiomas",
+    "required_level":"Spartan Elite "
+  },
+  {
+    "type":"Arma",
+    "name":"Espada Larga Espartana",
+    "description":"2,500",
+    "required_medal":"Lanza",
+    "required_level":"Spartan Warrior"
+  },
+  {
+    "type":"Poder",
+    "name":"Aves Exóticas",
+    "description":"2,500",
+    "required_medal":"Ninguno",
+    "required_level":"Spartan Warrior"
+  },
+  {
+    "type":"Armadura",
+    "name":"Escudo Espartano",
+    "description":"2,500",
+    "required_medal":"Escudo Reforzado con Bronce",
+    "required_level":"Spartan Warrior"
+  },
+  {
+    "type":"Poder",
+    "name":"Educación Tecnológica",
+    "description":"3,000",
+    "required_medal":"Idiomas",
+    "required_level":"Spartan Elite "
+  },
+  {
+    "type":"Armadura",
+    "name":"Pecho Descubierto",
+    "description":"5,000",
+    "required_medal":"Ninguno",
+    "required_level":"Spartan Warrior"
+  },
+  {
+    "type":"Arma",
+    "name":"Espada Inmortalizada",
+    "description":"10,000",
+    "required_medal":"Espada Larga Espartana",
+    "required_level":"Spartan Hero"
+  },
+  {
+    "type":"Poder",
+    "name":"Felinos Exóticos",
+    "description":"10,000",
+    "required_medal":"Tierras Propias",
+    "required_level":"Spartan Commander"
+  },
+  {
+    "type":"Armadura",
+    "name":"Casco con Mechón Rojo",
+    "description":"10,000",
+    "required_medal":"Escudo Espartano",
+    "required_level":"Spartan Warrior"
+  },
+  {
+    "type":"Poder",
+    "name":"Sabiduría",
+    "description":"10,000",
+    "required_medal":"Educación Tecnológica",
+    "required_level":"Spartan Elite "
+  },
+  {
+    "type":"Poder",
+    "name":"Tierras Propias",
+    "description":"20,000",
+    "required_medal":"Ninguno",
+    "required_level":"Spartan Commander"
+  },
+  {
+    "type":"Poder",
+    "name":"Esclavos",
+    "description":"20,000",
+    "required_medal":"Tierras Propias",
+    "required_level":"Spartan Commander"
+  },
+  {
+    "type":"Armadura",
+    "name":"Casco con Mechón Negro",
+    "description":"20,000",
+    "required_medal":"Casco con Mechón Rojo",
+    "required_level":"Spartan Warlord"
+  },
+  {
+    "type":"Poder",
+    "name":"Aristócrata",
+    "description":"25,000",
+    "required_medal":"Tierras Propias",
+    "required_level":"Spartan Commander"
+  },
+  {
+    "type":"Poder",
+    "name":"Ejército Propio",
+    "description":"50,000",
+    "required_medal":"Tierras Propias",
+    "required_level":"Spartan Warlord"
+  },
+  {
+    "type":"Poder",
+    "name":"Tierras en el Extranjero",
+    "description":"50,000",
+    "required_medal":"Ejército Propio",
+    "required_level":"Spartan Warlord"
+  },
+  {
+    "type":"Poder",
+    "name":"Poder Político",
+    "description":"50,000",
+    "required_medal":"Aristócrata",
+    "required_level":"Spartan Mercenary"
+  },
+  {
+    "type":"Poder",
+    "name":"Templo",
+    "description":"100,000",
+    "required_medal":"Ninguno",
+    "required_level":"Spartan Leyend"
+  },
+  {
+    "type":"Poder",
+    "name":"Poligamia",
+    "description":"100,000",
+    "required_medal":"Ninguno",
+    "required_level":"Spartan Commander"
+  },
+  {
+    "type":"Poder",
+    "name":"Inmortalidad",
+    "description":"500,000",
+    "required_medal":"Ninguno",
+    "required_level":"Spartan God"
+  },
+  {
+    "type":"Especial",
+    "name":"Veterano",
+    "description":"3 años",
+    "required_medal":"Ninguno",
+    "required_level":"Ninguno"
+  },
+  {
+    "type":"Especial",
+    "name":"Sabio",
+    "description":"5 años",
+    "required_medal":"Ninguno",
+    "required_level":"Ninguno"
+  },
+  {
+    "type":"Contribución",
+    "name":"Buena Publicación",
+    "description":"Recibir de 10 a 24 tributos",
+    "required_medal":"",
+    "required_level":""
+  },
+  {
+    "type":"Contribución",
+    "name":"Excelente Publicación",
+    "description":"Recibir de 25 a 49 tributos",
+    "required_medal":"",
+    "required_level":""
+  },
+  {
+    "type":"Contribución",
+    "name":"Grandiosa Publicación",
+    "description":"Recibir de 50 a 149 tributos",
+    "required_medal":"",
+    "required_level":""
+  },
+  {
+    "type":"Contribución",
+    "name":"Épica Publicación",
+    "description":"Recibir 150 o más tributos",
+    "required_medal":"",
+    "required_level":""
+  },
+  {
+    "type":"Contribución",
+    "name":"Publicación Popular",
+    "description":"Ser vista al menos 1,000 veces",
+    "required_medal":"",
+    "required_level":""
+  },
+  {
+    "type":"Contribución",
+    "name":"Publicación Famosa",
+    "description":"Ser vista al menos 10,000 veces",
+    "required_medal":"",
+    "required_level":""
+  },
+  {
+    "type":"Contribución",
+    "name":"Buena Respuesta",
+    "description":"Recibir de 5 a 9 tributos",
+    "required_medal":"",
+    "required_level":""
+  },
+  {
+    "type":"Contribución",
+    "name":"Excelente Respuesta",
+    "description":"Recibir de 10-24 tributos",
+    "required_medal":"",
+    "required_level":""
+  },
+  {
+    "type":"Contribución",
+    "name":"Grandiosa Repuesta",
+    "description":"Recibir 25 o más tributos",
+    "required_medal":"",
+    "required_level":""
+  },
+  {
+    "type":"Contribución",
+    "name":"Entusiasta",
+    "description":"Visitar la página cada día por 30 días consecutivos",
+    "required_medal":"",
+    "required_level":""
+  },
+  {
+    "type":"Contribución",
+    "name":"Fanático",
+    "description":"Visitar la página cada día por 100 días consecutivos",
+    "required_medal":"",
+    "required_level":""
+  },
+  {
+    "type":"Contribución",
+    "name":"Épico",
+    "description":"Ganar 100 de tributo en un solo día",
+    "required_medal":"",
+    "required_level":""
+  },
+  {
+    "type":"Contribución",
+    "name":"Legendario",
+    "description":"Ganar 100 de tributo en un solo día, 10 veces",
+    "required_medal":"",
+    "required_level":""
+  },
+  {
+    "type":"Contribución",
+    "name":"Geek",
+    "description":"Ganar 100 de tributo en un solo día, 50 veces",
+    "required_medal":"",
+    "required_level":""
+  },
+  {
+    "type":"Contribución",
+    "name":"Patrulla Ciudadana",
+    "description":"Poner un flag correctamente",
+    "required_medal":"",
+    "required_level":""
+  },
+  {
+    "type":"Contribución",
+    "name":"Sheriff",
+    "description":"Poner 50 flags correctamente",
+    "required_medal":"",
+    "required_level":""
+  },
+  {
+    "type":"Contribución",
+    "name":"Reviewer",
+    "description":"Al menos 5 reviews",
+    "required_medal":"",
+    "required_level":""
+  },
+  {
+    "type":"Contribución",
+    "name":"Reviewer Experto",
+    "description":"Al menos 50 reviews, cada uno con al menos 5 de tributo",
+    "required_medal":"",
+    "required_level":""
+  },
+  {
+    "type":"Contribución",
+    "name":"Editor",
+    "description":"Una sugerencia de edición aceptada",
+    "required_medal":"",
+    "required_level":""
+  },
+  {
+    "type":"Contribución",
+    "name":"Editor Experto",
+    "description":"50 sugerencias de edición aceptadas",
+    "required_medal":"",
+    "required_level":""
+  },
+  {
+    "type":"Contribución",
+    "name":"Organizador",
+    "description":"Ordenar publicaciones en su type correcta",
+    "required_medal":"",
+    "required_level":""
+  },
+  {
+    "type":"Contribución",
+    "name":"Contribuyente",
+    "description":"Dar 20 de tributo diarios, por 30 días",
+    "required_medal":"",
+    "required_level":""
+  },
+  {
+    "type":"Contribución",
+    "name":"Wiki-Hardware",
+    "description":"Contribuir con 10 ediciones correctas",
+    "required_medal":"",
+    "required_level":""
+  },
+  {
+    "type":"Contribución",
+    "name":"Wiki-Games",
+    "description":"Contribuir con 10 ediciones correctas",
+    "required_medal":"",
+    "required_level":""
+  },
+  {
+    "type":"Contribución",
+    "name":"Wiki-Smartphones",
+    "description":"Contribuir con 10 ediciones correctas",
+    "required_medal":"",
+    "required_level":""
+  }
+]

@@ -20,6 +20,7 @@
 // @codekit-prepend "modules/part/init"
 // @codekit-prepend "modules/user/init"
 // @codekit-prepend "modules/rank/init"
+// @codekit-prepend "modules/medal/init"
 // @codekit-prepend "modules/chat/chat"
 
 var boardApplication = angular.module('board', [
@@ -40,6 +41,7 @@ var boardApplication = angular.module('board', [
   'partModule',
   'userModule',
   'rankModule',
+  'sg.module.medal',
   'chatModule',
   'angular-jwt',
   'firebase',
