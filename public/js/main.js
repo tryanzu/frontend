@@ -4595,6 +4595,10 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
     templateUrl: '/js/partials/main.html?v=139',
     controller: 'CategoryListController'
   });
+  $routeProvider.when('/ranks', {
+    templateUrl: '/js/partials/ranks.html?v=139',
+    //controller: 'RanksController'
+  });
   $routeProvider.when('/c/:slug', {
     templateUrl: '/js/partials/main.html?v=139',
     controller: 'CategoryListController'
