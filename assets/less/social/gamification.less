@@ -1,0 +1,34 @@
+.top-users {
+  tr.highlight {
+    background-color: #F9F9F9;
+    font-weight: 600;
+  }
+  .position {
+    display: inline-block;
+    width: 48px;
+    height: 48px;
+    text-align: center;
+    font-size: 18px;
+    line-height: 48px;
+    background-color: @brand-primary-lighter;
+    border-radius: 24px;
+    font-weight: 300;
+
+    &.gold, &.silver, &.bronze {
+      font-weight: 400;
+      font-size: 24px
+    }
+    &.gold {
+      background-color: #F9E689;
+      color: #B9A337;
+    }
+    &.silver {
+      background-color: #EFEFEF;
+      color: #9A9A9A;
+    }
+    &.bronze {
+      background-color: #F9D7A4;
+      color: #BF985F;
+    }
+  }
+}

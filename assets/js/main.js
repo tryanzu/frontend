@@ -21,6 +21,7 @@
 // @codekit-prepend "modules/user/init"
 // @codekit-prepend "modules/rank/init"
 // @codekit-prepend "modules/medal/init"
+// @codekit-prepend "modules/top/init"
 // @codekit-prepend "modules/chat/chat"
 
 var boardApplication = angular.module('board', [
@@ -42,6 +43,7 @@ var boardApplication = angular.module('board', [
   'userModule',
   'rankModule',
   'sg.module.medal',
+  'sg.module.top',
   'chatModule',
   'angular-jwt',
   'firebase',
@@ -69,6 +71,10 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   $routeProvider.when('/medallas', {
     templateUrl: '/js/partials/medals.html?v=' + version,
     controller: 'MedalController'
+  });
+  $routeProvider.when('/tops', {
+    templateUrl: '/js/partials/tops.html?v=' + version,
+    controller: 'TopController'
   });
   $routeProvider.when('/c/:slug', {
     templateUrl: '/js/partials/main.html?v=' + version,

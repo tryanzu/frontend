@@ -9,12 +9,12 @@
             <tr>
               <th></th>
               <th></th>
-              <th>Costo de adquisición</th>
+              <th>Forma de obtenerla</th>
               <th>Medalla requerida</th>
               <th>Rango requerido</th>
             </tr>
             <tr ng-repeat="medal in medals">
-              <td><span class="have-it"><i class="fa fa-check"></i></span></td>
+              <td><span class="have-it" tooltip="Tienes esta medalla"><i class="fa fa-check"></i></span></td>
               <td>
                 <span class="medal" ng-class="labels[medal.type]"><i class="circle"></i> {{ medal.name}}</span>
               </td>

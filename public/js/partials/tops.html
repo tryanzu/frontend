@@ -1,0 +1,50 @@
+<main class="global-content">
+  <div class="container">
+    <h2 class="text-center" style="margin-bottom: 1em;">Top de usuarios</h2>
+    <div class="text-center" style="margin-bottom: 1em;">
+      <div class="btn-group" role="group" aria-label="...">
+        <button type="button" class="btn btn-default">Contribuciones</button>
+        <button type="button" class="btn btn-default active">Rangos</button>
+        <button type="button" class="btn btn-default">Riqueza</button>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-10 col-md-offset-1 col-xs-12">
+        <div class="table-responsive">
+          <table class="table top-users">
+            <thead>
+              <tr>
+                <th>Posición</th>
+                <th>Nombre de usuario</th>
+                <th>Rango actual</th>
+                <th>Espadas</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="i in [] | range:50" ng-class="{highlight: i == example.position}">
+                <td>
+                  <div class="position" ng-class="{gold: i == 0, silver: i == 1, bronze: i == 2}">
+                    {{ i + 1 }}
+                  </div>
+                </td>
+                <td>
+                  <a href="/u/{{ example.username }}/{{ example.id }}" title="Perfil de {{ example.username }}">
+                    <img class="avatar" ng-src="{{ example.image }}" alt="{{ example.username }}" ng-if="example.image">
+                    <span class="avatar" title="{{ example.username }}" ng-if="!example.image">{{ example.username[0] }}</span>
+                  </a>
+                  <div class="username">
+                    <a href="/u/{{ example.username }}/{{ example.id }}" title="Perfil de {{ example.username }}">
+                      <strong>{{ example.username }}</strong>
+                    </a>
+                  </div>
+                </td>
+                <td>{{ misc.gaming.rules[5].name }}</td>
+                <td>{{ (50-i)*100 | number:0}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
