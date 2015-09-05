@@ -1,0 +1,51 @@
+<main class="global-content">
+  <div class="container">
+    <h2 style="margin-bottom: 2em;">Medallas</h2>
+
+    <div class="row">
+      <div class="col-md-9">
+        <div class="table-responsive">
+          <table class="table table-medals">
+            <tr>
+              <th></th>
+              <th></th>
+              <th>Costo de adquisición</th>
+              <th>Medalla requerida</th>
+              <th>Rango requerido</th>
+            </tr>
+            <tr ng-repeat="medal in medals">
+              <td><span class="have-it"><i class="fa fa-check"></i></span></td>
+              <td>
+                <span class="medal" ng-class="labels[medal.type]"><i class="circle"></i> {{ medal.name}}</span>
+              </td>
+              <td>{{ medal.description}}</td>
+              <td>{{ medal.required_medal}}</td>
+              <td>{{ medal.required_level}}</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <h4>Descripción de tipos de medallas</h4>
+        <div class="medals-description">
+          <span class="medal especial"><i class="circle"></i> Medalla Especial</span>
+          <p>Las medallas especiales... Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+          <hr>
+          <span class="medal ropa"><i class="circle"></i> Medalla de Ropa</span>
+          <p>Las medallas de ropa... Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+          <hr>
+          <span class="medal arma"><i class="circle"></i> Medalla de Arma</span>
+          <p>Las medallas de arma... Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+          <hr>
+          <span class="medal armadura"><i class="circle"></i> Medalla de Armadura</span>
+          <p>Las medallas de armadura... Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+          <hr>
+          <span class="medal poder"><i class="circle"></i> Medalla de Poder</span>
+          <p>Las medallas de poder... Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
