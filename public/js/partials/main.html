@@ -486,7 +486,7 @@
                     </div>
                     <div class="content" markedsg="comment.content_final" ng-if="!comment.editing"></div>
 
-                    <div class="actions-count text-right">
+                    <div class="actions-count text-right" ng-if="!comment.editing">
                       <span ng-if="comment.votes.up > 0">A {{ comment.votes.up }} {{comment.votes.up == 1 ? 'persona le gusta':'personas les gusta'}} este comentario</span>
                       <span ng-if="comment.votes.up > 0 && comment.votes.down > 0"> y </span>
                       <span ng-if="comment.votes.down > 0">{{ comment.votes.down }} {{comment.votes.down == 1 ? 'persona piensa':'personas piensan'}} que esto apesta</span>

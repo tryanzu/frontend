@@ -382,8 +382,19 @@
 }
 
 @media @phone {
-  .current-article .float-actions {
-    position: relative;
+  .current-article {
+    padding-bottom: 60px;
+
+    .float-actions {
+      position: relative;
+      right: -20px;
+    }
+    .comments .comment .actions {
+      opacity: 1;
+    }
+  }
+  .username {
+    margin-right: 40px;
   }
 }
 
