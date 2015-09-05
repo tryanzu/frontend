@@ -3622,7 +3622,7 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
     to_edit.find('a.user-mention').each(function(index) {
       var text = $(this).html()
       if($(this).data('comment')) {
-        text += $(this).data('comment');
+        text += '#' + $(this).data('comment');
       }
       $(this).replaceWith(text);
     });
