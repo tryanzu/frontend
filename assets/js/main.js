@@ -20,7 +20,7 @@
 // @codekit-prepend "modules/part/init"
 // @codekit-prepend "modules/user/init"
 // @codekit-prepend "modules/rank/init"
-// @codekit-prepend "modules/medal/init"
+// @codekit-prepend "modules/badges/init"
 // @codekit-prepend "modules/top/init"
 // @codekit-prepend "modules/chat/chat"
 
@@ -42,7 +42,7 @@ var boardApplication = angular.module('board', [
   'partModule',
   'userModule',
   'rankModule',
-  'sg.module.medal',
+  'sg.module.badges',
   'sg.module.top',
   'chatModule',
   'angular-jwt',
@@ -69,8 +69,8 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
     controller: 'RanksController'
   });
   $routeProvider.when('/medallas', {
-    templateUrl: '/js/partials/medals.html?v=' + version,
-    controller: 'MedalController'
+    templateUrl: '/js/partials/badges.html?v=' + version,
+    controller: 'BadgeController'
   });
   $routeProvider.when('/tops', {
     templateUrl: '/js/partials/tops.html?v=' + version,
@@ -541,6 +541,7 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
     // Load gamification data
     $http.get(layer_path + 'gamification').
       success(function(data, status) {
+        console.log(data)
         $scope.misc.gaming = data;
       }).
       error(function(data) {});

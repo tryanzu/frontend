@@ -142,7 +142,20 @@
                                 <span class="sr-only">{{profile.gaming.ratio}}%</span>
                               </div>
                             </div>
-                            <div class="experience-points">{{ profile.gaming.swords }} Espadas <span class="next-level cold" ng-if="profile.gaming.level < 16">{{profile.gaming.remaining}} para el <a href="/ranks">siguiente nivel</a></span></div>
+                            <div class="experience-points">
+                              {{ profile.gaming.swords }} Espadas
+                            </div>
+                            <div>
+                              <span class="next-level cold" ng-if="profile.gaming.level < 16">
+                                {{profile.gaming.remaining}} espadas para <a href="/ranks">{{ misc.gaming.rules[profile.gaming.level + 1].name }}</a>
+                              </span>
+                              <div class="next-level-block">
+                                <img ng-src="/images/gamification/ranks/{{ profile.gaming.level + 1 }}.png" alt="" style="width: 54px;" ng-cloak>
+                              </div>
+                              <div class="text-center">
+                                <a href="/ranks">Ver todos los rangos</a>
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>

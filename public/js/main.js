@@ -4415,30 +4415,14 @@ RankModule.controller('RanksController', [function() {
 
 }]);
 
-var MedalModule = angular.module('sg.module.medal', []);
+var BadgeModule = angular.module('sg.module.badges', []);
 
-// Medals factory
-MedalModule.factory('Medal', ['$resource', function( $resource ){
-  return $resource('/medals.json', {}, {});
-}]);
+// Badge module controllers
+BadgeModule.controller('BadgeController', ['$scope', '$timeout', function($scope, $timeout) {
 
-// Rank module controllers
-MedalModule.controller('MedalController', ['$scope', 'Medal', function($scope, Medal) {
-
-  $scope.medals = [];
-
-  $scope.labels = {
-    'Especial': 'especial',
-    'Ropa': 'ropa',
-    'Arma': 'arma',
-    'Armadura': 'armadura',
-    'Poder': 'poder',
-    'Contribución': 'contribucion'
-  }
-
-  Medal.query().$promise.then( function( data ) {
-    $scope.medals = data;
-  });
+  $timeout(function(){
+    $scope.badges = $scope.misc.gaming.badges;
+  }, 1000);
 
 }]);
 
@@ -4617,7 +4601,7 @@ chatModule.directive('sgEnter', function() {
 // @codekit-prepend "modules/part/init"
 // @codekit-prepend "modules/user/init"
 // @codekit-prepend "modules/rank/init"
-// @codekit-prepend "modules/medal/init"
+// @codekit-prepend "modules/badges/init"
 // @codekit-prepend "modules/top/init"
 // @codekit-prepend "modules/chat/chat"
 
@@ -4639,7 +4623,7 @@ var boardApplication = angular.module('board', [
   'partModule',
   'userModule',
   'rankModule',
-  'sg.module.medal',
+  'sg.module.badges',
   'sg.module.top',
   'chatModule',
   'angular-jwt',
@@ -4666,8 +4650,8 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
     controller: 'RanksController'
   });
   $routeProvider.when('/medallas', {
-    templateUrl: '/js/partials/medals.html?v=' + version,
-    controller: 'MedalController'
+    templateUrl: '/js/partials/badges.html?v=' + version,
+    controller: 'BadgeController'
   });
   $routeProvider.when('/tops', {
     templateUrl: '/js/partials/tops.html?v=' + version,
@@ -5138,6 +5122,7 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
     // Load gamification data
     $http.get(layer_path + 'gamification').
       success(function(data, status) {
+        console.log(data)
         $scope.misc.gaming = data;
       }).
       error(function(data) {});

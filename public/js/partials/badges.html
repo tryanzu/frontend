@@ -13,14 +13,14 @@
               <th>Medalla requerida</th>
               <th>Rango requerido</th>
             </tr>
-            <tr ng-repeat="medal in medals">
+            <tr ng-repeat="badge in misc.gaming.badges">
               <td><span class="have-it" tooltip="Tienes esta medalla"><i class="fa fa-check"></i></span></td>
               <td>
-                <span class="medal" ng-class="labels[medal.type]"><i class="circle"></i> {{ medal.name}}</span>
+                <span class="medal" ng-class="labels[medal.type]"><i class="circle"></i> {{ badge.name}}</span>
               </td>
-              <td>{{ medal.description}}</td>
-              <td>{{ medal.required_medal}}</td>
-              <td>{{ medal.required_level}}</td>
+              <td>{{ badge.description }}</td>
+              <td>{{ badge.required_badge }}</td>
+              <td>{{ badge.required_level }}</td>
             </tr>
           </table>
         </div>

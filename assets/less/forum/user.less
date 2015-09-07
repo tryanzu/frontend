@@ -292,16 +292,24 @@
   .experience-points {
     font-weight: bold;
     font-size: 12px;
+    text-align: center;
   }
   .next-level {
     font-size: 12px;
     font-weight: 400;
-    margin-left: 5px;
+    text-align: center;
+    display: block;
+    margin-bottom: 0.4em;
+
     &.hot {
       color: #0FB657;
     }
     &.cold {
       color: @brand-primary
     }
+  }
+  .next-level-block {
+    text-align: center;
+    filter: grayscale(100%) brightness(1.4);
   }
 }
