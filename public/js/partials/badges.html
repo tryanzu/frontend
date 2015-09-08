@@ -14,13 +14,17 @@
               <th>Rango requerido</th>
             </tr>
             <tr ng-repeat="badge in misc.gaming.badges">
-              <td><span class="have-it" tooltip="Tienes esta medalla"><i class="fa fa-check"></i></span></td>
               <td>
-                <span class="medal" ng-class="labels[medal.type]"><i class="circle"></i> {{ badge.name}}</span>
+                <span class="have-it" tooltip="Tienes esta medalla" ng-if="false">
+                  <i class="fa fa-check"></i>
+                </span>
+              </td>
+              <td>
+                <span class="medal" ng-class="badge.type"><i class="circle"></i> {{ badge.name}}</span>
               </td>
               <td>{{ badge.description }}</td>
-              <td>{{ badge.required_badge }}</td>
-              <td>{{ badge.required_level }}</td>
+              <td>{{ badge.required_badge.name }}</td>
+              <td>{{ misc.gaming.rules[badge.required_level].name }}</td>
             </tr>
           </table>
         </div>

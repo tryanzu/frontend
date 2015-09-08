@@ -84,6 +84,7 @@ UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed
     $scope.resolving_posts = true;
 
     Feed.get({limit: 10, offset: 0, user_id: $scope.profile.id}, function(data) {
+      //console.log(data);
       for(p in data.feed) {
         for(c in $scope.categories) {
           if (data.feed[p].categories[0] == $scope.categories[c].slug) {
@@ -99,6 +100,16 @@ UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed
     });
   };
 
+  $scope.loadUserComments = function() {
+    $http.get(layer_path + "users/" + $routeParams.id +"/comments")
+      .success(function(data) {
+        //console.log(data);
+        $scope.comments = data;
+      })
+      .error(function(data) {
+      });
+  }
+
   User.get({user_id: $routeParams.id}, function(data) {
     $scope.profile = data;
     $scope.startFeed();
@@ -110,9 +121,10 @@ UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed
     $scope.profile.gaming.remaining = remaining;
     var ratio = 100 - 100*(remaining/(rules[data.gaming.level].swords_end - rules[data.gaming.level].swords_start));
     $scope.profile.gaming.ratio = ratio;
-    console.log(rules[data.gaming.level].swords_start, rules[data.gaming.level].swords_end, ratio);
-
+    //console.log(rules[data.gaming.level].swords_start, rules[data.gaming.level].swords_end, ratio);
+    $scope.loadUserComments();
   }, function(response) {
     window.location = '/';
   });
+
 }]);
