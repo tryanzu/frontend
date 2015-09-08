@@ -12,10 +12,11 @@
               <th>Forma de obtenerla</th>
               <th>Medalla requerida</th>
               <th>Rango requerido</th>
+              <th></th>
             </tr>
             <tr ng-repeat="badge in misc.gaming.badges">
               <td>
-                <span class="have-it" tooltip="Tienes esta medalla" ng-if="false">
+                <span class="have-it" tooltip="Tienes esta medalla" ng-if="badge.owned">
                   <i class="fa fa-check"></i>
                 </span>
               </td>
@@ -23,8 +24,9 @@
                 <span class="medal" ng-class="badge.type"><i class="circle"></i> {{ badge.name}}</span>
               </td>
               <td>{{ badge.description }}</td>
-              <td>{{ badge.required_badge.name }}</td>
+              <td>{{ badge.required_badge.name || "Ninguna" }}</td>
               <td>{{ misc.gaming.rules[badge.required_level].name }}</td>
+              <td><a href="" ng-click="buy_badge(badge)" ng-if="!badge.owned">Comprar medalla</a></td>
             </tr>
           </table>
         </div>

@@ -4430,11 +4430,21 @@ RankModule.controller('RanksController', [function() {
 var BadgeModule = angular.module('sg.module.badges', []);
 
 // Badge module controllers
-BadgeModule.controller('BadgeController', ['$scope', '$timeout', function($scope, $timeout) {
+BadgeModule.controller('BadgeController', ['$scope', '$timeout', '$http', function($scope, $timeout, $http) {
 
   /*$timeout(function(){
     $scope.badges = $scope.misc.gaming.badges;
   }, 100);*/
+
+  $scope.buy_badge = function(badge) {
+    $http.post(layer_path + "badges/buy/" + badge.id)
+      .success(function(data) {
+        console.log(data);
+        badge.owned = true;
+      })
+      .error(function(data) {
+      });
+  }
 
 }]);
 
@@ -4938,7 +4948,8 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
     }
     $scope.user.isLogged = localStorage.getItem('signed_in')==='true'?true:false;
     $scope.misc = {
-      gaming: null
+      gaming: null,
+      badges: null
     };
 
     $scope.logUser = function() {
@@ -4947,6 +4958,7 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
           $scope.signOut();
         })
         .success(function(data) {
+          console.log(data);
           $scope.user.info = data;
           $scope.user.isLogged = true;
 
@@ -4957,8 +4969,16 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
 
           // Attach the member roles to the current user
           for(var i in data.roles) {
-            //console.log("Adding " + data.roles[i].name + " as role");
             AclService.attachRole(data.roles[i].name);
+          }
+
+          // Match badges
+          for(var i in data.gaming.badges) {
+            for(var j in $scope.misc.gaming.badges) {
+              if(data.gaming.badges[i].id === $scope.misc.gaming.badges[j].id) {
+                $scope.misc.gaming.badges[j].owned = true;
+              }
+            }
           }
 
           mixpanel.identify(data.id);
@@ -5120,9 +5140,11 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
     Facebook.getLoginStatus(function(r){$rootScope.fb_response = r;});
 
     // If already signed in, sign in the user
-    if(localStorage.signed_in === 'true') {
-      $scope.logUser();
-    }
+    $timeout(function() {
+      if(localStorage.signed_in === 'true') {
+        $scope.logUser();
+      }
+    }, 200);
 
     // Load platform stats
     $http.get(layer_path + 'stats/board').
@@ -5134,7 +5156,17 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
     // Load gamification data
     $http.get(layer_path + 'gamification').
       success(function(data, status) {
-        console.log(data)
+        //console.log(data)
+        for(var i in data.badges) {
+          if(data.badges[i].required_badge !== null) {
+            for(var j in data.badges) {
+              if(data.badges[j].id == data.badges[i].required_badge) {
+                data.badges[i].required_badge = data.badges[j];
+                break;
+              }
+            }
+          }
+        }
         $scope.misc.gaming = data;
       }).
       error(function(data) {});
