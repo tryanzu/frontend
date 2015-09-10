@@ -132,7 +132,7 @@ UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed
         var rules = $scope.misc.gaming.rules;
         var remaining = rules[data.gaming.level].swords_end - $scope.profile.gaming.swords;
         $scope.profile.gaming.remaining = remaining;
-        var ratio = 100 - 100*(remaining/(rules[data.gaming.level].swords_end - rules[data.gaming.level].swords_start));
+        var ratio = 100 - 100 * (remaining / (rules[data.gaming.level].swords_end - rules[data.gaming.level].swords_start));
         $scope.profile.gaming.ratio = ratio;
       }, 100);
     });

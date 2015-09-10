@@ -3,20 +3,35 @@
     background-color: #F9F9F9;
     font-weight: 600;
   }
+
+  td.vc-text {
+    line-height: 36px;
+  }
+  .position-change {
+    height: 36px;
+    line-height: 36px;
+
+    &.up {
+      color: @brand-success;
+    }
+    &.down {
+      color: @brand-danger;
+    }
+  }
   .position {
     display: inline-block;
-    width: 48px;
-    height: 48px;
+    width: 36px;
+    height: 36px;
     text-align: center;
-    font-size: 18px;
-    line-height: 48px;
+    font-size: 14px;
+    line-height: 36px;
     background-color: @brand-primary-lighter;
-    border-radius: 24px;
+    border-radius: 18px;
     font-weight: 300;
 
     &.gold, &.silver, &.bronze {
       font-weight: 400;
-      font-size: 24px
+      font-size: 16px
     }
     &.gold {
       background-color: #F9E689;
@@ -30,5 +45,16 @@
       background-color: #F9D7A4;
       color: #BF985F;
     }
+  }
+
+  .avatar {
+    .avatar-size(36px);
+  }
+
+  .username {
+    display: inline-block;
+    margin-left: 1.2em;
+    height: 36px;
+    line-height: 36px;
   }
 }

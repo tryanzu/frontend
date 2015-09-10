@@ -346,9 +346,17 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
     $scope.user.isLogged = localStorage.getItem('signed_in')==='true'?true:false;
     $scope.misc = {
       gaming: null,
-      badges: null
+      badges: null,
+      role_labels: {
+        'developer': 'Software Developer',
+        'spartan-girl': 'Spartan Girl',
+        'editor': 'Editor',
+        'child-moderator': 'Moderador Jr',
+        'category-moderator': 'Moderador',
+        'super-moderator': 'Super Moderador',
+        'administrator': 'Admin'
+      }
     };
-
     $scope.promises = {
       'gaming': null,
       'board_stats': null

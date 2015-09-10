@@ -3906,7 +3906,8 @@ var PublishController = ['$scope', '$routeParams', '$http', 'Category', 'Part', 
     content: '',
     category: '',
     components: false,
-    isQuestion: false
+    isQuestion: false,
+    pinned: false
   };
 
 	$scope.budgetFlexibility = [
@@ -4155,7 +4156,8 @@ var PublishController = ['$scope', '$routeParams', '$http', 'Category', 'Part', 
   			name: $scope.post.title,
   			category: $scope.post.category,
   			kind: 'category-post',
-        isquestion: $scope.post.isQuestion
+        isquestion: $scope.post.isQuestion,
+        pinned: $scope.post.pinned
   		};
 
   		$http.post(layer_path + 'post', post).then(function(data) {
@@ -4195,7 +4197,8 @@ var EditPostController = ['$scope', '$routeParams', '$http', 'Category', 'Part',
     title: '',
     content: '',
     category: '',
-    isQuestion: false
+    isQuestion: false,
+    pinned: false
   };
 
   $scope.adding_file = false;
@@ -4231,7 +4234,6 @@ var EditPostController = ['$scope', '$routeParams', '$http', 'Category', 'Part',
       console.log($scope.post_edit.category, $scope.post_edit.category.length < 1);
     } else {
       $scope.publishing = true;
-
       $scope.post_edit.name = $scope.post_edit.title;
 
   		$http.put(layer_path + 'posts/' + $scope.post.id, $scope.post_edit).then(function(data) {
@@ -4258,7 +4260,8 @@ var EditPostController = ['$scope', '$routeParams', '$http', 'Category', 'Part',
         content: data.content,
         category: data.category,
         kind: 'category-post',
-        isQuestion: data.is_question
+        isQuestion: data.is_question,
+        pinned: data.pinned
       };
       $scope.publishing = false;
     });
@@ -4423,7 +4426,7 @@ UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed
         var rules = $scope.misc.gaming.rules;
         var remaining = rules[data.gaming.level].swords_end - $scope.profile.gaming.swords;
         $scope.profile.gaming.remaining = remaining;
-        var ratio = 100 - 100*(remaining/(rules[data.gaming.level].swords_end - rules[data.gaming.level].swords_start));
+        var ratio = 100 - 100 * (remaining / (rules[data.gaming.level].swords_end - rules[data.gaming.level].swords_start));
         $scope.profile.gaming.ratio = ratio;
       }, 100);
     });
@@ -4974,9 +4977,17 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
     $scope.user.isLogged = localStorage.getItem('signed_in')==='true'?true:false;
     $scope.misc = {
       gaming: null,
-      badges: null
+      badges: null,
+      role_labels: {
+        'developer': 'Software Developer',
+        'spartan-girl': 'Spartan Girl',
+        'editor': 'Editor',
+        'child-moderator': 'Moderador Jr',
+        'category-moderator': 'Moderador',
+        'super-moderator': 'Super Moderador',
+        'administrator': 'Admin'
+      }
     };
-
     $scope.promises = {
       'gaming': null,
       'board_stats': null

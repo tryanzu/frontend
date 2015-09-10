@@ -173,22 +173,31 @@
       background: transparent;
       border: 1px solid @brand-primary;
       color: @brand-primary;
+      font-weight: 600;
 
       &.developer {
-        border: 1px solid #44A53C;
-        color: #616161;
-        background-color: #F4F9F3;
         border: transparent;
-        background-color: lighten(@brand-success, 50%);
+        background-color: lighten(@brand-success, 52%);
         color: @brand-success;
       }
-
-      &.Moderador {
-        border: 1px solid #E0915B;
-        color: #616161;
-        background-color: #FFF9F1;
+      &.spartan-girl {
         border: transparent;
-        background-color: lighten(@brand-warning, 42%);
+        background-color: lighten(@brand-danger, 35%);
+        color: @brand-danger;
+      }
+      &.editor {
+        border: transparent;
+        background-color: lighten(@brand-info, 42%);
+        color: @brand-info;
+      }
+      &.child-moderator, &.category-moderator, &.super-moderator {
+        border: transparent;
+        background-color: lighten(@brand-warning, 40%);
+        color: @brand-warning;
+      }
+      &.administrator {
+        border: transparent;
+        background-color: lighten(@brand-warning, 40%);
         color: @brand-warning;
       }
     }

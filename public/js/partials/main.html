@@ -203,7 +203,7 @@
                     <span class="verified-account" ng-if="post.author.id === '559af1c501c25d3790000054' || post.author.facebook.verified" tooltip="Cuenta verificada" tooltip-placement="right"><i class="fa fa-check"></i></span>
                     <ul class="role-labels" ng-if="post.author.roles.length > 0">
                       <li ng-repeat="role in post.author.roles" ng-if="role.name !== 'user'">
-                        <span class="label label-default" ng-class="role.name">{{role.name}}</span>
+                        <span class="label label-default" ng-class="role.name">{{ misc.role_labels[role.name] }}</span>
                       </li>
                     </ul>
                     <div class="description">{{ post.author.description || "Just another Spartan Geek" }}</div>
@@ -478,7 +478,7 @@
                           <span class="level">{{ misc.gaming.rules[comment.author.level].name }} &#8226;</span> {{ comment.author.description }}
                           <ul class="role-labels" ng-if="comment.author.roles.length > 0">
                             <li ng-repeat="role in comment.author.roles" ng-if="role.name !== 'user'">
-                              <span class="label label-default" ng-class="role.name">{{role.name}}</span>
+                              <span class="label label-default" ng-class="role.name">{{ misc.role_labels[role.name] }}</span>
                             </li>
                           </ul>
                         </div>
