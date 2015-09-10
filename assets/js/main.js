@@ -349,13 +349,18 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
       badges: null
     };
 
+    $scope.promises = {
+      'gaming': null,
+      'board_stats': null
+    }
+
     $scope.logUser = function() {
       $http.get(layer_path + 'user/my')
         .error(function(data, status, headers, config) {
           $scope.signOut();
         })
         .success(function(data) {
-          console.log(data);
+          //console.log(data);
           $scope.user.info = data;
           $scope.user.isLogged = true;
 
@@ -370,13 +375,34 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
           }
 
           // Match badges
-          for(var i in data.gaming.badges) {
-            for(var j in $scope.misc.gaming.badges) {
-              if(data.gaming.badges[i].id === $scope.misc.gaming.badges[j].id) {
-                $scope.misc.gaming.badges[j].owned = true;
+          $scope.promises.gaming.then(function() {
+            $timeout(function() {
+              for(var i in data.gaming.badges) {
+                for(var j in $scope.misc.gaming.badges) {
+                  if(data.gaming.badges[i].id === $scope.misc.gaming.badges[j].id) {
+                    $scope.misc.gaming.badges[j].owned = true;
+                    break;
+                  }
+                }
               }
-            }
-          }
+
+              for(var i in $scope.misc.gaming.badges) {
+                if($scope.misc.gaming.badges[i].required_badge) {
+                  //console.log($scope.misc.gaming.badges[i].name, "necesita")
+                  for(var j in $scope.misc.gaming.badges) {
+                    if($scope.misc.gaming.badges[i].required_badge.id === $scope.misc.gaming.badges[j].id) {
+                      //console.log($scope.misc.gaming.badges[j].name, "encontrada...")
+                      //console.log(!$scope.misc.gaming.badges[j].owned)
+                      if(!$scope.misc.gaming.badges[j].owned) {
+                        $scope.misc.gaming.badges[i].badge_needed = true;
+                        //console.log($scope.misc.gaming.badges[i]);
+                      }
+                    }
+                  }
+                }
+              }
+            }, 100);
+          });
 
           mixpanel.identify(data.id);
           mixpanel.people.set({
@@ -537,21 +563,20 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
     Facebook.getLoginStatus(function(r){$rootScope.fb_response = r;});
 
     // If already signed in, sign in the user
-    $timeout(function() {
-      if(localStorage.signed_in === 'true') {
-        $scope.logUser();
-      }
-    }, 200);
+    if(localStorage.signed_in === 'true') {
+      $scope.logUser();
+    }
 
     // Load platform stats
-    $http.get(layer_path + 'stats/board').
+    $scope.promises.board_stats = $http.get(layer_path + 'stats/board').
       success(function(data, status) {
         $scope.status.stats = data;
       }).
       error(function(data) {
       });
+
     // Load gamification data
-    $http.get(layer_path + 'gamification').
+    $scope.promises.gaming = $http.get(layer_path + 'gamification').
       success(function(data, status) {
         //console.log(data)
         for(var i in data.badges) {

@@ -10,8 +10,17 @@ BadgeModule.controller('BadgeController', ['$scope', '$timeout', '$http', functi
   $scope.buy_badge = function(badge) {
     $http.post(layer_path + "badges/buy/" + badge.id)
       .success(function(data) {
-        console.log(data);
+        //console.log(data);
         badge.owned = true;
+
+        for(var i in $scope.misc.gaming.badges) {
+          if($scope.misc.gaming.badges[i].required_badge) {
+            if($scope.misc.gaming.badges[i].required_badge.id === badge.id) {
+              $scope.misc.gaming.badges[i].badge_needed = false;
+            }
+          }
+        }
+
       })
       .error(function(data) {
       });

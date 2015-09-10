@@ -4297,8 +4297,8 @@ UserModule.factory('User', ['$resource', function($resource) {
 }]);
 
 // User Profile controller
-UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed', 'Upload', '$http',
-  function($scope, User, $routeParams, Feed, Upload, $http) {
+UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed', 'Upload', '$http', '$timeout',
+  function($scope, User, $routeParams, Feed, Upload, $http, $timeout) {
 
   $scope.profile = null;
   $scope.resolving_posts = false;
@@ -4402,16 +4402,32 @@ UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed
   }
 
   User.get({user_id: $routeParams.id}, function(data) {
+    //console.log(data)
     $scope.profile = data;
     $scope.startFeed();
     $scope.new_data.username = $scope.profile.username;
 
-    // We calculate remaining swords for next level and ratio
-    var rules = $scope.misc.gaming.rules;
-    var remaining = rules[data.gaming.level].swords_end - $scope.profile.gaming.swords;
-    $scope.profile.gaming.remaining = remaining;
-    var ratio = 100 - 100*(remaining/(rules[data.gaming.level].swords_end - rules[data.gaming.level].swords_start));
-    $scope.profile.gaming.ratio = ratio;
+    $scope.promises.gaming.then(function() {
+      $timeout(function() {
+        for(var i in data.gaming.badges) {
+          for(var j in $scope.misc.gaming.badges) {
+            if(data.gaming.badges[i].id === $scope.misc.gaming.badges[j].id) {
+              data.gaming.badges[i].name = $scope.misc.gaming.badges[j].name;
+              data.gaming.badges[i].type = $scope.misc.gaming.badges[j].type;
+              break;
+            }
+          }
+        }
+
+        // We calculate remaining swords for next level and ratio
+        var rules = $scope.misc.gaming.rules;
+        var remaining = rules[data.gaming.level].swords_end - $scope.profile.gaming.swords;
+        $scope.profile.gaming.remaining = remaining;
+        var ratio = 100 - 100*(remaining/(rules[data.gaming.level].swords_end - rules[data.gaming.level].swords_start));
+        $scope.profile.gaming.ratio = ratio;
+      }, 100);
+    });
+
     //console.log(rules[data.gaming.level].swords_start, rules[data.gaming.level].swords_end, ratio);
     $scope.loadUserComments();
   }, function(response) {
@@ -4439,8 +4455,17 @@ BadgeModule.controller('BadgeController', ['$scope', '$timeout', '$http', functi
   $scope.buy_badge = function(badge) {
     $http.post(layer_path + "badges/buy/" + badge.id)
       .success(function(data) {
-        console.log(data);
+        //console.log(data);
         badge.owned = true;
+
+        for(var i in $scope.misc.gaming.badges) {
+          if($scope.misc.gaming.badges[i].required_badge) {
+            if($scope.misc.gaming.badges[i].required_badge.id === badge.id) {
+              $scope.misc.gaming.badges[i].badge_needed = false;
+            }
+          }
+        }
+
       })
       .error(function(data) {
       });
@@ -4952,13 +4977,18 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
       badges: null
     };
 
+    $scope.promises = {
+      'gaming': null,
+      'board_stats': null
+    }
+
     $scope.logUser = function() {
       $http.get(layer_path + 'user/my')
         .error(function(data, status, headers, config) {
           $scope.signOut();
         })
         .success(function(data) {
-          console.log(data);
+          //console.log(data);
           $scope.user.info = data;
           $scope.user.isLogged = true;
 
@@ -4973,13 +5003,34 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
           }
 
           // Match badges
-          for(var i in data.gaming.badges) {
-            for(var j in $scope.misc.gaming.badges) {
-              if(data.gaming.badges[i].id === $scope.misc.gaming.badges[j].id) {
-                $scope.misc.gaming.badges[j].owned = true;
+          $scope.promises.gaming.then(function() {
+            $timeout(function() {
+              for(var i in data.gaming.badges) {
+                for(var j in $scope.misc.gaming.badges) {
+                  if(data.gaming.badges[i].id === $scope.misc.gaming.badges[j].id) {
+                    $scope.misc.gaming.badges[j].owned = true;
+                    break;
+                  }
+                }
               }
-            }
-          }
+
+              for(var i in $scope.misc.gaming.badges) {
+                if($scope.misc.gaming.badges[i].required_badge) {
+                  //console.log($scope.misc.gaming.badges[i].name, "necesita")
+                  for(var j in $scope.misc.gaming.badges) {
+                    if($scope.misc.gaming.badges[i].required_badge.id === $scope.misc.gaming.badges[j].id) {
+                      //console.log($scope.misc.gaming.badges[j].name, "encontrada...")
+                      //console.log(!$scope.misc.gaming.badges[j].owned)
+                      if(!$scope.misc.gaming.badges[j].owned) {
+                        $scope.misc.gaming.badges[i].badge_needed = true;
+                        //console.log($scope.misc.gaming.badges[i]);
+                      }
+                    }
+                  }
+                }
+              }
+            }, 100);
+          });
 
           mixpanel.identify(data.id);
           mixpanel.people.set({
@@ -5140,21 +5191,20 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
     Facebook.getLoginStatus(function(r){$rootScope.fb_response = r;});
 
     // If already signed in, sign in the user
-    $timeout(function() {
-      if(localStorage.signed_in === 'true') {
-        $scope.logUser();
-      }
-    }, 200);
+    if(localStorage.signed_in === 'true') {
+      $scope.logUser();
+    }
 
     // Load platform stats
-    $http.get(layer_path + 'stats/board').
+    $scope.promises.board_stats = $http.get(layer_path + 'stats/board').
       success(function(data, status) {
         $scope.status.stats = data;
       }).
       error(function(data) {
       });
+
     // Load gamification data
-    $http.get(layer_path + 'gamification').
+    $scope.promises.gaming = $http.get(layer_path + 'gamification').
       success(function(data, status) {
         //console.log(data)
         for(var i in data.badges) {
