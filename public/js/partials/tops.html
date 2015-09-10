@@ -3,9 +3,9 @@
     <h2 class="text-center" style="margin-bottom: 1em;">Top de usuarios</h2>
     <div class="text-center" style="margin-bottom: 1em;">
       <div class="btn-group" role="group" aria-label="...">
-        <button type="button" class="btn btn-default">Contribuciones</button>
-        <button type="button" class="btn btn-default active">Rangos</button>
-        <button type="button" class="btn btn-default">Riqueza</button>
+        <button type="button" ng-click="change_order('badges')" class="btn btn-default" ng-class="{active: order_by == 'badges'}">Medallas</button>
+        <button type="button" ng-click="change_order('swords')" class="btn btn-default" ng-class="{active: order_by == 'swords'}">Rangos</button>
+        <button type="button" ng-click="change_order('wealth')" class="btn btn-default" ng-class="{active: order_by == 'wealth'}">Riqueza</button>
       </div>
     </div>
     <div class="row">
@@ -18,34 +18,38 @@
                 <th>Posición</th>
                 <th>Nombre de usuario</th>
                 <th>Rango actual</th>
+                <th>Medallas</th>
+                <th>Monedas</th>
                 <th>Espadas</th>
               </tr>
             </thead>
             <tbody>
-              <tr ng-repeat="i in [] | range:50" ng-class="{highlight: i == example.position}">
+              <tr ng-repeat="u in data" ng-class="{highlight: i == u.position[order_by]}">
                 <td style="width: 40px;" class="text-center">
-                  <span class="position-change up" ng-if="false"><i class="fa fa-chevron-up"></i></span>
-                  <span class="position-change down" ng-if="false"><i class="fa fa-chevron-down"></i></span>
-                  <span class="position-change same" ng-if="true"><i class="fa fa-minus"></i></span>
+                  <span class="position-change up" ng-if="u.position[order_by] < u.before[order_by]"><i class="fa fa-chevron-up"></i></span>
+                  <span class="position-change down" ng-if="u.position[order_by] > u.before[order_by]"><i class="fa fa-chevron-down"></i></span>
+                  <span class="position-change same" ng-if="u.position[order_by] == u.before[order_by]"><i class="fa fa-minus"></i></span>
                 </td>
                 <td>
-                  <div class="position" ng-class="{gold: i == 0, silver: i == 1, bronze: i == 2}">
-                    {{ i + 1 }}
+                  <div class="position" ng-class="{gold: u.position[order_by] == 1, silver: u.position[order_by] == 2, bronze: u.position[order_by] == 3}">
+                    {{ u.position[order_by] }}
                   </div>
                 </td>
                 <td>
-                  <a href="/u/{{ example.username }}/{{ example.id }}" title="Perfil de {{ example.username }}">
-                    <img class="avatar" ng-src="{{ example.image }}" alt="{{ example.username }}" ng-if="example.image">
-                    <span class="avatar" title="{{ example.username }}" ng-if="!example.image">{{ example.username[0] }}</span>
+                  <a href="/u/{{ u.user.username }}/{{ u.user.id }}" title="Perfil de {{ u.user.username }}">
+                    <img class="avatar" ng-src="{{ u.user.image }}" alt="{{ u.user.username }}" ng-if="u.user.image">
+                    <span class="avatar" title="{{ u.user.username }}" ng-if="!u.user.image">{{ u.user.username[0] }}</span>
                   </a>
                   <div class="username">
-                    <a href="/u/{{ example.username }}/{{ example.id }}" title="Perfil de {{ example.username }}">
-                      {{ example.username }}
+                    <a href="/u/{{ u.user.username }}/{{ u.user.id }}" title="Perfil de {{ u.user.username }}">
+                      {{ u.user.username }}
                     </a>
                   </div>
                 </td>
                 <td class="vc-text">{{ misc.gaming.rules[5].name }}</td>
-                <td class="vc-text">{{ (50-i)*100 | number:0}}</td>
+                <td class="vc-text">{{ u.badges | number:0 }}</td>
+                <td class="vc-text">{{ u.coins | number:0 }}</td>
+                <td class="vc-text">{{ u.swords | number:0 }}</td>
               </tr>
             </tbody>
           </table>

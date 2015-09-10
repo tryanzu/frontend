@@ -363,12 +363,10 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
     }
 
     $scope.logUser = function() {
-      $http.get(layer_path + 'user/my')
-        .error(function(data, status, headers, config) {
-          $scope.signOut();
-        })
-        .success(function(data) {
-          //console.log(data);
+      $http.get(layer_path + 'user/my').then(
+        function(response) {
+          var data = response.data;
+          console.log(data);
           $scope.user.info = data;
           $scope.user.isLogged = true;
 
@@ -493,6 +491,9 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
               });
             }
           });
+        },
+        function(response) {
+          $scope.signOut();
         });
     }
 
