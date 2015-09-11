@@ -366,14 +366,8 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
       $http.get(layer_path + 'user/my').then(
         function(response) {
           var data = response.data;
-          console.log(data);
           $scope.user.info = data;
           $scope.user.isLogged = true;
-
-          $timeout(function() {
-            $scope.$broadcast('userLogged');
-            $scope.$broadcast('changedContainers');
-          }, 100);
 
           // Attach the member roles to the current user
           for(var i in data.roles) {
@@ -394,14 +388,10 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
 
               for(var i in $scope.misc.gaming.badges) {
                 if($scope.misc.gaming.badges[i].required_badge) {
-                  //console.log($scope.misc.gaming.badges[i].name, "necesita")
                   for(var j in $scope.misc.gaming.badges) {
                     if($scope.misc.gaming.badges[i].required_badge.id === $scope.misc.gaming.badges[j].id) {
-                      //console.log($scope.misc.gaming.badges[j].name, "encontrada...")
-                      //console.log(!$scope.misc.gaming.badges[j].owned)
                       if(!$scope.misc.gaming.badges[j].owned) {
                         $scope.misc.gaming.badges[i].badge_needed = true;
-                        //console.log($scope.misc.gaming.badges[i]);
                       }
                     }
                   }
@@ -451,9 +441,7 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
               // Gamification attributes
               var gamingRef = new Firebase(userUrl + '/gaming');
               $scope.user.gaming = $firebaseObject(gamingRef);
-              $scope.user.gaming.$loaded(function() {
-                //console.log($scope.user.gaming);
-              });
+              $scope.user.gaming.$loaded(function() {});
 
               // For sync options in newsfeed
               var pending = $firebaseObject(pendingRef);
@@ -468,8 +456,7 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
               var count = $firebaseObject(notificationsCountRef)
               // synchronize the object with a three-way data binding
               count.$bindTo($scope, "user.notifications.count");
-              count.$loaded(function(){
-                //console.log(count);
+              count.$loaded( function() {
                 var to_show = 15;
                 if(count.$value > 15){
                   to_show = count.$value;
@@ -491,8 +478,15 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
               });
             }
           });
+
+          // Warn everyone
+          $timeout(function() {
+            $scope.$broadcast('userLogged');
+            $scope.$broadcast('changedContainers');
+          }, 100);
         },
         function(response) {
+          // If error while getting personal info, just log him out
           $scope.signOut();
         });
     }
@@ -534,7 +528,6 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
       $timeout(function() {
         var arrayLength = $scope.user.notifications.list.length;
         for (var i = 0; i < arrayLength; i++) {
-          //console.log($scope.user.notifications.list[i]);
           if(!$scope.user.notifications.list[i].seen) {
             $scope.user.notifications.list[i].seen = true;
             $scope.user.notifications.list.$save(i);
