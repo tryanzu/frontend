@@ -191,8 +191,8 @@
                     </div>
                     <div class="col-md-7 col-md-offset-1">
                       <h3>Medallas</h3>
-                      <p class="alert alert-info" ng-if="user.info.id !== profile.id && profile.gaming.badges.length === 0">Este usuario no tiene medallas.</p>
-                      <p class="alert alert-info" ng-if="user.info.id === profile.id && profile.gaming.badges.length === 0">Aún no tienes medallas, pero podrás conseguirlas con monedas.</p>
+                      <p class="alert alert-info" ng-if="user.info.id !== profile.id && !profile.gaming.badges.length">Este usuario no tiene medallas.</p>
+                      <p class="alert alert-info" ng-if="user.info.id === profile.id && !profile.gaming.badges.length">Aún no tienes medallas, pero podrás conseguirlas con monedas.</p>
 
                       <div ng-repeat="badge in profile.gaming.badges" class="badge-container">
                         <span class="medal" ng-class="badge.type"><i class="circle"></i> {{ badge.name}}</span>
