@@ -87,8 +87,8 @@
                     <li role="presentation" ng-class="{active: current_page == 'feed'}">
                       <a href="" ng-click="current_page = 'feed'">Publicaciones <span class="count hidden">2</span></a>
                     </li>
-                    <li role="presentation" class="hidden">
-                      <a href="">Comentarios <span class="count hidden">10</span></a>
+                    <li role="presentation" ng-class="{active: current_page == 'comments'}">
+                      <a href="" ng-click="current_page = 'comments'">Comentarios <span class="count">{{ comments.count }}</span></a>
                     </li>
                     <li role="presentation" class="hidden">
                       <a href="">Juegos <span class="count hidden">25</span></a>
@@ -100,7 +100,7 @@
               <div class="col-md-9">
                 <div class="offset-content user-content" ng-if="current_page == 'feed'">
                   <div ng-if="posts.length == 0">
-                    <p class="alert alert-info" ng-if="user.info.id !== profile.id">Este usuario aún no creado ninguna publiación.</p>
+                    <p class="alert alert-info" ng-if="user.info.id !== profile.id">Este usuario aún no creado ninguna publicación.</p>
                     <p class="alert alert-info" ng-if="user.info.id === profile.id">Aún no has creado ninguna publicación. ¿Qué esperas?</p>
                   </div>
                   <div class="user-activity" ng-if="posts.length > 0">
@@ -127,6 +127,35 @@
                   </div>
                 </div>
 
+                <div class="offset-content user-content" ng-if="current_page == 'comments'">
+                  <div ng-if="comments.count == 0">
+                    <p class="alert alert-info" ng-if="user.info.id !== profile.id">Este usuario aún no ha comentado en ninguna publicación.</p>
+                    <p class="alert alert-info" ng-if="user.info.id === profile.id">Aún no has dejado ningún comentario. ¿Qué esperas?</p>
+                  </div>
+                  <div class="user-activity" ng-if="comments.count > 0">
+                    <ul class="activity-list">
+                      <li ng-repeat="comment in comments.activity">
+                        <div>
+                          <img class="avatar activity-icon" title="{{profile.username}}" src="{{ profile.image }}" ng-if="profile.image">
+                          <span class="avatar activity-icon" ng-if="!profile.image">{{ profile.username[0] }}</span>
+                          <div class="activity-info">
+                            <strong>Comentó una publicación</strong>
+                            <time datetime="{{comment.created_at}}" time-ago from-time="{{comment.created_at}}"></time>
+                          </div>
+                          <a href="/p/{{comment.slug}}/{{comment.related_id}}" class="activity-content post-activity">
+                            <ul class="list-inline">
+                              <li class="item-title ">
+                                <h3 class="title">{{ comment.title }}</h3>
+                              </li>
+                            </ul>
+                            <div class="body">{{ comment.content}}</div>
+                          </a>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+
                 <div class="offset-content user-content" ng-if="current_page == 'info'">
                   <div class="row">
                     <div class="col-md-4">
@@ -142,15 +171,36 @@
                                 <span class="sr-only">{{profile.gaming.ratio}}%</span>
                               </div>
                             </div>
-                            <div class="experience-points">{{ profile.gaming.swords }} Espadas <span class="next-level cold" ng-if="profile.gaming.level < 16">{{profile.gaming.remaining}} para el <a href="/ranks">siguiente nivel</a></span></div>
+                            <div class="experience-points">
+                              {{ profile.gaming.swords }} Espadas
+                            </div>
+                            <div>
+                              <span class="next-level cold" ng-if="profile.gaming.level < 16">
+                                {{profile.gaming.remaining}} espadas para <a href="/rangos">{{ misc.gaming.rules[profile.gaming.level + 1].name }}</a>
+                              </span>
+                              <div class="next-level-block">
+                                <img ng-src="/images/gamification/ranks/{{ profile.gaming.level + 1 }}.png" alt="" style="width: 54px;" ng-cloak>
+                              </div>
+                              <div class="text-center">
+                                <a href="/rangos">Ver todos los rangos</a>
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
                     <div class="col-md-7 col-md-offset-1">
                       <h3>Medallas</h3>
-                      <p class="alert alert-info" ng-if="user.info.id !== profile.id">Este usuario no tiene medallas.</p>
-                      <p class="alert alert-info" ng-if="user.info.id === profile.id">Aún no tienes medallas, pero podrás conseguirlas con monedas. <strong>Muy pronto</strong> estará la sección de medallas.</p>
+                      <p class="alert alert-info" ng-if="user.info.id !== profile.id && !profile.gaming.badges.length">Este usuario no tiene medallas.</p>
+                      <p class="alert alert-info" ng-if="user.info.id === profile.id && !profile.gaming.badges.length">Aún no tienes medallas, pero podrás conseguirlas con monedas.</p>
+
+                      <div ng-repeat="badge in profile.gaming.badges" class="badge-container">
+                        <span class="medal" ng-class="badge.type"><i class="circle"></i> {{ badge.name}}</span>
+                      </div>
+
+                      <hr>
+
+                      <a href="/medallas" alt="Medallas de SpartanGeek">Revisa la lista de medallas aquí.</a>
                     </div>
                   </div>
                   <hr>

@@ -3622,7 +3622,7 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
     to_edit.find('a.user-mention').each(function(index) {
       var text = $(this).html()
       if($(this).data('comment')) {
-        text += $(this).data('comment');
+        text += '#' + $(this).data('comment');
       }
       $(this).replaceWith(text);
     });
@@ -3906,7 +3906,8 @@ var PublishController = ['$scope', '$routeParams', '$http', 'Category', 'Part', 
     content: '',
     category: '',
     components: false,
-    isQuestion: false
+    isQuestion: false,
+    pinned: false
   };
 
 	$scope.budgetFlexibility = [
@@ -4155,7 +4156,8 @@ var PublishController = ['$scope', '$routeParams', '$http', 'Category', 'Part', 
   			name: $scope.post.title,
   			category: $scope.post.category,
   			kind: 'category-post',
-        isquestion: $scope.post.isQuestion
+        isquestion: $scope.post.isQuestion,
+        pinned: $scope.post.pinned
   		};
 
   		$http.post(layer_path + 'post', post).then(function(data) {
@@ -4195,7 +4197,8 @@ var EditPostController = ['$scope', '$routeParams', '$http', 'Category', 'Part',
     title: '',
     content: '',
     category: '',
-    isQuestion: false
+    isQuestion: false,
+    pinned: false
   };
 
   $scope.adding_file = false;
@@ -4231,7 +4234,6 @@ var EditPostController = ['$scope', '$routeParams', '$http', 'Category', 'Part',
       console.log($scope.post_edit.category, $scope.post_edit.category.length < 1);
     } else {
       $scope.publishing = true;
-
       $scope.post_edit.name = $scope.post_edit.title;
 
   		$http.put(layer_path + 'posts/' + $scope.post.id, $scope.post_edit).then(function(data) {
@@ -4258,7 +4260,8 @@ var EditPostController = ['$scope', '$routeParams', '$http', 'Category', 'Part',
         content: data.content,
         category: data.category,
         kind: 'category-post',
-        isQuestion: data.is_question
+        isQuestion: data.is_question,
+        pinned: data.pinned
       };
       $scope.publishing = false;
     });
@@ -4297,8 +4300,8 @@ UserModule.factory('User', ['$resource', function($resource) {
 }]);
 
 // User Profile controller
-UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed', 'Upload', '$http',
-  function($scope, User, $routeParams, Feed, Upload, $http) {
+UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed', 'Upload', '$http', '$timeout',
+  function($scope, User, $routeParams, Feed, Upload, $http, $timeout) {
 
   $scope.profile = null;
   $scope.resolving_posts = false;
@@ -4375,6 +4378,7 @@ UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed
     $scope.resolving_posts = true;
 
     Feed.get({limit: 10, offset: 0, user_id: $scope.profile.id}, function(data) {
+      //console.log(data);
       for(p in data.feed) {
         for(c in $scope.categories) {
           if (data.feed[p].categories[0] == $scope.categories[c].slug) {
@@ -4390,28 +4394,119 @@ UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed
     });
   };
 
+  $scope.loadUserComments = function() {
+    $http.get(layer_path + "users/" + $routeParams.id +"/comments")
+      .success(function(data) {
+        //console.log(data);
+        $scope.comments = data;
+      })
+      .error(function(data) {
+      });
+  }
+
   User.get({user_id: $routeParams.id}, function(data) {
+    //console.log(data)
     $scope.profile = data;
     $scope.startFeed();
     $scope.new_data.username = $scope.profile.username;
 
-    // We calculate remaining swords for next level and ratio
-    var rules = $scope.misc.gaming.rules;
-    var remaining = rules[data.gaming.level].swords_end - $scope.profile.gaming.swords;
-    $scope.profile.gaming.remaining = remaining;
-    var ratio = 100 - 100*(remaining/(rules[data.gaming.level].swords_end - rules[data.gaming.level].swords_start));
-    $scope.profile.gaming.ratio = ratio;
-    console.log(rules[data.gaming.level].swords_start, rules[data.gaming.level].swords_end, ratio);
+    $scope.promises.gaming.then(function() {
+      $timeout(function() {
+        for(var i in data.gaming.badges) {
+          for(var j in $scope.misc.gaming.badges) {
+            if(data.gaming.badges[i].id === $scope.misc.gaming.badges[j].id) {
+              data.gaming.badges[i].name = $scope.misc.gaming.badges[j].name;
+              data.gaming.badges[i].type = $scope.misc.gaming.badges[j].type;
+              break;
+            }
+          }
+        }
 
+        // We calculate remaining swords for next level and ratio
+        var rules = $scope.misc.gaming.rules;
+        var remaining = rules[data.gaming.level].swords_end - $scope.profile.gaming.swords;
+        $scope.profile.gaming.remaining = remaining;
+        var ratio = 100 - 100 * (remaining / (rules[data.gaming.level].swords_end - rules[data.gaming.level].swords_start));
+        $scope.profile.gaming.ratio = ratio;
+      }, 100);
+    });
+
+    //console.log(rules[data.gaming.level].swords_start, rules[data.gaming.level].swords_end, ratio);
+    $scope.loadUserComments();
   }, function(response) {
     window.location = '/';
   });
+
 }]);
 
 var RankModule = angular.module('rankModule', []);
 
 // Rank module controllers
 RankModule.controller('RanksController', [function() {
+
+}]);
+
+var BadgeModule = angular.module('sg.module.badges', []);
+
+// Badge module controllers
+BadgeModule.controller('BadgeController', ['$scope', '$timeout', '$http', function($scope, $timeout, $http) {
+
+  /*$timeout(function(){
+    $scope.badges = $scope.misc.gaming.badges;
+  }, 100);*/
+
+  $scope.buy_badge = function(badge) {
+    $http.post(layer_path + "badges/buy/" + badge.id)
+      .success(function(data) {
+        //console.log(data);
+        badge.owned = true;
+
+        for(var i in $scope.misc.gaming.badges) {
+          if($scope.misc.gaming.badges[i].required_badge) {
+            if($scope.misc.gaming.badges[i].required_badge.id === badge.id) {
+              $scope.misc.gaming.badges[i].badge_needed = false;
+            }
+          }
+        }
+
+      })
+      .error(function(data) {
+      });
+  }
+
+}]);
+
+var TopModule = angular.module('sg.module.top', []);
+
+
+// Rank module controllers
+TopModule.controller('TopController', ['$scope', '$http', function($scope, $http) {
+  $scope.example = {
+    username: 'AcidKid',
+    image: 'http://s3-us-west-1.amazonaws.com/spartan-board/users/55dce3c893e89a20eb000001-120x120.jpg',
+    id: '54e238652397381217000001',
+    position: 2
+  }
+  $scope.order_by = 'swords';
+  $scope.options = ['swords', 'badges', 'wealth'];
+  $scope.data = [];
+
+  $scope.change_order = function(order) {
+
+    if($scope.options.indexOf(order) < 0) {
+      $scope.order_by = 'swords';
+    } else {
+      $scope.order_by = order;
+    }
+
+    $http.get(layer_path + 'stats/ranking', {params: {sort: $scope.order_by}}).
+      then(function(response){
+        $scope.data = response.data;
+        //console.log($scope.data )
+      });
+  }
+
+  $scope.change_order();
 
 }]);
 
@@ -4577,6 +4672,8 @@ chatModule.directive('sgEnter', function() {
 // @codekit-prepend "modules/part/init"
 // @codekit-prepend "modules/user/init"
 // @codekit-prepend "modules/rank/init"
+// @codekit-prepend "modules/badges/init"
+// @codekit-prepend "modules/top/init"
 // @codekit-prepend "modules/chat/chat"
 
 var boardApplication = angular.module('board', [
@@ -4597,6 +4694,8 @@ var boardApplication = angular.module('board', [
   'partModule',
   'userModule',
   'rankModule',
+  'sg.module.badges',
+  'sg.module.top',
   'chatModule',
   'angular-jwt',
   'firebase',
@@ -4617,9 +4716,17 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
     templateUrl: '/js/partials/main.html?v=' + version,
     controller: 'CategoryListController'
   });
-  $routeProvider.when('/ranks', {
+  $routeProvider.when('/rangos', {
     templateUrl: '/js/partials/ranks.html?v=' + version,
     controller: 'RanksController'
+  });
+  $routeProvider.when('/medallas', {
+    templateUrl: '/js/partials/badges.html?v=' + version,
+    controller: 'BadgeController'
+  });
+  $routeProvider.when('/top-ranking', {
+    templateUrl: '/js/partials/tops.html?v=' + version,
+    controller: 'TopController'
   });
   $routeProvider.when('/c/:slug', {
     templateUrl: '/js/partials/main.html?v=' + version,
@@ -4890,28 +4997,60 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
     }
     $scope.user.isLogged = localStorage.getItem('signed_in')==='true'?true:false;
     $scope.misc = {
-      gaming: null
+      gaming: null,
+      badges: null,
+      role_labels: {
+        'developer': 'Software Developer',
+        'spartan-girl': 'Spartan Girl',
+        'editor': 'Editor',
+        'child-moderator': 'Moderador Jr',
+        'category-moderator': 'Moderador',
+        'super-moderator': 'Super Moderador',
+        'administrator': 'Admin'
+      }
     };
+    $scope.promises = {
+      'gaming': null,
+      'board_stats': null
+    }
 
     $scope.logUser = function() {
-      $http.get(layer_path + 'user/my')
-        .error(function(data, status, headers, config) {
-          $scope.signOut();
-        })
-        .success(function(data) {
+      $http.get(layer_path + 'user/my').then(
+        function(response) {
+          var data = response.data;
           $scope.user.info = data;
           $scope.user.isLogged = true;
 
-          $timeout(function() {
-            $scope.$broadcast('userLogged');
-            $scope.$broadcast('changedContainers');
-          }, 100);
-
           // Attach the member roles to the current user
           for(var i in data.roles) {
-            //console.log("Adding " + data.roles[i].name + " as role");
             AclService.attachRole(data.roles[i].name);
           }
+
+          // Match badges
+          $scope.promises.gaming.then(function() {
+            $timeout(function() {
+              for(var i in data.gaming.badges) {
+                for(var j in $scope.misc.gaming.badges) {
+                  if(data.gaming.badges[i].id === $scope.misc.gaming.badges[j].id) {
+                    $scope.misc.gaming.badges[j].owned = true;
+                    break;
+                  }
+                }
+              }
+
+              for(var i in $scope.misc.gaming.badges) {
+                if($scope.misc.gaming.badges[i].required_badge) {
+                  for(var j in $scope.misc.gaming.badges) {
+                    if($scope.misc.gaming.badges[i].required_badge.id === $scope.misc.gaming.badges[j].id) {
+                      if(!$scope.misc.gaming.badges[j].owned) {
+                        $scope.misc.gaming.badges[i].badge_needed = true;
+                      }
+                    }
+                  }
+                }
+              }
+            }, 100);
+          });
 
           mixpanel.identify(data.id);
           mixpanel.people.set({
@@ -4954,9 +5093,7 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
               // Gamification attributes
               var gamingRef = new Firebase(userUrl + '/gaming');
               $scope.user.gaming = $firebaseObject(gamingRef);
-              $scope.user.gaming.$loaded(function() {
-                //console.log($scope.user.gaming);
-              });
+              $scope.user.gaming.$loaded(function() {});
 
               // For sync options in newsfeed
               var pending = $firebaseObject(pendingRef);
@@ -4971,8 +5108,7 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
               var count = $firebaseObject(notificationsCountRef)
               // synchronize the object with a three-way data binding
               count.$bindTo($scope, "user.notifications.count");
-              count.$loaded(function(){
-                //console.log(count);
+              count.$loaded( function() {
                 var to_show = 15;
                 if(count.$value > 15){
                   to_show = count.$value;
@@ -4994,6 +5130,16 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
               });
             }
           });
+
+          // Warn everyone
+          $timeout(function() {
+            $scope.$broadcast('userLogged');
+            $scope.$broadcast('changedContainers');
+          }, 100);
+        },
+        function(response) {
+          // If error while getting personal info, just log him out
+          $scope.signOut();
         });
     }
 
@@ -5034,7 +5180,6 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
       $timeout(function() {
         var arrayLength = $scope.user.notifications.list.length;
         for (var i = 0; i < arrayLength; i++) {
-          //console.log($scope.user.notifications.list[i]);
           if(!$scope.user.notifications.list[i].seen) {
             $scope.user.notifications.list[i].seen = true;
             $scope.user.notifications.list.$save(i);
@@ -5077,15 +5222,27 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
     }
 
     // Load platform stats
-    $http.get(layer_path + 'stats/board').
+    $scope.promises.board_stats = $http.get(layer_path + 'stats/board').
       success(function(data, status) {
         $scope.status.stats = data;
       }).
       error(function(data) {
       });
+
     // Load gamification data
-    $http.get(layer_path + 'gamification').
+    $scope.promises.gaming = $http.get(layer_path + 'gamification').
       success(function(data, status) {
+        //console.log(data)
+        for(var i in data.badges) {
+          if(data.badges[i].required_badge !== null) {
+            for(var j in data.badges) {
+              if(data.badges[j].id == data.badges[i].required_badge) {
+                data.badges[i].required_badge = data.badges[j];
+                break;
+              }
+            }
+          }
+        }
         $scope.misc.gaming = data;
       }).
       error(function(data) {});

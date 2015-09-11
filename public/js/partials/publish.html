@@ -320,6 +320,16 @@
           <p>De esta forma decidimos a quien mostrar tu publicación, a espartanos que responden ó que buscan respuestas.</p>
         </div>
 
+        <div class="config" ng-if="can('pin-board-posts')">
+          <h4>Marcar como Importante</h4>
+          <div class="question">
+            <div class="check">
+              <input type="checkbox" id="is_important" name="check" ng-model="post.pinned" />
+              <label for="is_important"></label>
+            </div>
+          </div>
+        </div>
+
         <div class="config">
 
           <p ng-show="post.components && post.title != ''">

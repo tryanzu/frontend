@@ -20,6 +20,8 @@
 // @codekit-prepend "modules/part/init"
 // @codekit-prepend "modules/user/init"
 // @codekit-prepend "modules/rank/init"
+// @codekit-prepend "modules/badges/init"
+// @codekit-prepend "modules/top/init"
 // @codekit-prepend "modules/chat/chat"
 
 var boardApplication = angular.module('board', [
@@ -40,6 +42,8 @@ var boardApplication = angular.module('board', [
   'partModule',
   'userModule',
   'rankModule',
+  'sg.module.badges',
+  'sg.module.top',
   'chatModule',
   'angular-jwt',
   'firebase',
@@ -60,9 +64,17 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
     templateUrl: '/js/partials/main.html?v=' + version,
     controller: 'CategoryListController'
   });
-  $routeProvider.when('/ranks', {
+  $routeProvider.when('/rangos', {
     templateUrl: '/js/partials/ranks.html?v=' + version,
     controller: 'RanksController'
+  });
+  $routeProvider.when('/medallas', {
+    templateUrl: '/js/partials/badges.html?v=' + version,
+    controller: 'BadgeController'
+  });
+  $routeProvider.when('/top-ranking', {
+    templateUrl: '/js/partials/tops.html?v=' + version,
+    controller: 'TopController'
   });
   $routeProvider.when('/c/:slug', {
     templateUrl: '/js/partials/main.html?v=' + version,
@@ -333,28 +345,60 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
     }
     $scope.user.isLogged = localStorage.getItem('signed_in')==='true'?true:false;
     $scope.misc = {
-      gaming: null
+      gaming: null,
+      badges: null,
+      role_labels: {
+        'developer': 'Software Developer',
+        'spartan-girl': 'Spartan Girl',
+        'editor': 'Editor',
+        'child-moderator': 'Moderador Jr',
+        'category-moderator': 'Moderador',
+        'super-moderator': 'Super Moderador',
+        'administrator': 'Admin'
+      }
     };
+    $scope.promises = {
+      'gaming': null,
+      'board_stats': null
+    }
 
     $scope.logUser = function() {
-      $http.get(layer_path + 'user/my')
-        .error(function(data, status, headers, config) {
-          $scope.signOut();
-        })
-        .success(function(data) {
+      $http.get(layer_path + 'user/my').then(
+        function(response) {
+          var data = response.data;
           $scope.user.info = data;
           $scope.user.isLogged = true;
 
-          $timeout(function() {
-            $scope.$broadcast('userLogged');
-            $scope.$broadcast('changedContainers');
-          }, 100);
-
           // Attach the member roles to the current user
           for(var i in data.roles) {
-            //console.log("Adding " + data.roles[i].name + " as role");
             AclService.attachRole(data.roles[i].name);
           }
+
+          // Match badges
+          $scope.promises.gaming.then(function() {
+            $timeout(function() {
+              for(var i in data.gaming.badges) {
+                for(var j in $scope.misc.gaming.badges) {
+                  if(data.gaming.badges[i].id === $scope.misc.gaming.badges[j].id) {
+                    $scope.misc.gaming.badges[j].owned = true;
+                    break;
+                  }
+                }
+              }
+
+              for(var i in $scope.misc.gaming.badges) {
+                if($scope.misc.gaming.badges[i].required_badge) {
+                  for(var j in $scope.misc.gaming.badges) {
+                    if($scope.misc.gaming.badges[i].required_badge.id === $scope.misc.gaming.badges[j].id) {
+                      if(!$scope.misc.gaming.badges[j].owned) {
+                        $scope.misc.gaming.badges[i].badge_needed = true;
+                      }
+                    }
+                  }
+                }
+              }
+            }, 100);
+          });
 
           mixpanel.identify(data.id);
           mixpanel.people.set({
@@ -397,9 +441,7 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
               // Gamification attributes
               var gamingRef = new Firebase(userUrl + '/gaming');
               $scope.user.gaming = $firebaseObject(gamingRef);
-              $scope.user.gaming.$loaded(function() {
-                //console.log($scope.user.gaming);
-              });
+              $scope.user.gaming.$loaded(function() {});
 
               // For sync options in newsfeed
               var pending = $firebaseObject(pendingRef);
@@ -414,8 +456,7 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
               var count = $firebaseObject(notificationsCountRef)
               // synchronize the object with a three-way data binding
               count.$bindTo($scope, "user.notifications.count");
-              count.$loaded(function(){
-                //console.log(count);
+              count.$loaded( function() {
                 var to_show = 15;
                 if(count.$value > 15){
                   to_show = count.$value;
@@ -437,6 +478,16 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
               });
             }
           });
+
+          // Warn everyone
+          $timeout(function() {
+            $scope.$broadcast('userLogged');
+            $scope.$broadcast('changedContainers');
+          }, 100);
+        },
+        function(response) {
+          // If error while getting personal info, just log him out
+          $scope.signOut();
         });
     }
 
@@ -477,7 +528,6 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
       $timeout(function() {
         var arrayLength = $scope.user.notifications.list.length;
         for (var i = 0; i < arrayLength; i++) {
-          //console.log($scope.user.notifications.list[i]);
           if(!$scope.user.notifications.list[i].seen) {
             $scope.user.notifications.list[i].seen = true;
             $scope.user.notifications.list.$save(i);
@@ -520,15 +570,27 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
     }
 
     // Load platform stats
-    $http.get(layer_path + 'stats/board').
+    $scope.promises.board_stats = $http.get(layer_path + 'stats/board').
       success(function(data, status) {
         $scope.status.stats = data;
       }).
       error(function(data) {
       });
+
     // Load gamification data
-    $http.get(layer_path + 'gamification').
+    $scope.promises.gaming = $http.get(layer_path + 'gamification').
       success(function(data, status) {
+        //console.log(data)
+        for(var i in data.badges) {
+          if(data.badges[i].required_badge !== null) {
+            for(var j in data.badges) {
+              if(data.badges[j].id == data.badges[i].required_badge) {
+                data.badges[i].required_badge = data.badges[j];
+                break;
+              }
+            }
+          }
+        }
         $scope.misc.gaming = data;
       }).
       error(function(data) {});

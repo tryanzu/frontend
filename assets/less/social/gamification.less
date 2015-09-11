@@ -1,0 +1,60 @@
+.top-users {
+  tr.highlight {
+    background-color: #F9F9F9;
+    font-weight: 600;
+  }
+
+  td.vc-text {
+    line-height: 36px;
+  }
+  .position-change {
+    height: 36px;
+    line-height: 36px;
+
+    &.up {
+      color: @brand-success;
+    }
+    &.down {
+      color: @brand-danger;
+    }
+  }
+  .position {
+    display: inline-block;
+    width: 36px;
+    height: 36px;
+    text-align: center;
+    font-size: 14px;
+    line-height: 36px;
+    background-color: @brand-primary-lighter;
+    border-radius: 18px;
+    font-weight: 300;
+
+    &.gold, &.silver, &.bronze {
+      font-weight: 400;
+      font-size: 16px
+    }
+    &.gold {
+      background-color: #F9E689;
+      color: #B9A337;
+    }
+    &.silver {
+      background-color: #EFEFEF;
+      color: #9A9A9A;
+    }
+    &.bronze {
+      background-color: #F9D7A4;
+      color: #BF985F;
+    }
+  }
+
+  .avatar {
+    .avatar-size(36px);
+  }
+
+  .username {
+    display: inline-block;
+    margin-left: 1.2em;
+    height: 36px;
+    line-height: 36px;
+  }
+}

@@ -6,8 +6,8 @@ UserModule.factory('User', ['$resource', function($resource) {
 }]);
 
 // User Profile controller
-UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed', 'Upload', '$http',
-  function($scope, User, $routeParams, Feed, Upload, $http) {
+UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed', 'Upload', '$http', '$timeout',
+  function($scope, User, $routeParams, Feed, Upload, $http, $timeout) {
 
   $scope.profile = null;
   $scope.resolving_posts = false;
@@ -84,6 +84,7 @@ UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed
     $scope.resolving_posts = true;
 
     Feed.get({limit: 10, offset: 0, user_id: $scope.profile.id}, function(data) {
+      //console.log(data);
       for(p in data.feed) {
         for(c in $scope.categories) {
           if (data.feed[p].categories[0] == $scope.categories[c].slug) {
@@ -99,20 +100,47 @@ UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed
     });
   };
 
+  $scope.loadUserComments = function() {
+    $http.get(layer_path + "users/" + $routeParams.id +"/comments")
+      .success(function(data) {
+        //console.log(data);
+        $scope.comments = data;
+      })
+      .error(function(data) {
+      });
+  }
+
   User.get({user_id: $routeParams.id}, function(data) {
+    //console.log(data)
     $scope.profile = data;
     $scope.startFeed();
     $scope.new_data.username = $scope.profile.username;
 
-    // We calculate remaining swords for next level and ratio
-    var rules = $scope.misc.gaming.rules;
-    var remaining = rules[data.gaming.level].swords_end - $scope.profile.gaming.swords;
-    $scope.profile.gaming.remaining = remaining;
-    var ratio = 100 - 100*(remaining/(rules[data.gaming.level].swords_end - rules[data.gaming.level].swords_start));
-    $scope.profile.gaming.ratio = ratio;
-    console.log(rules[data.gaming.level].swords_start, rules[data.gaming.level].swords_end, ratio);
+    $scope.promises.gaming.then(function() {
+      $timeout(function() {
+        for(var i in data.gaming.badges) {
+          for(var j in $scope.misc.gaming.badges) {
+            if(data.gaming.badges[i].id === $scope.misc.gaming.badges[j].id) {
+              data.gaming.badges[i].name = $scope.misc.gaming.badges[j].name;
+              data.gaming.badges[i].type = $scope.misc.gaming.badges[j].type;
+              break;
+            }
+          }
+        }
 
+        // We calculate remaining swords for next level and ratio
+        var rules = $scope.misc.gaming.rules;
+        var remaining = rules[data.gaming.level].swords_end - $scope.profile.gaming.swords;
+        $scope.profile.gaming.remaining = remaining;
+        var ratio = 100 - 100 * (remaining / (rules[data.gaming.level].swords_end - rules[data.gaming.level].swords_start));
+        $scope.profile.gaming.ratio = ratio;
+      }, 100);
+    });
+
+    //console.log(rules[data.gaming.level].swords_start, rules[data.gaming.level].swords_end, ratio);
+    $scope.loadUserComments();
   }, function(response) {
     window.location = '/';
   });
+
 }]);
