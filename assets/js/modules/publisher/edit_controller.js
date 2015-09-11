@@ -9,7 +9,8 @@ var EditPostController = ['$scope', '$routeParams', '$http', 'Category', 'Part',
     title: '',
     content: '',
     category: '',
-    isQuestion: false
+    isQuestion: false,
+    pinned: false
   };
 
   $scope.adding_file = false;
@@ -45,7 +46,6 @@ var EditPostController = ['$scope', '$routeParams', '$http', 'Category', 'Part',
       console.log($scope.post_edit.category, $scope.post_edit.category.length < 1);
     } else {
       $scope.publishing = true;
-
       $scope.post_edit.name = $scope.post_edit.title;
 
   		$http.put(layer_path + 'posts/' + $scope.post.id, $scope.post_edit).then(function(data) {
@@ -72,7 +72,8 @@ var EditPostController = ['$scope', '$routeParams', '$http', 'Category', 'Part',
         content: data.content,
         category: data.category,
         kind: 'category-post',
-        isQuestion: data.is_question
+        isQuestion: data.is_question,
+        pinned: data.pinned
       };
       $scope.publishing = false;
     });

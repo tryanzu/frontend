@@ -15,7 +15,8 @@ var PublishController = ['$scope', '$routeParams', '$http', 'Category', 'Part', 
     content: '',
     category: '',
     components: false,
-    isQuestion: false
+    isQuestion: false,
+    pinned: false
   };
 
 	$scope.budgetFlexibility = [
@@ -264,7 +265,8 @@ var PublishController = ['$scope', '$routeParams', '$http', 'Category', 'Part', 
   			name: $scope.post.title,
   			category: $scope.post.category,
   			kind: 'category-post',
-        isquestion: $scope.post.isQuestion
+        isquestion: $scope.post.isQuestion,
+        pinned: $scope.post.pinned
   		};
 
   		$http.post(layer_path + 'post', post).then(function(data) {
