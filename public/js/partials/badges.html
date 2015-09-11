@@ -27,7 +27,10 @@
               <td>{{ badge.required_badge.name || "Ninguna" }}</td>
               <td>{{ misc.gaming.rules[badge.required_level].name }}</td>
               <td>
-                <a href="" ng-click="buy_badge(badge)" ng-if="user.isLogged && !badge.owned && (badge.required_level <= user.info.gaming.level || !badge.required_level) && badge.available && badge.coins > 0 && !badge.badge_needed" style="white-space: nowrap;">Comprar medalla</a>
+                <a href="" ng-click="buy_badge(badge)" ng-if="user.isLogged && !badge.owned && (badge.required_level <= user.info.gaming.level || !badge.required_level) && badge.available && (badge.coins > 0 && badge.coins <= user.gaming.coins) && !badge.badge_needed" style="white-space: nowrap;">Comprar medalla</a>
+
+                <span class="label label-default" ng-if="user.isLogged && !badge.owned && (badge.required_level <= user.info.gaming.level || !badge.required_level) && badge.available && (badge.coins > 0 && badge.coins > user.gaming.coins) && !badge.badge_needed" style="white-space: nowrap;">Monedas insuficientes</span>
+
                 <span class="label label-primary" ng-if="!badge.available && !badge.owned">Próximamente</span>
               </td>
             </tr>
