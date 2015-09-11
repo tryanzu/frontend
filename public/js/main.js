@@ -4724,7 +4724,7 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
     templateUrl: '/js/partials/badges.html?v=' + version,
     controller: 'BadgeController'
   });
-  $routeProvider.when('/tops', {
+  $routeProvider.when('/top-ranking', {
     templateUrl: '/js/partials/tops.html?v=' + version,
     controller: 'TopController'
   });
