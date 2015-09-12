@@ -85,6 +85,10 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
     templateUrl: '/js/partials/validate.html?v=' + version,
     controller: 'UserValidationController'
   });
+  $routeProvider.when('/componente/:slug', {
+    templateUrl: '/js/partials/component.html?v=' + version,
+    controller: 'ComponentController'
+  });
   $routeProvider.when('/c/:slug', {
     templateUrl: '/js/partials/main.html?v=' + version,
     controller: 'CategoryListController'
