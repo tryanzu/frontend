@@ -4417,6 +4417,7 @@ UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed
             if(data.gaming.badges[i].id === $scope.misc.gaming.badges[j].id) {
               data.gaming.badges[i].name = $scope.misc.gaming.badges[j].name;
               data.gaming.badges[i].type = $scope.misc.gaming.badges[j].type;
+              data.gaming.badges[i].slug = $scope.misc.gaming.badges[j].slug;
               break;
             }
           }
