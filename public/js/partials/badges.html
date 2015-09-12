@@ -1,9 +1,13 @@
 <main class="global-content">
   <div class="container">
-    <h2 style="margin-bottom: 2em;">Medallas</h2>
+    <h2 style="margin-bottom: 1em;">Medallas</h2>
 
     <div class="row">
       <div class="col-md-9">
+        <div class="text-right">
+          <span class="see-badges-only">Mostrar el arte de las medallas disponibles</span>
+          <switch id="enabled" name="enabled" ng-model="show_art" on="Si" off="No" class="sg"></switch>
+        </div>
         <div class="table-responsive">
           <table class="table table-medals">
             <tr>
@@ -20,7 +24,8 @@
                   <i class="fa fa-check"></i>
                 </span>
               </td>
-              <td>
+              <td ng-class="{'expand-column': show_art}">
+                <img ng-src="/images/gamification/badges/{{ badge.slug }}.png" ng-if="show_art && badge.available">
                 <span class="medal" ng-class="badge.type"><i class="circle"></i> {{ badge.name}}</span>
               </td>
               <td>{{ badge.description }}</td>
@@ -29,7 +34,7 @@
               <td>
                 <a href="" ng-click="buy_badge(badge)" ng-if="user.isLogged && !badge.owned && (badge.required_level <= user.info.gaming.level || !badge.required_level) && badge.available && (badge.coins > 0 && badge.coins <= user.gaming.coins) && !badge.badge_needed" style="white-space: nowrap;">Comprar medalla</a>
 
-                <span class="label label-default" ng-if="user.isLogged && !badge.owned && (badge.required_level <= user.info.gaming.level || !badge.required_level) && badge.available && (badge.coins > 0 && badge.coins > user.gaming.coins) && !badge.badge_needed" style="white-space: nowrap;">Monedas insuficientes</span>
+                <span class="label label-no-coins" ng-if="user.isLogged && !badge.owned && (badge.required_level <= user.info.gaming.level || !badge.required_level) && badge.available && (badge.coins > 0 && badge.coins > user.gaming.coins) && !badge.badge_needed">Monedas insuficientes</span>
 
                 <span class="label label-primary" ng-if="!badge.available && !badge.owned">Próximamente</span>
               </td>
@@ -54,7 +59,7 @@
           <p>Las medallas de armadura son el complemento perfecto que salvaguarda tu vida, no para estar a la defensiva, sino para ser más agresivo durante las peleas.</p>
           <hr>
           <span class="medal power"><i class="circle"></i> Medalla de Poder</span>
-          <p>Las medallas de poder... Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+          <p>Las medallas de poder son representativas de los ciudadanos que tienen un prestigio no sólo militar, sino también el ámbito social, las artes, la educación y el gusto por la buena vida.</p>
           <hr>
           <span class="medal contribution"><i class="circle"></i> Medalla de Contribución</span>
           <p>Las medallas de contribución son obtenidas por aquellos miembros que están creando valor a la comunidad, ya sea a através de excelentes aportes o de cuidar el orden en la comunidad.</p>

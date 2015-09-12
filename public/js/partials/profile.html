@@ -195,11 +195,12 @@
                       <p class="alert alert-info" ng-if="user.info.id === profile.id && !profile.gaming.badges.length">Aún no tienes medallas, pero podrás conseguirlas con monedas.</p>
 
                       <div ng-repeat="badge in profile.gaming.badges" class="badge-container">
+                        <div class="badge-preview">
+                          <img ng-src="/images/gamification/badges/{{ badge.slug }}.png">
+                        </div>
                         <span class="medal" ng-class="badge.type"><i class="circle"></i> {{ badge.name}}</span>
                       </div>
-
-                      <hr>
-
+                      <br>
                       <a href="/medallas" alt="Medallas de SpartanGeek">Revisa la lista de medallas aquí.</a>
                     </div>
                   </div>

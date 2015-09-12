@@ -94,7 +94,13 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
       $scope.posts = [];
       $scope.resolving.loaded = false;
 
-  		Feed.get({limit: 10, offset: 0, category: category.id}, function(data) {
+      var vp_h = $(window).height();
+      var limit = 10;
+      if(vp_h > 1080) {
+        limit = 20;
+      }
+
+  		Feed.get({limit: limit, offset: 0, category: category.id}, function(data) {
 
         // For logged users, sync the feed position for new messages notifications
         if($scope.user.isLogged) {

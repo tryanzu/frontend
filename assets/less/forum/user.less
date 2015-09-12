@@ -316,6 +316,29 @@
 
 .badge-container {
   display: inline-block;
-  margin-right: 1em;
-  margin-bottom: 1em;
+  margin-right: 0.8em;
+  margin-bottom: 1.5em;
+  min-width: 150px;
+  max-width: 150px;
+  text-align: center;
+  border: 1px solid @brand-primary-lighter;
+  padding: 10px;
+
+  .badge-preview {
+    margin-bottom: 0.4em;
+    img {
+      max-width: 64px;
+    }
+  }
+
+  .medal {
+    padding: 2px 4px;
+    background-color: #fff;
+    color: #333;
+    font-weight: 600;
+
+    i.circle {
+      display: none;
+    }
+  }
 }
