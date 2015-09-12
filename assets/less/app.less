@@ -63,6 +63,10 @@
   }
 }
 
+.mb-40 {
+  margin-bottom: 40px;
+}
+
 /*
   Allow angular.js to be loaded in body, hiding cloaked elements until
   templates compile.  The !important is important given that there may be
@@ -464,4 +468,57 @@ ul.counters {
   padding: 8px;
   text-align: center;
   margin-top: 1em;
+}
+
+.team-member {
+  .avatar {
+    .avatar-size(64px);
+  }
+
+  a {
+    color: @brand-primary-opaque;
+  }
+
+  .job-title {
+    margin-left: 5px;
+    font-size: 14px;
+    line-height: 23px;
+    color: @brand-primary-light-text;
+  }
+
+  .description {
+    display: inline-block;
+    /*position: absolute;*/
+    width: 75%;
+    margin-left: 2em;
+
+    a {
+      font-weight: 600;
+      font-size: 16px;
+    }
+    p {
+      font-size: 13px;
+      color: @brand-primary-opaque;
+      margin-top: 0.3em;
+    }
+  }
+}
+.software-version {
+  color: #888888;
+}
+
+@media @phone {
+  .team-member {
+    .avatar {
+      .avatar-size(96px);
+    }
+
+    .description {
+      display: inline-block;
+      width: 100%;
+      margin-left: 0;
+      margin-top: 1em;
+      margin-bottom: 2em;
+    }
+  }
 }

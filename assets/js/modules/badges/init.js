@@ -23,6 +23,7 @@ BadgeModule.controller('BadgeController', ['$scope', '$timeout', '$http', functi
 
       })
       .error(function(data) {
+        console.log("Can't buy me loOove! ... talk to AcidKid");
       });
   }
 

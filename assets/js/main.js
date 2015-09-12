@@ -60,10 +60,11 @@ var version = '142';
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider', 'AclServiceProvider',
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider, AclServiceProvider) {
 
-  $routeProvider.when('/', {
-    templateUrl: '/js/partials/main.html?v=' + version,
-    controller: 'CategoryListController'
+  $routeProvider.when('/about', {
+    templateUrl: '/js/partials/about.html?v=' + version,
+    //controller: 'RanksController'
   });
+
   $routeProvider.when('/rangos', {
     templateUrl: '/js/partials/ranks.html?v=' + version,
     controller: 'RanksController'
@@ -104,6 +105,10 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
         window.location = '/';
       }
     }
+  });
+  $routeProvider.when('/', {
+    templateUrl: '/js/partials/main.html?v=' + version,
+    controller: 'CategoryListController'
   });
   $routeProvider.otherwise({ redirectTo: '/' });
 
