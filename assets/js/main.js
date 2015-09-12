@@ -55,7 +55,7 @@ var boardApplication = angular.module('board', [
   'yaru22.angular-timeago'
 ]);
 
-var version = '142';
+var version = '0.1.4.3';
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider', 'AclServiceProvider',
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider, AclServiceProvider) {
