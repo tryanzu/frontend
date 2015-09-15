@@ -131,9 +131,6 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
   			$scope.resolving_posts = false;
   			$scope.offset = data.feed.length;
         $scope.resolving.loaded = true;
-
-        // Category track
-        mixpanel.track("View category", {offset: 0, category: category.slug});
   		});
   	};
 
@@ -143,14 +140,13 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
         $scope.resolving.older = true;
         var pending = $scope.status.pending.$value==undefined?$scope.status.pending:$scope.status.pending.$value;
         //console.log($scope.offset, pending);
-    		Feed.get({limit: 10, offset: $scope.offset + pending, category: $scope.category.slug}, function(data) {
+    		Feed.get({limit: 10, offset: $scope.offset + pending, category: $scope.category.id}, function(data) {
           $scope.appendCategories(data.feed);
     			$scope.posts = $scope.posts.concat(data.feed);
     			$scope.offset = $scope.offset + data.feed.length;
           $scope.resolving.older = false;
     		});
 
-        mixpanel.track("View feed", {offset: $scope.offset, category: $scope.category.slug});
     		ga('send', 'pageview', '/feed/' + $scope.category.slug);
       } else {
         console.log("FeedGet already running...");
@@ -202,7 +198,6 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
           $('.discussions-list').animate({ scrollTop: 0}, 100);
         });
 
-        mixpanel.track("Load more clicked")
         ga('send', 'pageview', '/feed/' + $scope.category.slug);
       } else {
         console.log("FeedGet already running...");
@@ -212,12 +207,7 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
   	$scope.turnCategory = function( category ) {
   		$scope.category = category;
   		$scope.startupFeed(category);
-  		//$scope.previewStyle = {'background-image': 'url(/images/boards/'+$scope.category.slug+'.png)'};
 
-  		// Reset counters if exists though
-  		//$scope.category.recent = 0;
-
-      mixpanel.track("View category", {category: $scope.category.id});
   		ga('send', 'pageview', '/category/' + $scope.category.slug);
   	};
 
@@ -267,7 +257,6 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
       $scope.status.post_selected = true;
   		Bridge.changePost(post);
 
-      mixpanel.track("View post", {id: post.id, category: $scope.category.id});
   		ga('send', 'pageview', '/post/' + $scope.category.slug + '/' + post.id);
   	};
 
@@ -276,7 +265,6 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
       $scope.status.post_selected = true;
       Bridge.changePost({id: postId, slug: slug, name: ""});
 
-      mixpanel.track("View post", {id: postId, category: $scope.category.id});
       ga('send', 'pageview', '/post/' + slug + '/' + postId);
     };
 

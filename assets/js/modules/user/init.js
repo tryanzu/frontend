@@ -102,12 +102,18 @@ UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed
 
   $scope.loadUserComments = function() {
     $http.get(layer_path + "users/" + $routeParams.id +"/comments")
-      .success(function(data) {
-        //console.log(data);
-        $scope.comments = data;
-      })
-      .error(function(data) {
-      });
+      .then(function(response) {
+        for(var i in response.data.activity) {
+          var to_edit = $('<div>' + response.data.activity[i].content + '</div>');
+          to_edit.find('a.user-mention').each(function(index) {
+            var text = $(this).html();
+            $(this).replaceWith(text);
+          });
+          response.data.activity[i].content = to_edit.html();
+        }
+
+        $scope.comments = response.data;
+      }, function(response) {});
   }
 
   User.get({user_id: $routeParams.id}, function(data) {
