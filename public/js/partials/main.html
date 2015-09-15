@@ -29,7 +29,7 @@
                   <div class="row">
                     <div class="col-xs-12">
                       <p>Puedes personalizar la lista de publicaciones seleccionando únicamente las categorías que te interesan</p>
-                      <div class="text-right" ng-if="user.info.categories.length < 61 || ! user.info.categories">
+                      <div class="text-right" ng-if="user.info.categories.length < 63 || ! user.info.categories">
                         <span class="see-in-feed">Suscribirme a todas</span>
                         <switch id="enabled" name="enabled" ng-model="dummy" ng-change="subscribeToAll()" on="Si" off="No" class="sg"></switch>
                       </div>

@@ -115,9 +115,6 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
         // Allow to comment once again
         $scope.waiting_comment = false;
         $scope.comment.content = '';
-
-        // Mixpanel track
-        mixpanel.track("Comment", {id: $scope.post.id, category: $scope.post.category.slug});
       }, function(error) {
         console.log("Error publicando comentario...");
       });
