@@ -4715,7 +4715,10 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
     templateUrl: '/js/partials/about.html?v=' + version,
     //controller: 'RanksController'
   });
-
+  $routeProvider.when('/tienda', {
+    templateUrl: '/js/partials/shop.html?v=' + version,
+    //controller: 'RanksController'
+  });
   $routeProvider.when('/rangos', {
     templateUrl: '/js/partials/ranks.html?v=' + version,
     controller: 'RanksController'
