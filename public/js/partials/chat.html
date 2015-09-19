@@ -75,8 +75,12 @@
     </div>
 
     <div class="details-nav" ng-if="show_details" ng-class="{stream: channel.selected.fullscreen}">
-      <div class="detail-section" ng-if="channel.selected.fullscreen">
-        <img src="http://i.ytimg.com/vi/od1tAshoD3w/maxresdefault.jpg" width="100%">
+      <div class="detail-section" ng-if="channel.selected.fullscreen && !channel.selected.fullscreen.video">
+        <img ng-src="{{ channel.selected.fullscreen.image }}" width="100%">
+      </div>
+
+      <div class="detail-section" ng-if="channel.selected.fullscreen.video">
+        <youtube code="channel.selected.fullscreen.video"></youtube>
       </div>
 
       <div class="detail-section">
