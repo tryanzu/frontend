@@ -285,7 +285,7 @@
                   </div>
                 </div>
 
-                <h2 class="discussion-title">{{ post.title }}</h2>
+                <h1 class="discussion-title">{{ post.title }}</h1>
                 <span class="label label-default label-date">Escrito {{ post.created_at | timeAgo }}</span>
 
                 <div class="content" ng-if="post.type !== 'recommendations'" marked="post.content_final"></div>
