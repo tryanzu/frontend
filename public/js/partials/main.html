@@ -418,14 +418,18 @@
                   </div>
                 </div>
 
+                <div class="votes-count">
+                  <span ng-if="post.votes.up > 0">A {{ post.votes.up }} {{post.votes.up == 1 ? 'persona le gusta':'personas les gusta'}}</span>
+                  <span ng-if="post.votes.up > 0 && post.votes.down > 0"> y </span>
+                  <span ng-if="post.votes.down > 0">{{ post.votes.down }} {{post.votes.down == 1 ? 'persona piensa':'personas piensan'}} que apesta</span>
+                </div>
+
                 <ul class="post-actions" ng-class="{empty: post.author.id == user.info.id && post.votes.up == 0 && post.votes.down == 0}">
                   <li class="action" ng-if="post.liked != -1">
                     <a href="" ng-click="post_vote(post, 'up')" class="btn btn-success-border btn-round" ng-class="{'liked': post.liked == 1}" ng-if="post.author.id != user.info.id && user.gaming.tribute > 0"><i class="fa fa-thumbs-up"></i> Me gusta</a>
-                    <div class="count" ng-if="post.votes.up > 0">A <strong>{{post.votes.up}} personas</strong> le gusta</div>
                   </li>
                   <li class="action" ng-if="post.liked != 1">
                     <a href="" ng-click="post_vote(post, 'down')" ng-class="{'hated': post.liked == -1}" class="btn btn-default btn-round" ng-if="post.author.id != user.info.id && user.gaming.shit > 0"><i class="fa fa-trash"></i> Esto apesta</a>
-                    <div class="count" ng-if="post.votes.down > 0"><strong>{{post.votes.down}} personas</strong> piensan que apesta</div>
                   </li>
                 </ul>
 

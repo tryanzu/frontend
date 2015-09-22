@@ -297,9 +297,9 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
         $scope.ratio = $scope.viewport_h/$scope.total_h*100;
         $scope.scrollable = 0;
         $scope.scrollable_h = $scope.total_h - $scope.viewport_h;
-        if($scope.ratio < 15) {
-          $scope.ratio = 15;
-          $scope.scrollable = 85;
+        if($scope.ratio < 35) {
+          $scope.ratio = 35;
+          $scope.scrollable = 65;
         } else {
           $scope.scrollable = 100 - $scope.ratio;
         }

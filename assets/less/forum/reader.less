@@ -8,6 +8,8 @@
 .label-date {
   background-color: @brand-primary-lighter;
   color: desaturate( lighten(@brand-primary, 18%), 20%);
+  color: @brand-primary;
+  font-weight: 400;
 }
 
 .actions-count {
@@ -462,7 +464,7 @@
 }
 
 .post-actions {
-  margin-top: 2em;
+  margin-top: 0.5em;
   margin-bottom: 1.2em;
   list-style-type: none;
   padding-left: 0;
@@ -476,19 +478,12 @@
   .action {
     display: inline-block;
     margin-right: 1.5em;
-
-    .count {
-      font-size: 12px;
-      margin-top: 5px;
-      color: #9E9E9E;
-      display: table;
-
-      strong {
-        font-weight: 400;
-        color: #222;
-      }
-    }
   }
+}
+.votes-count {
+  font-size: 12px;
+  margin-top: 2.5em;
+  color: #8A8A8A;
 }
 
 .comment-response {
