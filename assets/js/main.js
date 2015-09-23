@@ -317,8 +317,8 @@ boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http'
     }
 }]);
 
-boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', '$modal', '$timeout', '$firebaseObject', '$firebaseArray', 'Facebook', 'AclService',
-  function($scope, $rootScope, $http, $modal, $timeout, $firebaseObject, $firebaseArray, Facebook, AclService) {
+boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', '$modal', '$timeout', '$firebaseObject', '$firebaseArray', 'Facebook', 'AclService', '$location',
+  function($scope, $rootScope, $http, $modal, $timeout, $firebaseObject, $firebaseArray, Facebook, AclService, $location) {
     $scope.user = {
       isLogged: false,
       info: null,
@@ -537,7 +537,7 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
     };
 
     $scope.total_notifications = function() {
-      return 0 + $scope.user.notifications.count.$value;
+      return 1 + $scope.user.notifications.count.$value;
     };
 
     $scope.reloadPost = function() {
@@ -583,6 +583,12 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
         $scope.misc.gaming = data;
       }).
       error(function(data) {});
+
+    var ref = $location.search().ref;
+    if(ref != undefined) {
+      localStorage.setItem('ref', ref);
+    }
+    //alert(localStorage.getItem('ref'))
   }
 ]);
 

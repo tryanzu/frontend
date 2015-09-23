@@ -93,6 +93,9 @@
                     <li role="presentation" class="hidden">
                       <a href="">Juegos <span class="count hidden">25</span></a>
                     </li>
+                    <li role="presentation" ng-class="{active: current_page == 'ref'}">
+                      <a href="" ng-click="current_page = 'ref'">Amigos invitados</a>
+                    </li>
                   </ul>
                 </div>
               </div>
@@ -384,6 +387,123 @@
                         </div>
                       </div>
                     </div>
+                  </div>
+                </div>
+
+                <div class="offset-content user-content" ng-if="current_page == 'ref'">
+                  <h2>Amigos invitados</h2>
+
+                  <p>Ningún usuario se ha registrado por invitación tuya.</p>
+                  <p>Ningún usuario se ha registrado por invitación de {{ profile.username }}.</p>
+
+                  <p>Esta lista es de los usuarios que se han registrado a SpartanGeek por invitación tuya:</p>
+                  <p>Esta lista es de los usuarios que se han registrado a SpartanGeek por invitación de {{ profile.username }}:</p>
+
+                  <div>
+                    <a href="/u/yisus-gamer/55f320437a4780586a000152" class="author" tooltip="{{ profile.username }}">
+                      <img class="avatar" alt="yisus-gamer" src="http://s3-us-west-1.amazonaws.com/spartan-board/users/55f321947a4780586a000154-120x120.png">
+                    </a>
+                    <a href="/u/TheRealSpartan/55c627027a4780093100062e" class="author" tooltip="{{ profile.username }}">
+                      <span class="avatar" title="TheRealSpartan" ng-if="!post.author.image || true">T</span>
+                    </a>
+                  </div>
+
+                  <hr>
+
+                  <div ng-if="user.info.id == profile.id">
+                    <h3>Invita a más amigos</h3>
+
+                    <p>Puedes invitar a más amigos usando el siguiente link:</p>
+
+                    <pre>http://spartangeek.com/?ref=ABCDE</pre>
+
+                    <p>Por cada usuario que se registre usando tu código y validando su cuenta, se te contará como referencia. Cualquier cuenta registrada con Facebook se valida automáticamente.</p>
+
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th>Amigos registrados por invitación tuya</th>
+                          <th>Regalo</th>
+                          <th>Límite</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>5</td>
+                          <td>
+                            <ul>
+                              <li>Medalla especial</li>
+                            </ul>
+                          </td>
+                          <td>1 semana</td>
+                        </tr>
+                        <tr>
+                          <td>20</td>
+                          <td>
+                            <ul>
+                              <li>Medalla especial</li>
+                              <li>100 espadas</li>
+                            </ul>
+                          </td>
+                          <td>-</td>
+                        </tr>
+                        <tr>
+                          <td>50</td>
+                          <td>
+                            <ul>
+                              <li>2 Medallas especiales</li>
+                              <li>250 espadas</li>
+                            </ul>
+                          </td>
+                          <td>50 primeros usuarios</td>
+                        </tr>
+                        <tr>
+                          <td>100</td>
+                          <td>
+                            <ul>
+                              <li><strong>1 Playera Spartana</strong></li>
+                              <li>1 Medalla <sup>1</sup></li>
+                              <li>500 espadas</li>
+                            </ul>
+                          </td>
+                          <td>100 primeros usuarios</td>
+                        </tr>
+                        <tr>
+                          <td>300</td>
+                          <td>
+                            <ul>
+                              <li><strong>1 Playera Spartana</strong></li>
+                              <li>2 Medallas especiales</li>
+                              <li>1500 espadas</li>
+                              <li>1 caja de cervezas <sup>2</sup></li>
+                              <li>1 componente de hardware para PC <sup>3</sup></li>
+                            </ul>
+                          </td>
+                          <td>25 primeros usuarios</td>
+                        </tr>
+                        <tr>
+                          <td>1000</td>
+                          <td>
+                            <ul>
+                              <li><strong>1 Playera Spartana</strong></li>
+                              <li>1 Medalla especial</li>
+                              <li>1500 espadas</li>
+                              <li>1 caja de cervezas <sup>2</sup></li>
+                              <li>1 componente de hardware para PC <sup>3</sup></li>
+                              <li>Upgrade a tu PC <sup>4</sup></li>
+                            </ul>
+                          </td>
+                          <td>5 primeros usuarios</td>
+                        </tr>
+                      </tbody>
+                    </table>
+
+                    <ol>
+                      <li>Medalla por ser dueño de una playera Spartana. Sólo se dará en caso de que no ser ya dueño de esta medalla.</li>
+                      <li>Caja de chelas como la que se vio el día de weba del 19 de Septiembre de 2015. Sólo para mayores de edad con identificación oficial.</li>
+                      <li>A elección del staff de SpartanGeek</li>
+                      <li>A elección del staff de SpartanGeek</li>
+                    </ol>
                   </div>
                 </div>
               </div>

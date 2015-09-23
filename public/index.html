@@ -104,11 +104,18 @@
                 </a>
                 <h4>Notificaciones</h4>
               </div>
+              <li>
+                <a class="unread" style="white-space:initial" href="">
+                  Tu correo no ha sido confirmado
+                  <div class="description" style="margin-bottom: 5px;">Te enviaremos un mail para la confirmación.</div>
+                  <div href="" class="btn btn-sm btn-primary"><span class="label">Validar mi cuenta</span></div>
+                </a>
+              </li>
               <li class="hidden">
                 <a class="unread" style="white-space:initial" href="">
                   Te falta completar información de tu perfil
                   <div class="description" style="margin-bottom: 5px;">Una vez lleno, <strong>SpartanGeek</strong> podrá recomendarte conversaciones, hardware, juegos, partidas en línea y promociones</div>
-                  <div href="" class="btn btn-xs btn-primary"><span class="label">Agregar datos a mi perfil</span></div>
+                  <div href="" class="btn btn-sm btn-primary"><span class="label">Agregar datos a mi perfil</span></div>
                 </a>
               </li>
               <li ng-repeat="n in (user.notifications.list | orderBy:'-created_at')">
