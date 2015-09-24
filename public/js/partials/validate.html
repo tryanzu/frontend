@@ -1,0 +1,17 @@
+<main class="global-content">
+  <div class="container">
+    <h2 class="text-center" ng-if="validation_in_progress">Validando correo...</h2>
+
+    <div class="big-icon" ng-if="validation_in_progress">
+      <i class="fa fa-spinner fa-pulse"></i>
+    </div>
+
+    <h2 class="text-center" ng-if="!validation_in_progress && validated">¡Tu cuenta ha sido verificada!</h2>
+
+    <div class="big-icon" ng-if="!validation_in_progress && validated">
+      <i class="fa fa-check-circle-o"></i>
+    </div>
+
+    <p class="text-center" ng-if="!validation_in_progress && validated">Regresar a la <a href="/">página principal</a>.
+  </div>
+</main>

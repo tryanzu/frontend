@@ -95,7 +95,7 @@
             <a dropdown-toggle href="" class="dropdown-toggle btn-user" data-toggle="dropdown" role="button" aria-expanded="false">
               <span class="notifications-icon"><i class="fa fa-fw fa-bell icon-glyph"></i></span>
               <span class="label">Notificaciones</span>
-              <span class="notification-badge" ng-if="total_notifications() > 0">{{ total_notifications() }}</span>
+              <span class="notification-badge" ng-if="total_notifications() + (user.info.validated?0:1) > 0">{{ total_notifications() + (user.info.validated?0:1) }}</span>
             </a>
             <ul class="dropdown-menu" role="menu">
               <div class="notifications-header">
@@ -104,11 +104,10 @@
                 </a>
                 <h4>Notificaciones</h4>
               </div>
-              <li>
-                <a class="unread" style="white-space:initial" href="">
+              <li ng-if="!user.info.validated">
+                <a class="unread" href="">
                   Tu correo no ha sido confirmado
-                  <div class="description" style="margin-bottom: 5px;">Te enviaremos un mail para la confirmación.</div>
-                  <div href="" class="btn btn-sm btn-primary"><span class="label">Validar mi cuenta</span></div>
+                  <div class="description">Te enviamos un correo para que puedas validar tu cuenta.</div>
                 </a>
               </li>
               <li class="hidden">

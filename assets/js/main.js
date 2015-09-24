@@ -80,6 +80,10 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
     templateUrl: '/js/partials/tops.html?v=' + version,
     controller: 'TopController'
   });
+  $routeProvider.when('/signup/confirm/:code', {
+    templateUrl: '/js/partials/validate.html?v=' + version,
+    controller: 'UserValidationController'
+  });
   $routeProvider.when('/c/:slug', {
     templateUrl: '/js/partials/main.html?v=' + version,
     controller: 'CategoryListController'
@@ -256,10 +260,22 @@ boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http'
   		}
 
   		// Post credentials to the UserRegisterAction endpoint
-  		$http.post(layer_path + 'user', {email: $scope.form.email, password: $scope.form.password, username: $scope.form.username}, {skipAuthorization: true})
+      var payload = {
+        email: $scope.form.email,
+        password: $scope.form.password,
+        username: $scope.form.username
+      };
+      var ref = localStorage.getItem('ref');
+      if(ref) {
+        payload.ref = ref;
+      }
+
+      //console.log(payload);
+
+  		$http.post(layer_path + 'user', payload, { skipAuthorization: true })
       .error(function(data, status, headers, config) {
         console.log(data.message);
-        $scope.form.error = {message:'El usuario o correo elegido ya existe.'};
+        $scope.form.error = { message:'El usuario o correo elegido ya existe.' };
       })
       .success(function(data) {
         localStorage.setItem('id_token', data.token);
@@ -362,6 +378,7 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
       $http.get(layer_path + 'user/my').then(
         function(response) {
           var data = response.data;
+          //console.log(data);
           $scope.user.info = data;
           $scope.user.isLogged = true;
 
@@ -537,7 +554,8 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
     };
 
     $scope.total_notifications = function() {
-      return 1 + $scope.user.notifications.count.$value;
+      var sp = 0;
+      return sp + $scope.user.notifications.count.$value;
     };
 
     $scope.reloadPost = function() {

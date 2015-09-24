@@ -33,6 +33,7 @@
                         </ul>
                       </div>
                       <span class="username" ng-if="!update.editing_username">{{ profile.username }}</span>
+                      <span class="verified-account" ng-if="profile.validated" tooltip="Cuenta verificada" tooltip-placement="right"><i class="fa fa-check"></i></span>
                       <span class="edit" ng-if="user.info.name_changes < 1 && profile.id === user.info.id">
                         <a href="" ng-click="update.editing_username = true" ng-if="!update.editing_username">Editar nombre de usuario</a>
                         <div class="" ng-if="update.editing_username" style="display: inline-block">
@@ -393,19 +394,18 @@
                 <div class="offset-content user-content" ng-if="current_page == 'ref'">
                   <h2>Amigos invitados</h2>
 
-                  <p>Ningún usuario se ha registrado por invitación tuya.</p>
-                  <p>Ningún usuario se ha registrado por invitación de {{ profile.username }}.</p>
+                  <p ng-if="profile.referrals.count == 0 && user.info.id === profile.id">Ningún usuario se ha registrado por invitación tuya.</p>
+                  <p ng-if="profile.referrals.count == 0 && user.info.id !== profile.id">Ningún usuario se ha registrado por invitación de {{ profile.username }}.</p>
 
-                  <p>Esta lista es de los usuarios que se han registrado a SpartanGeek por invitación tuya:</p>
-                  <p>Esta lista es de los usuarios que se han registrado a SpartanGeek por invitación de {{ profile.username }}:</p>
+                  <p ng-if="profile.referrals.count > 0 && user.info.id === profile.id">Esta lista es de los usuarios que se han registrado a SpartanGeek por invitación tuya:</p>
+                  <p ng-if="profile.referrals.count > 0 && user.info.id !== profile.id">Esta lista es de los usuarios que se han registrado a SpartanGeek por invitación de {{ profile.username }}:</p>
 
-                  <div>
-                    <a href="/u/yisus-gamer/55f320437a4780586a000152" class="author" tooltip="{{ profile.username }}">
-                      <img class="avatar" alt="yisus-gamer" src="http://s3-us-west-1.amazonaws.com/spartan-board/users/55f321947a4780586a000154-120x120.png">
+                  <div ng-if="profile.referrals.count > 0">
+                    <a href="/u/{{ user.username}}/{{ user.id }}" class="author" tooltip="{{ user.username }}" ng-repeat="user in profile.referrals.users">
+                      <img class="avatar" alt="{{ user.username }}" ng-src="{{ user.image }}" ng-if="user.image">
+                      <span class="avatar" title="{{ user.username }}" ng-if="!user.image">{{ user.username[0] }}</span>
                     </a>
-                    <a href="/u/TheRealSpartan/55c627027a4780093100062e" class="author" tooltip="{{ profile.username }}">
-                      <span class="avatar" title="TheRealSpartan" ng-if="!post.author.image || true">T</span>
-                    </a>
+                    <p ng-if="profile.referrals.count > 10">Y otros {{ profile.referrals.count - 10 }} usuarios más</p>
                   </div>
 
                   <hr>
@@ -415,11 +415,11 @@
 
                     <p>Puedes invitar a más amigos usando el siguiente link:</p>
 
-                    <pre>http://spartangeek.com/?ref=ABCDE</pre>
+                    <pre>http://spartangeek.com/?ref={{ user.info.ref_code }}</pre>
 
                     <p>Por cada usuario que se registre usando tu código y validando su cuenta, se te contará como referencia. Cualquier cuenta registrada con Facebook se valida automáticamente.</p>
 
-                    <table class="table">
+                    <table class="table table-acq">
                       <thead>
                         <tr>
                           <th>Amigos registrados por invitación tuya</th>
