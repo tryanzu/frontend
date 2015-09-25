@@ -52,14 +52,14 @@
 	width: 100%;
 	height: 100%;
 	background: #eef2f9;
-	color: #3b3f45;
+	color: @brand-primary;
 	font-size: 1.2em;
 }
 
 .fs-form-overview .fs-fields::before {
 	display: block;
 	margin-bottom: 2.5em;
-	color: #3b3f45;
+	color: @brand-primary;
 	content: 'Revisa antes de enviar';
 	font-weight: 700;
 	font-size: 1.85em;
@@ -205,20 +205,20 @@ button.fs-continue,
 }
 
 .fs-form-full .fs-fields > li label[data-info]::before {
-    position: absolute;
-    bottom: 100%;
-   	left: 0;
-    padding: 0 0 10px;
-    min-width: 200px;
-	content: attr(data-info);
-	font-size: 0.4em;
-	color: #6a7b7e;
-    opacity: 0;
-    -webkit-transition: opacity 0.3s, -webkit-transform 0.3s;
-    transition: opacity 0.3s, transform 0.3s;
-    -webkit-transform: translate3d(0,-5px,0);
-    transform: translate3d(0,-5px,0);
-    pointer-events: none;
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  padding: 0 0 10px;
+  min-width: 200px;
+  content: attr(data-info);
+  font-size: 0.4em;
+  color: rgba(255,255,255, 0.6);
+  opacity: 0;
+  -webkit-transition: opacity 0.3s, -webkit-transform 0.3s;
+  transition: opacity 0.3s, transform 0.3s;
+  -webkit-transform: translate3d(0,-5px,0);
+  transform: translate3d(0,-5px,0);
+  pointer-events: none;
 }
 
 .fs-form-full .fs-fields > li label[data-info]:hover::before {
@@ -268,7 +268,7 @@ button.fs-continue,
 }
 
 .fs-fields input:focus {
-	background-color: #3b3f45; /* Fixes chrome bug with placeholder */
+	background-color: @brand-primary; /* Fixes chrome bug with placeholder */
 }
 
 .fs-form-overview .fs-fields input:focus {
@@ -305,7 +305,7 @@ button.fs-continue,
 
 .fs-fields > li .fs-radio-custom span label {
 	color: rgba(0,0,0,0.4);
-  color: #959DA9;
+  //color: #959DA9;
 	-webkit-transition: color 0.3s;
 	transition: color 0.3s;
 }
@@ -527,7 +527,7 @@ button.fs-continue,
 	top: 0;
 	right: 0;
 	overflow: hidden;
-	color: #777;
+	color: @brand-primary-dark;//#777;
 	margin: 40px;
 	width: 2em;
 	font-weight: 700;
@@ -626,11 +626,11 @@ button.fs-continue,
 button.fs-submit,
 button.fs-continue {
 	padding: 0.6em 1.5em;
-	border: 3px solid #232529;
+	//border: 3px solid #232529;
+  border: 3px solid rgba(0,0,0,0.5);
 	border-radius: 40px;
 	font-weight: 700;
-	color: rgba(0,0,0,0.4);
-  color: #959DA9;
+	color: rgba(0,0,0,0.5);
 }
 
 .fs-form-overview .fs-submit,
@@ -668,7 +668,7 @@ button.fs-continue:hover {
 	text-align: center;
 	background: transparent;
 	color: rgba(0,0,0,0.3);
-  color: #959DA9;
+  //color: #959DA9;
 	content: 'o presiona ENTER';
 	font-size: 0.65em;
 	pointer-events: none;
@@ -682,7 +682,7 @@ button.fs-continue:hover {
 	z-index: 800;
 	max-width: 960px;
 	width: 70%;
-	color: #eb7e7f;
+	color: #FFA6A7;
 	font-weight: 700;
 	font-size: 1em;
 	opacity: 0;
