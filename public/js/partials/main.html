@@ -188,7 +188,7 @@
             <div class="back-to-list visible-xs-block">
               <a href="/" ng-click="activePostId = null"><i class="fa fa-chevron-left"></i> Regresar al listado de publicaciones</a>
             </div>
-            <div class="author" ng-hide="resolving">
+            <div class="author" ng-hide="resolving || error_loading">
               <div class="row">
                 <div class="col-md-7 col-xs-12">
                   <a href="/u/{{ post.author.username }}/{{ post.author.id }}" title="Perfil de {{ post.author.username }}">
@@ -200,7 +200,7 @@
                     <a href="/u/{{ post.author.username }}/{{ post.author.id }}" title="Perfil de {{ post.author.username }}">
                       <span class="username">{{ post.author.username }}</span>
                     </a>
-                    <span class="verified-account" ng-if="post.author.id === '559af1c501c25d3790000054' || post.author.facebook.verified" tooltip="Cuenta verificada" tooltip-placement="right"><i class="fa fa-check"></i></span>
+                    <span class="verified-account" ng-if="post.author.id === '559af1c501c25d3790000054' || post.author.validated" tooltip="Cuenta verificada" tooltip-placement="right"><i class="fa fa-check"></i></span>
                     <ul class="role-labels" ng-if="post.author.roles.length > 0">
                       <li ng-repeat="role in post.author.roles" ng-if="role.name !== 'user'">
                         <span class="label label-default" ng-class="role.name">{{ misc.role_labels[role.name] }}</span>
@@ -223,10 +223,16 @@
             <div class="resolving" ng-hide="!resolving">
               <img src="/images/head.png" />
               <h4>Cargando</h4>
-              <i class="fa fa-circle-o-notch fa-spin"></i>
+              <i class="fa fa-spinner fa-pulse"></i>
             </div>
 
-            <div ng-hide="resolving">
+            <div class="resolving" ng-show="error_loading">
+              <img src="/images/head.png" />
+              <h4>Error 404</h4>
+              <p>No encontramos la publicación que estabas buscando.</p>
+            </div>
+
+            <div ng-hide="resolving || error_loading">
 
               <nav class="discussion-nav">
                 <ul>
@@ -418,14 +424,18 @@
                   </div>
                 </div>
 
+                <div class="votes-count">
+                  <span ng-if="post.votes.up > 0">A {{ post.votes.up }} {{post.votes.up == 1 ? 'persona le gusta':'personas les gusta'}}</span>
+                  <span ng-if="post.votes.up > 0 && post.votes.down > 0"> y </span>
+                  <span ng-if="post.votes.down > 0">{{ post.votes.down }} {{post.votes.down == 1 ? 'persona piensa':'personas piensan'}} que apesta</span>
+                </div>
+
                 <ul class="post-actions" ng-class="{empty: post.author.id == user.info.id && post.votes.up == 0 && post.votes.down == 0}">
                   <li class="action" ng-if="post.liked != -1">
-                    <a href="" ng-click="post_vote(post, 'up')" class="btn btn-success-border btn-round" ng-class="{'liked': post.liked == 1}" ng-if="post.author.id != user.info.id && user.gaming.tribute > 0"><i class="fa fa-thumbs-up"></i> Me gusta</a>
-                    <div class="count" ng-if="post.votes.up > 0">A <strong>{{post.votes.up}} personas</strong> le gusta</div>
+                    <a href="" ng-click="post_vote(post, 'up')" class="btn btn-success-border btn-round" ng-class="{'liked': post.liked == 1, 'disabled': user.gaming.tribute == 0}" ng-if="post.author.id != user.info.id"><i class="fa fa-thumbs-up"></i> Me gusta</a>
                   </li>
                   <li class="action" ng-if="post.liked != 1">
-                    <a href="" ng-click="post_vote(post, 'down')" ng-class="{'hated': post.liked == -1}" class="btn btn-default btn-round" ng-if="post.author.id != user.info.id && user.gaming.shit > 0"><i class="fa fa-trash"></i> Esto apesta</a>
-                    <div class="count" ng-if="post.votes.down > 0"><strong>{{post.votes.down}} personas</strong> piensan que apesta</div>
+                    <a href="" ng-click="post_vote(post, 'down')" ng-class="{'hated': post.liked == -1, 'disabled': user.gaming.shit == 0}" class="btn btn-default btn-round" ng-if="post.author.id != user.info.id"><i class="fa fa-trash"></i> Esto apesta</a>
                   </li>
                 </ul>
 

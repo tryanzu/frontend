@@ -97,7 +97,7 @@
 }
 
 .btn.btn-sm .label {
-  font-size: 85%;
+  font-size: 100%;
 }
 
 .btn.btn-round {
@@ -109,7 +109,12 @@
 }
 
 .btn-success-border {
-  .button-variant-border(#57ad68; @btn-default-bg; #57ad68);
+  .button-variant-border(#57ad68; @btn-default-bg; #999);
+
+  &.liked {
+    border-color: #57ad68;
+    //margin-right: -1.2em;
+  }
 }
 
 .sidebar-menu {
@@ -222,12 +227,27 @@
 
 .user-mention {
   background-color: @brand-primary-lighter;
-  border-radius: 0;
-  padding: 0;
+  border-radius: 3px;
+  padding: 2px 3px;
 }
 .active {
   .user-mention {
     background-color: lighten(@brand-warning, 40%);
     color: @brand-warning;
   }
+}
+
+.table-acq {
+  table-layout: fixed;
+
+  ul {
+    padding-left: 0;
+  }
+}
+
+.big-icon {
+  text-align: center;
+  font-size: 128px;
+  margin-top: 15px;
+  color: @brand-primary-light-text;
 }
