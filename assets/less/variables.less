@@ -7,14 +7,14 @@
 @secondary-hue:                    hue(@brand-primary-light);
 @secondary-sat:                    saturation(@brand-primary-light);
 
-@brand-primary:         #325BA2;//#305fa9;
+@brand-primary:         #386db8; //#325BA2;//#305fa9;
 @brand-success:         #21b384;//#438C52;
 @brand-info:            #3498DB;
 @brand-warning:         #F39C12;
 @brand-danger:          #E74C3C;
 
-@brand-primary-light:       lighten(@brand-primary, 48%);
-@brand-primary-lighter:     desaturate(lighten(@brand-primary, 54%), 3%);
+@brand-primary-light:       lighten(@brand-primary, 42%);
+@brand-primary-lighter:     desaturate(lighten(@brand-primary, 48%), 0%);
 @brand-primary-light-text:  desaturate(lighten(@brand-primary, 25%), 30%);
 @brand-primary-normal:      desaturate(darken(@brand-primary, 5%), 20%);
 @brand-primary-dark:        desaturate(darken(@brand-primary, 8%), 30%);
@@ -53,7 +53,7 @@
 //
 //## Font, line-height, and color for body text, headings, and more.
 
-@font-family-sans-serif:  "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+@font-family-sans-serif:  "Proxima", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 
 //** Unit-less `line-height` for use in components like buttons.
 
@@ -107,7 +107,7 @@
 @btn-default-border:             lighten(@brand-primary-opaque, 35%);
 
 @btn-primary-color:              white;
-@btn-primary-bg:                 @brand-primary;
+@btn-primary-bg:                 darken(@brand-primary, 5%);
 @btn-primary-border:             @btn-primary-bg;
 
 @btn-success-color:              white;

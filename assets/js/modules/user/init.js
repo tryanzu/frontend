@@ -117,7 +117,7 @@ UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed
   }
 
   User.get({user_id: $routeParams.id}, function(data) {
-    //console.log(data)
+    console.log(data)
     $scope.profile = data;
     $scope.startFeed();
     $scope.new_data.username = $scope.profile.username;
@@ -149,5 +149,23 @@ UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed
   }, function(response) {
     window.location = '/';
   });
-
 }]);
+
+UserModule.controller('UserValidationController', ['$scope', '$http', '$routeParams',
+  function($scope, $http, $routeParams) {
+
+    $scope.validation_in_progress = true;
+    $scope.validated = false;
+
+    $http.get(layer_path + "user/confirm/" + $routeParams.code).
+      then(function() {
+        $scope.validation_in_progress = false;
+        $scope.user.info.validated = true;
+        $scope.validated = true;
+      }, function() {
+        $scope.validation_in_progress = false;
+        //Redirect to home if error
+        window.location = '/';
+      });
+  }
+])

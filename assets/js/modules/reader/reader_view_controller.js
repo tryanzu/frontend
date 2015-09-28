@@ -242,6 +242,7 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
 	$scope.$on('resolvePost', function(event, post) {
 		$scope.waiting = false;
 		$scope.resolving = true;
+    $scope.error_loading = false;
 		$scope.post = post;
 		$scope.force_comment = false;
 
@@ -297,9 +298,9 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
         $scope.ratio = $scope.viewport_h/$scope.total_h*100;
         $scope.scrollable = 0;
         $scope.scrollable_h = $scope.total_h - $scope.viewport_h;
-        if($scope.ratio < 15) {
-          $scope.ratio = 15;
-          $scope.scrollable = 85;
+        if($scope.ratio < 35) {
+          $scope.ratio = 35;
+          $scope.scrollable = 65;
         } else {
           $scope.scrollable = 100 - $scope.ratio;
         }
@@ -366,8 +367,10 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
         $('.scrubber-after').css('height', $scope.surplus + '%');
       });
       /* End TODO */
-
-		});
+		}, function(response) {
+      $scope.resolving = false;
+      $scope.error_loading = true;
+    });
 	});
 
   $scope.$on('scrubberRecalculate', function(event) {
