@@ -109,7 +109,12 @@
 }
 
 .btn-success-border {
-  .button-variant-border(#57ad68; @btn-default-bg; #57ad68);
+  .button-variant-border(#57ad68; @btn-default-bg; #999);
+
+  &.liked {
+    border-color: #57ad68;
+    //margin-right: -1.2em;
+  }
 }
 
 .sidebar-menu {

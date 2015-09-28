@@ -432,10 +432,10 @@
 
                 <ul class="post-actions" ng-class="{empty: post.author.id == user.info.id && post.votes.up == 0 && post.votes.down == 0}">
                   <li class="action" ng-if="post.liked != -1">
-                    <a href="" ng-click="post_vote(post, 'up')" class="btn btn-success-border btn-round" ng-class="{'liked': post.liked == 1}" ng-if="post.author.id != user.info.id && user.gaming.tribute > 0"><i class="fa fa-thumbs-up"></i> Me gusta</a>
+                    <a href="" ng-click="post_vote(post, 'up')" class="btn btn-success-border btn-round" ng-class="{'liked': post.liked == 1, 'disabled': user.gaming.tribute == 0}" ng-if="post.author.id != user.info.id"><i class="fa fa-thumbs-up"></i> Me gusta</a>
                   </li>
                   <li class="action" ng-if="post.liked != 1">
-                    <a href="" ng-click="post_vote(post, 'down')" ng-class="{'hated': post.liked == -1}" class="btn btn-default btn-round" ng-if="post.author.id != user.info.id && user.gaming.shit > 0"><i class="fa fa-trash"></i> Esto apesta</a>
+                    <a href="" ng-click="post_vote(post, 'down')" ng-class="{'hated': post.liked == -1, 'disabled': user.gaming.shit == 0}" class="btn btn-default btn-round" ng-if="post.author.id != user.info.id"><i class="fa fa-trash"></i> Esto apesta</a>
                   </li>
                 </ul>
 

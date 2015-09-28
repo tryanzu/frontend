@@ -261,7 +261,7 @@ button.fs-continue,
 }
 
 .fs-fields [required] {
-	background-image: url(../img/abacusstar.svg);
+	background-image: url('/images/shop/abacusstar.svg');
 	background-position: top right;
 	background-size: 18px;
 	background-repeat: no-repeat;
@@ -293,22 +293,21 @@ button.fs-continue,
 .fs-fields > li .fs-radio-custom span {
 	float: left;
 	position: relative;
-	margin-right: 3%;
+	margin-right: 5%;
 	padding: 10px;
 	max-width: 200px;
-	width: 30%;
+	width: 20%;
 	text-align: center;
 	font-weight: 700;
 	font-size: 50%;
-	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+  label {
+    color: rgba(0,0,0,0.4);
+    -webkit-transition: color 0.3s;
+    transition: color 0.3s;
+  }
 }
 
-.fs-fields > li .fs-radio-custom span label {
-	color: rgba(0,0,0,0.4);
-  //color: #959DA9;
-	-webkit-transition: color 0.3s;
-	transition: color 0.3s;
-}
 
 .fs-form-overview .fs-fields > li .fs-radio-custom span {
 	max-width: 140px;
@@ -343,16 +342,20 @@ button.fs-continue,
 	transform: translate(-50%,-50%);
 }
 
-.fs-fields .fs-radio-custom label.radio-mobile::after {
-	background-image: url(../img/mobile.svg);
+.fs-fields .fs-radio-custom label.options-architecture::after {
+	background-image: url('/images/shop/architecture.png');
 }
 
-.fs-fields .fs-radio-custom label.radio-social::after {
-	background-image: url(../img/social.svg);
+.fs-fields .fs-radio-custom label.options-homework::after {
+	background-image: url('/images/shop/homework.png');
 }
 
-.fs-fields .fs-radio-custom label.radio-conversion::after {
-	background-image: url(../img/conversion.svg);
+.fs-fields .fs-radio-custom label.options-professional::after {
+  background-image: url('/images/shop/professional.png');
+}
+
+.fs-fields .fs-radio-custom label.options-gaming::after {
+	background-image: url('/images/shop/gaming.png');
 }
 
 .fs-fields .fs-radio-custom label:hover::after,
@@ -424,7 +427,7 @@ button.fs-continue,
 }
 
 .fs-fields input.fs-mark[required] {
-	background-image: url(../img/dollar.svg), url(../img/abacusstar.svg);
+	background-image: url(../img/dollar.svg), url('/images/shop/abacusstar.svg');
 	background-position: 0% 0.15em, top right;
 	background-size: auto 75%, 18px;
 	background-repeat: no-repeat;
