@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SpartanGeek - Tienda - Solicitud de compra</title>
+    <meta name="description" content="Solicitud para comprar computadoras en México" />
+    <meta name="keywords" content="tienda, computadoras, pc gaming, juegos pc, nvidia, amd" />
+    <meta name="author" content="SpartanGeek" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="stylesheet" type="text/css" href="css/shop.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+  </head>
+  <body>
+    <div class="container">
+
+      <div class="fs-form-wrap" id="fs-form-wrap">
+        <div class="fs-title">
+          <img src="/images/logo.png" alt="Tienda de computadoras SpartanGeek">
+        </div>
+        <form id="myform" class="fs-form fs-form-full" autocomplete="off">
+          <ol class="fs-fields">
+            <li data-input-trigger>
+              <label class="fs-field-label fs-anim-upper" for="q3" data-info="Nos ayudará a darte una mejor recomendación">¿Para qué usarás tu PC?</label>
+              <div class="fs-radio-group fs-radio-custom clearfix fs-anim-lower">
+                <span><input id="q3b" name="q3" type="radio" value="conversion"/><label for="q3b" class="options-gaming">Gaming</label></span>
+                <span><input id="q3c" name="q3" type="radio" value="social"/><label for="q3c" class="options-architecture">Arquitectura</label></span>
+                <span><input id="q3a" name="q3" type="radio" value="mobile"/><label for="q3a" class="options-homework">Trabajos escolares</label></span>
+                <span><input id="q3d" name="q3" type="radio" value="mobile"/><label for="q3d" class="options-professional">Profesional y multimedia</label></span>
+              </div>
+            </li>
+            <li>
+              <label class="fs-field-label fs-anim-upper" for="q4">¿Algún comentario extra sobre la PC que quieres?</label>
+              <textarea class="fs-anim-lower" id="q4" name="q4" placeholder="Describe aquí"></textarea>
+            </li>
+            <li>
+              <label class="fs-field-label fs-anim-upper" for="q5">¿Cual es tu presupuesto?</label>
+              <input class="fs-mark fs-anim-lower" id="q5" name="q5" type="number" placeholder="1000" step="100" min="100"/>
+            </li>
+            <li>
+              <label class="fs-field-label fs-anim-upper" for="q1">¿Cual es tu nombre?</label>
+              <input class="fs-anim-lower" id="q1" name="q1" type="text" placeholder="Pancho Villa" required/>
+            </li>
+            <li>
+              <label class="fs-field-label fs-anim-upper" for="q2" data-info="Para poder contactarte con la respuesta...">¿Cual es tu dirección de correo electrónico?</label>
+              <input class="fs-anim-lower" id="q2" name="q2" type="email" placeholder="revolucion@gmail.com" required/>
+            </li>
+          </ol><!-- /fs-fields -->
+          <button class="fs-submit" type="submit">Quiero comprar una Spartana</button>
+        </form><!-- /fs-form -->
+      </div><!-- /fs-form-wrap -->
+
+    </div><!-- /container -->
+    <script src="js/shop.js"></script>
+    <script>
+      (function() {
+        var formWrap = document.getElementById( 'fs-form-wrap' );
+
+        new FForm( formWrap, {
+          onReview : function() {
+            classie.add( document.body, 'overview' ); // for demo purposes only
+          }
+        } );
+      })();
+    </script>
+  </body>
+</html>
