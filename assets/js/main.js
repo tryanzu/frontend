@@ -13,6 +13,7 @@
 // @codekit-prepend "vendor/angular-ui-switch.min.js"
 // @codekit-prepend "vendor/angular-acl.min.js"
 // @codekit-prepend "vendor/angular-timeago.js"
+// @codekit-prepend "vendor/algoliasearch.angular.min.js"
 // @codekit-prepend "modules/feed/init"
 // @codekit-prepend "modules/categories/init"
 // @codekit-prepend "modules/reader/init"
@@ -23,6 +24,7 @@
 // @codekit-prepend "modules/badges/init"
 // @codekit-prepend "modules/top/init"
 // @codekit-prepend "modules/chat/chat"
+// @codekit-prepend "modules/search/search"
 
 var boardApplication = angular.module('board', [
   'ngRoute',
@@ -52,7 +54,8 @@ var boardApplication = angular.module('board', [
   'mentio',
   'uiSwitch',
   'mm.acl',
-  'yaru22.angular-timeago'
+  'yaru22.angular-timeago',
+  'searchBar'
 ]);
 
 var version = '0.1.4.5b';
