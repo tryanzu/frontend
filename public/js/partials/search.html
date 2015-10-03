@@ -29,20 +29,22 @@
           <div class="hit" ng-repeat="hit in hits" style="padding: 0 15px;" ng-hide="fetching">
             <div class="row" style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #E8E8E8;">
               <div class="col-sm-2 col-xs-4" style="text-align: center">
-                <a href="/u/{{ u.user.username }}/{{ u.user.id }}" title="Perfil de {{ u.user.username }}">
+                <a href="/u/{{ hit.user.username }}/{{ hit.user.id }}" title="Perfil de {{ hit.user.username }}" ng-click="toggle()">
                   <img class="avatar" ng-src="{{ hit.user.image }}" alt="{{ hit.user.username }}" ng-if="hit.user.image">
                   <span class="avatar" title="{{ hit.user.username }}" ng-if="!hit.user.image">{{ hit.user.username[0] }}</span>
                 </a>
                 <div class="username">
-                  <a href="/u/{{ hit.user.username }}/{{ hit.user.id }}" title="Perfil de {{ hit.user.username }}">
+                  <a href="/u/{{ hit.user.username }}/{{ hit.user.id }}" title="Perfil de {{ hit.user.username }}" ng-click="toggle()">
                     <span ng-bind-html="hit._highlightResult.user.username.value"></span>
                   </a>
                 </div>
               </div>
               <div class="col-sm-10 col-xs-8">
-                <p class="title" ng-bind-html="hit._highlightResult.title.value"></p>
-                <p class="content" ng-bind-html="hit._highlightResult.content.value"></p>
-                <p>Escrito en <span ng-bind-html="hit._highlightResult.category.name.value"></span></p>
+                <a href="/p/-/{{ hit.objectID }}" ng-click="toggle()">
+                  <p class="title" ng-bind-html="hit._highlightResult.title.value"></p>
+                  <p class="content" ng-bind-html="hit._highlightResult.content.value"></p>
+                  <p>Escrito en <span ng-bind-html="hit._highlightResult.category.name.value"></span></p>
+                </a>
               </div>
             </div>
           </div>
