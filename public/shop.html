@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SpartanGeek - Tienda - Solicitud de compra</title>
+    <meta name="description" content="Solicitud para comprar computadoras en México" />
+    <meta name="keywords" content="tienda, computadoras, pc gaming, juegos pc, nvidia, amd" />
+    <meta name="author" content="SpartanGeek" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="stylesheet" type="text/css" href="css/shop.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+  </head>
+  <body>
+    <div class="container">
+
+      <div class="fs-form-wrap" id="fs-form-wrap">
+        <div class="fs-title">
+          <img src="/images/logo.png" alt="Tienda de computadoras SpartanGeek">
+        </div>
+        <form id="myform" class="fs-form fs-form-full" autocomplete="off">
+          <ol class="fs-fields">
+            <li data-input-trigger>
+              <label class="fs-field-label fs-anim-upper" for="usage" data-info="Nos ayudará a darte una mejor recomendación de hardware y actualizaciones futuras">¿Para qué usarás principalmente tu PC?</label>
+              <div class="fs-radio-group fs-radio-custom clearfix fs-anim-lower">
+                <span><input id="usagea" name="usage" type="radio" value="gaming"/><label for="usagea" class="options-gaming">Gaming</label></span>
+                <span><input id="usageb" name="usage" type="radio" value="arquitectura"/><label for="usageb" class="options-architecture">Arquitectura</label></span>
+                <span><input id="usagec" name="usage" type="radio" value="escuela"/><label for="usagec" class="options-homework">Trabajos escolares</label></span>
+                <span><input id="usaged" name="usage" type="radio" value="profesional-multimedia"/><label for="usaged" class="options-professional">Profesional y multimedia</label></span>
+              </div>
+            </li>
+            <li data-input-trigger>
+              <label class="fs-field-label fs-anim-upper" for="games" data-info="Para decidir la gama de GPU mínima que necesitas">¿Qué juegos vas a jugar?</label>
+              <div class="fs-radio-group fs-radio-custom clearfix fs-anim-lower">
+                <span>
+                  <input id="qgamesa" name="games" type="radio" value="aaa"/>
+                  <label for="qgamesa" class="games-aaa">Títulos AAA</label>
+                </span>
+                <span>
+                  <input id="qgamesb" name="games" type="radio" value="classic"/>
+                  <label for="qgamesb" class="games-classic">Títulos clásicos o medios</label>
+                </span>
+                <span>
+                  <input id="qgamesc" name="games" type="radio" value="low"/>
+                  <label for="qgamesc" class="games-low">Juegos gama baja</label>
+                </span>
+                <span>
+                  <input id="qgamesd" name="games" type="radio" value="indie"/>
+                  <label for="qgamesd" class="games-indie">Juegos Indie</label>
+                </span>
+              </div>
+            </li>
+            <li data-input-trigger>
+              <label class="fs-field-label fs-anim-upper" for="extra">¿Necesitas alguno de estos componentes?</label>
+              <div class="fs-checkbox-group fs-checkbox-custom clearfix fs-anim-lower">
+                <span>
+                  <input id="qcomp-keyboard" type="checkbox" name="extra" value="keyboard">
+                  <label for="qcomp-keyboard" class="components-keyboard">Teclado</label>
+                </span>
+                <span>
+                  <input id="qcomp-mouse" type="checkbox" name="extra" value="mouse">
+                  <label for="qcomp-mouse" class="components-mouse">Mouse</label>
+                </span>
+                <span>
+                  <input id="qcomp-monitor" type="checkbox" name="extra" value="monitor">
+                  <label for="qcomp-monitor" class="components-monitor">Monitor</label>
+                </span>
+                <span>
+                  <input id="qcomp-headset" type="checkbox" name="extra" value="headset">
+                  <label for="qcomp-headset" class="components-headset">Headset</label>
+                </span>
+              </div>
+            </li>
+            <li>
+              <label class="fs-field-label fs-anim-upper" for="budget">¿Cual es tu presupuesto?</label>
+              <input class="fs-mark fs-anim-lower" id="budget" name="budget" type="number" placeholder="10000" step="500" min="5500" max="50000" required />
+            </li>
+            <li>
+              <label class="fs-field-label fs-anim-upper" for="buydelay">¿En cuantos días planeas hacer la compra?</label>
+              <input class="fs-mark fs-anim-lower" id="buydelay" name="buydelay" type="number" placeholder="7" step="1" min="1" max="365" />
+            </li>
+            <li>
+              <label class="fs-field-label fs-anim-upper" for="estado" data-info="En caso de que estés en el DF podrías pasar por ella">¿En dónde estás ubicado?</label>
+              <div class="fs-anim-lower">
+                <select id="estado" name="estado">
+                  <option value="Aguascalientes">Aguascalientes</option>
+                  <option value="Baja California">Baja California</option>
+                  <option value="Baja California Sur">Baja California Sur</option>
+                  <option value="Campeche">Campeche</option>
+                  <option value="Coahuila de Zaragoza">Coahuila de Zaragoza</option>
+                  <option value="Colima">Colima</option>
+                  <option value="Chiapas">Chiapas</option>
+                  <option value="Chihuahua">Chihuahua</option>
+                  <option value="Distrito Federal" selected="selected">Distrito Federal</option>
+                  <option value="Durango">Durango</option>
+                  <option value="Guanajuato">Guanajuato</option>
+                  <option value="Guerrero">Guerrero</option>
+                  <option value="Hidalgo">Hidalgo</option>
+                  <option value="Jalisco">Jalisco</option>
+                  <option value="México">México</option>
+                  <option value="Michoacán">Michoacán</option>
+                  <option value="Morelos">Morelos</option>
+                  <option value="Nayarit">Nayarit</option>
+                  <option value="Nuevo León">Nuevo León</option>
+                  <option value="Oaxaca">Oaxaca</option>
+                  <option value="Puebla">Puebla</option>
+                  <option value="Querétaro">Querétaro</option>
+                  <option value="Quintana Roo">Quintana Roo</option>
+                  <option value="San Luis Potosí">San Luis Potosí</option>
+                  <option value="Sinaloa">Sinaloa</option>
+                  <option value="Sonora">Sonora</option>
+                  <option value="Tabasco">Tabasco</option>
+                  <option value="Tamaulipas">Tamaulipas</option>
+                  <option value="Tlaxcala">Tlaxcala</option>
+                  <option value="Veracruz">Veracruz</option>
+                  <option value="Yucatán">Yucatán</option>
+                  <option value="Zacatecas">Zacatecas</option>
+                </select>
+              </div>
+            </li>
+            <li>
+              <label class="fs-field-label fs-anim-upper" for="user_name">¿Cual es tu nombre completo?</label>
+              <input class="fs-anim-lower" id="user_name" name="user_name" type="text" placeholder="Pancho Villa" required/>
+            </li>
+            <li>
+              <label class="fs-field-label fs-anim-upper" for="user_email" data-info="Para poder contactarte con la respuesta...">¿Cual es tu correo electrónico?</label>
+              <input class="fs-anim-lower" id="user_email" name="user_email" type="email" placeholder="revolucion@gmail.com" required/>
+            </li>
+            <li>
+              <label class="fs-field-label fs-anim-upper" for="user_phone">¿Cual es tu teléfono?</label>
+              <input class="fs-anim-lower" id="user_phone" name="user_phone" type="text" placeholder="5510203040" required/>
+            </li>
+            <li>
+              <label class="fs-field-label fs-anim-upper" for="content">¿Algún comentario extra sobre la PC que quieres?</label>
+              <textarea class="fs-anim-lower" id="content" name="content" placeholder="Describe aquí"></textarea>
+            </li>
+          </ol><!-- /fs-fields -->
+          <button class="fs-submit" type="submit">Quiero comprar una Spartana</button>
+          <div class="fs-messages">
+            <p class="alert alert-success">Tu solicitud se ha enviado correctamente. Pronto nos pondremos en contacto contigo.</p>
+            <p class="alert alert-warning">Hubo un problema al enviar la solicitud, intenta nuevamente.</p>
+          </div>
+
+        </form><!-- /fs-form -->
+      </div><!-- /fs-form-wrap -->
+
+    </div><!-- /container -->
+    <script type="text/javascript" src="js/config.js"></script>
+    <script src="js/shop.js"></script>
+    <script>
+      $.fn.serializeObject = function() {
+        var o = {};
+        var a = this.serializeArray();
+        $.each(a, function() {
+            if (o[this.name]) {
+                if (!o[this.name].push) {
+                    o[this.name] = [o[this.name]];
+                }
+                o[this.name].push(this.value || '');
+            } else {
+                o[this.name] = this.value || '';
+            }
+        });
+        return o;
+      };
+
+      (function() {
+        var formWrap = document.getElementById( 'fs-form-wrap' );
+
+        new FForm( formWrap, {
+          onReview : function() {
+            classie.add( document.body, 'overview' ); // for demo purposes only
+          }
+        } );
+
+        var games_list = {
+          'aaa': ['GTA V', 'Battlefield 4', 'The Witcher 3'],
+          'classic': ['Far Cry 3', 'Resident Evil 4', 'F.E.A.R. 3'],
+          'low': ['Minecraft', 'League of Legends'],
+          'indie': ['FEZ', 'Ark']
+        };
+
+        $("#myform").on("submit", function( event ) {
+          event.preventDefault();
+
+          $('.alert.alert-warning').removeClass('show');
+          $('.fs-submit').html('Enviando...');
+
+          var payload = $(this).serializeObject();
+          payload.user = {
+            name: payload.user_name,
+            email: payload.user_email,
+            phone: payload.user_phone
+          };
+          payload.games = games_list[payload.games];
+          delete payload.user_name;
+          delete payload.user_email;
+          delete payload.user_phone;
+
+          console.log(payload);
+
+          $.post(layer_path + 'store/order', payload, function(data) {
+            console.log(data);
+            $('.fs-submit').addClass('hide');
+            $('.alert.alert-success').addClass('show');
+          }).fail(function(data) {
+            $('.alert.alert-warning').addClass('show');
+            $('.fs-submit').html('Quiero comprar una Spartana');
+          });
+        });
+
+      })();
+    </script>
+  </body>
+</html>

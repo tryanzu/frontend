@@ -251,3 +251,20 @@
   margin-top: 15px;
   color: @brand-primary-light-text;
 }
+
+.label-inverse.label-default {
+  color: @brand-primary;
+  border: 1px solid @brand-primary;
+  padding: .15em .3em .15em;
+}
+.btn-cancel {
+  color: @brand-danger;
+  background-color: lighten(@brand-danger, 35%);
+  font-weight: 600;
+  text-transform: uppercase;
+
+  &:hover {
+    color: lighten(@brand-danger, 35%);
+    background-color: @brand-danger;
+  }
+}
