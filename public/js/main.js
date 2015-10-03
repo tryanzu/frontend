@@ -4827,7 +4827,7 @@ var boardApplication = angular.module('board', [
   'searchBar'
 ]);
 
-var version = '0.1.4.5b';
+var version = '0.1.4.6';
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider', 'AclServiceProvider',
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider, AclServiceProvider) {
