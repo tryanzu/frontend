@@ -1,0 +1,55 @@
+<form class="navbar-form navbar-left" role="search" ng-click="toggle()">
+  <div class="form-group">
+    <input autocomplete="off" autocorrect="off" class="form-control" ng-keyup="do($event)" ng-model="query" placeholder="Buscar publicación" spellcheck="false" type="text" style="width:180px">
+  </div>
+</form>
+
+<div id="search-layout" ng-class="{'open': open}">
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-10">
+        <form>
+          <input autocomplete="off" autocorrect="off" type="text" ng-keyup="do($event)" ng-model="query" placeholder="Buscar publicación" ng-class="{'empty-box':!query}" />
+        </form>
+        <p ng-if="query">Presiona la tecla <span class="label label-inverse label-default">ESC</span> para iniciar una nueva búsqueda.</p>
+      </div>
+      <div class="col-sm-2">
+        <br>
+        <a ng-click="toggle()" class="btn btn-cancel btn-block btn-sm"><i class="fa fa-times"></i> Cerrar</a>
+      </div>
+    </div>
+    <div ng-hide="!query">
+      <h2>Resultados</h2>
+      <p ng-if="statistics.total > 0">Se {{statistics.total > 1?'encontraron':'encontró' }} {{ statistics.total }} {{statistics.total > 1?'publicaciones':'publicación' }} en {{ statistics.time }} milisegundos</p>
+      <div class="row margin-btm40 results">
+        <div class="col-xs-12">
+          <h3 id="posts">Publicaciones</h3>
+          <p ng-show="fetching">Cargando...</p>
+          <p ng-hide="hits.length || fetching" class="text-danger">No se encontraron resultados para <strong class="text-uc">{{ query }}</strong></p>
+          <div class="hit" ng-repeat="hit in hits" style="padding: 0 15px;" ng-hide="fetching">
+            <div class="row" style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #E8E8E8;">
+              <div class="col-sm-2 col-xs-4" style="text-align: center">
+                <a href="/u/{{ hit.user.username }}/{{ hit.user.id }}" title="Perfil de {{ hit.user.username }}" ng-click="toggle()">
+                  <img class="avatar" ng-src="{{ hit.user.image }}" alt="{{ hit.user.username }}" ng-if="hit.user.image">
+                  <span class="avatar" title="{{ hit.user.username }}" ng-if="!hit.user.image">{{ hit.user.username[0] }}</span>
+                </a>
+                <div class="username">
+                  <a href="/u/{{ hit.user.username }}/{{ hit.user.id }}" title="Perfil de {{ hit.user.username }}" ng-click="toggle()">
+                    <span ng-bind-html="hit._highlightResult.user.username.value"></span>
+                  </a>
+                </div>
+              </div>
+              <div class="col-sm-10 col-xs-8">
+                <a href="/p/-/{{ hit.objectID }}" ng-click="toggle()">
+                  <p class="title" ng-bind-html="hit._highlightResult.title.value"></p>
+                  <p class="content" ng-bind-html="hit._highlightResult.content.value"></p>
+                  <p>Escrito en <span ng-bind-html="hit._highlightResult.category.name.value"></span></p>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

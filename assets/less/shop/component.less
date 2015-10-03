@@ -48,7 +48,7 @@
 }
 
 .fs-form-overview {
-	padding: 2.5em 30% 6em;
+	padding: 2.5em 30% 2.5em;
 	width: 100%;
 	height: 100%;
 	background: #eef2f9;
@@ -132,6 +132,9 @@ button.fs-continue,
 /* Hide the submit button */
 .fs-form .fs-submit {
 	display: none;
+}
+.fs-form .fs-messages {
+  display: none;
 }
 
 /* Fields */
@@ -236,7 +239,8 @@ button.fs-continue,
 }
 
 /* Inputs */
-.fs-fields input {
+.fs-fields input,
+.fs-fields select  {
 	display: block;
 	margin: 0;
 	padding: 0 0 0.15em;
@@ -255,7 +259,7 @@ button.fs-continue,
 	box-shadow: none; /* removes red shadow in FF*/
 }
 
-.fs-form-overview .fs-fields input {
+.fs-form-overview .fs-fields input, .fs-form-overview .fs-fields select {
 	border-bottom-color: transparent;
 	color: rgba(0,0,0,0.5);
 }
@@ -275,11 +279,11 @@ button.fs-continue,
 	background-color: #eef2f9; /* Fixes chrome bug with placeholder */
 }
 
-.fs-form-overview .fs-fields input {
+.fs-form-overview .fs-fields input, .fs-form-overview .fs-fields select {
 	font-size: 1.2em;
 }
 
-.fs-fields .fs-radio-custom input[type="radio"] {
+.fs-fields .fs-radio-custom input[type="radio"], .fs-fields .fs-checkbox-custom input[type="checkbox"] {
 	position: absolute;
 	display: block;
 	margin: 30px auto 20px;
@@ -290,7 +294,7 @@ button.fs-continue,
 	cursor: pointer;
 }
 
-.fs-fields > li .fs-radio-custom span {
+.fs-fields > li .fs-radio-custom span, .fs-fields > li .fs-checkbox-custom span {
 	float: left;
 	position: relative;
 	margin-right: 5%;
@@ -309,15 +313,12 @@ button.fs-continue,
 }
 
 
-.fs-form-overview .fs-fields > li .fs-radio-custom span {
+.fs-form-overview .fs-fields > li .fs-radio-custom span, .fs-form-overview .fs-fields > li .fs-checkbox-custom span {
 	max-width: 140px;
-}
-
-.fs-form-overview .fs-fields > li .fs-radio-custom span {
 	font-size: 75%;
 }
 
-.fs-fields > li .fs-radio-custom label {
+.fs-fields > li .fs-radio-custom label, .fs-fields > li .fs-checkbox-custom label {
 	display: block;
 	padding-top: 100%;
 	width: 100%;
@@ -325,7 +326,7 @@ button.fs-continue,
 	cursor: pointer;
 }
 
-.fs-fields .fs-radio-custom label::after {
+.fs-fields .fs-radio-custom label::after, .fs-fields .fs-checkbox-custom label::after {
 	position: absolute;
 	top: 50%;
 	left: 50%;
@@ -335,10 +336,8 @@ button.fs-continue,
 	background-size: 85%;
 	background-repeat: no-repeat;
 	content: '';
-	opacity: 0.5;
-	-webkit-transition: opacity 0.2s;
-	transition: opacity 0.2s;
-	-webkit-transform: translate(-50%,-50%);
+	opacity: 0.4;
+	//transition: opacity 0.1s;
 	transform: translate(-50%,-50%);
 }
 
@@ -358,17 +357,51 @@ button.fs-continue,
 	background-image: url('/images/shop/gaming.png');
 }
 
+.fs-fields .fs-radio-custom label.games-aaa::after {
+  background-image: url('/images/shop/games-aaa.png');
+}
+
+.fs-fields .fs-radio-custom label.games-classic::after {
+  background-image: url('/images/shop/games-classic.png');
+}
+
+.fs-fields .fs-radio-custom label.games-low::after {
+  background-image: url('/images/shop/games-low.png');
+}
+
+.fs-fields .fs-radio-custom label.games-indie::after {
+  background-image: url('/images/shop/games-indie.png');
+}
+
+.fs-fields .fs-checkbox-custom label.components-keyboard::after {
+  background-image: url('/images/shop/components-keyboard.png');
+}
+.fs-fields .fs-checkbox-custom label.components-mouse::after {
+  background-image: url('/images/shop/components-mouse.png');
+}
+.fs-fields .fs-checkbox-custom label.components-monitor::after {
+  background-image: url('/images/shop/components-monitor.png');
+}
+.fs-fields .fs-checkbox-custom label.components-headset::after {
+  background-image: url('/images/shop/components-headset.png');
+}
+
 .fs-fields .fs-radio-custom label:hover::after,
-.fs-fields input[type="radio"]:focus + label::after,
-.fs-fields input[type="radio"]:checked + label::after {
+//.fs-fields input[type="radio"]:focus + label::after,
+.fs-fields input[type="radio"]:checked + label::after,
+.fs-fields .fs-checkbox-custom label:hover::after,
+//.fs-fields input[type=checkbox]:focus + label::after,
+.fs-fields input[type=checkbox]:checked + label::after {
 	opacity: 1;
 }
 
-.fs-fields .fs-radio-custom input[type="radio"]:checked + label {
+.fs-fields .fs-radio-custom input[type="radio"]:checked + label,
+.fs-fields .fs-checkbox-custom input[type=checkbox]:checked + label {
 	color: #eef2f9;
 }
 
-.fs-form-overview .fs-fields .fs-radio-custom input[type="radio"]:checked + label {
+.fs-form-overview .fs-fields .fs-radio-custom input[type="radio"]:checked + label,
+.fs-form-overview .fs-fields .fs-checkbox-custom input[type="checkbox"]:checked + label {
 	color: rgba(0,0,0,0.8);
 }
 
@@ -640,6 +673,31 @@ button.fs-continue {
 .no-js .fs-form .fs-submit  {
 	display: block;
 	float: right;
+
+  &.hide {
+    display: none;
+  }
+}
+
+.fs-form-overview .fs-messages {
+  display: block;
+  clear: both;
+  padding-top: 1em;
+
+  p.alert.alert-success {
+    color: #29A024;
+    display: none;
+    &.show {
+      display: block;
+    }
+  }
+  p.alert.alert-warning {
+    color: #DE7F37;
+    display: none;
+    &.show {
+      display: block;
+    }
+  }
 }
 
 .fs-form-overview .fs-submit {
