@@ -71,9 +71,9 @@
       </div>
 
       <ul class="nav navbar-nav navbar-stats hidden-xs" ng-if="!user.isLogged">
-        <li><a><i class="fa fa-users"></i> Usuarios: {{status.stats.users}}</a></li>
-        <li><a><i class="fa fa-file"></i> Publicaciones: {{status.stats.posts}}</a></li>
-        <li><a><i class="fa fa-comments"></i> Comentarios: {{status.stats.comments}}</a></li>
+        <li><a><i class="fa fa-users"></i> Usuarios: {{ status.stats.users | number:0 }}</a></li>
+        <li><a><i class="fa fa-file"></i> Publicaciones: {{ status.stats.posts | number:0 }}</a></li>
+        <li><a><i class="fa fa-comments"></i> Comentarios: {{ status.stats.comments | number:0 }}</a></li>
       </ul>
 
       <ul class="nav navbar-nav hidden-xs" ng-if="user.isLogged">
@@ -101,7 +101,7 @@
             <a dropdown-toggle href="" class="dropdown-toggle btn-user" data-toggle="dropdown" role="button" aria-expanded="false">
               <span class="notifications-icon"><i class="fa fa-fw fa-bell icon-glyph"></i></span>
               <span class="label">Notificaciones</span>
-              <span class="notification-badge" ng-if="total_notifications() > 0">{{ total_notifications() }}</span>
+              <span class="notification-badge" ng-if="total_notifications() + (user.info.validated?0:1) > 0">{{ total_notifications() + (user.info.validated?0:1) }}</span>
             </a>
             <ul class="dropdown-menu" role="menu">
               <div class="notifications-header">
@@ -110,7 +110,7 @@
                 </a>
                 <h4>Notificaciones</h4>
               </div>
-              <li ng-if="!user.info.validated && false">
+              <li ng-if="!user.info.validated">
                 <a class="unread" href="">
                   Tu correo no ha sido confirmado
                   <div class="description">Te enviamos un correo para que puedas validar tu cuenta.</div>
