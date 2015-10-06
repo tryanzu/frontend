@@ -211,9 +211,13 @@ boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http'
     };
 
     $scope.fb_try = function(response) {
-      $http.get("https://graph.facebook.com/me?access_token="+response.authResponse.accessToken).
+      $http.get("https://graph.facebook.com/me?access_token=" + response.authResponse.accessToken).
         success(function(data, status, headers, config) {
-          var info = data;
+          //var info = data;
+          var ref = localStorage.getItem('ref');
+          if(ref) {
+            data.ref = ref;
+          }
           $http.post(layer_path + 'user/get-token/facebook', data).
             error(function(data, status, headers, config) {
               $scope.form.error = {message:'No se pudo iniciar sesión.'};
@@ -312,9 +316,13 @@ boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http'
     };
 
     $scope.fb_try = function(response) {
-      $http.get("https://graph.facebook.com/me?access_token="+response.authResponse.accessToken).
+      $http.get("https://graph.facebook.com/me?access_token=" + response.authResponse.accessToken).
         success(function(data, status, headers, config) {
-          var info = data;
+          //var info = data;
+          var ref = localStorage.getItem('ref');
+          if(ref) {
+            data.ref = ref;
+          }
           $http.post(layer_path + 'user/get-token/facebook', data).
             error(function(data, status, headers, config) {
               $scope.form.error = {message:'No se pudo iniciar sesión.'};
