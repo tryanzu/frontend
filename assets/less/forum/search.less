@@ -56,9 +56,9 @@
 }
 
 #top-search .form-control {
-  background-color: #fff;
-  border-color: @brand-primary-light;
-  color: @brand-primary;
+  background-color: darken(@brand-primary,5%);
+  border-color: darken(@brand-primary,8%);
+  color: white;
   font-size: 14px;
 }
 
@@ -91,4 +91,25 @@
   .content {
     color: @brand-primary-opaque;
   }
+}
+
+.search-result {
+  padding: 10px;
+  border-radius: 5px;
+  display: block;
+
+  &:hover {
+    text-decoration: none;
+    background-color: @brand-primary-lighter;
+
+    em {
+      background-color: @brand-primary-light;
+    }
+  }
+}
+.search-icon {
+  position: absolute;
+  color: @brand-primary-light-text;
+  left: 20px;
+  top: 20px;
 }

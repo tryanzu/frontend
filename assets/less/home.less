@@ -1,0 +1,90 @@
+.gradient (@startColor: #eee, @endColor: white) {
+  background-color: @startColor;
+  background: -webkit-gradient(linear, left top, left bottom, from(@startColor), to(@endColor));
+  background: -webkit-linear-gradient(top, @startColor, @endColor);
+  background: -moz-linear-gradient(top, @startColor, @endColor);
+  background: -ms-linear-gradient(top, @startColor, @endColor);
+  background: -o-linear-gradient(top, @startColor, @endColor);
+}
+
+hr.star-light,
+hr.star-primary {
+  margin: 25px auto 30px;
+  padding: 0;
+  max-width: 250px;
+  border: 0;
+  border-top: solid 5px;
+  text-align: center;
+}
+
+hr.star-light:after,
+hr.star-primary:after {
+  content: "\f005";
+  display: inline-block;
+  position: relative;
+  top: -.8em;
+  padding: 0 .25em;
+  font-family: FontAwesome;
+  font-size: 2em;
+}
+
+hr.star-light {
+  border-color: #fff;
+}
+
+hr.star-light:after {
+  color: #fff;
+  background-color: @brand-primary;
+  //.gradient(@brand-primary, darken(@brand-primary, 10%));
+}
+
+hr.star-primary {
+  border-color: #2c3e50;
+}
+
+hr.star-primary:after {
+  color: #2c3e50;
+  background-color: #fff;
+}
+
+header {
+  text-align: center;
+  color: #fff;
+  background: @brand-primary;
+  box-shadow: inset 0 -10px 10px -10px rgba(0, 0, 0, 0.25);
+  //.gradient(@brand-primary, darken(@brand-primary, 10%));
+  margin-top: 58px;
+}
+
+header .container {
+  padding-top: 50px;
+  padding-bottom: 50px;
+}
+
+header .intro-text .name {
+  display: block;
+  text-transform: uppercase;
+  font-family: Proxima, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 2em;
+  font-weight: 600;
+}
+
+header .intro-text .skills {
+  font-size: 1.25em;
+  font-weight: 300;
+}
+
+@media(min-width:768px) {
+  header .container {
+    padding-top: 100px;
+    padding-bottom: 100px;
+  }
+
+  header .intro-text .name {
+    font-size: 3em;
+  }
+
+  header .intro-text .skills {
+    font-size: 2em;
+  }
+}
