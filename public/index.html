@@ -30,7 +30,7 @@
   <!-- /Favicon -->
 
   <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
-  <link type="text/css" rel="stylesheet" href="/css/app.css?v=0.1.4.6">
+  <link type="text/css" rel="stylesheet" href="/css/app.css?v=0.1.4.7">
 
   <script>
     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -50,7 +50,7 @@
   <script src='https://cdn.firebase.com/js/client/2.2.1/firebase.js'></script>
   <script src="https://cdn.firebase.com/libs/angularfire/1.1.1/angularfire.min.js"></script>
   <script type="text/javascript" src="js/config.js"></script>
-  <script type="text/javascript" src="js/main.js?v=0.1.4.6"></script>
+  <script type="text/javascript" src="js/main.js?v=0.1.4.7"></script>
 
 </head>
 <body ng-controller="MainController">
@@ -71,9 +71,9 @@
       </div>
 
       <ul class="nav navbar-nav navbar-stats hidden-xs" ng-if="!user.isLogged">
-        <li><a><i class="fa fa-users"></i> Usuarios: {{status.stats.users}}</a></li>
-        <li><a><i class="fa fa-file"></i> Publicaciones: {{status.stats.posts}}</a></li>
-        <li><a><i class="fa fa-comments"></i> Comentarios: {{status.stats.comments}}</a></li>
+        <li><a><i class="fa fa-users"></i> Usuarios: {{ status.stats.users | number:0 }}</a></li>
+        <li><a><i class="fa fa-file"></i> Publicaciones: {{ status.stats.posts | number:0 }}</a></li>
+        <li><a><i class="fa fa-comments"></i> Comentarios: {{ status.stats.comments | number:0 }}</a></li>
       </ul>
 
       <ul class="nav navbar-nav hidden-xs" ng-if="user.isLogged">
@@ -101,7 +101,7 @@
             <a dropdown-toggle href="" class="dropdown-toggle btn-user" data-toggle="dropdown" role="button" aria-expanded="false">
               <span class="notifications-icon"><i class="fa fa-fw fa-bell icon-glyph"></i></span>
               <span class="label">Notificaciones</span>
-              <span class="notification-badge" ng-if="total_notifications() > 0">{{ total_notifications() }}</span>
+              <span class="notification-badge" ng-if="total_notifications() + (user.info.validated?0:1) > 0">{{ total_notifications() + (user.info.validated?0:1) }}</span>
             </a>
             <ul class="dropdown-menu" role="menu">
               <div class="notifications-header">
@@ -110,7 +110,7 @@
                 </a>
                 <h4>Notificaciones</h4>
               </div>
-              <li ng-if="!user.info.validated && false">
+              <li ng-if="!user.info.validated">
                 <a class="unread" href="">
                   Tu correo no ha sido confirmado
                   <div class="description">Te enviamos un correo para que puedas validar tu cuenta.</div>
@@ -185,19 +185,19 @@
           <li tooltip="Monedas para comprar medallas" tooltip-placement="bottom">
             <a>
               <span class="icon"><i class="fa fa-usd"></i></span>
-              <span class="label">Monedas: {{ user.gaming.coins || 0 }}</span>
+              <span class="label"><span class="visible-lg-inline">Monedas: </span>{{ user.gaming.coins || 0 }}</span>
             </a>
           </li>
           <li tooltip="Cantidad de 'Me gusta' que puedes dar" tooltip-placement="bottom">
             <a>
               <span class="icon"><i class="sgi big"></i></span>
-              <span class="label">Tributo: {{ user.gaming.tribute || 0 }}</span>
+              <span class="label"><span class="visible-lg-inline">Tributo: </span>{{ user.gaming.tribute || 0 }}</span>
             </a>
           </li>
           <li tooltip="Cantidad de 'Esto apesta' que puedes dar" tooltip-placement="bottom">
             <a>
               <span class="icon"><i class="sgi shit big"></i></span>
-              <span class="label">Mierda: {{ user.gaming.shit || 0 }}</span>
+              <span class="label"><span class="visible-lg-inline">Mierda: </span>{{ user.gaming.shit || 0 }}</span>
             </a>
           </li>
         </ul>

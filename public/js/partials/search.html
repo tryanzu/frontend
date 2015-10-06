@@ -1,6 +1,7 @@
 <form class="navbar-form navbar-left" role="search" ng-click="toggle()">
   <div class="form-group">
-    <input autocomplete="off" autocorrect="off" class="form-control" ng-keyup="do($event)" ng-model="query" placeholder="Buscar publicación" spellcheck="false" type="text" style="width:180px">
+    <i class="fa fa-search search-icon"></i>
+    <input autocomplete="off" autocorrect="off" class="form-control" ng-keyup="do($event)" ng-model="query" placeholder="Buscar publicación" spellcheck="false" type="text" style="width:180px; padding-left: 30px;">
   </div>
 </form>
 
@@ -40,7 +41,7 @@
                 </div>
               </div>
               <div class="col-sm-10 col-xs-8">
-                <a href="/p/-/{{ hit.objectID }}" ng-click="toggle()">
+                <a class="search-result" href="/p/-/{{ hit.objectID }}" ng-click="toggle()">
                   <p class="title" ng-bind-html="hit._highlightResult.title.value"></p>
                   <p class="content" ng-bind-html="hit._highlightResult.content.value"></p>
                   <p>Escrito en <span ng-bind-html="hit._highlightResult.category.name.value"></span></p>

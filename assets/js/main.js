@@ -58,18 +58,19 @@ var boardApplication = angular.module('board', [
   'searchBar'
 ]);
 
-var version = '0.1.4.6';
+var version = '0.1.4.7';
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider', 'AclServiceProvider',
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider, AclServiceProvider) {
 
+  $routeProvider.when('/home', {
+    templateUrl: '/js/partials/home.html?v=' + version
+  });
   $routeProvider.when('/about', {
-    templateUrl: '/js/partials/about.html?v=' + version,
-    //controller: 'RanksController'
+    templateUrl: '/js/partials/about.html?v=' + version
   });
   $routeProvider.when('/tienda', {
-    templateUrl: '/js/partials/shop.html?v=' + version,
-    //controller: 'RanksController'
+    templateUrl: '/js/partials/shop.html?v=' + version
   });
   $routeProvider.when('/rangos', {
     templateUrl: '/js/partials/ranks.html?v=' + version,
@@ -211,9 +212,13 @@ boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http'
     };
 
     $scope.fb_try = function(response) {
-      $http.get("https://graph.facebook.com/me?access_token="+response.authResponse.accessToken).
+      $http.get("https://graph.facebook.com/me?access_token=" + response.authResponse.accessToken).
         success(function(data, status, headers, config) {
-          var info = data;
+          //var info = data;
+          var ref = localStorage.getItem('ref');
+          if(ref) {
+            data.ref = ref;
+          }
           $http.post(layer_path + 'user/get-token/facebook', data).
             error(function(data, status, headers, config) {
               $scope.form.error = {message:'No se pudo iniciar sesión.'};
@@ -312,9 +317,13 @@ boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http'
     };
 
     $scope.fb_try = function(response) {
-      $http.get("https://graph.facebook.com/me?access_token="+response.authResponse.accessToken).
+      $http.get("https://graph.facebook.com/me?access_token=" + response.authResponse.accessToken).
         success(function(data, status, headers, config) {
-          var info = data;
+          //var info = data;
+          var ref = localStorage.getItem('ref');
+          if(ref) {
+            data.ref = ref;
+          }
           $http.post(layer_path + 'user/get-token/facebook', data).
             error(function(data, status, headers, config) {
               $scope.form.error = {message:'No se pudo iniciar sesión.'};
