@@ -4452,8 +4452,10 @@ UserModule.controller('UserValidationController', ['$scope', '$http', '$routePar
     $http.get(layer_path + "user/confirm/" + $routeParams.code).
       then(function() {
         $scope.validation_in_progress = false;
-        $scope.user.info.validated = true;
         $scope.validated = true;
+        if($scope.user.isLogged) {
+          $scope.user.info.validated = true;
+        }
       }, function() {
         $scope.validation_in_progress = false;
         //Redirect to home if error
