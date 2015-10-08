@@ -203,7 +203,12 @@
           payload = JSON.stringify(payload);
           console.log(payload);
 
-          $.post(layer_path + 'store/order', payload, function(data) {
+          $.ajax({
+            url: layer_path + 'store/order',
+            type: "POST",
+            data: payload,
+            contentType: "application/json"
+          }).done(function(data) {
             console.log(data);
             $('.fs-submit').addClass('hide');
             $('.alert.alert-success').addClass('show');
