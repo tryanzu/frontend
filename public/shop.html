@@ -196,6 +196,8 @@
             phone: payload.user_phone
           };
           payload.games = games_list[payload.games];
+          payload.budget = parseInt(payload.budget);
+          payload.buydelay = parseInt(payload.buydelay);
           delete payload.user_name;
           delete payload.user_email;
           delete payload.user_phone;
