@@ -88,6 +88,12 @@
             <span class="label">Chat</span>
           </a>
         </li>
+        <li>
+          <a href="tienda">
+            <span class="icon"><i class="fa fa-shopping-cart"></i></span>
+            <span class="label">Spartanas</span>
+          </a>
+        </li>
       </ul>
 
       <!-- Collect the nav links, forms, and other content for toggling -->
@@ -100,7 +106,7 @@
           <li class="dropdown notifications" dropdown>
             <a dropdown-toggle href="" class="dropdown-toggle btn-user" data-toggle="dropdown" role="button" aria-expanded="false">
               <span class="notifications-icon"><i class="fa fa-fw fa-bell icon-glyph"></i></span>
-              <span class="label">Notificaciones</span>
+              <span class="label visible-lg-inline">Notificaciones</span>
               <span class="notification-badge" ng-if="total_notifications() + (user.info.validated?0:1) > 0">{{ total_notifications() + (user.info.validated?0:1) }}</span>
             </a>
             <ul class="dropdown-menu" role="menu">
