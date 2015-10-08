@@ -200,6 +200,7 @@
           delete payload.user_email;
           delete payload.user_phone;
 
+          payload = JSON.stringify(payload);
           console.log(payload);
 
           $.post(layer_path + 'store/order', payload, function(data) {

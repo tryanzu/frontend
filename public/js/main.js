@@ -4840,9 +4840,6 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   $routeProvider.when('/about', {
     templateUrl: '/js/partials/about.html?v=' + version
   });
-  $routeProvider.when('/tienda', {
-    templateUrl: '/js/partials/shop.html?v=' + version
-  });
   $routeProvider.when('/rangos', {
     templateUrl: '/js/partials/ranks.html?v=' + version,
     controller: 'RanksController'
@@ -5399,11 +5396,17 @@ boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', functi
     localStorage.removeItem('signed_in');
     localStorage.removeItem('id_token');
     localStorage.removeItem('firebase_token');
+    localStorage.removeItem('redirect_to_home');
   }
 
   // Initialize the local storage
   if(!localStorage.signed_in)
     localStorage.signed_in = false;
+
+  if(localStorage.signed_in === 'false' && localStorage.redirect_to_home !== 'true') {
+    localStorage.setItem('redirect_to_home', 'true');
+    window.location.href = "/home";
+  }
 
   $rootScope.page = {
     title: "SpartanGeek.com | Comunidad de tecnología, geeks y más",
