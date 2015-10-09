@@ -151,6 +151,10 @@
     <script type="text/javascript" src="js/config.js"></script>
     <script src="js/shop.js"></script>
     <script>
+      function isArray(obj) {
+        return Object.prototype.toString.call(obj) === '[object Array]';
+      }
+
       $.fn.serializeObject = function() {
         var o = {};
         var a = this.serializeArray();
@@ -201,6 +205,11 @@
           delete payload.user_name;
           delete payload.user_email;
           delete payload.user_phone;
+
+          // Extra as Array
+          if( !isArray( payload.extra ) ) {
+            payload.extra = [payload.extra];
+          }
 
           payload = JSON.stringify(payload);
           console.log(payload);
