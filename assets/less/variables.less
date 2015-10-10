@@ -7,17 +7,17 @@
 @secondary-hue:                    hue(@brand-primary-light);
 @secondary-sat:                    saturation(@brand-primary-light);
 
-@brand-primary:         #386db8; //#325BA2;//#305fa9;
+@brand-primary:         #2d5998; //#386db8; //#325BA2;//#305fa9;
 @brand-success:         #21b384;//#438C52;
 @brand-info:            #3498DB;
 @brand-warning:         #F39C12;
 @brand-danger:          #E74C3C;
 
-@brand-primary-light:       lighten(@brand-primary, 42%);
-@brand-primary-lighter:     lighten(@brand-primary, 48%);
+@brand-primary-light:       desaturate(lighten(@brand-primary, 52%), 14%);//lighten(@brand-primary, 49%);//lighten(@brand-primary, 42%);
+@brand-primary-lighter:     desaturate(lighten(@brand-primary, 59%), 14%);//lighten(@brand-primary, 56%);//lighten(@brand-primary, 48%);
 @brand-primary-light-text:  desaturate(lighten(@brand-primary, 25%), 30%);
-@brand-primary-normal:      desaturate(darken(@brand-primary, 5%), 20%);
-@brand-primary-dark:        desaturate(darken(@brand-primary, 8%), 30%);
+@brand-primary-normal:      desaturate(darken(@brand-primary, 5%), 10%);
+@brand-primary-dark:        desaturate(darken(@brand-primary, 8%), 20%);
 @brand-primary-opaque:      desaturate(@brand-primary, 50%);
 
 @control-bg:                     @brand-primary-lighter;
@@ -109,7 +109,7 @@
 @btn-default-border:             lighten(@brand-primary-opaque, 35%);
 
 @btn-primary-color:              white;
-@btn-primary-bg:                 darken(@brand-primary, 5%);
+@btn-primary-bg:                 @brand-primary; //darken(@brand-primary, 5%);
 @btn-primary-border:             @btn-primary-bg;
 
 @btn-success-color:              white;
