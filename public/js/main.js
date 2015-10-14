@@ -4858,7 +4858,7 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   });
   $routeProvider.when('/componente/:slug', {
     templateUrl: '/js/partials/component.html?v=' + version,
-    controller: 'ComponentController'
+    //controller: 'ComponentController'
   });
   $routeProvider.when('/c/:slug', {
     templateUrl: '/js/partials/main.html?v=' + version,
