@@ -65,7 +65,8 @@ var EditPostController = ['$scope', '$routeParams', '$http', 'Category', 'Part',
   Category.writable(function(data) {
     $scope.categories = data;
 
-    Post.get({id: $routeParams.id}, function(data) {
+    Post.light({id: $routeParams.id}, function(data) {
+      console.log(data);
       $scope.post = data;
       $scope.post_edit = {
         title: data.title,

@@ -444,7 +444,7 @@
                 </div>
 
                 <div class="comments">
-                  <div class="comment" data-number="{{ comment.position }}" ng-repeat="comment in (post.comments.set | orderBy:'position')" ng-class="{editing: comment.editing}">
+                  <div class="comment" data-number="{{ comment.position }}" ng-repeat="comment in (post.comments.set | orderBy:'position')" ng-class="{editing: comment.editing, best: comment.best_answer}">
                     <div class="float-actions text-right">
                       <div class="btn-group" ng-if="aacl.can('edit', 'comments', user.info, comment.author.id, post.category.id)" dropdown>
                         <button type="button" class="button button-icon button-flat" ng-hide="comment.editing" dropdown-toggle>
@@ -459,6 +459,9 @@
                           </li>
                         </ul>
                       </div>
+                    </div>
+                    <div class="header" ng-if="comment.best_answer">
+                      <i class="fa fa-check-circle-o"></i> Mejor respuesta
                     </div>
                     <div class="comment-author">
                       <a href="/u/{{ comment.author.username }}/{{ comment.author.id }}" title="Perfil de {{ comment.author.username }}">

@@ -27,35 +27,43 @@
               <label class="fs-field-label fs-anim-upper" for="usage" data-info="Nos ayudará a darte una mejor recomendación de hardware y actualizaciones futuras">¿Para qué usarás principalmente tu PC?</label>
               <div class="fs-radio-group fs-radio-custom clearfix fs-anim-lower">
                 <span><input id="usagea" name="usage" type="radio" value="gaming"/><label for="usagea" class="options-gaming">Gaming</label></span>
+                <span><input id="usagec" name="usage" type="radio" value="edicion-y-diseño"/><label for="usagec" class="options-homework">Edición y Diseño</label></span>
                 <span><input id="usageb" name="usage" type="radio" value="arquitectura"/><label for="usageb" class="options-architecture">Arquitectura</label></span>
-                <span><input id="usagec" name="usage" type="radio" value="escuela"/><label for="usagec" class="options-homework">Trabajos escolares</label></span>
-                <span><input id="usaged" name="usage" type="radio" value="profesional-multimedia"/><label for="usaged" class="options-professional">Profesional y multimedia</label></span>
+                <span><input id="usaged" name="usage" type="radio" value="profesional-multimedia"/><label for="usaged" class="options-professional">Ingeniería y Programación</label></span>
               </div>
             </li>
             <li data-input-trigger>
-              <label class="fs-field-label fs-anim-upper" for="games" data-info="Para decidir la gama de GPU mínima que necesitas">¿Qué juegos vas a jugar?</label>
-              <div class="fs-radio-group fs-radio-custom clearfix fs-anim-lower">
+              <label class="fs-field-label fs-anim-upper" for="games" data-info="Para decidir la gama de GPU mínima que necesitas">¿Qué juegos planeas jugar?</label>
+              <div class="fs-radio-group fs-radio-custom fs-radio-custom-small clearfix fs-anim-lower">
                 <span>
                   <input id="qgamesa" name="games" type="radio" value="aaa"/>
-                  <label for="qgamesa" class="games-aaa">Títulos AAA</label>
+                  <label for="qgamesa" class="games-aaa">Los más recientes</label>
+                  <span>GTA V, Star Wars: Battlefront, The Witcher 3, Battlefield 4</span>
                 </span>
                 <span>
                   <input id="qgamesb" name="games" type="radio" value="classic"/>
-                  <label for="qgamesb" class="games-classic">Títulos clásicos o medios</label>
+                  <label for="qgamesb" class="games-classic">Juegos medios y clásicos</label>
+                  <span>Call of Duty, Far Cry 3, Resident Evil, FIFA</span>
                 </span>
                 <span>
                   <input id="qgamesc" name="games" type="radio" value="low"/>
-                  <label for="qgamesc" class="games-low">Juegos gama baja</label>
+                  <label for="qgamesc" class="games-low">MOBAs, Minecraft y similares</label>
+                  <span>League of Legends, Dota 2, Heroes of the Storm</span>
                 </span>
                 <span>
                   <input id="qgamesd" name="games" type="radio" value="indie"/>
                   <label for="qgamesd" class="games-indie">Juegos Indie</label>
+                  <span>FEZ, Mighty no. 9, Rocket League</span>
+                </span>
+                <span>
+                  <input id="qgamese" name="games" type="radio" value="none"/>
+                  <label for="qgamese" class="games-none">No la usaré para jugar</label>
                 </span>
               </div>
             </li>
             <li data-input-trigger>
               <label class="fs-field-label fs-anim-upper" for="extra">¿Necesitas alguno de estos componentes?</label>
-              <div class="fs-checkbox-group fs-checkbox-custom clearfix fs-anim-lower">
+              <div class="fs-checkbox-group fs-checkbox-custom fs-checkbox-custom-small clearfix fs-anim-lower">
                 <span>
                   <input id="qcomp-keyboard" type="checkbox" name="extra" value="keyboard">
                   <label for="qcomp-keyboard" class="components-keyboard">Teclado</label>
@@ -72,11 +80,15 @@
                   <input id="qcomp-headset" type="checkbox" name="extra" value="headset">
                   <label for="qcomp-headset" class="components-headset">Headset</label>
                 </span>
+                <span>
+                  <input id="qcomp-none" type="checkbox" name="extra" value="none"/>
+                  <label for="qcomp-none" class="components-none">No necesito</label>
+                </span>
               </div>
             </li>
             <li>
-              <label class="fs-field-label fs-anim-upper" for="budget">¿Cual es tu presupuesto?</label>
-              <input class="fs-mark fs-anim-lower" id="budget" name="budget" type="number" placeholder="10000" step="500" min="5500" max="50000" required />
+              <label class="fs-field-label fs-anim-upper" for="budget" data-info="En múltiplos de $1000">¿Cual es tu presupuesto?</label>
+              <input class="fs-mark fs-anim-lower" id="budget" name="budget" type="number" placeholder="10000" step="1000" min="6000" required />
             </li>
             <li>
               <label class="fs-field-label fs-anim-upper" for="buydelay">¿En cuantos días planeas hacer la compra?</label>
@@ -134,7 +146,7 @@
               <input class="fs-anim-lower" id="user_phone" name="user_phone" type="text" placeholder="5510203040" required/>
             </li>
             <li>
-              <label class="fs-field-label fs-anim-upper" for="content">¿Algún comentario extra sobre la PC que quieres?</label>
+              <label class="fs-field-label fs-anim-upper" for="content">¿Algún comentario extra sobre la PC que quieres? lo puedes dejar en blanco</label>
               <textarea class="fs-anim-lower" id="content" name="content" placeholder="Describe aquí"></textarea>
             </li>
           </ol><!-- /fs-fields -->
@@ -181,10 +193,11 @@
         } );
 
         var games_list = {
-          'aaa': ['GTA V', 'Battlefield 4', 'The Witcher 3'],
-          'classic': ['Far Cry 3', 'Resident Evil 4', 'F.E.A.R. 3'],
-          'low': ['Minecraft', 'League of Legends'],
-          'indie': ['FEZ', 'Ark']
+          'aaa': ['GTA V', 'Battlefield 4', 'The Witcher 3', 'Star Wars: Battlefront'],
+          'classic': ['Far Cry 3', 'Resident Evil', 'F.E.A.R. 3', 'Call of Duty', 'FIFA'],
+          'low': ['Minecraft', 'League of Legends', 'Dota 2'],
+          'indie': ['FEZ', 'Ark'],
+          'none': ['No la usaré para jugar']
         };
 
         $("#myform").on("submit", function( event ) {
@@ -213,6 +226,10 @@
 
           payload = JSON.stringify(payload);
           console.log(payload);
+
+          if(!payload.content) {
+            payload.content = "Sin comentarios";
+          }
 
           $.ajax({
             url: layer_path + 'store/order',

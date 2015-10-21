@@ -3712,6 +3712,11 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
         }
       }
 
+      // Testing best comment
+      //var l = $scope.post.comments.set.length;
+      //console.log(l);
+      $scope.post.comments.set[1].best_answer = true;
+
       // Attach title and description for SEO purposes
       $scope.page.title = "SpartanGeek.com | "  + $scope.post.title + " en " + $scope.post.category.name;
       if($scope.post.content.length - 1 < 157) {
@@ -3871,6 +3876,10 @@ var PostService = ['$resource', function($resource) {
     {
       'update': {
         method:'PUT'
+      },
+      'light': {
+        method: 'GET',
+        url: layer_path + 'posts/:id/light'
       }
     }
   );
@@ -4251,7 +4260,8 @@ var EditPostController = ['$scope', '$routeParams', '$http', 'Category', 'Part',
   Category.writable(function(data) {
     $scope.categories = data;
 
-    Post.get({id: $routeParams.id}, function(data) {
+    Post.light({id: $routeParams.id}, function(data) {
+      console.log(data);
       $scope.post = data;
       $scope.post_edit = {
         title: data.title,
