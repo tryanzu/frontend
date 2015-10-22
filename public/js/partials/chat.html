@@ -28,9 +28,6 @@
               <h3 style="margin-top: 0">{{ channel.selected.name || "#" }}</h3>
             </div>
             <div class="col-md-6 col-xs-5 text-right">
-              <span class="users-details" style="margin-right: 1em;">
-                <i class="fa fa-fw fa-users icon"></i> <span class="label">{{ members.length }}</span>
-              </span>
               <a title="Información de este canal" class="btn btn-default btn-icon btn-round hidden" ng-click="toggle_details()" ng-class="{'active': show_details}">
                 <i class="fa fa-fw fa-info-circle icon"></i>
                 <span class="label hidden-xs">Información de este canal</span>
@@ -89,7 +86,7 @@
       </div>
 
       <div class="detail-section" ng-if="!channel.selected.fullscreen || true">
-        <h4>{{ online_members }}/{{ members.length }} Spartanos</h4>
+        <h4>Spartanos conectados</h4>
 
         <ul class="user-status">
           <li ng-repeat="m in members | orderBy:['-status','username']" ng-class="{'online': m.status == 'online'}">

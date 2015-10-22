@@ -4561,19 +4561,6 @@ var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
   $scope.show_details = true;
 
   $scope.members = [];
-  $scope.online_members = 0;
-
-  $scope.countOnline = function() {
-    var temp = 0;
-    //console.log("Contando...");
-    for(m in $scope.members) {
-      //console.log($scope.members[m].status);
-      if($scope.members[m].status == 'online') {
-        temp++;
-      }
-    }
-    $scope.online_members = temp;
-  };
 
   $scope.changeChannel = function(channel) {
     $scope.channel.selected = channel;
@@ -4601,13 +4588,6 @@ var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
     var membersRef = new Firebase(firebase_url + 'members/' + channel.$id);
     $scope.members = $firebaseArray(membersRef);
 
-    $scope.members.$loaded().then(function(x) {
-      $scope.countOnline();
-      x.$watch(function(event) {
-        $scope.countOnline();
-      });
-    });
-
     if($scope.user.isLogged) {
       var amOnline = new Firebase(firebase_url + '.info/connected');
       var statusRef = new Firebase(firebase_url + 'members/' + channel.$id + '/' + $scope.user.info.id);
@@ -4615,7 +4595,8 @@ var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
       amOnline.on('value', function(snapshot) {
         if(snapshot.val()) {
           var image = $scope.user.info.image || "";
-          statusRef.onDisconnect().set({username: $scope.user.info.username, image: image, status: "offline"});
+          //statusRef.onDisconnect().set({username: $scope.user.info.username, image: image, status: "offline"});
+          statusRef.onDisconnect().remove();
           statusRef.set({
             id: $scope.user.info.id,
             username: $scope.user.info.username,
@@ -4672,21 +4653,12 @@ chatModule.controller('ChatController', ChatController);
 chatModule.directive('sgEnter', function() {
   return {
     link: function(scope, element, attrs) {
-      //var mh_window = $('.message-history');
       console.log(scope.message.send_on_enter);
       element.bind("keydown keypress", function(event) {
         if(event.which === 13 && scope.message.send_on_enter) {
           scope.$apply(function(){
             scope.$eval(attrs.sgEnter, {'event': event});
           });
-          /*console.log(mh_window.scrollTop(), (mh_window[0].scrollHeight - mh_window.height() - 20));
-          if(mh_window.scrollTop() > (mh_window[0].scrollHeight - mh_window.height() - 20)) {
-            console.log("estaba hasta abajo!");
-            mh_window.scrollTop(mh_window[0].scrollHeight);
-          } else {
-            console.log("estaba hasta arriba");
-          }*/
-          //console.log(mh_window.scrollTop(), mh_window[0].scrollHeight);
           event.preventDefault();
         }
       });
@@ -4962,17 +4934,16 @@ boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http'
 
   		// Post credentials to the auth rest point
   		$http.get(layer_path + 'auth/get-token', {params: {email: $scope.form.email, password: $scope.form.password}, skipAuthorization: true})
-      .error(function(data, status, headers, config) {
-        $scope.form.error = {message:'Usuario o contraseña incorrecta.'};
-      })
       .success(function(data) {
         localStorage.setItem('id_token', data.token);
         localStorage.setItem('firebase_token', data.firebase);
         localStorage.setItem('signed_in', true);
-        //console.log(data.token, data.firebase);
+
         $modalInstance.dismiss('logged');
         $rootScope.$broadcast('login');
-        //$rootScope.$broadcast('status_change');
+      })
+      .error(function(data, status, headers, config) {
+        $scope.form.error = {message:'Usuario o contraseña incorrecta.'};
       });
   	};
 
@@ -5278,6 +5249,10 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
               });
             }
           });
+
+          if($location.path() == '/home') {
+            window.location.href = "/";
+          }
 
           // Warn everyone
           $timeout(function() {

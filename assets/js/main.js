@@ -181,17 +181,16 @@ boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http'
 
   		// Post credentials to the auth rest point
   		$http.get(layer_path + 'auth/get-token', {params: {email: $scope.form.email, password: $scope.form.password}, skipAuthorization: true})
-      .error(function(data, status, headers, config) {
-        $scope.form.error = {message:'Usuario o contraseña incorrecta.'};
-      })
       .success(function(data) {
         localStorage.setItem('id_token', data.token);
         localStorage.setItem('firebase_token', data.firebase);
         localStorage.setItem('signed_in', true);
-        //console.log(data.token, data.firebase);
+
         $modalInstance.dismiss('logged');
         $rootScope.$broadcast('login');
-        //$rootScope.$broadcast('status_change');
+      })
+      .error(function(data, status, headers, config) {
+        $scope.form.error = {message:'Usuario o contraseña incorrecta.'};
       });
   	};
 
@@ -497,6 +496,10 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
               });
             }
           });
+
+          if($location.path() == '/home') {
+            window.location.href = "/";
+          }
 
           // Warn everyone
           $timeout(function() {
