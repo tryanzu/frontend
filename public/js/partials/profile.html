@@ -103,18 +103,18 @@
 
               <div class="col-md-9">
                 <div class="offset-content user-content" ng-if="current_page == 'feed'">
-                  <div ng-if="posts.length == 0">
+                  <div ng-if="posts.data.length == 0 && posts.first_load">
                     <p class="alert alert-info" ng-if="user.info.id !== profile.id">Este usuario aún no creado ninguna publicación.</p>
                     <p class="alert alert-info" ng-if="user.info.id === profile.id">Aún no has creado ninguna publicación. ¿Qué esperas?</p>
                   </div>
-                  <div class="user-activity" ng-if="posts.length > 0">
+                  <div class="user-activity" ng-if="posts.data.length > 0">
                     <ul class="activity-list">
-                      <li ng-repeat="post in posts">
+                      <li ng-repeat="post in posts.data">
                         <div>
                           <img class="avatar activity-icon" title="{{profile.username}}" src="{{ profile.image }}" ng-if="profile.image">
                           <span class="avatar activity-icon" ng-if="!profile.image">{{ profile.username[0] }}</span>
                           <div class="activity-info">
-                            <strong>Escribió una publicación</strong>
+                            <strong>Escribió una publicación en {{ post.category.name }}</strong>
                             <time datetime="{{post.created_at}}" time-ago from-time="{{post.created_at}}"></time>
                           </div>
                           <a href="/p/{{post.slug}}/{{post.id}}" class="activity-content post-activity">
@@ -128,6 +128,12 @@
                         </div>
                       </li>
                     </ul>
+                    <div class="text-center mb-20" ng-if="posts.resolving">
+                      <i class="fa fa-spinner fa-spin" style="font-size: 32px;"></i>
+                    </div>
+                    <div class="text-center mb-40" ng-if="posts.more_to_load && !posts.resolving">
+                      <a href="" class="btn btn-default" ng-click="loadMorePosts()"><span class="label">Cargar más publicaciones</span></a>
+                    </div>
                   </div>
                 </div>
 

@@ -119,6 +119,9 @@
                           <span class="ball" ng-style="{'background-color': post.category.color}"></span>
                           <span class="name">{{ post.category.name }}</span>
                         </li>
+                        <li class="solved" ng-if="post.solved">
+                          <i class="fa fa-check-circle"></i> <span>Resuelto</span>
+                        </li>
                         <li class="pinned" ng-if="post.pinned">
                           <i class="fa fa-exclamation-circle"></i> <span>Importante</span>
                         </li>

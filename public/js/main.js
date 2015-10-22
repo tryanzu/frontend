@@ -4319,12 +4319,19 @@ UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed
     editing_username: false
   };
   $scope.current_page = 'info';
-
   $scope.new_data = {
     username: null,
     username_saving: false,
     username_error: false,
     username_error_message: 'El nombre de usuario sólo puede llevar letras, números y guiones. Debe empezar con letra y terminar con número o letra y tener entre 3 y 32 caracteres.'
+  }
+
+  $scope.posts = {
+    data: [],
+    resolving: true,
+    offset: 0,
+    more_to_load: true,
+    first_load: false
   }
 
   $scope.editUsername = function() {
@@ -4383,24 +4390,31 @@ UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed
   }
 
   $scope.startFeed = function() {
-    $scope.resolving_posts = true;
+    $scope.posts.resolving = true;
 
-    Feed.get({limit: 10, offset: 0, user_id: $scope.profile.id}, function(data) {
+    Feed.get({ limit: 10, offset: $scope.posts.offset, user_id: $scope.profile.id }, function(data) {
       //console.log(data);
-      for(p in data.feed) {
-        for(c in $scope.categories) {
-          if (data.feed[p].categories[0] == $scope.categories[c].slug) {
-            data.feed[p].category = {name: $scope.categories[c].name, color: $scope.categories[c].color, slug: $scope.categories[c].slug}
-            break;
-          }
-        }
-      }
-
-      $scope.posts = data.feed;
-      $scope.resolving_posts = false;
-      $scope.offset = 10;
+      $scope.posts.data = data.feed;
+      $scope.posts.resolving = false;
+      $scope.posts.offset = $scope.posts.offset + data.feed.length;
+      $scope.posts.first_load = true;
     });
   };
+  $scope.loadMorePosts = function() {
+    $scope.posts.resolving = true;
+
+    Feed.get({ limit: 10, offset: $scope.posts.offset, user_id: $scope.profile.id }, function(data) {
+      //console.log(data);
+      if(data.feed.length > 0) {
+        $scope.posts.data = $scope.posts.data.concat(data.feed);
+        $scope.posts.offset = $scope.posts.offset + data.feed.length;
+      } else {
+        $scope.posts.more_to_load = false;
+      }
+      $scope.posts.resolving = false;
+    });
+  }
+
 
   $scope.loadUserComments = function() {
     $http.get(layer_path + "users/" + $routeParams.id +"/comments")
