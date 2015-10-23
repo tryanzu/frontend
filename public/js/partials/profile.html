@@ -33,7 +33,7 @@
                         </ul>
                       </div>
                       <span class="username" ng-if="!update.editing_username">{{ profile.username }}</span>
-                      <span class="verified-account" ng-if="profile.validated" tooltip="Cuenta verificada" tooltip-placement="right"><i class="fa fa-check"></i></span>
+                      <span class="verified-account" ng-if="profile.validated"><i class="fa fa-check"></i> Cuenta verificada</span>
                       <span class="edit" ng-if="user.info.name_changes < 1 && profile.id === user.info.id">
                         <a href="" ng-click="update.editing_username = true" ng-if="!update.editing_username">Editar nombre de usuario</a>
                         <div class="" ng-if="update.editing_username" style="display: inline-block">
