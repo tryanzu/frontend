@@ -119,6 +119,9 @@
                           <span class="ball" ng-style="{'background-color': post.category.color}"></span>
                           <span class="name">{{ post.category.name }}</span>
                         </li>
+                        <li class="solved" ng-if="post.solved">
+                          <i class="fa fa-check-circle"></i> <span>Resuelto</span>
+                        </li>
                         <li class="pinned" ng-if="post.pinned">
                           <i class="fa fa-exclamation-circle"></i> <span>Importante</span>
                         </li>
@@ -444,7 +447,7 @@
                 </div>
 
                 <div class="comments">
-                  <div class="comment" data-number="{{ comment.position }}" ng-repeat="comment in (post.comments.set | orderBy:'position')" ng-class="{editing: comment.editing}">
+                  <div class="comment" data-number="{{ comment.position }}" ng-repeat="comment in (post.comments.set | orderBy:'position')" ng-class="{editing: comment.editing, best: comment.chosen}">
                     <div class="float-actions text-right">
                       <div class="btn-group" ng-if="aacl.can('edit', 'comments', user.info, comment.author.id, post.category.id)" dropdown>
                         <button type="button" class="button button-icon button-flat" ng-hide="comment.editing" dropdown-toggle>
@@ -459,6 +462,9 @@
                           </li>
                         </ul>
                       </div>
+                    </div>
+                    <div class="header" ng-if="comment.chosen">
+                      <i class="fa fa-check-circle-o"></i> Mejor respuesta
                     </div>
                     <div class="comment-author">
                       <a href="/u/{{ comment.author.username }}/{{ comment.author.id }}" title="Perfil de {{ comment.author.username }}">

@@ -5,31 +5,27 @@ var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
     selected: null
   };
   $scope.messages = [];
+  $scope.old_messages = [];
   $scope.message = {
     content: '',
     send_on_enter: true,
     previous: '-'
   };
   $scope.show_details = true;
+  $scope.move_to_bottom = true;
 
   $scope.members = [];
-  $scope.online_members = 0;
 
-  $scope.countOnline = function() {
-    var temp = 0;
-    //console.log("Contando...");
-    for(m in $scope.members) {
-      //console.log($scope.members[m].status);
-      if($scope.members[m].status == 'online') {
-        temp++;
-      }
-    }
-    $scope.online_members = temp;
-  };
+  $scope.goToBottom = function() {
+    var mh_window = $('.message-history');
+    mh_window.scrollTop(mh_window[0].scrollHeight);
+    $scope.old_messages = [];
+    $scope.move_to_bottom = true;
+  }
 
   $scope.changeChannel = function(channel) {
     $scope.channel.selected = channel;
-    var messagesRef = new Firebase(firebase_url + 'messages/' + channel.$id).limitToLast(100);
+    var messagesRef = new Firebase(firebase_url + 'messages/' + channel.$id).orderByChild('created_at').limitToLast(75);
     $scope.messages = $firebaseArray(messagesRef);
 
     $scope.messages.$loaded().then(function(x) {
@@ -40,9 +36,10 @@ var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
 
       x.$watch(function(event) {
         if(event.event === "child_added") {
-          $timeout(function(){
-            var mh_window = $('.message-history');
-            if(mh_window.scrollTop() > (mh_window[0].scrollHeight - mh_window.height() - 20)) {
+          var mh_window = $('.message-history');
+          $scope.move_to_bottom = mh_window.scrollTop() > (mh_window[0].scrollHeight - mh_window.height() - 1);
+          $timeout(function() {
+            if($scope.move_to_bottom) {
               mh_window.scrollTop(mh_window[0].scrollHeight);
             }
           }, 50);
@@ -50,15 +47,22 @@ var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
       });
     });
 
+    messagesRef.on('child_removed', function(dataSnapshot) {
+      // code to handle new value.
+      var mh_window = $('.message-history');
+      var at_bottom = mh_window.scrollTop() > (mh_window[0].scrollHeight - mh_window.height() - 1);
+      if(!at_bottom) {
+        $scope.old_messages = $scope.old_messages.concat( dataSnapshot.val() );
+        //console.log("not at bottom");
+      } else {
+        $scope.old_messages = [];
+        //console.log("at bottom");
+      }
+      //console.log(dataSnapshot.val());
+    });
+
     var membersRef = new Firebase(firebase_url + 'members/' + channel.$id);
     $scope.members = $firebaseArray(membersRef);
-
-    $scope.members.$loaded().then(function(x) {
-      $scope.countOnline();
-      x.$watch(function(event) {
-        $scope.countOnline();
-      });
-    });
 
     if($scope.user.isLogged) {
       var amOnline = new Firebase(firebase_url + '.info/connected');
@@ -67,7 +71,8 @@ var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
       amOnline.on('value', function(snapshot) {
         if(snapshot.val()) {
           var image = $scope.user.info.image || "";
-          statusRef.onDisconnect().set({username: $scope.user.info.username, image: image, status: "offline"});
+          //statusRef.onDisconnect().set({username: $scope.user.info.username, image: image, status: "offline"});
+          statusRef.onDisconnect().remove();
           statusRef.set({
             id: $scope.user.info.id,
             username: $scope.user.info.username,
@@ -124,21 +129,12 @@ chatModule.controller('ChatController', ChatController);
 chatModule.directive('sgEnter', function() {
   return {
     link: function(scope, element, attrs) {
-      //var mh_window = $('.message-history');
       console.log(scope.message.send_on_enter);
       element.bind("keydown keypress", function(event) {
         if(event.which === 13 && scope.message.send_on_enter) {
           scope.$apply(function(){
             scope.$eval(attrs.sgEnter, {'event': event});
           });
-          /*console.log(mh_window.scrollTop(), (mh_window[0].scrollHeight - mh_window.height() - 20));
-          if(mh_window.scrollTop() > (mh_window[0].scrollHeight - mh_window.height() - 20)) {
-            console.log("estaba hasta abajo!");
-            mh_window.scrollTop(mh_window[0].scrollHeight);
-          } else {
-            console.log("estaba hasta arriba");
-          }*/
-          //console.log(mh_window.scrollTop(), mh_window[0].scrollHeight);
           event.preventDefault();
         }
       });

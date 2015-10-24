@@ -58,7 +58,7 @@ var boardApplication = angular.module('board', [
   'searchBar'
 ]);
 
-var version = '0.1.4.8';
+var version = '0.1.5';
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider', 'AclServiceProvider',
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider, AclServiceProvider) {
@@ -84,6 +84,10 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   $routeProvider.when('/signup/confirm/:code', {
     templateUrl: '/js/partials/validate.html?v=' + version,
     controller: 'UserValidationController'
+  });
+  $routeProvider.when('/componente/:slug', {
+    templateUrl: '/js/partials/component.html?v=' + version,
+    //controller: 'ComponentController'
   });
   $routeProvider.when('/c/:slug', {
     templateUrl: '/js/partials/main.html?v=' + version,
@@ -177,17 +181,16 @@ boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http'
 
   		// Post credentials to the auth rest point
   		$http.get(layer_path + 'auth/get-token', {params: {email: $scope.form.email, password: $scope.form.password}, skipAuthorization: true})
-      .error(function(data, status, headers, config) {
-        $scope.form.error = {message:'Usuario o contraseña incorrecta.'};
-      })
       .success(function(data) {
         localStorage.setItem('id_token', data.token);
         localStorage.setItem('firebase_token', data.firebase);
         localStorage.setItem('signed_in', true);
-        //console.log(data.token, data.firebase);
+
         $modalInstance.dismiss('logged');
         $rootScope.$broadcast('login');
-        //$rootScope.$broadcast('status_change');
+      })
+      .error(function(data, status, headers, config) {
+        $scope.form.error = {message:'Usuario o contraseña incorrecta.'};
       });
   	};
 
@@ -493,6 +496,10 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
               });
             }
           });
+
+          if($location.path() == '/home') {
+            window.location.href = "/";
+          }
 
           // Warn everyone
           $timeout(function() {

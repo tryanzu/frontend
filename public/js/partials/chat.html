@@ -28,9 +28,6 @@
               <h3 style="margin-top: 0">{{ channel.selected.name || "#" }}</h3>
             </div>
             <div class="col-md-6 col-xs-5 text-right">
-              <span class="users-details" style="margin-right: 1em;">
-                <i class="fa fa-fw fa-users icon"></i> <span class="label">{{ members.length }}</span>
-              </span>
               <a title="Información de este canal" class="btn btn-default btn-icon btn-round hidden" ng-click="toggle_details()" ng-class="{'active': show_details}">
                 <i class="fa fa-fw fa-info-circle icon"></i>
                 <span class="label hidden-xs">Información de este canal</span>
@@ -41,6 +38,19 @@
       </div>
       <div adjust-height-chat>
         <div class="message-history">
+          <div class="message" ng-repeat="m in old_messages" ng-class="::{'compact':old_messages[$index-1].author.username == m.author.username}">
+            <a href="/u/{{ m.author.username }}/{{ m.author.id }}" class="author" target="_blank" ng-if=":: old_messages[$index-1].author.username != m.author.username">
+              <span class="avatar" title="{{ m.author.username }}" ng-if="!m.author.image">{{ m.author.username[0] }}</span>
+              <img class="avatar" ng-src="{{ m.author.image }}" alt="{{ m.author.username }}" ng-if="m.author.image">
+            </a>
+            <div class="meta" ng-if=":: old_messages[$index-1].author.username != m.author.username">
+              <a href="/u/{{ m.author.username }}/{{ m.author.id }}" class="username" target="_blank">{{ m.author.username }}</a>
+              <span class="timestamp" tooltip="{{ m.created_at | date_at }}" tooltip-popup-delay="500" tooltip-placement="right">{{ m.created_at | date:'H:mm' }}</span>
+              <span class="star"></span>
+            </div>
+            <span class="timestamp" ng-if=":: old_messages[$index-1].author.username == m.author.username" tooltip="{{ m.created_at | date_at }}" tooltip-popup-delay="500" tooltip-placement="right">{{ m.created_at | date:'H:mm' }}</span>
+            <div class="content">{{ m.content }}</div>
+          </div>
           <div class="message" ng-repeat="m in messages" ng-class="::{'compact':messages[$index-1].author.username == m.author.username}">
             <a href="/u/{{ m.author.username }}/{{ m.author.id }}" class="author" target="_blank" ng-if=":: messages[$index-1].author.username != m.author.username">
               <span class="avatar" title="{{ m.author.username }}" ng-if="!m.author.image">{{ m.author.username[0] }}</span>
@@ -54,6 +64,8 @@
             <span class="timestamp" ng-if=":: messages[$index-1].author.username == m.author.username" tooltip="{{ m.created_at | date_at }}" tooltip-popup-delay="500" tooltip-placement="right">{{ m.created_at | date:'H:mm' }}</span>
             <div class="content">{{ m.content }}</div>
           </div>
+
+          <div class="new_chat_alert" ng-if="!move_to_bottom"><a href="" ng-click="goToBottom()"><i class="fa fa-arrow-down"></i> Nuevos mensajes ({{ old_messages.length }})</a></div>
         </div>
 
         <div class="footer" ng-if="user.isLogged">
@@ -89,7 +101,7 @@
       </div>
 
       <div class="detail-section" ng-if="!channel.selected.fullscreen || true">
-        <h4>{{ online_members }}/{{ members.length }} Spartanos</h4>
+        <h4>Spartanos conectados</h4>
 
         <ul class="user-status">
           <li ng-repeat="m in members | orderBy:['-status','username']" ng-class="{'online': m.status == 'online'}">

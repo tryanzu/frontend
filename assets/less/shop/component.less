@@ -312,6 +312,32 @@ button.fs-continue,
   }
 }
 
+.fs-fields > li .fs-radio-custom-small span, .fs-fields > li .fs-checkbox-custom-small span {
+  float: left;
+  position: relative;
+  margin-right: 2%;
+  padding: 10px;
+  max-width: 200px;
+  width: 18%;
+  text-align: center;
+  font-weight: 700;
+  font-size: 50%;
+
+  label {
+    color: rgba(0,0,0,0.4);
+    -webkit-transition: color 0.3s;
+    transition: color 0.3s;
+    font-size: 18px;
+  }
+
+  span {
+    color: rgba(255,255,255,0.8);
+    text-align: center;
+    display: inline-block;
+    width: 100%;
+  }
+}
+
 
 .fs-form-overview .fs-fields > li .fs-radio-custom span, .fs-form-overview .fs-fields > li .fs-checkbox-custom span {
 	max-width: 140px;
@@ -372,6 +398,9 @@ button.fs-continue,
 .fs-fields .fs-radio-custom label.games-indie::after {
   background-image: url('/images/shop/games-indie.png');
 }
+.fs-fields .fs-radio-custom label.games-none::after {
+  background-image: url('/images/shop/none.png');
+}
 
 .fs-fields .fs-checkbox-custom label.components-keyboard::after {
   background-image: url('/images/shop/components-keyboard.png');
@@ -384,6 +413,9 @@ button.fs-continue,
 }
 .fs-fields .fs-checkbox-custom label.components-headset::after {
   background-image: url('/images/shop/components-headset.png');
+}
+.fs-fields .fs-checkbox-custom label.components-none::after {
+  background-image: url('/images/shop/none.png');
 }
 
 .fs-fields .fs-radio-custom label:hover::after,
@@ -403,6 +435,17 @@ button.fs-continue,
 .fs-form-overview .fs-fields .fs-radio-custom input[type="radio"]:checked + label,
 .fs-form-overview .fs-fields .fs-checkbox-custom input[type="checkbox"]:checked + label {
 	color: rgba(0,0,0,0.8);
+}
+
+.fs-form-overview .fs-fields .fs-radio-custom-small span,
+.fs-form-overview .fs-fields .fs-checkbox-custom-small span {
+  font-size: 12px;
+  color: rgba(0,0,0,0.5);
+}
+
+.fs-form-overview .fs-fields .fs-radio-custom-small label,
+.fs-form-overview .fs-fields .fs-checkbox-custom-small label {
+  font-size: 13px;
 }
 
 .fs-fields textarea {
@@ -565,7 +608,7 @@ button.fs-continue,
 	overflow: hidden;
 	color: @brand-primary-dark;//#777;
 	margin: 40px;
-	width: 2em;
+	width: 3em;
 	font-weight: 700;
 	font-size: 2em;
 	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;

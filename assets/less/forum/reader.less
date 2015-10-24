@@ -33,7 +33,7 @@
 }
 
 .current-article h1 {
-  color: @brand-primary-normal;
+  color: @brand-primary-dark;
   font: inherit;
   font-size: 24px;
   line-height: 32px;
@@ -146,14 +146,14 @@
 
 .verified-account {
   display: inline-block;
-  background-color: @brand-success;
-  color: white;
-  width: 18px;
-  height: 18px;
-  font-size: 11px;
-  line-height: 18px;
-  text-align: center;
-  border-radius: 50%;
+  background-color: transparent;
+  color: @brand-success;
+  border: 1px solid @brand-success;
+  font-size: 14px;
+  line-height: 16px;
+  padding: 3px 5px;
+  border-radius: 4px;
+  vertical-align: text-bottom;
 }
 
 .role-labels {
@@ -308,6 +308,25 @@
 
     &.editing {
       background-color: @brand-primary-lighter;
+    }
+
+    &.best {
+      background-color: lighten(@brand-success, 54%);
+
+      .header {
+        font-size: 12px;
+        text-transform: uppercase;
+        color: @brand-success;
+        font-weight: 600;
+        margin-bottom: 8px;
+        line-height: 18px;
+
+        i {
+          font-size: 18px;
+          vertical-align: top;
+          font-weight: 400;
+        }
+      }
     }
 
     .comment-author .username {
