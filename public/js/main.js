@@ -3871,6 +3871,10 @@ var PostService = ['$resource', function($resource) {
     {
       'update': {
         method:'PUT'
+      },
+      'light': {
+        method: 'GET',
+        url: layer_path + 'posts/:id/light'
       }
     }
   );
@@ -4251,7 +4255,8 @@ var EditPostController = ['$scope', '$routeParams', '$http', 'Category', 'Part',
   Category.writable(function(data) {
     $scope.categories = data;
 
-    Post.get({id: $routeParams.id}, function(data) {
+    Post.light({id: $routeParams.id}, function(data) {
+      //console.log(data);
       $scope.post = data;
       $scope.post_edit = {
         title: data.title,
@@ -4309,12 +4314,19 @@ UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed
     editing_username: false
   };
   $scope.current_page = 'info';
-
   $scope.new_data = {
     username: null,
     username_saving: false,
     username_error: false,
     username_error_message: 'El nombre de usuario sólo puede llevar letras, números y guiones. Debe empezar con letra y terminar con número o letra y tener entre 3 y 32 caracteres.'
+  }
+
+  $scope.posts = {
+    data: [],
+    resolving: true,
+    offset: 0,
+    more_to_load: true,
+    first_load: false
   }
 
   $scope.editUsername = function() {
@@ -4373,24 +4385,31 @@ UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed
   }
 
   $scope.startFeed = function() {
-    $scope.resolving_posts = true;
+    $scope.posts.resolving = true;
 
-    Feed.get({limit: 10, offset: 0, user_id: $scope.profile.id}, function(data) {
+    Feed.get({ limit: 10, offset: $scope.posts.offset, user_id: $scope.profile.id }, function(data) {
       //console.log(data);
-      for(p in data.feed) {
-        for(c in $scope.categories) {
-          if (data.feed[p].categories[0] == $scope.categories[c].slug) {
-            data.feed[p].category = {name: $scope.categories[c].name, color: $scope.categories[c].color, slug: $scope.categories[c].slug}
-            break;
-          }
-        }
-      }
-
-      $scope.posts = data.feed;
-      $scope.resolving_posts = false;
-      $scope.offset = 10;
+      $scope.posts.data = data.feed;
+      $scope.posts.resolving = false;
+      $scope.posts.offset = $scope.posts.offset + data.feed.length;
+      $scope.posts.first_load = true;
     });
   };
+  $scope.loadMorePosts = function() {
+    $scope.posts.resolving = true;
+
+    Feed.get({ limit: 10, offset: $scope.posts.offset, user_id: $scope.profile.id }, function(data) {
+      //console.log(data);
+      if(data.feed.length > 0) {
+        $scope.posts.data = $scope.posts.data.concat(data.feed);
+        $scope.posts.offset = $scope.posts.offset + data.feed.length;
+      } else {
+        $scope.posts.more_to_load = false;
+      }
+      $scope.posts.resolving = false;
+    });
+  }
+
 
   $scope.loadUserComments = function() {
     $http.get(layer_path + "users/" + $routeParams.id +"/comments")
@@ -4543,31 +4562,27 @@ var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
     selected: null
   };
   $scope.messages = [];
+  $scope.old_messages = [];
   $scope.message = {
     content: '',
     send_on_enter: true,
     previous: '-'
   };
   $scope.show_details = true;
+  $scope.move_to_bottom = true;
 
   $scope.members = [];
-  $scope.online_members = 0;
 
-  $scope.countOnline = function() {
-    var temp = 0;
-    //console.log("Contando...");
-    for(m in $scope.members) {
-      //console.log($scope.members[m].status);
-      if($scope.members[m].status == 'online') {
-        temp++;
-      }
-    }
-    $scope.online_members = temp;
-  };
+  $scope.goToBottom = function() {
+    var mh_window = $('.message-history');
+    mh_window.scrollTop(mh_window[0].scrollHeight);
+    $scope.old_messages = [];
+    $scope.move_to_bottom = true;
+  }
 
   $scope.changeChannel = function(channel) {
     $scope.channel.selected = channel;
-    var messagesRef = new Firebase(firebase_url + 'messages/' + channel.$id).limitToLast(100);
+    var messagesRef = new Firebase(firebase_url + 'messages/' + channel.$id).orderByChild('created_at').limitToLast(75);
     $scope.messages = $firebaseArray(messagesRef);
 
     $scope.messages.$loaded().then(function(x) {
@@ -4578,9 +4593,10 @@ var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
 
       x.$watch(function(event) {
         if(event.event === "child_added") {
-          $timeout(function(){
-            var mh_window = $('.message-history');
-            if(mh_window.scrollTop() > (mh_window[0].scrollHeight - mh_window.height() - 20)) {
+          var mh_window = $('.message-history');
+          $scope.move_to_bottom = mh_window.scrollTop() > (mh_window[0].scrollHeight - mh_window.height() - 1);
+          $timeout(function() {
+            if($scope.move_to_bottom) {
               mh_window.scrollTop(mh_window[0].scrollHeight);
             }
           }, 50);
@@ -4588,15 +4604,22 @@ var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
       });
     });
 
+    messagesRef.on('child_removed', function(dataSnapshot) {
+      // code to handle new value.
+      var mh_window = $('.message-history');
+      var at_bottom = mh_window.scrollTop() > (mh_window[0].scrollHeight - mh_window.height() - 1);
+      if(!at_bottom) {
+        $scope.old_messages = $scope.old_messages.concat( dataSnapshot.val() );
+        //console.log("not at bottom");
+      } else {
+        $scope.old_messages = [];
+        //console.log("at bottom");
+      }
+      //console.log(dataSnapshot.val());
+    });
+
     var membersRef = new Firebase(firebase_url + 'members/' + channel.$id);
     $scope.members = $firebaseArray(membersRef);
-
-    $scope.members.$loaded().then(function(x) {
-      $scope.countOnline();
-      x.$watch(function(event) {
-        $scope.countOnline();
-      });
-    });
 
     if($scope.user.isLogged) {
       var amOnline = new Firebase(firebase_url + '.info/connected');
@@ -4605,7 +4628,8 @@ var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
       amOnline.on('value', function(snapshot) {
         if(snapshot.val()) {
           var image = $scope.user.info.image || "";
-          statusRef.onDisconnect().set({username: $scope.user.info.username, image: image, status: "offline"});
+          //statusRef.onDisconnect().set({username: $scope.user.info.username, image: image, status: "offline"});
+          statusRef.onDisconnect().remove();
           statusRef.set({
             id: $scope.user.info.id,
             username: $scope.user.info.username,
@@ -4662,21 +4686,12 @@ chatModule.controller('ChatController', ChatController);
 chatModule.directive('sgEnter', function() {
   return {
     link: function(scope, element, attrs) {
-      //var mh_window = $('.message-history');
       console.log(scope.message.send_on_enter);
       element.bind("keydown keypress", function(event) {
         if(event.which === 13 && scope.message.send_on_enter) {
           scope.$apply(function(){
             scope.$eval(attrs.sgEnter, {'event': event});
           });
-          /*console.log(mh_window.scrollTop(), (mh_window[0].scrollHeight - mh_window.height() - 20));
-          if(mh_window.scrollTop() > (mh_window[0].scrollHeight - mh_window.height() - 20)) {
-            console.log("estaba hasta abajo!");
-            mh_window.scrollTop(mh_window[0].scrollHeight);
-          } else {
-            console.log("estaba hasta arriba");
-          }*/
-          //console.log(mh_window.scrollTop(), mh_window[0].scrollHeight);
           event.preventDefault();
         }
       });
@@ -4856,6 +4871,10 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
     templateUrl: '/js/partials/validate.html?v=' + version,
     controller: 'UserValidationController'
   });
+  $routeProvider.when('/componente/:slug', {
+    templateUrl: '/js/partials/component.html?v=' + version,
+    //controller: 'ComponentController'
+  });
   $routeProvider.when('/c/:slug', {
     templateUrl: '/js/partials/main.html?v=' + version,
     controller: 'CategoryListController'
@@ -4948,17 +4967,16 @@ boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http'
 
   		// Post credentials to the auth rest point
   		$http.get(layer_path + 'auth/get-token', {params: {email: $scope.form.email, password: $scope.form.password}, skipAuthorization: true})
-      .error(function(data, status, headers, config) {
-        $scope.form.error = {message:'Usuario o contraseña incorrecta.'};
-      })
       .success(function(data) {
         localStorage.setItem('id_token', data.token);
         localStorage.setItem('firebase_token', data.firebase);
         localStorage.setItem('signed_in', true);
-        //console.log(data.token, data.firebase);
+
         $modalInstance.dismiss('logged');
         $rootScope.$broadcast('login');
-        //$rootScope.$broadcast('status_change');
+      })
+      .error(function(data, status, headers, config) {
+        $scope.form.error = {message:'Usuario o contraseña incorrecta.'};
       });
   	};
 
@@ -5264,6 +5282,10 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
               });
             }
           });
+
+          if($location.path() == '/home') {
+            window.location.href = "/";
+          }
 
           // Warn everyone
           $timeout(function() {

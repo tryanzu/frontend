@@ -6,6 +6,10 @@ var PostService = ['$resource', function($resource) {
     {
       'update': {
         method:'PUT'
+      },
+      'light': {
+        method: 'GET',
+        url: layer_path + 'posts/:id/light'
       }
     }
   );
