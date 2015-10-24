@@ -264,11 +264,6 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
         }
       }
 
-      // Testing best comment
-      //var l = $scope.post.comments.set.length;
-      //console.log(l);
-      $scope.post.comments.set[1].best_answer = true;
-
       // Attach title and description for SEO purposes
       $scope.page.title = "SpartanGeek.com | "  + $scope.post.title + " en " + $scope.post.category.name;
       if($scope.post.content.length - 1 < 157) {

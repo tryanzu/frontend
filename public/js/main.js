@@ -3712,11 +3712,6 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
         }
       }
 
-      // Testing best comment
-      //var l = $scope.post.comments.set.length;
-      //console.log(l);
-      $scope.post.comments.set[1].best_answer = true;
-
       // Attach title and description for SEO purposes
       $scope.page.title = "SpartanGeek.com | "  + $scope.post.title + " en " + $scope.post.category.name;
       if($scope.post.content.length - 1 < 157) {
@@ -4261,7 +4256,7 @@ var EditPostController = ['$scope', '$routeParams', '$http', 'Category', 'Part',
     $scope.categories = data;
 
     Post.light({id: $routeParams.id}, function(data) {
-      console.log(data);
+      //console.log(data);
       $scope.post = data;
       $scope.post_edit = {
         title: data.title,
