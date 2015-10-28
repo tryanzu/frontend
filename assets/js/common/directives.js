@@ -37,7 +37,7 @@ directives.directive('adjustHeightChat', function($window, $document, $timeout) 
         var height = $(window).height();
         var footer = $('div.footer').outerHeight();
         var neededHeight = height - top - footer;
-        console.log(top, height, footer, neededHeight);
+        //console.log(top, height, footer, neededHeight);
 
         $(element).css('height', neededHeight);
       };
