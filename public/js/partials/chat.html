@@ -65,7 +65,7 @@
             <div class="content">{{ m.content }}</div>
           </div>
 
-          <div class="new_chat_alert" ng-if="!move_to_bottom"><a href="" ng-click="goToBottom()"><i class="fa fa-arrow-down"></i> Nuevos mensajes ({{ old_messages.length }})</a></div>
+          <div class="new_chat_alert" ng-if="scrolledUp && old_messages.length > 0"><a href="" ng-click="goToBottom()"><i class="fa fa-arrow-down"></i> Nuevos mensajes ({{ old_messages.length }})</a></div>
         </div>
 
         <div class="footer" ng-if="user.isLogged">

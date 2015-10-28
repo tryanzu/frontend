@@ -37,7 +37,7 @@ directives.directive('adjustHeightChat', function($window, $document, $timeout) 
         var height = $(window).height();
         var footer = $('div.footer').outerHeight();
         var neededHeight = height - top - footer;
-        console.log(top, height, footer, neededHeight);
+        //console.log(top, height, footer, neededHeight);
 
         $(element).css('height', neededHeight);
       };
@@ -4569,7 +4569,8 @@ var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
     previous: '-'
   };
   $scope.show_details = true;
-  $scope.move_to_bottom = true;
+
+  $scope.scrolledUp = false;
 
   $scope.members = [];
 
@@ -4577,7 +4578,7 @@ var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
     var mh_window = $('.message-history');
     mh_window.scrollTop(mh_window[0].scrollHeight);
     $scope.old_messages = [];
-    $scope.move_to_bottom = true;
+    $scope.scrolledUp = false;
   }
 
   $scope.changeChannel = function(channel) {
@@ -4593,29 +4594,22 @@ var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
 
       x.$watch(function(event) {
         if(event.event === "child_added") {
-          var mh_window = $('.message-history');
-          $scope.move_to_bottom = mh_window.scrollTop() > (mh_window[0].scrollHeight - mh_window.height() - 1);
-          $timeout(function() {
-            if($scope.move_to_bottom) {
+          if(!$scope.scrolledUp) {
+            var mh_window = $('.message-history');
+            $timeout(function() {
               mh_window.scrollTop(mh_window[0].scrollHeight);
-            }
-          }, 50);
+            }, 50);
+          }
         }
       });
     });
 
     messagesRef.on('child_removed', function(dataSnapshot) {
-      // code to handle new value.
-      var mh_window = $('.message-history');
-      var at_bottom = mh_window.scrollTop() > (mh_window[0].scrollHeight - mh_window.height() - 1);
-      if(!at_bottom) {
+      if($scope.scrolledUp) {
         $scope.old_messages = $scope.old_messages.concat( dataSnapshot.val() );
-        //console.log("not at bottom");
       } else {
         $scope.old_messages = [];
-        //console.log("at bottom");
       }
-      //console.log(dataSnapshot.val());
     });
 
     var membersRef = new Firebase(firebase_url + 'members/' + channel.$id);
@@ -4628,7 +4622,6 @@ var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
       amOnline.on('value', function(snapshot) {
         if(snapshot.val()) {
           var image = $scope.user.info.image || "";
-          //statusRef.onDisconnect().set({username: $scope.user.info.username, image: image, status: "offline"});
           statusRef.onDisconnect().remove();
           statusRef.set({
             id: $scope.user.info.id,
@@ -4678,6 +4671,38 @@ var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
     $scope.changeChannel($scope.channels[0]);
   });
 
+  // Scrolling responses
+  $scope.scroll_help = {
+    lastScrollTop: 0,
+    from_top: 0,
+    max_height: 0,
+    last_height: 0
+  }
+
+  $('.message-history').scroll( function() {
+    $scope.scroll_help.from_top = $(this).scrollTop();
+    $scope.scroll_help.max_height = $(this)[0].scrollHeight - $(this).height();
+    if($scope.scroll_help.from_top > $scope.scroll_help.max_height) {
+      $scope.scroll_help.from_top = $scope.scroll_help.max_height;
+    }
+    //console.log($scope.scroll_help.from_top, $scope.scroll_help.lastScrollTop, $scope.scroll_help.max_height);
+    if ($scope.scroll_help.from_top >= $scope.scroll_help.lastScrollTop) {
+      // downscroll code
+      if($scope.scroll_help.from_top == $scope.scroll_help.max_height) {
+        $scope.scrolledUp = false;
+        $scope.old_messages = [];
+        //console.log("Estoy hasta abajo");
+      }
+    } else {
+      if($scope.scroll_help.last_height <= $scope.scroll_help.max_height) {
+        // upscroll code
+        $scope.scrolledUp = true;
+        //console.log("cambie a subido");
+      }
+    }
+    $scope.scroll_help.lastScrollTop = $scope.scroll_help.from_top;
+    $scope.scroll_help.last_height = $scope.scroll_help.max_height;
+  });
 }];
 
 var chatModule = angular.module('chatModule', ["firebase"]);
@@ -4686,7 +4711,7 @@ chatModule.controller('ChatController', ChatController);
 chatModule.directive('sgEnter', function() {
   return {
     link: function(scope, element, attrs) {
-      console.log(scope.message.send_on_enter);
+      //console.log(scope.message.send_on_enter);
       element.bind("keydown keypress", function(event) {
         if(event.which === 13 && scope.message.send_on_enter) {
           scope.$apply(function(){
