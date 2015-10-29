@@ -12,6 +12,17 @@
         <form>
           <input autocomplete="off" autocorrect="off" type="text" ng-keyup="do($event)" ng-model="query" placeholder="Buscar publicación" ng-class="{'empty-box':!query}" />
         </form>
+
+        <div class="search-examples" ng-if="!query">
+          <h4>Ejemplos de búsquedas</h4>
+          <ul>
+            <li>shanks recomendación pc</li>
+            <li>programmer fechas</li>
+            <li>gtx 970</li>
+            <li>i5 4460</li>
+          </ul>
+        </div>
+
         <p ng-if="query">Presiona la tecla <span class="label label-inverse label-default">ESC</span> para iniciar una nueva búsqueda.</p>
       </div>
       <div class="col-sm-2">

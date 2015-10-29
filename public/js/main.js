@@ -4794,7 +4794,7 @@ angular.module('searchBar', [
       $scope.loading = $timeout(function() {
         index.search($scope.query)
           .then(function searchSuccess(content) {
-            console.log(content);
+            //console.log(content);
             $scope.hits = content.hits;
             $scope.statistics.total = content.nbHits;
             $scope.statistics.time = content.processingTimeMS;
