@@ -386,6 +386,10 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
       'board_stats': null
     }
 
+    $scope.show_search = function() {
+      $rootScope.$broadcast('open_search');
+    }
+
     $scope.logUser = function() {
       $http.get(layer_path + 'user/my').then(
         function(response) {

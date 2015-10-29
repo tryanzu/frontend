@@ -29,6 +29,10 @@ angular.module('searchBar', [
     jQuery("#search-layout input").trigger( "focus" );
   }
 
+  $scope.$on('open_search', function(event, data) {
+    $scope.toggle();
+  });
+
   $scope.do = function(event) {
 
     var previous = $scope.query

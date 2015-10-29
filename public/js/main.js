@@ -4771,6 +4771,10 @@ angular.module('searchBar', [
     jQuery("#search-layout input").trigger( "focus" );
   }
 
+  $scope.$on('open_search', function(event, data) {
+    $scope.toggle();
+  });
+
   $scope.do = function(event) {
 
     var previous = $scope.query
@@ -5195,6 +5199,10 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
     $scope.promises = {
       'gaming': null,
       'board_stats': null
+    }
+
+    $scope.show_search = function() {
+      $rootScope.$broadcast('open_search');
     }
 
     $scope.logUser = function() {
