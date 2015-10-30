@@ -221,7 +221,11 @@ boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http'
           }
           $http.post(layer_path + 'user/get-token/facebook', data).
             error(function(data, status, headers, config) {
-              $scope.form.error = {message:'No se pudo iniciar sesión.'};
+              if(data.message == "Not trusted.") {
+                $scope.form.error = {message:'Tu cuenta ha sido bloqueada.'};
+              } else {
+                $scope.form.error = {message:'No se pudo iniciar sesión.'};
+              }
             })
             .success(function(data) {
               localStorage.setItem('id_token', data.token);
@@ -326,7 +330,11 @@ boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http'
           }
           $http.post(layer_path + 'user/get-token/facebook', data).
             error(function(data, status, headers, config) {
-              $scope.form.error = {message:'No se pudo iniciar sesión.'};
+              if(data.message == "Not trusted.") {
+                $scope.form.error = {message:'Tu cuenta ha sido bloqueada.'};
+              } else {
+                $scope.form.error = {message:'No se pudo iniciar sesión.'};
+              }
             })
             .success(function(data) {
               localStorage.setItem('id_token', data.token);
