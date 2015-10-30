@@ -29,6 +29,10 @@ angular.module('searchBar', [
     jQuery("#search-layout input").trigger( "focus" );
   }
 
+  $scope.$on('open_search', function(event, data) {
+    $scope.toggle();
+  });
+
   $scope.do = function(event) {
 
     var previous = $scope.query
@@ -48,7 +52,7 @@ angular.module('searchBar', [
       $scope.loading = $timeout(function() {
         index.search($scope.query)
           .then(function searchSuccess(content) {
-            console.log(content);
+            //console.log(content);
             $scope.hits = content.hits;
             $scope.statistics.total = content.nbHits;
             $scope.statistics.time = content.processingTimeMS;

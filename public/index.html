@@ -70,30 +70,30 @@
         </a>
       </div>
 
-      <ul class="nav navbar-nav navbar-stats hidden-xs" ng-if="!user.isLogged">
-        <li><a><i class="fa fa-users"></i> Usuarios: {{ status.stats.users | number:0 }}</a></li>
-        <li><a><i class="fa fa-file"></i> Publicaciones: {{ status.stats.posts | number:0 }}</a></li>
-        <li><a><i class="fa fa-comments"></i> Comentarios: {{ status.stats.comments | number:0 }}</a></li>
-      </ul>
-
-      <ul class="nav navbar-nav hidden-xs" ng-if="user.isLogged">
+      <ul class="nav navbar-nav hidden-xs">
         <li>
           <div role="search" id="top-search" ng-controller="SearchController">
             <div search-bar></div>
           </div>
         </li>
-        <li>
+        <li ng-if="user.isLogged">
           <a href="chat">
             <span class="icon"><i class="fa fa-comment"></i></span>
-            <span class="label">Chat</span>
+            <span class="label visible-lg-inline">Chat</span>
           </a>
         </li>
         <li>
           <a href="/tienda" target="_blank">
             <span class="icon"><i class="fa fa-shopping-cart"></i></span>
-            <span class="label">Spartanas</span>
+            <span class="label visible-lg-inline">Spartanas</span>
           </a>
         </li>
+      </ul>
+
+      <ul class="nav navbar-nav navbar-stats hidden-xs" ng-if="!user.isLogged">
+        <li><a><i class="fa fa-users"></i> Usuarios: {{ status.stats.users | number:0 }}</a></li>
+        <li><a><i class="fa fa-file"></i> Publicaciones: {{ status.stats.posts | number:0 }}</a></li>
+        <li><a><i class="fa fa-comments"></i> Comentarios: {{ status.stats.comments | number:0 }}</a></li>
       </ul>
 
       <!-- Collect the nav links, forms, and other content for toggling -->
