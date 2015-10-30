@@ -4771,6 +4771,10 @@ angular.module('searchBar', [
     jQuery("#search-layout input").trigger( "focus" );
   }
 
+  $scope.$on('open_search', function(event, data) {
+    $scope.toggle();
+  });
+
   $scope.do = function(event) {
 
     var previous = $scope.query
@@ -4790,7 +4794,7 @@ angular.module('searchBar', [
       $scope.loading = $timeout(function() {
         index.search($scope.query)
           .then(function searchSuccess(content) {
-            console.log(content);
+            //console.log(content);
             $scope.hits = content.hits;
             $scope.statistics.total = content.nbHits;
             $scope.statistics.time = content.processingTimeMS;
@@ -4869,7 +4873,7 @@ var boardApplication = angular.module('board', [
   'searchBar'
 ]);
 
-var version = '0.1.5';
+var version = '151';
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider', 'AclServiceProvider',
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider, AclServiceProvider) {
@@ -5032,7 +5036,11 @@ boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http'
           }
           $http.post(layer_path + 'user/get-token/facebook', data).
             error(function(data, status, headers, config) {
-              $scope.form.error = {message:'No se pudo iniciar sesión.'};
+              if(data.message == "Not trusted.") {
+                $scope.form.error = {message:'Tu cuenta ha sido bloqueada.'};
+              } else {
+                $scope.form.error = {message:'No se pudo iniciar sesión.'};
+              }
             })
             .success(function(data) {
               localStorage.setItem('id_token', data.token);
@@ -5137,7 +5145,11 @@ boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http'
           }
           $http.post(layer_path + 'user/get-token/facebook', data).
             error(function(data, status, headers, config) {
-              $scope.form.error = {message:'No se pudo iniciar sesión.'};
+              if(data.message == "Not trusted.") {
+                $scope.form.error = {message:'Tu cuenta ha sido bloqueada.'};
+              } else {
+                $scope.form.error = {message:'No se pudo iniciar sesión.'};
+              }
             })
             .success(function(data) {
               localStorage.setItem('id_token', data.token);
@@ -5195,6 +5207,10 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
     $scope.promises = {
       'gaming': null,
       'board_stats': null
+    }
+
+    $scope.show_search = function() {
+      $rootScope.$broadcast('open_search');
     }
 
     $scope.logUser = function() {
