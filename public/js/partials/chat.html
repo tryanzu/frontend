@@ -103,15 +103,24 @@
       <div class="detail-section" ng-if="!channel.selected.fullscreen || true">
         <h4>Spartanos conectados</h4>
 
+        <input type="text" ng-model="searchText" class="form-control mb-20" ng-if="can('edit-category-comments')">
+
         <ul class="user-status">
-          <li ng-repeat="m in members | orderBy:['-status','username']" ng-class="{'online': m.status == 'online'}">
+          <li ng-repeat="m in members | filter:searchText | orderBy:['-status','username']" ng-class="{'online': m.status == 'online'}">
             <a href="/u/{{ m.username }}/{{ m.id }}" class="">
               <span class="avatar" title="{{ m.username }}" ng-if="!m.image">{{ m.username[0] }}</span>
               <img class="avatar" ng-src="{{ m.image }}" alt="{{ m.username }}" ng-if="m.image">
             </a>
             <a href="/u/{{ m.username }}/{{ m.id }}" class="username">{{ m.username }}</a>
 
+            <span ng-if="m.id != user.info.id && can('edit-category-comments')" ng-click="m.hide_info = !m.hide_info"><i class="fa fa-ban"></i></span>
             <span class="status"></span>
+
+            <div collapse="!m.hide_info" ng-if="m.id != user.info.id && can('edit-category-comments')" style="padding: 10px 0; border-bottom: 1px solid #ddd;">
+              <div class="btn-toolbar">
+                <a href="" ng-click="suspendUser(m.id, 60*5); m.already_blocked = true" class="btn btn-default btn-sm" ng-class="{'disabled': m.already_blocked}">Bloquear</a>
+              </div>
+            </div>
           </li>
         </ul>
       </div>

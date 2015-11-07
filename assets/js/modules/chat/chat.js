@@ -77,6 +77,8 @@ var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
     }
   };
 
+  $scope.searchText = ""
+
   $scope.addMessage = function() {
     if($scope.message.content === $scope.message.previous || ($scope.message.previous.indexOf($scope.message.content) > -1) || ($scope.message.content.indexOf($scope.message.previous) > -1)) {
       $scope.message.content = '';
@@ -105,14 +107,29 @@ var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
     $scope.show_details = !$scope.show_details;
   }
 
+  $scope.suspendUser = function(userId, timeLengthSeconds) {
+    //var suspendedUntil = new Date().getTime() + 1000*timeLengthSeconds;
+
+    $scope.suspensionsRef.child(userId).set(true, function(error) {
+      if (error) {
+        console.log("error in user ban")
+      } else {
+        console.log("user was banned")
+      }
+    });
+  };
+
   // Initialization
   var ref = new Firebase(firebase_url + 'chat');
   var channelsRef = new Firebase(firebase_url + 'channels');
+  $scope.suspensionsRef = new Firebase(firebase_url + 'suspensions');
 
   $scope.channels = $firebaseArray(channelsRef);
   $scope.channels.$loaded().then(function() {
     $scope.changeChannel($scope.channels[0]);
   });
+
+  //$scope.suspensionsRef = $firebaseArray(suspensionsRef);
 
   // Scrolling responses
   $scope.scroll_help = {
