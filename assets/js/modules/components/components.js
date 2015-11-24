@@ -89,4 +89,8 @@ ComponentsModule.controller('ComponentController', ['$scope', '$routeParams', '$
     console.log(response.data);
     $scope.component = response.data;
   }, function(){});
-}])
+}]);
+
+ComponentsModule.controller('PcBuilderController', ['$scope', function($scope) {
+
+}]);

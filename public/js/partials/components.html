@@ -1,76 +1,79 @@
-<div class="container">
-  <div id="main-header">
+<div class="global-content">
+  <div class="container">
     <div class="row">
-      <div class="col-md-3">
-        <figure id="logo">
-          <img src="images/logo.png" />
-        </figure>
-      </div>
-
-      <div class="col-md-9 search">
-        <input type="text" ng-model="query" id="search-text" placeholder="Busqueda por componente, modelo, serie" autocomplete="off" autocorrect="off"  ng-keyup="do($event)" />
-
-        <i class="fa fa-search"></i>
-      </div>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col-md-12 mb-40">
-      <img src="/images/banners/15-NV-GF-GTX-HEROs-851x315-FB-Header-spl.jpg">
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col-md-9">
-      <div class="search">
-        <div class="hit-stats">
-          <div class="stats">
-            {{ results.nbHits }} Resultados
+      <div class="col-md-12 mb-40">
+        <div class="img-slider">
+          <div class="main-img">
+            <img src="/images/banners/first_big.jpg" height="auto" width="100%">
+          </div>
+          <div class="img-slider-selector">
+            <ul>
+              <li>
+                <img src="/images/banners/first_small.png" height="auto" width="100%">
+              </li>
+              <li>
+                <img src="/images/banners/second_small.png" height="auto" width="100%">
+              </li>
+              <li>
+                <img src="/images/banners/third_small.png" height="auto" width="100%">
+              </li>
+            </ul>
           </div>
         </div>
-        <div class="components-list row">
-          <div class="component col-md-6" ng-repeat="hit in results.hits">
-            <div class="row">
-              <div class="col-md-3">
-                <div class="component-thumbnail">
-                  <img src="https://spartangeek.com/images/products/{{ hit.image }}" alt="{{ hit.full_name || hit.name }}" ng-if="hit.image" class="portrait2">
-                  <img src="/images/noimage.jpg" alt="{{ hit.full_name || hit.name }}" ng-if="!hit.image">
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-9">
+        <div class="search">
+          <div class="hit-stats">
+            <div class="stats">
+              {{ results.nbHits }} Resultados
+            </div>
+          </div>
+          <div class="components-list row">
+            <div class="component col-md-6" ng-repeat="hit in results.hits">
+              <div class="row">
+                <div class="col-md-3">
+                  <div class="component-thumbnail">
+                    <img ng-src="https://spartangeek.com/images/products/{{ hit.image }}" alt="{{ hit.full_name || hit.name }}" ng-if="hit.image" class="portrait2">
+                    <img src="/images/noimage.jpg" alt="{{ hit.full_name || hit.name }}" ng-if="!hit.image">
+                  </div>
                 </div>
-              </div>
-              <div class="hit-content col-md-9">
-                <p class="hit-name"><a href="/componente/{{ hit.slug }}">{{ hit.full_name || hit.name }}</a></p>
-                <p class="hit-part-number">{{ hit.part_number }}</p>
-                <div class="btn-toolbar">
-                  <a href="#" class="btn btn-link btn-xs"><i class="fa fa-cart-plus"></i> Agregar a carrito</a>
-                  <a href="#" class="btn btn-link btn-xs"><i class="fa fa-desktop"></i> Agregar a build</a>
+                <div class="hit-content col-md-9">
+                  <p class="hit-name"><a href="/componente/{{ hit.slug }}">{{ hit.full_name || hit.name }}</a></p>
+                  <p class="hit-part-number">{{ hit.part_number }}</p>
+                  <div class="btn-toolbar">
+                    <a href="#" class="btn btn-link btn-xs" ng-if="hit.activated"><i class="fa fa-cart-plus"></i> Agregar a carrito</a>
+                    <a href="#" class="btn btn-link btn-xs"><i class="fa fa-desktop"></i> Agregar a mi lista</a>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
+
+          <uib-pagination ng-change="changePage()" total-items="totalItems" items-per-page="itemsPerPage" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" max-size="15" boundary-links="true" rotate="false"></uib-pagination>
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <h4>Buscar</h4>
+        <input type="text" class="form-control" ng-model="query" id="search-text" placeholder="Busqueda por componente, modelo, serie" autocomplete="off" autocorrect="off"  ng-keyup="do($event)" />
+
+        <div class="switch-control">
+          <switch id="enabled" name="enabled" ng-model="show_art" on="Si" off="No" class="sg"></switch>
+          <span class="switch-label">Mostrar sólo componentes vendidos en SG</span>
         </div>
 
-        <uib-pagination ng-change="changePage()" total-items="totalItems" items-per-page="itemsPerPage" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" max-size="15" boundary-links="true" rotate="false"></uib-pagination>
-      </div>
-    </div>
-
-    <div class="col-md-3">
-      <h4>Buscar</h4>
-      <input type="text" class="form-control" ng-model="query" id="search-text" placeholder="Busqueda por componente, modelo, serie" autocomplete="off" autocorrect="off"  ng-keyup="do($event)" />
-
-      <div class="switch-control">
-        <switch id="enabled" name="enabled" ng-model="show_art" on="Si" off="No" class="sg"></switch>
-        <span class="switch-label">Mostrar sólo componentes vendidos en SG</span>
+        <h4>Recomendaciones</h4>
+        <ul class="collections">
+          <li><a href="#">Los más vendidos</a></li>
+          <li><a href="#">Los más vistos</a></li>
+          <li><a href="#">Procesadores de menos de $3,000</a></li>
+          <li><a href="#">Heroes of the Storm de regalo</a></li>
+        </ul>
       </div>
 
-      <h4>Recomendaciones</h4>
-      <ul class="collections">
-        <li><a href="#">Los más vendidos</a></li>
-        <li><a href="#">Los más vistos</a></li>
-        <li><a href="#">Procesadores de menos de $3,000</a></li>
-        <li><a href="#">Heroes of the Storm de regalo</a></li>
-      </ul>
     </div>
-
   </div>
 </div>

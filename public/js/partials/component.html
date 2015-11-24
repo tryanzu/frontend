@@ -7,6 +7,13 @@
       </div>
     </div>
   </div>
+  <div class="component-images" ng-if="component.images">
+    <div class="container">
+      <div class="text-center">
+        <img ng-src="https://spartangeek.com/images/products/{{ image.path.substring(5) }}" ng-repeat="image in component.images" height="128px">
+      </div>
+    </div>
+  </div>
   <div class="container">
     <div class="row">
       <div class="col-md-5">
@@ -25,133 +32,196 @@
             <th>Número de parte</th>
             <td>{{ component.part_number }}</td>
           </tr>
-          <tr ng-if="false">
+
+          <!-- Cooler -->
+          <tr ng-if="component.supported_sockets">
+            <th>Sockets soportados</th>
+            <td>{{ component.supported_sockets }}</td>
+          </tr>
+          <tr ng-if="component.liquid_cooled">
+            <th>Enfriamiento líquido</th>
+            <td>{{ component.liquid_cooled?"Si":"No" }}</td>
+          </tr>
+          <tr ng-if="component.bearing_type">
+            <th>Tipo de Rodamiento</th>
+            <td>{{ component.bearing_type }}</td>
+          </tr>
+          <tr ng-if="component.radiator_size">
+            <th>Tamaño de radiador</th>
+            <td>{{ component.radiator_size }}</td>
+          </tr>
+          <tr ng-if="component.noise_level">
+            <th>Nivel de ruido</th>
+            <td>{{ component.noise_level }}</td>
+          </tr>
+          <tr ng-if="component.fan_rpm">
+            <th>RPM de ventilador</th>
+            <td>{{ component.fan_rpm }}</td>
+          </tr>
+
+          <!-- CPU -->
+          <tr ng-if="component.data_width">
             <th>Ancho de dato</th>
-            <td>64-bit</td>
+            <td>{{ component.data_width }}</td>
           </tr>
-          <tr ng-if="false">
+          <tr ng-if="component.socket">
             <th>Socket</th>
-            <td>LGA1150</td>
+            <td>{{ component.socket }}</td>
           </tr>
-          <tr ng-if="false">
+          <tr ng-if="component.speed">
             <th>Velocidad</th>
-            <td>4.0GHz</td>
+            <td>{{ component.speed }}</td>
           </tr>
-          <tr ng-if="false">
+          <tr ng-if="component.cores">
             <th>Núcleos</th>
-            <td>4</td>
+            <td>{{ component.cores }}</td>
           </tr>
-          <tr ng-if="false">
+          <tr ng-if="component.l1_cache">
             <th>Cache L1</th>
-            <td>4 x 32KB Instruction<br>4 x 32KB Data</td>
+            <td>{{ component.l1_cache }}</td>
           </tr>
-          <tr ng-if="false">
+          <tr ng-if="component.l2_cache">
             <th>Cache L2</th>
-            <td>4 x 256KB</td>
+            <td>{{ component.l2_cache }}</td>
           </tr>
-          <tr ng-if="false">
+          <tr ng-if="component.l3_cache">
             <th>Cache L3</th>
-            <td>1 x 8MB</td>
+            <td>{{ component.l3_cache }}</td>
           </tr>
-          <tr ng-if="false">
+          <tr ng-if="component.lithography">
             <th>Litografía</th>
-            <td>22 nm</td>
+            <td>{{ component.lithography }}</td>
           </tr>
-          <tr ng-if="false">
+          <tr ng-if="component.thermal_design_power">
             <th>Potencia de diseño térmico (TDP)</th>
-            <td>88 Watts</td>
+            <td>{{ component.thermal_design_power }}</td>
           </tr>
-          <tr ng-if="false">
+          <tr ng-if="component.includes_cpu_cooler">
             <th>Incluye cooler de CPU</th>
-            <td>Si</td>
+            <td>{{ component.includes_cpu_cooler }}</td>
           </tr>
-          <tr ng-if="false">
+          <tr ng-if="component.hyper_threading">
             <th>Hyper-threading</th>
-            <td>Si</td>
+            <td>{{ component.hyper_threading }}</td>
           </tr>
-          <tr ng-if="false">
+          <tr ng-if="component.integrated_graphics">
             <th>Gráficos integrados</th>
-            <td>Intel HD Graphics 4600</td>
+            <td>{{ component.integrated_graphics }}</td>
+          </tr>
+
+          <!-- Storage -->
+          <tr ng-if="component.capacity">
+            <th>Capacidad</th>
+            <td>{{ component.capacity }}</td>
+          </tr>
+          <tr ng-if="component.interface">
+            <th>Interfaz</th>
+            <td>{{ component.interface }}</td>
+          </tr>
+          <tr ng-if="component.cache">
+            <th>Cache</th>
+            <td>{{ component.cache }}</td>
+          </tr>
+          <tr ng-if="component.rpm">
+            <th>RPM</th>
+            <td>{{ component.rpm }}</td>
+          </tr>
+          <tr ng-if="component.form_factor">
+            <th>Factor de forma</th>
+            <td>{{ component.form_factor }}</td>
+          </tr>
+          <tr ng-if="component.ssd_controller">
+            <th>Controlador SSD</th>
+            <td>{{ component.ssd_controller }}</td>
+          </tr>
+          <tr ng-if="component.nand_flash_type">
+            <th>Tipo de NAND Flash</th>
+            <td>{{ component.nand_flash_type }}</td>
+          </tr>
+          <tr ng-if="component.price_per_gb">
+            <th>Precio por GB</th>
+            <td>{{ component.price_per_gb }}</td>
+          </tr>
+          <tr ng-if="component.gb_per_dollar">
+            <th>GB por dólar</th>
+            <td>{{ component.gb_per_dollar }}</td>
           </tr>
         </table>
+
+        <a href="" class="btn btn-primary"><span class="label"><i class="fa fa-plus"></i> Agregar a lista de componentes</span></a>
       </div>
       <div class="col-md-7">
-        <h2>Precios</h2>
-        <table class="table">
-          <tr>
-            <th>Vendedor</th>
-            <th>Precio</th>
-            <th>Descuento</th>
-            <th>Envío</th>
-            <th>Disponibilidad</th>
-            <th>Total</th>
-            <th></th>
-          </tr>
 
-          <tr class="sg-product">
-            <td>SpartanGeek</td>
-            <td>$5,800</td>
-            <td>-</td>
-            <td>$100</td>
-            <td>Si</td>
-            <td>$5,900</td>
-            <td tooltip="El precio publicado ya no es válido, debes esperar a que lo actualicemos para poder comprar" tooltip-placement="left"><i class="fa fa-shopping-cart"></i></td>
-          </tr>
+        <section id="component-prices" ng-if="component.store.prices">
+          <h2>Precios</h2>
+          <table class="table">
+            <tr>
+              <th>Vendedor</th>
+              <th>Precio</th>
+              <th>Descuento</th>
+              <th>Envío</th>
+              <th>Disponibilidad</th>
+              <th>Total</th>
+              <th></th>
+            </tr>
 
-          <tr>
-            <td>HiSO</td>
-            <td>$5,900</td>
-            <td>-</td>
-            <td>$150</td>
-            <td>Si</td>
-            <td>$6,050</td>
-            <td><i class="fa fa-shopping-cart hidden"></i></td>
-          </tr>
-          <tr>
-            <td>Longview</td>
-            <td>$6,200</td>
-            <td>-</td>
-            <td>$50</td>
-            <td>Si</td>
-            <td>$6,250</td>
-            <td><i class="fa fa-shopping-cart hidden"></i></td>
-          </tr>
-        </table>
+            <tr ng-repeat="price in component.store.prices" ng-class="{'sg-product': false}">
+              <td>SpartanGeek</td>
+              <td>{{ price | currency:'$ ':0 }}</td>
+              <td>-</td>
+              <td>$120</td>
+              <td>Si</td>
+              <td>{{ price + 120 | currency:'$ ':0 }}</td>
+              <td tooltip="El precio publicado ya no es válido, debes esperar a que lo actualicemos para poder comprar" tooltip-placement="left"><i class="fa fa-shopping-cart"></i></td>
+            </tr>
+          </table>
 
-        <hr>
-        <h2>Preguntas relacionadas</h2>
-        <ul>
-          <li>
-            <a href="http://ilumineph.local:5757/p/-/55f37b2c7a4780586a000231">
-              <h4>i7 4790k o i7 5930k ??</h4>
-            </a>
-            <p>¿Que procesador de intel me recomiendan para juar en 4k conectando un SLI o crossfire?</p>
-            <hr>
-            <div class="comment ng-scope">
-              <div class="comment-author">
-                <a href="/u/WarHell/54bf37cd23973814f6000025" title="Perfil de WarHell">
-                  <img class="avatar ng-scope" alt="WarHell" src="http://s3-us-west-1.amazonaws.com/spartan-board/users/55f2637e7a4780586a00008a-120x120.png">
-                </a>
-                <div class="username">
+          <hr>
+        </section>
+
+        <section id="component-questions">
+          <h2>Preguntas relacionadas</h2>
+          <p class="alert alert-warning">Aún no hay preguntas para este producto.</p>
+          <ul ng-if="false">
+            <li>
+              <a href="http://ilumineph.local:5757/p/-/55f37b2c7a4780586a000231">
+                <h4>i7 4790k o i7 5930k ??</h4>
+              </a>
+              <p>¿Que procesador de intel me recomiendan para juar en 4k conectando un SLI o crossfire?</p>
+              <hr>
+              <div class="comment ng-scope">
+                <div class="comment-author">
                   <a href="/u/WarHell/54bf37cd23973814f6000025" title="Perfil de WarHell">
-                    <strong class="ng-binding">WarHell</strong>
+                    <img class="avatar ng-scope" alt="WarHell" src="http://s3-us-west-1.amazonaws.com/spartan-board/users/55f2637e7a4780586a00008a-120x120.png">
                   </a>
+                  <div class="username">
+                    <a href="/u/WarHell/54bf37cd23973814f6000025" title="Perfil de WarHell">
+                      <strong class="ng-binding">WarHell</strong>
+                    </a>
 
-                  <div class="ng-binding">
-                    <span class="level ng-binding">Spartan Commander •</span> Solo otro Spartan Geek más
+                    <div class="ng-binding">
+                      <span class="level ng-binding">Spartan Commander •</span> Solo otro Spartan Geek más
+                    </div>
                   </div>
                 </div>
+                <div class="content ng-scope ng-isolate-scope">
+                  <p>Obviamente una 5930K es mejor con sus 6 núcleos, mayor cache, además se puede overclockear tanto como una 4790K. Y debes saber que el chipset X99 todavía permitirá instalar los procesadores Broadwell-E que saldrán en 2016 (las posibles 6820K, 6930K y 6960X). Asi que te dará opción de actualizar en un futuro. Mientras el chipset Z97 ya murió con la 4790K.</p>
+                </div>
               </div>
-              <div class="content ng-scope ng-isolate-scope">
-                <p>Obviamente una 5930K es mejor con sus 6 núcleos, mayor cache, además se puede overclockear tanto como una 4790K. Y debes saber que el chipset X99 todavía permitirá instalar los procesadores Broadwell-E que saldrán en 2016 (las posibles 6820K, 6930K y 6960X). Asi que te dará opción de actualizar en un futuro. Mientras el chipset Z97 ya murió con la 4790K.</p>
-              </div>
-            </div>
-          </li>
-        </ul>
-        <hr>
-        <div class="text-right">
-          <a href="#" class="btn btn-success"><span class="label">Crear nueva pregunta</span></a>
-        </div>
+            </li>
+          </ul>
+          <hr>
+          <div class="text-right">
+            <a href="#" class="btn btn-success"><span class="label">Crear nueva pregunta</span></a>
+          </div>
+        </section>
+
+        <section id="component-reviews">
+          <img src="images/components/emotions.png" width="100%">
+          <img src="images/components/metrics.png" width="100%">
+
+          <hr>
+        </section>
       </div>
     </div>
   </div>

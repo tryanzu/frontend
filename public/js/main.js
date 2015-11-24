@@ -4934,7 +4934,11 @@ ComponentsModule.controller('ComponentController', ['$scope', '$routeParams', '$
     console.log(response.data);
     $scope.component = response.data;
   }, function(){});
-}])
+}]);
+
+ComponentsModule.controller('PcBuilderController', ['$scope', function($scope) {
+
+}]);
 
 // @codekit-prepend "common/directives"
 // @codekit-prepend "common/filters"
@@ -5034,6 +5038,11 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
     templateUrl: '/js/partials/component.html?v=' + version,
     controller: 'ComponentController'
   });
+  $routeProvider.when('/componentes/armar-pc', {
+    templateUrl: '/js/partials/pc_builder.html?v=' + version,
+    controller: 'PcBuilderController'
+  });
+
   $routeProvider.when('/c/:slug', {
     templateUrl: '/js/partials/main.html?v=' + version,
     controller: 'CategoryListController'
