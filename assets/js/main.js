@@ -6,6 +6,7 @@
 // @codekit-prepend "vendor/wizzy"
 // @codekit-prepend "vendor/infinite-scroll"
 // @codekit-prepend "vendor/ui-bootstrap-tpls-0.13.0.min"
+// @codekit-prepend "vendor/ui-bootstrap-tpls-0.14.3.min"
 // @codekit-prepend "vendor/angular-facebook"
 // @codekit-prepend "vendor/ng-file-upload-all.min.js"
 // @codekit-prepend "vendor/elastic.js"
@@ -25,6 +26,7 @@
 // @codekit-prepend "modules/top/init"
 // @codekit-prepend "modules/chat/chat"
 // @codekit-prepend "modules/search/search"
+// @codekit-prepend "modules/components/components"
 
 var boardApplication = angular.module('board', [
   'ngRoute',
@@ -44,6 +46,7 @@ var boardApplication = angular.module('board', [
   'partModule',
   'userModule',
   'rankModule',
+  'sg.module.components',
   'sg.module.badges',
   'sg.module.top',
   'chatModule',
@@ -85,9 +88,13 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
     templateUrl: '/js/partials/validate.html?v=' + version,
     controller: 'UserValidationController'
   });
+  $routeProvider.when('/componentes', {
+    templateUrl: '/js/partials/components.html?v=' + version,
+    controller: 'ComponentsController'
+  });
   $routeProvider.when('/componente/:slug', {
     templateUrl: '/js/partials/component.html?v=' + version,
-    //controller: 'ComponentController'
+    controller: 'ComponentController'
   });
   $routeProvider.when('/c/:slug', {
     templateUrl: '/js/partials/main.html?v=' + version,

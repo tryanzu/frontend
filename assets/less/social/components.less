@@ -1,6 +1,6 @@
 .component {
   .header {
-    background-color: @brand-primary-dark;
+    background-color: darken(@brand-primary, 10%);
     color: white;
     padding-top: 3em;
     padding-bottom: 3em;
@@ -56,4 +56,52 @@
     }
   }
 
+}
+
+.components-list {
+
+  .component {
+    height: 110px;
+    margin-bottom: 20px;
+
+    .hit-name, .hit-part-number {
+      margin-bottom: 0;
+    }
+
+    .hit-name {
+      font-weight: bold;
+
+      a {
+        color: @brand-primary-opaque;
+      }
+    }
+    .hit-part-number {
+      font-size: 12px;
+    }
+  }
+  .component-thumbnail {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    overflow: hidden;
+  }
+  .component-thumbnail img {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    height: 100%;
+    width: auto;
+    transform: translate(-50%,-50%);
+  }
+  .component-thumbnail img.portrait {
+    width: 100%;
+    height: auto;
+  }
+}
+
+.collections {
+  padding-left: 0;
+  li {
+    list-style-type: none;
+  }
 }

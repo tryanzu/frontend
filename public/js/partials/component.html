@@ -2,8 +2,8 @@
   <div class="header">
     <div class="container">
       <div class="text-center">
-        <h2>Procesador</h2>
-        <h1>Intel Core i7-4790K 4.0GHz Quad-Core OEM/Tray Processor</h1>
+        <h2>{{ type_labels[component.type] }}</h2>
+        <h1>{{ component.full_name || component.name }}</h1>
       </div>
     </div>
   </div>
@@ -13,50 +13,65 @@
         <h2>Especificaciones</h2>
 
         <table class="table">
-          <tr><th>Fabricante</th>
-          <td>Intel</td>
+          <tr ng-if="component.manufacturer">
+            <th>Fabricante</th>
+            <td>{{ component.manufacturer }}</td>
           </tr>
-          <tr><th>Modelo</th>
-          <td>Core i7-4790K</td>
+          <tr ng-if="component.model">
+            <th>Modelo</th>
+            <td>{{ component.model }}</td>
           </tr>
-          <tr><th>Número de parte</th>
-          <td>CM8064601710501</td>
+          <tr ng-if="component.part_number">
+            <th>Número de parte</th>
+            <td>{{ component.part_number }}</td>
           </tr>
-          <tr><th>Ancho de dato</th>
-          <td>64-bit</td>
+          <tr ng-if="false">
+            <th>Ancho de dato</th>
+            <td>64-bit</td>
           </tr>
-          <tr><th>Socket</th>
-          <td>LGA1150</td>
+          <tr ng-if="false">
+            <th>Socket</th>
+            <td>LGA1150</td>
           </tr>
-          <tr><th>Velocidad</th>
-          <td>4.0GHz</td>
+          <tr ng-if="false">
+            <th>Velocidad</th>
+            <td>4.0GHz</td>
           </tr>
-          <tr><th>Núcleos</th>
-          <td>4</td>
+          <tr ng-if="false">
+            <th>Núcleos</th>
+            <td>4</td>
           </tr>
-          <tr><th>Cache L1</th>
-          <td>4 x 32KB Instruction<br>4 x 32KB Data</td>
+          <tr ng-if="false">
+            <th>Cache L1</th>
+            <td>4 x 32KB Instruction<br>4 x 32KB Data</td>
           </tr>
-          <tr><th>Cache L2</th>
-          <td>4 x 256KB</td>
+          <tr ng-if="false">
+            <th>Cache L2</th>
+            <td>4 x 256KB</td>
           </tr>
-          <tr><th>Cache L3</th>
-          <td>1 x 8MB</td>
+          <tr ng-if="false">
+            <th>Cache L3</th>
+            <td>1 x 8MB</td>
           </tr>
-          <tr><th>Litografía</th>
-          <td>22 nm</td>
+          <tr ng-if="false">
+            <th>Litografía</th>
+            <td>22 nm</td>
           </tr>
-          <tr><th>Potencia de diseño térmico (TDP)</th>
-          <td>88 Watts</td>
+          <tr ng-if="false">
+            <th>Potencia de diseño térmico (TDP)</th>
+            <td>88 Watts</td>
           </tr>
-          <tr><th>Incluye cooler de CPU</th>
-          <td>Si</td>
+          <tr ng-if="false">
+            <th>Incluye cooler de CPU</th>
+            <td>Si</td>
           </tr>
-          <tr><th>Hyper-threading</th>
-          <td>Si</td>
+          <tr ng-if="false">
+            <th>Hyper-threading</th>
+            <td>Si</td>
           </tr>
-          <tr><th>Gráficos integrados</th>
-          <td>Intel HD Graphics 4600</td>
+          <tr ng-if="false">
+            <th>Gráficos integrados</th>
+            <td>Intel HD Graphics 4600</td>
           </tr>
         </table>
       </div>
@@ -80,7 +95,7 @@
             <td>$100</td>
             <td>Si</td>
             <td>$5,900</td>
-            <td tooltip="El precio tiene más de 5 días de antigüedad, debes esperar a que lo actualicemos para poder comprar" tooltip-placement="left"><i class="fa fa-shopping-cart"></i></td>
+            <td tooltip="El precio publicado ya no es válido, debes esperar a que lo actualicemos para poder comprar" tooltip-placement="left"><i class="fa fa-shopping-cart"></i></td>
           </tr>
 
           <tr>
