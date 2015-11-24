@@ -61,7 +61,7 @@ var boardApplication = angular.module('board', [
   'searchBar'
 ]);
 
-var version = '152';
+var version = '154';
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider', 'AclServiceProvider',
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider, AclServiceProvider) {
