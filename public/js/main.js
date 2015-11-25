@@ -4867,11 +4867,27 @@ ComponentsModule.controller('ComponentsController', ['$scope', '$timeout', 'Comp
   $scope.currentPage = 0;
   $scope.itemsPerPage = 36;
 
+  $scope.facets = {};
+
+  $scope.type_labels = {
+    'cpu': 'Procesadores',
+    'motherboard': 'Tarjetas Madre',
+    'case': 'Gabinetes',
+    'video-card': 'Tarjetas de Video',
+    'storage': 'Almacenamiento',
+    'memory': 'Memorias RAM',
+    'cpu-cooler': 'Enfriamiento para CPU',
+    'monitor': 'Monitores',
+    'power-supply': 'Fuentes de Poder'
+  }
+
   $scope.reset = function() {
     ComponentsService.index.search('', {page: 0, hitsPerPage: $scope.itemsPerPage, facets: '*'})
     .then(function(response) {
+      console.log(response);
       $scope.results = response;
       $scope.totalItems = response.nbHits;
+      $scope.facets = response.facets;
     });
   }
   $scope.reset();
@@ -4881,6 +4897,7 @@ ComponentsModule.controller('ComponentsController', ['$scope', '$timeout', 'Comp
     .then(function(response) {
       $scope.results = response;
       $scope.totalItems = response.nbHits;
+      $scope.facets = response.facets;
     });
   }
 
@@ -4900,6 +4917,7 @@ ComponentsModule.controller('ComponentsController', ['$scope', '$timeout', 'Comp
             //console.log(response);
             $scope.results = response;
             $scope.totalItems = response.nbHits;
+            $scope.facets = response.facets;
 
           }, function searchFailure(err) {
             console.log(err);
