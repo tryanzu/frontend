@@ -4864,7 +4864,7 @@ ComponentsModule.controller('ComponentsController', ['$scope', '$timeout', 'Comp
   $scope.fetching = true;
 
   $scope.totalItems = 10;
-  $scope.currentPage = 0;
+  $scope.currentPage = 1;
   $scope.itemsPerPage = 36;
 
   $scope.facets = {};
@@ -4881,8 +4881,23 @@ ComponentsModule.controller('ComponentsController', ['$scope', '$timeout', 'Comp
     'power-supply': 'Fuentes de Poder'
   }
 
+  $scope.current_facet = '';
+
+  $scope.change_facet = function(new_facet) {
+    $scope.current_facet = new_facet;
+    $scope.changePage();
+  }
+
   $scope.reset = function() {
-    ComponentsService.index.search('', {page: 0, hitsPerPage: $scope.itemsPerPage, facets: '*'})
+    ComponentsService.index.search('', {
+      page: 0,
+      hitsPerPage:
+      $scope.itemsPerPage,
+      facets: '*',
+      facetFilters: [
+        'type:' + $scope.current_facet,
+      ]
+    })
     .then(function(response) {
       console.log(response);
       $scope.results = response;
@@ -4893,13 +4908,20 @@ ComponentsModule.controller('ComponentsController', ['$scope', '$timeout', 'Comp
   $scope.reset();
 
   $scope.changePage = function() {
-    ComponentsService.index.search($scope.query, {page: $scope.currentPage - 1, hitsPerPage: $scope.itemsPerPage, facets: '*'})
+    ComponentsService.index.search($scope.query, {
+      page: $scope.currentPage - 1,
+      hitsPerPage: $scope.itemsPerPage,
+      facets: '*',
+      facetFilters: [
+        'type:' + $scope.current_facet,
+      ]
+    })
     .then(function(response) {
       $scope.results = response;
       $scope.totalItems = response.nbHits;
       $scope.facets = response.facets;
     });
-  }
+  };
 
   $scope.do = function(event) {
     if(event.keyCode == 27) {
