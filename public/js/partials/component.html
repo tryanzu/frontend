@@ -118,7 +118,7 @@
             <th>Socket de CPU</th>
             <td>{{ component.cpu_socket }}</td>
           </tr>
-          <tr ng-if="component.chipset">
+          <tr ng-if="component.chipset && component.type == 'motherboard'">
             <th>Chipset</th>
             <td>{{ component.chipset }}</td>
           </tr>
@@ -126,7 +126,7 @@
             <th>Ranuras de Memoria</th>
             <td>{{ component.memory_slots }}</td>
           </tr>
-          <tr ng-if="component.memory_type">
+          <tr ng-if="component.memory_type && component.type == 'motherboard'">
             <th>Tipo de memoria</th>
             <td>{{ component.memory_type }}</td>
           </tr>
@@ -142,11 +142,11 @@
             <th>Video integrado</th>
             <td>{{ component.onboard_video }}</td>
           </tr>
-          <tr ng-if="component.crossfire_support">
+          <tr ng-if="component.crossfire_support && component.type == 'motherboard'">
             <th>Soporte para Crossfire</th>
             <td>{{ component.crossfire_support }}</td>
           </tr>
-          <tr ng-if="component.sli_support">
+          <tr ng-if="component.sli_support && component.type == 'motherboard'">
             <th>Soporte para SLI</th>
             <td>{{ component.sli_support }}</td>
           </tr>
@@ -179,12 +179,54 @@
             <td>{{ component.onboard_usb_3 }}</td>
           </tr>
 
+          <!-- Memory -->
+          <tr ng-if="component.memory_type && component.type == 'memory'">
+            <th>Tipo de Memoria</th>
+            <td>{{ component.memory_type }}</td>
+          </tr>
+          <tr ng-if="component.speed">
+            <th>Velocidad</th>
+            <td>{{ component.speed }}</td>
+          </tr>
+          <tr ng-if="component.size">
+            <th>Tamaño</th>
+            <td>{{ component.size }}</td>
+          </tr>
+          <tr ng-if="component.price_per_gb">
+            <th>Precio por GB</th>
+            <td>{{ component.price_per_gb }}</td>
+          </tr>
+          <tr ng-if="component.cas">
+            <th>CAS</th>
+            <td>{{ component.cas }}</td>
+          </tr>
+          <tr ng-if="component.voltage">
+            <th>Voltaje</th>
+            <td>{{ component.voltage }}</td>
+          </tr>
+          <tr ng-if="component.heat_spreader">
+            <th>Disipador de calor</th>
+            <td>{{ component.heat_spreader }}</td>
+          </tr>
+          <tr ng-if="component.ecc">
+            <th>ECC</th>
+            <td>{{ component.ecc }}</td>
+          </tr>
+          <tr ng-if="component.registered">
+            <th>Registrada</th>
+            <td>{{ component.registered }}</td>
+          </tr>
+          <tr ng-if="component.color">
+            <th>Color</th>
+            <td>{{ component.color }}</td>
+          </tr>
+
           <!-- Storage -->
           <tr ng-if="component.capacity">
             <th>Capacidad</th>
             <td>{{ component.capacity }}</td>
           </tr>
-          <tr ng-if="component.interface">
+          <tr ng-if="component.interface && component.type == 'storage'">
             <th>Interfaz</th>
             <td>{{ component.interface }}</td>
           </tr>
@@ -215,6 +257,266 @@
           <tr ng-if="component.gb_per_dollar">
             <th>GB por dólar</th>
             <td>{{ component.gb_per_dollar }}</td>
+          </tr>
+
+          <!-- Videocard -->
+          <tr ng-if="component.interface">
+            <th>Interfaz</th>
+            <td>{{ component.interface }}</td>
+          </tr>
+          <tr ng-if="component.chipset">
+            <th>Chipset</th>
+            <td>{{ component.chipset }}</td>
+          </tr>
+          <tr ng-if="component.memory_size">
+            <th>Tamaño de Memoria</th>
+            <td>{{ component.memory_size }}</td>
+          </tr>
+          <tr ng-if="component.memory_type">
+            <th>Tipo de Memoria</th>
+            <td>{{ component.memory_type }}</td>
+          </tr>
+          <tr ng-if="component.core_clock">
+            <th>Clock de núcleo</th>
+            <td>{{ component.core_clock }}</td>
+          </tr>
+          <tr ng-if="component.tdp">
+            <th>TDP</th>
+            <td>{{ component.tdp }}</td>
+          </tr>
+          <tr ng-if="component.fan">
+            <th>Ventilador</th>
+            <td>{{ component.fan }}</td>
+          </tr>
+          <tr ng-if="component.sli_support && component.type == 'video-card'">
+            <th>Soporte para SLI</th>
+            <td>{{ component.sli_support }}</td>
+          </tr>
+          <tr ng-if="component.crossfire_support && component.type == 'video-card'">
+            <th>Soporte para Crossfire</th>
+            <td>{{ component.crossfire_support }}</td>
+          </tr>
+          <tr ng-if="component.length">
+            <th>Longitud</th>
+            <td>{{ component.length * 2.54 | number:1 }}</td>
+          </tr>
+          <tr ng-if="component.supports_g_sync">
+            <th>Soporta G Sync</th>
+            <td>{{ component.supports_g_sync }}</td>
+          </tr>
+          <tr ng-if="component.supports_freesync">
+            <th>Soporta Freesync</th>
+            <td>{{ component.supports_freesync }}</td>
+          </tr>
+          <tr ng-if="component.dvi_d_dual_link">
+            <th>DVI-D Dual Link</th>
+            <td>{{ component.dvi_d_dual_link }}</td>
+          </tr>
+          <tr ng-if="component.hdmi">
+            <th>HDMI</th>
+            <td>{{ component.hdmi }}</td>
+          </tr>
+          <tr ng-if="component.vga && component.type == 'video-card'">
+            <th>VGA</th>
+            <td>{{ component.vga }}</td>
+          </tr>
+          <tr ng-if="component.displayport && component.type == 'video-card'">
+            <th>Displayport</th>
+            <td>{{ component.displayport }}</td>
+          </tr>
+          <tr ng-if="component.mini_displayport">
+            <th>Mini Displayport</th>
+            <td>{{ component.mini_displayport }}</td>
+          </tr>
+
+          <!-- Case -->
+          <tr ng-if="component.case_type">
+            <th>Tipo de Gabinete</th>
+            <td>{{ component.case_type }}</td>
+          </tr>
+          <tr ng-if="component.color">
+            <th>Color</th>
+            <td>{{ component.color }}</td>
+          </tr>
+          <tr ng-if="component.includes_psu">
+            <th>Incluye Fuente de poder</th>
+            <td>{{ component.includes_psu }}</td>
+          </tr>
+          <tr ng-if="component.internal_25_bays">
+            <th>Bahías 2.5" internas</th>
+            <td>{{ component.internal_25_bays }}</td>
+          </tr>
+          <tr ng-if="component.internal_35_bays">
+            <th>Bahías 3.5" internas</th>
+            <td>{{ component.internal_35_bays }}</td>
+          </tr>
+          <tr ng-if="component.external_35_bays">
+            <th>Bahías 3.5" externas</th>
+            <td>{{ component.external_35_bays }}</td>
+          </tr>
+          <tr ng-if="component.external_525_bays">
+            <th>Bahías 5.25" externas</th>
+            <td>{{ component.external_525_bays }}</td>
+          </tr>
+          <tr ng-if="component.motherboard_compatibility">
+            <th>Compatibilidad de tarjeta madre</th>
+            <td>{{ component.motherboard_compatibility }}</td>
+          </tr>
+          <tr ng-if="component.front_usb_3">
+            <th>USB 3.0 frontal</th>
+            <td>{{ component.front_usb_3 }}</td>
+          </tr>
+          <tr ng-if="component.maximum_gpu_length">
+            <th>Longitud máxima para GPU</th>
+            <td>{{ component.maximum_gpu_length * 2.54 | number:1 }}</td>
+          </tr>
+          <tr ng-if="component.dimensions">
+            <th>Dimensiones</th>
+            <td>{{ component.dimensions }}</td>
+          </tr>
+
+          <!-- PSU -->
+          <tr ng-if="component.psu_type">
+            <th>Tipo de Fuente de poder</th>
+            <td>{{ component.psu_type }}</td>
+          </tr>
+          <tr ng-if="component.wattage">
+            <th>Potencia</th>
+            <td>{{ component.wattage }}</td>
+          </tr>
+          <tr ng-if="component.fans">
+            <th>Ventiladores</th>
+            <td>{{ component.fans }}</td>
+          </tr>
+          <tr ng-if="component.modular">
+            <th>Modular</th>
+            <td>{{ component.modular }}</td>
+          </tr>
+          <tr ng-if="component.efficiency_certification">
+            <th>Certificación de eficiencia</th>
+            <td>{{ component.efficiency_certification }}</td>
+          </tr>
+          <tr ng-if="component.efficiency">
+            <th>Eficiencia</th>
+            <td>{{ component.efficiency }}</td>
+          </tr>
+          <tr ng-if="component.output">
+            <th>Salida</th>
+            <td>{{ component.output }}</td>
+          </tr>
+          <tr ng-if="component.pcie_62_pin_connectors">
+            <th>Conectores PCIe 6+2 pin</th>
+            <td>{{ component.pcie_62_pin_connectors }}</td>
+          </tr>
+
+          <!-- Monitor -->
+          <tr ng-if="component.screen_size">
+            <th>Tamaño de pantalla</th>
+            <td>{{ component.screen_size }}</td>
+          </tr>
+          <tr ng-if="component.recommended_resolution">
+            <th>Resolución recomendada</th>
+            <td>{{ component.recommended_resolution }}</td>
+          </tr>
+          <tr ng-if="component.widescreen">
+            <th>Pantalla ancha</th>
+            <td>{{ component.widescreen }}</td>
+          </tr>
+          <tr ng-if="component.aspect_ratio">
+            <th>Radio de aspecto</th>
+            <td>{{ component.aspect_ratio }}</td>
+          </tr>
+          <tr ng-if="component.viewing_angle">
+            <th>Angulo de visión</th>
+            <td>{{ component.viewing_angle }}</td>
+          </tr>
+          <tr ng-if="component.display_colors">
+            <th>Gama de color</th>
+            <td>{{ component.display_colors }}</td>
+          </tr>
+          <tr ng-if="component.brightness">
+            <th>Brillo</th>
+            <td>{{ component.brightness }}</td>
+          </tr>
+          <tr ng-if="component.contrast_ratio">
+            <th>Radio de contraste</th>
+            <td>{{ component.contrast_ratio }}</td>
+          </tr>
+          <tr ng-if="component.response_time">
+            <th>Tiempo de respuesta</th>
+            <td>{{ component.response_time }}</td>
+          </tr>
+          <tr ng-if="component.refresh_rate">
+            <th>Refresco</th>
+            <td>{{ component.refresh_rate }}</td>
+          </tr>
+          <tr ng-if="component.ips">
+            <th>IPS</th>
+            <td>{{ component.ips }}</td>
+          </tr>
+          <tr ng-if="component.led">
+            <th>LED</th>
+            <td>{{ component.led }}</td>
+          </tr>
+          <tr ng-if="component.builtin_speakers">
+            <th>Bocinas integradas</th>
+            <td>{{ component.builtin_speakers }}</td>
+          </tr>
+          <tr ng-if="component.dvi_d_dual_link">
+            <th>DVI-D Dual Link</th>
+            <td>{{ component.dvi_d_dual_link }}</td>
+          </tr>
+          <tr ng-if="component.dvi_d_single_link">
+            <th>DVI-D Single Link</th>
+            <td>{{ component.dvi_d_single_link }}</td>
+          </tr>
+          <tr ng-if="component.dvi_i_dual_link">
+            <th>DVI-I Dual Link</th>
+            <td>{{ component.dvi_i_dual_link }}</td>
+          </tr>
+          <tr ng-if="component.displayport">
+            <th>Displayport</th>
+            <td>{{ component.displayport }}</td>
+          </tr>
+          <tr ng-if="component.hdmi">
+            <th>HDMI</th>
+            <td>{{ component.hdmi }}</td>
+          </tr>
+          <tr ng-if="component.dvi">
+            <th>DVI</th>
+            <td>{{ component.dvi }}</td>
+          </tr>
+          <tr ng-if="component.dvi_a">
+            <th>DVI a</th>
+            <td>{{ component.dvi_a }}</td>
+          </tr>
+          <tr ng-if="component.vga">
+            <th>VGA</th>
+            <td>{{ component.vga }}</td>
+          </tr>
+          <tr ng-if="component.component">
+            <th>Componente</th>
+            <td>{{ component.component }}</td>
+          </tr>
+          <tr ng-if="component.s_video">
+            <th>S-Video</th>
+            <td>{{ component.s_video }}</td>
+          </tr>
+          <tr ng-if="component.bnc">
+            <th>BNC</th>
+            <td>{{ component.bnc }}</td>
+          </tr>
+          <tr ng-if="component.mini_displayport">
+            <th>Mini Displayport</th>
+            <td>{{ component.mini_displayport }}</td>
+          </tr>
+          <tr ng-if="component.supports_freesync">
+            <th>Soporta Freesync</th>
+            <td>{{ component.supports_freesync }}</td>
+          </tr>
+          <tr ng-if="component.supports_g_sync">
+            <th>Soporta G Sync</th>
+            <td>{{ component.supports_g_sync }}</td>
           </tr>
         </table>
 
