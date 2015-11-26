@@ -645,7 +645,7 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
   }
 ]);
 
-boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', function($rootScope, $http, AclService, AdvancedAcl) {
+boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', '$location', function($rootScope, $http, AclService, AdvancedAcl, $location) {
   // TEST PURPOSES
   if(false) {
     localStorage.removeItem('signed_in');
@@ -658,7 +658,10 @@ boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', functi
   if(!localStorage.signed_in)
     localStorage.signed_in = false;
 
-  if(localStorage.signed_in === 'false' && localStorage.redirect_to_home !== 'true') {
+  var location = $location.path();
+  console.log(location);
+
+  if(localStorage.signed_in === 'false' && localStorage.redirect_to_home !== 'true' && location == '/') {
     localStorage.setItem('redirect_to_home', 'true');
     window.location.href = "/home";
   }
