@@ -10,12 +10,12 @@
   <div class="component-images" ng-if="component.images">
     <div class="container">
       <div class="text-center">
-        <img ng-src="https://spartangeek.com/images/products/{{ image.path.substring(5) }}" ng-repeat="image in component.images" height="128px">
+        <img ng-src="https://spartangeek.com/images/products/{{ image.path.substring(5) }}" ng-repeat="image in component.images">
       </div>
     </div>
   </div>
   <div class="container">
-    <div class="row">
+    <div class="row mb-40">
       <div class="col-md-5">
         <h2>Especificaciones</h2>
 
@@ -109,6 +109,76 @@
             <td>{{ component.integrated_graphics }}</td>
           </tr>
 
+          <!-- Motherboard -->
+          <tr ng-if="component.form_factor">
+            <th>Factor de forma</th>
+            <td>{{ component.form_factor }}</td>
+          </tr>
+          <tr ng-if="component.cpu_socket">
+            <th>Socket de CPU</th>
+            <td>{{ component.cpu_socket }}</td>
+          </tr>
+          <tr ng-if="component.chipset">
+            <th>Chipset</th>
+            <td>{{ component.chipset }}</td>
+          </tr>
+          <tr ng-if="component.memory_slots">
+            <th>Ranuras de Memoria</th>
+            <td>{{ component.memory_slots }}</td>
+          </tr>
+          <tr ng-if="component.memory_type">
+            <th>Tipo de memoria</th>
+            <td>{{ component.memory_type }}</td>
+          </tr>
+          <tr ng-if="component.max_memory">
+            <th>Memoria máxima soportada</th>
+            <td>{{ component.max_memory }}</td>
+          </tr>
+          <tr ng-if="component.raid_support">
+            <th>Soporte para RAID</th>
+            <td>{{ component.raid_support }}</td>
+          </tr>
+          <tr ng-if="component.onboard_video">
+            <th>Video integrado</th>
+            <td>{{ component.onboard_video }}</td>
+          </tr>
+          <tr ng-if="component.crossfire_support">
+            <th>Soporte para Crossfire</th>
+            <td>{{ component.crossfire_support }}</td>
+          </tr>
+          <tr ng-if="component.sli_support">
+            <th>Soporte para SLI</th>
+            <td>{{ component.sli_support }}</td>
+          </tr>
+          <tr ng-if="component.sata_3_gbs">
+            <th>SATA 3 GB/S</th>
+            <td>{{ component.sata_3_gbs }}</td>
+          </tr>
+          <tr ng-if="component.sata_6_gbs">
+            <th>SATA 6 GB/S</th>
+            <td>{{ component.sata_6_gbs }}</td>
+          </tr>
+          <tr ng-if="component.sata_express">
+            <th>SATA Express</th>
+            <td>{{ component.sata_express }}</td>
+          </tr>
+          <tr ng-if="component.mini_pci_express_msata">
+            <th>Mini PCI express M.2 SATA</th>
+            <td>{{ component.mini_pci_express_msata }}</td>
+          </tr>
+          <tr ng-if="component.msata">
+            <th>M SATA</th>
+            <td>{{ component.msata }}</td>
+          </tr>
+          <tr ng-if="component.onboard_ethernet">
+            <th>Ethernet incluido</th>
+            <td>{{ component.onboard_ethernet }}</td>
+          </tr>
+          <tr ng-if="component.onboard_usb_3">
+            <th>USB 3.0</th>
+            <td>{{ component.onboard_usb_3 }}</td>
+          </tr>
+
           <!-- Storage -->
           <tr ng-if="component.capacity">
             <th>Capacidad</th>
@@ -172,7 +242,7 @@
               <td>$120</td>
               <td>Si</td>
               <td>{{ price + 120 | currency:'$ ':0 }}</td>
-              <td tooltip="El precio publicado ya no es válido, debes esperar a que lo actualicemos para poder comprar" tooltip-placement="left"><i class="fa fa-shopping-cart"></i></td>
+              <td uib-tooltip="El precio publicado ya no es válido, debes esperar a que lo actualicemos para poder comprar" tooltip-placement="left"><i class="fa fa-shopping-cart"></i></td>
             </tr>
           </table>
 

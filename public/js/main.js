@@ -211,7 +211,7 @@ services.factory('AdvancedAcl', ['$rootScope', function($rootScope) {
   };
 }]);
 
-services.service('modalService', ['$modal', function ($modal) {
+services.service('modalService', ['$uibModal', function ($modal) {
   var modalDefaults = {
     backdrop: true,
     keyboard: true,
@@ -257,7 +257,7 @@ services.service('modalService', ['$modal', function ($modal) {
       }
     }
 
-    return $modal.open(tempModalDefaults).result;
+    return $uibModal.open(tempModalDefaults).result;
   };
 }]);
 
@@ -3365,12 +3365,12 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
             var cn = loc.split('/');
             if(cn.length == 5) {
               cn = cn[4]; // comment number
-              console.log("Watching comment:", cn);
+              //console.log("Watching comment:", cn);
               $scope.view_comment.position = cn;
             }
             else {
               $scope.view_comment.position = -1;
-              console.log("Not watching comment");
+              //console.log("Not watching comment");
             }
             $scope.viewPostID(params.id, params.slug);
           }
@@ -3422,7 +3422,7 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
           var cn = path.split('/');
           if(cn.length == 5) {
             cn = cn[4]; // comment number
-            console.log("Watching comment:", cn);
+            //console.log("Watching comment:", cn);
             $scope.view_comment.position = cn;
           }
           else {
@@ -4575,6 +4575,9 @@ var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
   $scope.scrolledUp = false;
 
   $scope.members = [];
+  $scope.searchText = {
+    content: ''
+  };
 
   $scope.goToBottom = function() {
     var mh_window = $('.message-history');
@@ -4635,8 +4638,6 @@ var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
       });
     }
   };
-
-  $scope.searchText = ""
 
   $scope.addMessage = function() {
     if($scope.message.content === $scope.message.previous || ($scope.message.previous.indexOf($scope.message.content) > -1) || ($scope.message.content.indexOf($scope.message.previous) > -1)) {
@@ -5401,8 +5402,8 @@ boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http'
     }
 }]);
 
-boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', '$modal', '$timeout', '$firebaseObject', '$firebaseArray', 'Facebook', 'AclService', '$location',
-  function($scope, $rootScope, $http, $modal, $timeout, $firebaseObject, $firebaseArray, Facebook, AclService, $location) {
+boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', '$uibModal', '$timeout', '$firebaseObject', '$firebaseArray', 'Facebook', 'AclService', '$location',
+  function($scope, $rootScope, $http, $uibModal, $timeout, $firebaseObject, $firebaseArray, Facebook, AclService, $location) {
     $scope.user = {
       isLogged: false,
       info: null,
@@ -5574,7 +5575,7 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
     }
 
     $scope.signIn = function() {
-      var modalInstance = $modal.open({
+      var modalInstance = $uibModal.open({
         templateUrl: '/js/partials/sign-in.html',
         controller: 'SignInController',
         size: 'sm'
@@ -5586,7 +5587,7 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
     };
 
     $scope.signUp = function() {
-      var modalInstance = $modal.open({
+      var modalInstance = $uibModal.open({
         templateUrl: '/js/partials/sign-up.html',
         controller: 'SignUpController',
         size: 'sm'

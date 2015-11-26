@@ -365,8 +365,8 @@ boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http'
     }
 }]);
 
-boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', '$modal', '$timeout', '$firebaseObject', '$firebaseArray', 'Facebook', 'AclService', '$location',
-  function($scope, $rootScope, $http, $modal, $timeout, $firebaseObject, $firebaseArray, Facebook, AclService, $location) {
+boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', '$uibModal', '$timeout', '$firebaseObject', '$firebaseArray', 'Facebook', 'AclService', '$location',
+  function($scope, $rootScope, $http, $uibModal, $timeout, $firebaseObject, $firebaseArray, Facebook, AclService, $location) {
     $scope.user = {
       isLogged: false,
       info: null,
@@ -538,7 +538,7 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
     }
 
     $scope.signIn = function() {
-      var modalInstance = $modal.open({
+      var modalInstance = $uibModal.open({
         templateUrl: '/js/partials/sign-in.html',
         controller: 'SignInController',
         size: 'sm'
@@ -550,7 +550,7 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
     };
 
     $scope.signUp = function() {
-      var modalInstance = $modal.open({
+      var modalInstance = $uibModal.open({
         templateUrl: '/js/partials/sign-up.html',
         controller: 'SignUpController',
         size: 'sm'
