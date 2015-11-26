@@ -189,19 +189,19 @@
         </ul>
 
         <ul class="nav navbar-nav navbar-right hidden-xs" ng-if="user.isLogged" ng-cloak>
-          <li tooltip="Monedas para comprar medallas" tooltip-placement="bottom">
+          <li uib-tooltip="Monedas para comprar medallas" tooltip-placement="bottom">
             <a>
               <span class="icon"><i class="fa fa-usd"></i></span>
               <span class="label"><span class="visible-lg-inline">Monedas: </span>{{ user.gaming.coins || 0 }}</span>
             </a>
           </li>
-          <li tooltip="Cantidad de 'Me gusta' que puedes dar" tooltip-placement="bottom">
+          <li uib-tooltip="Cantidad de 'Me gusta' que puedes dar" tooltip-placement="bottom">
             <a>
               <span class="icon"><i class="sgi big"></i></span>
               <span class="label"><span class="visible-lg-inline">Tributo: </span>{{ user.gaming.tribute || 0 }}</span>
             </a>
           </li>
-          <li tooltip="Cantidad de 'Esto apesta' que puedes dar" tooltip-placement="bottom">
+          <li uib-tooltip="Cantidad de 'Esto apesta' que puedes dar" tooltip-placement="bottom">
             <a>
               <span class="icon"><i class="sgi shit big"></i></span>
               <span class="label"><span class="visible-lg-inline">Mierda: </span>{{ user.gaming.shit || 0 }}</span>

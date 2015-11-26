@@ -50,7 +50,7 @@
                         <li ng-repeat="s in c.subcategories">
                           <div class="row">
                             <div class="col-md-6 col-xs-6">
-                              <a href="/c/{{ s.slug }}" tooltip="Haz click para ver sólo esta categoría" tooltip-placement="right">{{ s.name }}</a>
+                              <a href="/c/{{ s.slug }}" uib-tooltip="Haz click para ver sólo esta categoría" tooltip-placement="right">{{ s.name }}</a>
                             </div>
                             <div class="col-md-6 col-xs-6 text-right" ng-if="user.isLogged">
                               <span class="see-in-feed">Suscribirme</span>
@@ -225,7 +225,7 @@
                     <a href="/u/{{ post.author.username }}/{{ post.author.id }}" title="Perfil de {{ post.author.username }}">
                       <span class="username">{{ post.author.username }}</span>
                     </a>
-                    <span class="verified-account" ng-if="post.author.id === '559af1c501c25d3790000054' || post.author.validated" tooltip="Cuenta verificada" tooltip-placement="right"><i class="fa fa-check"></i></span>
+                    <span class="verified-account" ng-if="post.author.id === '559af1c501c25d3790000054' || post.author.validated" uib-tooltip="Cuenta verificada" tooltip-placement="right"><i class="fa fa-check"></i></span>
                     <ul class="role-labels" ng-if="post.author.roles.length > 0">
                       <li ng-repeat="role in post.author.roles" ng-if="role.name !== 'user'">
                         <span class="label label-default" ng-class="role.name">{{ misc.role_labels[role.name] }}</span>
@@ -270,7 +270,7 @@
                     </a>
                   </li>
                   <li class="title-control">
-                    <div class="stream-scrubber dropdown hidden-xs">
+                    <div class="stream-scrubber uib-dropdown hidden-xs">
                       <a href="#" data-toggle="dropdown" class="btn btn-default dropdown-toggle">
                         <span class="index">{{ scrubber.current_c }}</span> de <span class="count">{{ post.comments.count + 1}}</span> mensajes <i class="fa fa-fw fa-sort icon-glyph"></i>
                       </a>
@@ -301,8 +301,8 @@
 
               <div class="discussion-posts">
                 <div class="float-actions text-right">
-                  <div class="btn-group" ng-if="aacl.can('delete', 'posts', user.info, post.author.id, post.category.id)" dropdown>
-                    <button type="button" class="button button-icon button-flat" dropdown-toggle>
+                  <div class="btn-group" ng-if="aacl.can('delete', 'posts', user.info, post.author.id, post.category.id)" uib-dropdown>
+                    <button type="button" class="button button-icon button-flat" uib-dropdown-toggle>
                       <i class="fa fa-pencil"></i>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-right">
@@ -471,8 +471,8 @@
                 <div class="comments">
                   <div class="comment" data-number="{{ comment.position }}" ng-repeat="comment in (post.comments.set | orderBy:'position')" ng-class="{editing: comment.editing, best: comment.chosen}">
                     <div class="float-actions text-right">
-                      <div class="btn-group" ng-if="aacl.can('edit', 'comments', user.info, comment.author.id, post.category.id)" dropdown>
-                        <button type="button" class="button button-icon button-flat" ng-hide="comment.editing" dropdown-toggle>
+                      <div class="btn-group" ng-if="aacl.can('edit', 'comments', user.info, comment.author.id, post.category.id)" uib-dropdown>
+                        <button type="button" class="button button-icon button-flat" ng-hide="comment.editing" uib-dropdown-toggle>
                           <i class="fa fa-pencil"></i>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-right">
@@ -497,8 +497,8 @@
                         <a href="/u/{{ comment.author.username }}/{{ comment.author.id }}" title="Perfil de {{ comment.author.username }}">
                           <strong>{{ comment.author.username }}</strong>
                         </a>
-                        <span class="date dropdown" dropdown auto-close="outsideClick" ng-if="!comment.editing">
-                          <a href="" class="dropdown-toggle" dropdown-toggle>
+                        <span class="date dropdown" uib-dropdown auto-close="outsideClick" ng-if="!comment.editing">
+                          <a href="" class="dropdown-toggle" uib-dropdown-toggle>
                             <time time-ago from-time='{{ comment.created_at}}'></time>
                           </a>
                           <div class="dropdown-menu post-meta">

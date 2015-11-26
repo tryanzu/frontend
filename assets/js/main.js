@@ -5,7 +5,7 @@
 // @codekit-prepend "vendor/angular-marked"
 // @codekit-prepend "vendor/wizzy"
 // @codekit-prepend "vendor/infinite-scroll"
-// @codekit-prepend "vendor/ui-bootstrap-tpls-0.13.0.min"
+
 // @codekit-prepend "vendor/ui-bootstrap-tpls-0.14.3.min"
 // @codekit-prepend "vendor/angular-facebook"
 // @codekit-prepend "vendor/ng-file-upload-all.min.js"
