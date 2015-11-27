@@ -137,7 +137,7 @@ ComponentsModule.controller('ComponentController', ['$scope', '$routeParams', '$
     'power-supply': '55dca5893f6ba10067000013'
   };
 
-  $scope.questions = false;
+  $scope.questions = [];
 
   $scope.question = {
     content: '',
@@ -206,7 +206,9 @@ ComponentsModule.controller('ComponentController', ['$scope', '$routeParams', '$
     $scope.component = response.data;
     $http.get(layer_path + "component/" + $scope.component._id + "/posts").then(function success(response){
       console.log(response.data);
-      $scope.questions = response.data;
+      if(response.data) {
+        $scope.questions = response.data;
+      }
     }, function(error){});
 
   }, function error(response){
