@@ -553,15 +553,36 @@
 
         <section id="component-questions">
           <h2>Preguntas relacionadas</h2>
-          <p class="alert alert-warning">Aún no hay preguntas para este producto.</p>
-          <ul ng-if="false">
-            <li>
-              <a href="http://ilumineph.local:5757/p/-/55f37b2c7a4780586a000231">
-                <h4>i7 4790k o i7 5930k ??</h4>
+          <p class="alert alert-warning" ng-if="!questions">Aún no hay preguntas para este producto.</p>
+          <table class="table">
+            <tbody ng-repeat="q in questions">
+              <tr>
+                <th>Pregunta</th>
+                <td>
+                  <a href="http://ilumineph.local:5757/p/{{ q.slug }}/{{ q.id }}" target="_blank">
+                    <span class="question">{{ q.content }}</span>
+                  </a>
+                </td>
+              </tr>
+              <tr ng-if="!q.solved && false">
+                <th>Respuesta</th>
+                <td>Aún no hay una respuesta</td>
+              </tr>
+              <tr ng-if="q.solved || true">
+                <th>Respuesta</th>
+                <td>
+                  <p>Obviamente una 5930K es mejor con sus 6 núcleos, mayor cache, además se puede overclockear tanto como una 4790K. Y debes saber que el chipset X99 todavía permitirá instalar los procesadores Broadwell-E que saldrán en 2016 (las posibles 6820K, 6930K y 6960X). Asi que te dará opción de actualizar en un futuro. Mientras el chipset Z97 ya murió con la 4790K.</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <ul ng-if="questions">
+            <li ng-repeat="q in questions">
+              <a href="http://ilumineph.local:5757/p/{{ q.slug }}/{{ q.id }}" target="_blank">
+                <p class="question">{{ q.content }}</p>
               </a>
-              <p>¿Que procesador de intel me recomiendan para juar en 4k conectando un SLI o crossfire?</p>
-              <hr>
-              <div class="comment ng-scope">
+              <hr class="hidden">
+              <div class="comment hidden">
                 <div class="comment-author">
                   <a href="/u/WarHell/54bf37cd23973814f6000025" title="Perfil de WarHell">
                     <img class="avatar ng-scope" alt="WarHell" src="http://s3-us-west-1.amazonaws.com/spartan-board/users/55f2637e7a4780586a00008a-120x120.png">

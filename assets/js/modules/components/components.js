@@ -137,6 +137,8 @@ ComponentsModule.controller('ComponentController', ['$scope', '$routeParams', '$
     'power-supply': '55dca5893f6ba10067000013'
   };
 
+  $scope.questions = false;
+
   $scope.question = {
     content: '',
     publishing: false,
@@ -176,11 +178,24 @@ ComponentsModule.controller('ComponentController', ['$scope', '$routeParams', '$
     };
 
     $http.post(layer_path + 'post', post).then(function(response) {
+      //console.log(response);
+      $scope.new_post = response.data.post;
       // relate post to component
       //POST  /v1/posts/:id/relate/:related_id
-      //$http.post(layer_path + '')
-      $scope.question.publishing = false;
-      //console.log(response);
+      $http.post(layer_path + 'posts/' + response.data.post.id + '/relate/' + $scope.component._id).then(function success() {
+        var new_question = {
+          slug: $scope.new_post.slug,
+          content: $scope.post.content,
+          id: $scope.new_post.id
+        };
+        $scope.questions.push(new_question);
+
+        $scope.question.publishing = false;
+        $scope.question.content = '';
+        $scope.question.show_editor = false;
+      }, function(error){
+
+      });
     }, function(err) {
       console.log(err);
     });
@@ -189,6 +204,11 @@ ComponentsModule.controller('ComponentController', ['$scope', '$routeParams', '$
   $http.get(layer_path + "component/" + $routeParams.slug).then(function success(response){
     //console.log(response.data);
     $scope.component = response.data;
+    $http.get(layer_path + "component/" + $scope.component._id + "/posts").then(function success(response){
+      console.log(response.data);
+      $scope.questions = response.data;
+    }, function(error){});
+
   }, function error(response){
     if(response.status == 404) {
       window.location.href = "/";
