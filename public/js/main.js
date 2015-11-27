@@ -3470,10 +3470,19 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
 		$scope.force_comment = true;
 	};
 
+
+  $scope.best_answer = function(comment) {
+    $http.post(layer_path + "posts/" + $scope.post.id + "/answer/" + comment).then(function success(response){
+      console.log(response);
+    }, function(error){
+      console.log(error, "No se puedo elegir como mejor respuesta.");
+    })
+  };
+
   $scope.show_composer = function() {
     $('.current-article').animate({ scrollTop: $('.current-article')[0].scrollHeight}, 100);
     $('#comment-content').focus();
-  }
+  };
 
   $scope.reply_to = function(username, comment) {
     if($scope.comment.content == '') {
@@ -3697,6 +3706,7 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
 		$scope.force_comment = false;
 
 		Post.get({id: post.id}, function(data) {
+      console.log(data);
 			$scope.post = data;
       addMediaEmbed($scope.post);
 

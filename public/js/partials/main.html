@@ -531,6 +531,9 @@
                     </div>
                     <div class="actions text-right" ng-if="user.isLogged && !comment.editing">
                       <ul>
+                        <li ng-if="post.is_question && (!post.solved && aacl.can('solve', 'posts', user.info, post.author.id, post.category.id))">
+                          <a href="" ng-click="best_answer(comment.position)"><i class="fa fa-check-circle"></i> Marcar como mejor respuesta</a>
+                        </li>
                         <li ng-if="comment.liked != -1 && comment.author.id != user.info.id && user.gaming.tribute > 0">
                           <a href="" ng-click="comment_vote(post.id, comment, 'up')" ng-class="{'liked': comment.liked == 1}"><i class="sgi gray"></i> Me gusta</a>
                         </li>
