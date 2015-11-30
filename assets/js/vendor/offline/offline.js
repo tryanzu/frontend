@@ -1,0 +1,5 @@
+// @codekit-prepend "jquery-2.1.4.min"
+// @codekit-prepend "angular-1.3.14.min"
+// @codekit-prepend "angular-route-1.3.16.min"
+// @codekit-prepend "angular-resource-1.3.14.min"
+// @codekit-prepend "angular-sanitize-1.3.16.min"

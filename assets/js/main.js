@@ -1,13 +1,9 @@
-// @codekit-prepend "common/directives"
-// @codekit-prepend "common/filters"
-// @codekit-prepend "common/active_reader"
-// @codekit-prepend "common/services"
 // @codekit-prepend "vendor/angular-marked"
 // @codekit-prepend "vendor/wizzy"
 // @codekit-prepend "vendor/infinite-scroll"
-
 // @codekit-prepend "vendor/ui-bootstrap-tpls-0.14.3.min"
 // @codekit-prepend "vendor/angular-facebook"
+// @codekit-prepend "vendor/angular-jwt.min"
 // @codekit-prepend "vendor/ng-file-upload-all.min.js"
 // @codekit-prepend "vendor/elastic.js"
 // @codekit-prepend "vendor/mentio.min.js"
@@ -15,6 +11,12 @@
 // @codekit-prepend "vendor/angular-acl.min.js"
 // @codekit-prepend "vendor/angular-timeago.js"
 // @codekit-prepend "vendor/algoliasearch.angular.min.js"
+
+// @codekit-prepend "common/directives"
+// @codekit-prepend "common/filters"
+// @codekit-prepend "common/active_reader"
+// @codekit-prepend "common/services"
+
 // @codekit-prepend "modules/feed/init"
 // @codekit-prepend "modules/categories/init"
 // @codekit-prepend "modules/reader/init"
