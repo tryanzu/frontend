@@ -572,7 +572,7 @@
               <tr ng-if="q.solved">
                 <th>Respuesta</th>
                 <td>
-                  <p>Obviamente una 5930K es mejor con sus 6 núcleos, mayor cache, además se puede overclockear tanto como una 4790K. Y debes saber que el chipset X99 todavía permitirá instalar los procesadores Broadwell-E que saldrán en 2016 (las posibles 6820K, 6930K y 6960X). Asi que te dará opción de actualizar en un futuro. Mientras el chipset Z97 ya murió con la 4790K.</p>
+                  <div>{{ q.best_answer.content }}</div>
                 </td>
               </tr>
             </tbody>

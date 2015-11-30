@@ -464,34 +464,34 @@
                   </li>
                 </ul>
 
+                <div class="best_answer" ng-if="best_answer_object">
+                  <div class="comment best">
+                    <div class="header">
+                      <i class="fa fa-check-circle-o"></i> Mejor respuesta
+                    </div>
+                    <div class="comment-author">
+                      <a href="/u/{{ best_answer_object.author.username }}/{{ best_answer_object.author.id }}" title="Perfil de {{ best_answer_object.author.username }}">
+                        <img class="avatar" ng-src="{{ best_answer_object.author.image }}" alt="{{ best_answer_object.author.username }}" ng-if="best_answer_object.author.image">
+                        <span class="avatar" title="{{ best_answer_object.author.username }}" ng-if="!best_answer_object.author.image">{{ best_answer_object.author.username[0] }}</span>
+                      </a>
+                      <div class="username">
+                        <a href="/u/{{ best_answer_object.author.username }}/{{ best_answer_object.author.id }}" title="Perfil de {{ best_answer_object.author.username }}">
+                          <strong>{{ best_answer_object.author.username }}</strong>
+                        </a>
+                        <div>
+                          <span class="level">{{ misc.gaming.rules[best_answer_object.author.level].name }}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="content" markedsg="best_answer_object.content_final"></div>
+                  </div>
+                </div>
+
                 <div class="answers">
                   <h5 ng-if="!post.comments_blocked || post.comments.count > 0">{{ post.comments.count }} respuesta{{post.comments.count == 1?'':'s'}}</h5>
                 </div>
 
                 <div class="comments">
-                  <div ng-if="best_answer_object">
-                    <div class="comment best">
-                      <div class="header">
-                        <i class="fa fa-check-circle-o"></i> Mejor respuesta
-                      </div>
-                      <div class="comment-author">
-                        <a href="/u/{{ best_answer_object.author.username }}/{{ best_answer_object.author.id }}" title="Perfil de {{ best_answer_object.author.username }}">
-                          <img class="avatar" ng-src="{{ best_answer_object.author.image }}" alt="{{ best_answer_object.author.username }}" ng-if="best_answer_object.author.image">
-                          <span class="avatar" title="{{ best_answer_object.author.username }}" ng-if="!best_answer_object.author.image">{{ best_answer_object.author.username[0] }}</span>
-                        </a>
-                        <div class="username">
-                          <a href="/u/{{ best_answer_object.author.username }}/{{ best_answer_object.author.id }}" title="Perfil de {{ best_answer_object.author.username }}">
-                            <strong>{{ best_answer_object.author.username }}</strong>
-                          </a>
-                          <div>
-                            <span class="level">{{ misc.gaming.rules[best_answer_object.author.level].name }}</span>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="content" markedsg="best_answer_object.content_final"></div>
-                    </div>
-                  </div>
-
                   <div class="comment" data-number="{{ comment.position }}" ng-repeat="comment in (post.comments.set | orderBy:'position')" ng-class="{editing: comment.editing, best: comment.chosen}">
                     <div class="float-actions text-right">
                       <div class="btn-group" ng-if="aacl.can('edit', 'comments', user.info, comment.author.id, post.category.id)" uib-dropdown>

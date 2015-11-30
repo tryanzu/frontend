@@ -297,7 +297,7 @@
   }
 }
 
-.current-article .comments {
+.current-article .comments, .best_answer {
   margin-left: -1em;
 
   .comment {
@@ -311,7 +311,7 @@
     }
 
     &.best {
-      background-color: lighten(@brand-success, 54%);
+      border: 1px dashed lighten(@brand-success, 44%);
 
       .header {
         font-size: 12px;
@@ -409,6 +409,12 @@
         }
       }
     }
+  }
+}
+
+.best_answer {
+  .best {
+    background-color: lighten(@brand-success, 55%);
   }
 }
 

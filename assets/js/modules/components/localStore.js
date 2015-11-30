@@ -38,7 +38,6 @@ spartan_store.factory('cart', function($localstorage) {
   };
 
   cart.persist = function() {
-
     // Use local storage to persist data
     $localstorage.setObject('cart', cart.items);
   };
