@@ -544,7 +544,10 @@
               <td>$120</td>
               <td>Si</td>
               <td>{{ price + 120 | currency:'$ ':0 }}</td>
-              <td uib-tooltip="El precio publicado ya no es válido, debes esperar a que lo actualicemos para poder comprar" tooltip-placement="left"><i class="fa fa-shopping-cart"></i></td>
+              <td uib-tooltip="El precio publicado ya no es válido, debes esperar a que lo actualicemos para poder comprar" tooltip-placement="left" ng-if="false"><i class="fa fa-shopping-cart"></i></td>
+              <td>
+                <a href="" class="btn btn-success" ng-click="cart.addItem(component)"><span class="label">Comprar</span></a>
+              </td>
             </tr>
           </table>
 

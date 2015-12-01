@@ -652,7 +652,7 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
   }
 ]);
 
-boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', function($rootScope, $http, AclService, AdvancedAcl) {
+boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', 'cart', function($rootScope, $http, AclService, AdvancedAcl, cart) {
   // TEST PURPOSES
   if(false) {
     localStorage.removeItem('signed_in');
@@ -669,6 +669,8 @@ boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', functi
     localStorage.setItem('redirect_to_home', 'true');
     window.location.href = "/home";
   }
+
+  $rootScope.cart = cart;
 
   $rootScope.page = {
     title: "SpartanGeek.com | Comunidad de tecnología, geeks y más",

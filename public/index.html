@@ -79,13 +79,13 @@
             <div search-bar></div>
           </div>
         </li>
-        <li ng-if="user.isLogged">
+        <li ng-if="user.isLogged && false">
           <a href="chat">
             <span class="icon"><i class="fa fa-comment"></i></span>
             <span class="label visible-lg-inline">Chat</span>
           </a>
         </li>
-        <li>
+        <li ng-if="false">
           <a href="/tienda" target="_blank">
             <span class="icon"><i class="fa fa-shopping-cart"></i></span>
             <span class="label visible-lg-inline">Spartanas</span>
@@ -190,7 +190,35 @@
           </li>
         </ul>
 
-        <ul class="nav navbar-nav navbar-right hidden-xs" ng-if="user.isLogged" ng-cloak>
+        <ul class="nav navbar-nav navbar-right">
+          <li uib-dropdown>
+            <a uib-dropdown-toggle>
+              <span class="icon"><i class="fa fa-shopping-cart"></i></span>
+              <span class="label visible-lg-inline">Carrito ({{ cart.getCount() }})</span></span>
+            </a>
+            <ul class="dropdown-menu cart-list" role="menu">
+              <li class="no-elements" ng-if="cart.items.length == 0">
+                <a>No has agregado componentes</a>
+              </li>
+              <li ng-repeat="item in cart.items">
+                <div class="cart-element">
+                  <div class="component-thumbnail">
+                    <img ng-src="https://spartangeek.com/images/products/{{ item.image }}" alt="{{ item.full_name || item.name }}" ng-if="item.image">
+                    <img src="/images/noimage.jpg" alt="{{ item.full_name || item.name }}" ng-if="!item.image">
+                  </div>
+                  <div class="info">{{ item.fullname || item.name}} <span class="multiplier">x {{ item.quantity | number:0 }}</span><p class="price">{{ item.price * item.quantity | currency:'$':0 }}</p></div>
+                </div>
+              </li>
+              <li ng-if="cart.items.length > 0">
+                <div class="text-center">
+                  <a href="" class="btn btn-primary"><span class="label">Finalizar pedido</span></a>
+                </div>
+              </li>
+            </ul>
+          </li>
+        </ul>
+
+        <ul class="nav navbar-nav navbar-right hidden-xs" ng-if="user.isLogged && false" ng-cloak>
           <li uib-tooltip="Monedas para comprar medallas" tooltip-placement="bottom">
             <a>
               <span class="icon"><i class="fa fa-usd"></i></span>

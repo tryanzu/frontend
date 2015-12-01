@@ -4885,20 +4885,47 @@ ComponentsModule.factory('$localstorage', ['$window', function($window) {
   }
 }]);
 
-ComponentsModule.factory('cart', ['$$localstorage', function($localstorage) {
+ComponentsModule.factory('cart', ['$localstorage', function($localstorage) {
 
-  var cart_keys = {}
+  //var cart_keys = {}
   var cart = {};
 
   cart.items = $localstorage.getObject('cart');
-  cart.items_keys = $localstorage.getObject('cart_keys');
+  //cart.items_keys = $localstorage.getObject('cart_keys');
 
   cart.addItem = function(item) {
-    cart.items.push(item);
+    console.log(item);
+    var added = false;
+    for(var i = 0; i < cart.items.length; i++) {
+      if(item._id == cart.items[i]._id) {
+        added = true;
+        cart.items[i].quantity++;
+        cart.persist();
+        break;
+      }
+    }
+    if(!added) {
+      var new_item = {
+        _id: item._id,
+        name: item.name,
+        full_name: item.full_name,
+        slug: item.slug,
+        price: item.store.prices.spartangeek,
+        quantity: 1,
+        image: item.image
+      }
+      cart.items.push(new_item);
+      cart.persist();
+    }
+    console.log(cart);
+  };
+
+  cart.removeItem = function(key) {
+    cart.items.splice(key, 1);
     cart.persist();
   };
 
-  cart.remove = function(key) {
+  cart.removeByKey = function(key) {
     cart.items.splice(key, 1);
     cart.persist();
   };
@@ -4907,6 +4934,18 @@ ComponentsModule.factory('cart', ['$$localstorage', function($localstorage) {
     // Use local storage to persist data
     $localstorage.setObject('cart', cart.items);
   };
+
+  cart.getCount = function() {
+    if(cart.items.length > 0) {
+      var total = 0;
+      for(var i = 0; i < cart.items.length; i++) {
+        total += cart.items[i].quantity;
+      }
+      return total;
+    } else {
+      return 0;
+    }
+  }
 
   return cart;
 }]);
@@ -5020,9 +5059,13 @@ ComponentsModule.controller('ComponentsController', ['$scope', '$timeout', 'Comp
   };
 }]);
 
-ComponentsModule.controller('ComponentController', ['$scope', '$routeParams', '$http', function($scope, $routeParams, $http){
+ComponentsModule.controller('ComponentController', ['$scope', '$routeParams', '$http', 'cart', function($scope, $routeParams, $http, cart){
+
+  //window.localStorage.removeItem('cart');
+  //console.log(window.localStorage.getItem('cart'));
 
   $scope.component = {};
+  //$scope.cart = cart;
 
   $scope.type_labels = {
     'cpu': 'Procesador',
@@ -5116,7 +5159,7 @@ ComponentsModule.controller('ComponentController', ['$scope', '$routeParams', '$
     //console.log(response.data);
     $scope.component = response.data;
     $http.get(layer_path + "component/" + $scope.component._id + "/posts").then(function success(response){
-      console.log(response.data);
+      //console.log(response.data);
       if(response.data) {
         $scope.questions = response.data;
       }
@@ -5787,7 +5830,7 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
   }
 ]);
 
-boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', function($rootScope, $http, AclService, AdvancedAcl) {
+boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', 'cart', function($rootScope, $http, AclService, AdvancedAcl, cart) {
   // TEST PURPOSES
   if(false) {
     localStorage.removeItem('signed_in');
@@ -5804,6 +5847,8 @@ boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', functi
     localStorage.setItem('redirect_to_home', 'true');
     window.location.href = "/home";
   }
+
+  $rootScope.cart = cart;
 
   $rootScope.page = {
     title: "SpartanGeek.com | Comunidad de tecnología, geeks y más",
