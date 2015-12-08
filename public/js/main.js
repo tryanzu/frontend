@@ -4947,6 +4947,30 @@ ComponentsModule.factory('cart', ['$localstorage', function($localstorage) {
     }
   }
 
+  cart.getShippingFee = function() {
+    if(cart.items.length > 0) {
+      var total = 0;
+      for(var i = 0; i < cart.items.length; i++) {
+        total += cart.items[i].quantity;
+      }
+      return 120 + (total - 1) * 60;
+    } else {
+      return 0;
+    }
+  }
+
+  cart.getTotal = function() {
+    if(cart.items.length > 0) {
+      var total = 0;
+      for(var i = 0; i < cart.items.length; i++) {
+        total += cart.items[i].quantity * cart.items[i].price;
+      }
+      return total;
+    } else {
+      return 0;
+    }
+  }
+
   return cart;
 }]);
 
@@ -4962,6 +4986,8 @@ ComponentsModule.factory("ComponentsService", function(algolia) {
 });
 
 ComponentsModule.controller('ComponentsController', ['$scope', '$timeout', 'ComponentsService', function($scope, $timeout, ComponentsService) {
+
+  $scope.onlyStore = false;
 
   $scope.results = [];
   $scope.query = '';
@@ -4990,7 +5016,19 @@ ComponentsModule.controller('ComponentsController', ['$scope', '$timeout', 'Comp
 
   $scope.change_facet = function(new_facet) {
     $scope.current_facet = new_facet;
+    $scope.currentPage = 1;
     $scope.changePage();
+  }
+
+  $scope.getFacetFilters = function() {
+    if($scope.onlyStore) {
+      return [
+        'type:' + $scope.current_facet,
+        'activated: true'
+      ];
+    } else {
+      return [ 'type:' + $scope.current_facet ];
+    }
   }
 
   $scope.reset = function() {
@@ -4999,9 +5037,7 @@ ComponentsModule.controller('ComponentsController', ['$scope', '$timeout', 'Comp
       hitsPerPage:
       $scope.itemsPerPage,
       facets: '*',
-      facetFilters: [
-        'type:' + $scope.current_facet,
-      ]
+      facetFilters: $scope.getFacetFilters()
     })
     .then(function(response) {
       console.log(response);
@@ -5017,9 +5053,7 @@ ComponentsModule.controller('ComponentsController', ['$scope', '$timeout', 'Comp
       page: $scope.currentPage - 1,
       hitsPerPage: $scope.itemsPerPage,
       facets: '*',
-      facetFilters: [
-        'type:' + $scope.current_facet,
-      ]
+      facetFilters: $scope.getFacetFilters()
     })
     .then(function(response) {
       $scope.results = response;
@@ -5027,6 +5061,10 @@ ComponentsModule.controller('ComponentsController', ['$scope', '$timeout', 'Comp
       $scope.facets = response.facets;
     });
   };
+
+  $scope.$watch("onlyStore", function(newVal, oldVal) {
+    $scope.changePage();
+  });
 
   $scope.do = function(event) {
     if(event.keyCode == 27) {
@@ -5176,6 +5214,18 @@ ComponentsModule.controller('PcBuilderController', ['$scope', function($scope) {
 
 }]);
 
+ComponentsModule.controller('CheckoutController', ['$scope', 'cart', function($scope, cart) {
+  $scope.currentStep = "cart";
+
+  $scope.goToShipping = function() {
+    $scope.currentStep = "address";
+  }
+
+  $scope.goToPay = function() {
+    $scope.currentStep = "payment";
+  }
+}]);
+
 // @codekit-prepend "vendor/angular-marked"
 // @codekit-prepend "vendor/wizzy"
 // @codekit-prepend "vendor/infinite-scroll"
@@ -5280,7 +5330,10 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
     templateUrl: '/js/partials/pc_builder.html?v=' + version,
     controller: 'PcBuilderController'
   });
-
+  $routeProvider.when('/componentes/checkout', {
+    templateUrl: '/js/partials/checkout.html?v=' + version,
+    controller: 'CheckoutController'
+  });
   $routeProvider.when('/c/:slug', {
     templateUrl: '/js/partials/main.html?v=' + version,
     controller: 'CategoryListController'
@@ -5830,7 +5883,7 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
   }
 ]);
 
-boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', 'cart', function($rootScope, $http, AclService, AdvancedAcl, cart) {
+boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', 'cart', '$location', function($rootScope, $http, AclService, AdvancedAcl, cart, $location) {
   // TEST PURPOSES
   if(false) {
     localStorage.removeItem('signed_in');
@@ -5838,6 +5891,8 @@ boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', 'cart'
     localStorage.removeItem('firebase_token');
     localStorage.removeItem('redirect_to_home');
   }
+
+  $rootScope.location = $location;
 
   // Initialize the local storage
   if(!localStorage.signed_in)

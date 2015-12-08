@@ -102,7 +102,10 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
     templateUrl: '/js/partials/pc_builder.html?v=' + version,
     controller: 'PcBuilderController'
   });
-
+  $routeProvider.when('/componentes/checkout', {
+    templateUrl: '/js/partials/checkout.html?v=' + version,
+    controller: 'CheckoutController'
+  });
   $routeProvider.when('/c/:slug', {
     templateUrl: '/js/partials/main.html?v=' + version,
     controller: 'CategoryListController'
@@ -652,7 +655,7 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
   }
 ]);
 
-boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', 'cart', function($rootScope, $http, AclService, AdvancedAcl, cart) {
+boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', 'cart', '$location', function($rootScope, $http, AclService, AdvancedAcl, cart, $location) {
   // TEST PURPOSES
   if(false) {
     localStorage.removeItem('signed_in');
@@ -660,6 +663,8 @@ boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', 'cart'
     localStorage.removeItem('firebase_token');
     localStorage.removeItem('redirect_to_home');
   }
+
+  $rootScope.location = $location;
 
   // Initialize the local storage
   if(!localStorage.signed_in)

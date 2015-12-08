@@ -79,6 +79,30 @@ ComponentsModule.factory('cart', ['$localstorage', function($localstorage) {
     }
   }
 
+  cart.getShippingFee = function() {
+    if(cart.items.length > 0) {
+      var total = 0;
+      for(var i = 0; i < cart.items.length; i++) {
+        total += cart.items[i].quantity;
+      }
+      return 120 + (total - 1) * 60;
+    } else {
+      return 0;
+    }
+  }
+
+  cart.getTotal = function() {
+    if(cart.items.length > 0) {
+      var total = 0;
+      for(var i = 0; i < cart.items.length; i++) {
+        total += cart.items[i].quantity * cart.items[i].price;
+      }
+      return total;
+    } else {
+      return 0;
+    }
+  }
+
   return cart;
 }]);
 
@@ -94,6 +118,8 @@ ComponentsModule.factory("ComponentsService", function(algolia) {
 });
 
 ComponentsModule.controller('ComponentsController', ['$scope', '$timeout', 'ComponentsService', function($scope, $timeout, ComponentsService) {
+
+  $scope.onlyStore = false;
 
   $scope.results = [];
   $scope.query = '';
@@ -122,7 +148,19 @@ ComponentsModule.controller('ComponentsController', ['$scope', '$timeout', 'Comp
 
   $scope.change_facet = function(new_facet) {
     $scope.current_facet = new_facet;
+    $scope.currentPage = 1;
     $scope.changePage();
+  }
+
+  $scope.getFacetFilters = function() {
+    if($scope.onlyStore) {
+      return [
+        'type:' + $scope.current_facet,
+        'activated: true'
+      ];
+    } else {
+      return [ 'type:' + $scope.current_facet ];
+    }
   }
 
   $scope.reset = function() {
@@ -131,9 +169,7 @@ ComponentsModule.controller('ComponentsController', ['$scope', '$timeout', 'Comp
       hitsPerPage:
       $scope.itemsPerPage,
       facets: '*',
-      facetFilters: [
-        'type:' + $scope.current_facet,
-      ]
+      facetFilters: $scope.getFacetFilters()
     })
     .then(function(response) {
       console.log(response);
@@ -149,9 +185,7 @@ ComponentsModule.controller('ComponentsController', ['$scope', '$timeout', 'Comp
       page: $scope.currentPage - 1,
       hitsPerPage: $scope.itemsPerPage,
       facets: '*',
-      facetFilters: [
-        'type:' + $scope.current_facet,
-      ]
+      facetFilters: $scope.getFacetFilters()
     })
     .then(function(response) {
       $scope.results = response;
@@ -159,6 +193,10 @@ ComponentsModule.controller('ComponentsController', ['$scope', '$timeout', 'Comp
       $scope.facets = response.facets;
     });
   };
+
+  $scope.$watch("onlyStore", function(newVal, oldVal) {
+    $scope.changePage();
+  });
 
   $scope.do = function(event) {
     if(event.keyCode == 27) {
@@ -306,4 +344,16 @@ ComponentsModule.controller('ComponentController', ['$scope', '$routeParams', '$
 
 ComponentsModule.controller('PcBuilderController', ['$scope', function($scope) {
 
+}]);
+
+ComponentsModule.controller('CheckoutController', ['$scope', 'cart', function($scope, cart) {
+  $scope.currentStep = "cart";
+
+  $scope.goToShipping = function() {
+    $scope.currentStep = "address";
+  }
+
+  $scope.goToPay = function() {
+    $scope.currentStep = "payment";
+  }
 }]);

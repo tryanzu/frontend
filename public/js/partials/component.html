@@ -260,7 +260,7 @@
           </tr>
 
           <!-- Videocard -->
-          <tr ng-if="component.interface">
+          <tr ng-if="component.interface && component.type == 'video-card'">
             <th>Interfaz</th>
             <td>{{ component.interface }}</td>
           </tr>
@@ -530,9 +530,9 @@
             <tr>
               <th>Vendedor</th>
               <th>Precio</th>
-              <th>Descuento</th>
+              <th ng-if="false">Descuento</th>
               <th>Envío</th>
-              <th>Disponibilidad</th>
+              <th>Disponible</th>
               <th>Total</th>
               <th></th>
             </tr>
@@ -540,8 +540,8 @@
             <tr ng-repeat="price in component.store.prices" ng-class="{'sg-product': false}">
               <td>SpartanGeek</td>
               <td>{{ price | currency:'$ ':0 }}</td>
-              <td>-</td>
-              <td>$120</td>
+              <td ng-if="false">-</td>
+              <td>{{ 120 | currency:'$ ':0 }}</td>
               <td>Si</td>
               <td>{{ price + 120 | currency:'$ ':0 }}</td>
               <td uib-tooltip="El precio publicado ya no es válido, debes esperar a que lo actualicemos para poder comprar" tooltip-placement="left" ng-if="false"><i class="fa fa-shopping-cart"></i></td>

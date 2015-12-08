@@ -1,6 +1,6 @@
 <div class="global-content">
   <div class="container">
-    <div class="row">
+    <div class="row" ng-if="onlyStore">
       <div class="col-md-12 mb-40">
         <div class="img-slider">
           <div class="main-img">
@@ -61,7 +61,7 @@
         <input type="text" class="form-control" ng-model="query" id="search-text" placeholder="Busqueda por componente, modelo, serie" autocomplete="off" autocorrect="off"  ng-keyup="do($event)" />
 
         <div class="switch-control">
-          <switch id="enabled" name="enabled" ng-model="show_art" on="Si" off="No" class="sg"></switch>
+          <switch id="enabled" name="enabled" ng-model="onlyStore" on="Si" off="No" class="sg"></switch>
           <span class="switch-label">Mostrar sólo componentes vendidos en SG</span>
         </div>
 

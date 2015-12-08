@@ -1,0 +1,224 @@
+<main class="global-content">
+  <div class="container">
+
+    <div class="row">
+      <div class="col-md-12">
+        <ul class="checkout-steps">
+          <li ng-class="{'active': currentStep == 'cart'}">
+            <div class="step-icon"><i class="fa fa-shopping-cart"></i></div>
+            <span>1. Detalles de pedido</span>
+          </li>
+          <li ng-class="{'active': currentStep == 'address'}">
+            <div class="step-icon"><i class="fa fa-truck"></i></div>
+            <span>2. Detalles de envío</span>
+          </li>
+          <li ng-class="{'active': currentStep == 'payment'}">
+            <div class="step-icon"><i class="fa fa-money"></i></div>
+            <span>3. Detalles de pago</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="row" ng-if="currentStep == 'cart'">
+      <div class="col-md-8">
+        <h3>Mi carrito actual</h3>
+
+        <div ng-show="cart.items.length > 0" class="cart">
+          <div class="item" ng-repeat="item in cart.items">
+            <figure>
+              <img ng-src="https://spartangeek.com/images/products/{{ item.image }}" ng-if="item.image"></img>
+              <img src="/images/noimage.jpg" ng-if="!item.image"></img>
+            </figure>
+
+            <div class="content">
+              <span class="name">{{ item.full_name || item.name }}</span>
+              <div class="price">
+                <p>x {{ item.quantity }}</p>
+                <span>{{ item.price * item.quantity | currency:'$ ':0 }} MXN</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <table class="table table-summary">
+          <tr>
+            <th>Total</th>
+            <td>{{ cart.getTotal() | currency:'$ ':0 }} MXN</td>
+          </tr>
+          <tr>
+            <th>Envío</th>
+            <td>{{ cart.getShippingFee() | currency:'$ ':0 }} MXN</td>
+          </tr>
+          <tr class="total">
+            <th>Subtotal</th>
+            <td>{{ cart.getTotal() + cart.getShippingFee() | currency:'$ ':0 }} MXN</td>
+          </tr>
+        </table>
+
+        <a href="/componentes" class="btn btn-lg btn-default btn-block"><span class="label">Seguir comprando</span></a>
+      </div>
+      <div class="col-md-3 col-md-offset-1">
+        Subtotal por {{ cart.getCount() }} productos
+        <a href="" class="btn btn-lg btn-primary btn-block" ng-click="goToShipping()" ng-if="user.isLogged"><span class="label">Finalizar pedido</span></a>
+        <a href="" class="btn btn-lg btn-primary btn-block" ng-click="signIn()" ng-if="!user.isLogged"><span class="label">Iniciar sesión para finalizar pedido</span></a>
+      </div>
+    </div>
+
+    <div class="row" ng-if="currentStep == 'address'">
+      <div class="col-md-12">
+        <h2>Selecciona una dirección de envío</h2>
+
+        <p class="mb-20">¿La dirección a la que quieres enviar aparece en el listado de abajo? Entonces, haz click en el botón correspondiente "Enviar a esta dirección". O puedes ingresar una nueva dirección de envío.</p>
+
+        <hr>
+
+        <div class="row">
+          <div class="col-md-12">
+
+
+
+            <div class="a-spacing-base address-book row">
+
+
+              <div id="address-book-entry-0" class="address-book-entry a-spacing-double-large address-book-new-row col-md-4">
+
+                <div class="displayAddressDiv">
+                  <ul class="displayAddressUL">
+                    <li class="displayAddressLI displayAddressFullName"><b>Rodrigo Contreras Reyes</b></li>
+                    <li class="displayAddressLI displayAddressAddressLine1">Av. Revolución 1034</li>
+                    <li class="displayAddressLI displayAddressAddressLine2">Departamento 603, Colonia San José Insurgentes</li>
+                    <li class="displayAddressLI displayAddressCityStateOrRegionPostalCode">Benito Juárez, México DF 03900</li>
+                    <li class="displayAddressLI displayAddressCountryName">Mexico</li>
+                    <li class="displayAddressLI displayAddressPhoneNumber">Teléfono: +52 5585584046</li>
+                  </ul>
+                </div>
+                <div class="row">
+                  <div class="col-md-12 mb-10">
+                    <a href="" class="btn btn-primary btn-block" ng-click="goToPay()">Enviar a 'Mi casa'</a>
+                  </div>
+                  <div class="col-md-6">
+                    <a href="" class="btn btn-default btn-sm btn-block">Editar 'Mi casa'</a>
+                  </div>
+                  <div class="col-md-6">
+                    <a href="" class="btn btn-default btn-sm btn-block">Eliminar 'Mi casa'</a>
+                  </div>
+                </div>
+              </div>
+
+              <div id="address-book-entry-1" class="address-book-entry a-spacing-double-large  col-md-4">
+
+                <div class="displayAddressDiv">
+                  <ul class="displayAddressUL">
+                    <li class="displayAddressLI displayAddressFullName"><b>Jorge Contreras Reyes</b></li>
+                    <li class="displayAddressLI displayAddressAddressLine1">630B MAIN ST</li>
+                    <li class="displayAddressLI displayAddressCityStateOrRegionPostalCode">PORT JEFFERSON, NY 11777-2203</li>
+                    <li class="displayAddressLI displayAddressCountryName">United States</li>
+                    <li class="displayAddressLI displayAddressPhoneNumber">Phone: +52 5585584046</li>
+                  </ul>
+                </div>
+                <div class="row">
+                  <div class="col-md-12 mb-10">
+                    <a href="" class="btn btn-primary btn-block" ng-click="goToPay()">Enviar a 'Mi hermano'</a>
+                  </div>
+                  <div class="col-md-6">
+                    <a href="" class="btn btn-default btn-sm btn-block">Editar 'Mi hermano'</a>
+                  </div>
+                  <div class="col-md-6">
+                    <a href="" class="btn btn-default btn-sm btn-block">Eliminar 'Mi hermano'</a>
+                  </div>
+                </div>
+              </div>
+
+
+              <div class="cl"></div>
+            </div>
+
+
+
+
+
+
+          </div>
+        </div>
+
+        <hr>
+
+        <div class="row">
+          <div class="col-md-12">
+            <h3>Agregar nueva dirección</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="row" ng-if="currentStep == 'payment'">
+      <div class="col-md-6">
+        <h3>Sumario</h3>
+
+        <div ng-show="cart.items.length > 0" class="cart">
+          <div class="item" ng-repeat="item in cart.items">
+            <figure>
+              <img ng-src="https://spartangeek.com/images/products/{{ item.image }}" ng-if="item.image"></img>
+              <img src="/images/noimage.jpg" ng-if="!item.image"></img>
+            </figure>
+
+            <div class="content">
+              <span class="name">{{ item.full_name || item.name }}</span>
+              <div class="price">
+                <p>x {{ item.quantity }}</p>
+                <span>{{ item.price * item.quantity | currency:'$ ':0 }} MXN</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <table class="table table-summary">
+          <tr>
+            <th>Total</th>
+            <td>{{ cart.getTotal() | currency:'$ ':0 }} MXN</td>
+          </tr>
+          <tr>
+            <th>Envío</th>
+            <td>{{ cart.getShippingFee() | currency:'$ ':0 }} MXN</td>
+          </tr>
+          <tr>
+            <th>Comisión por método de pago elegido</th>
+            <td class="fee">{{ cart.getTotal() * 0.04 + 10 | currency:'$ ':0 }} MXN</td>
+          </tr>
+          <tr class="total">
+            <th>Total a Pagar</th>
+            <td>{{ cart.getTotal() + cart.getShippingFee() | currency:'$ ':0 }} MXN</td>
+          </tr>
+        </table>
+
+      </div>
+      <div class="col-md-5 col-md-offset-1">
+        <h2>Elige tu forma de pago</h2>
+
+        <div class="radio">
+          <label>
+            <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1" checked>
+            Pago con depósito o transferencia bancaria &mdash; Tienes 3 días hábiles para hacer el pago
+          </label>
+        </div>
+        <img src="/images/pay-deposit.png" alt="Pago con depósito o transferencia bancaria">
+        <div class="radio">
+          <label>
+            <input type="radio" name="optionsRadios" id="optionsRadios2" value="option2">
+            Pago con tarjeta de débido o crédito &mdash; Comisión de 4%
+          </label>
+        </div>
+        <img src="/images/pay-card.png" alt="Pago con tarjeta de débido o crédito">
+        <div class="radio">
+          <label>
+            <input type="radio" name="optionsRadios" id="optionsRadios2" value="option2">
+            Pago con Paypal &mdash; Comisión de 4.1%
+          </label>
+        </div>
+        <img src="/images/pay-paypal.png" alt="Pago con Paypal">
+      </div>
+    </div>
+  </div>
+</main>
