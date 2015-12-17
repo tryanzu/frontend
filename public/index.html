@@ -79,24 +79,12 @@
             <div search-bar></div>
           </div>
         </li>
-        <li ng-if="user.isLogged && false">
-          <a href="chat">
-            <span class="icon"><i class="fa fa-comment"></i></span>
-            <span class="label visible-lg-inline">Chat</span>
-          </a>
-        </li>
-        <li ng-if="false">
-          <a href="/tienda" target="_blank">
-            <span class="icon"><i class="fa fa-shopping-cart"></i></span>
-            <span class="label visible-lg-inline">Spartanas</span>
-          </a>
-        </li>
       </ul>
 
-      <ul class="nav navbar-nav navbar-stats hidden-xs" ng-if="!user.isLogged">
-        <li><a><i class="fa fa-users"></i> Usuarios: {{ status.stats.users | number:0 }}</a></li>
-        <li><a><i class="fa fa-file"></i> Publicaciones: {{ status.stats.posts | number:0 }}</a></li>
-        <li><a><i class="fa fa-comments"></i> Comentarios: {{ status.stats.comments | number:0 }}</a></li>
+      <ul class="nav navbar-nav navbar-stats hidden-xs" ng-if="!user.isLogged && location.path() == '/'">
+        <li><a><i class="fa fa-users"></i> <span class="hidden-md">Usuarios</span>: {{ status.stats.users | number:0 }}</a></li>
+        <li><a><i class="fa fa-file"></i> <span class="hidden-md">Publicaciones</span>: {{ status.stats.posts | number:0 }}</a></li>
+        <li><a><i class="fa fa-comments"></i> <span class="hidden-md">Comentarios</span>: {{ status.stats.comments | number:0 }}</a></li>
       </ul>
 
       <!-- Collect the nav links, forms, and other content for toggling -->
@@ -104,6 +92,23 @@
         <ul class="nav navbar-nav navbar-right" ng-if="!user.isLogged">
           <li><a href="" ng-click="signIn()">Iniciar sesión</a></li>
           <li><a href="" ng-click="signUp()">Únete</a></li>
+        </ul>
+        <ul class="nav navbar-nav" ng-class="{'hidden-md': !user.isLogged}" ng-cloack>
+          <li class="dropdown" uib-dropdown>
+            <a uib-dropdown-toggle href="">
+              Secciones <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu" role="menu">
+              <li><a href="/"><i class="fa fa-users"></i> Comunidad</a></li>
+              <li ng-if="user.isLogged"><a href="/chat"><i class="fa fa-comment"></i> Chat</a></li>
+              <li><a href="/componentes"><i class="fa fa-th-large"></i> Catálogo de componentes</a></li>
+              <li role="separator" class="divider"></li>
+              <li><a href="/componentes/tienda"><i class="fa fa-shopping-cart"></i> Tienda de componentes</a></li>
+              <li><a href="/tienda" target="_blank"><i class="fa fa-desktop"></i> Pedir una Spartana</a></li>
+              <li class="divider"></li>
+              <li><a href="/about"><i class="fa fa-fw fa-question icon"></i> Acerca de...</a></li>
+            </ul>
+          </li>
         </ul>
         <ul class="nav navbar-nav navbar-right" ng-if="user.isLogged" ng-cloak>
           <li class="dropdown notifications" uib-dropdown>
@@ -181,18 +186,32 @@
                   <i class="fa fa-fw fa-line-chart icon"></i> Ranking de usuarios
                 </a>
               </li>
+              <li class="divider"></li>
+              <li uib-tooltip="Monedas para comprar medallas" tooltip-placement="left">
+                <a>
+                  <i class="fa fa-usd"></i> Monedas: <span class="badge badge-important pull-right">{{ (user.gaming.coins || 0) | number:0 }}</span>
+                </a>
+              </li>
+              <li uib-tooltip="Cantidad de 'Me gusta' que puedes dar" tooltip-placement="left">
+                <a>
+                  <i class="sgi gray big"></i> Tributo: <span class="badge badge-important pull-right">{{ (user.gaming.tribute || 0) | number:0 }}</span>
+                </a>
+              </li>
+              <li uib-tooltip="Cantidad de 'Esto apesta' que puedes dar" tooltip-placement="left">
+                <a>
+                  <i class="sgi gray shit"></i> Mierda: <span class="badge badge-important pull-right">{{ (user.gaming.shit || 0) | number:0 }}</span>
+                </a>
+              </li>
               <li class="hidden"><a href="/config"><i class="fa fa-fw fa-cog icon"></i> Configuración</a></li>
               <li class="divider"></li>
               <li><a href="" ng-click="signOut()"><i class="fa fa-fw fa-sign-out icon"></i> Salir</a></li>
-              <li class="divider"></li>
-              <li><a href="/about"><i class="fa fa-fw fa-question icon"></i> Acerca de...</a></li>
             </ul>
           </li>
         </ul>
 
-        <ul class="nav navbar-nav navbar-right">
+        <ul class="nav navbar-nav navbar-right" ng-if="location.path().indexOf('componente') > -1 && location.path().indexOf('checkout') < 0">
           <li uib-dropdown>
-            <a uib-dropdown-toggle>
+            <a href="" uib-dropdown-toggle>
               <span class="icon"><i class="fa fa-shopping-cart"></i></span>
               <span class="label visible-lg-inline">Carrito ({{ cart.getCount() }})</span></span>
             </a>
@@ -200,7 +219,7 @@
               <li class="no-elements" ng-if="cart.items.length == 0">
                 <a>No has agregado componentes</a>
               </li>
-              <li ng-repeat="item in cart.items">
+              <li ng-repeat="item in cart.items track by $index">
                 <div class="cart-element">
                   <div class="component-thumbnail">
                     <img ng-src="https://spartangeek.com/images/products/{{ item.image }}" alt="{{ item.full_name || item.name }}" ng-if="item.image">

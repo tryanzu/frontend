@@ -26,7 +26,7 @@ ComponentsModule.factory('cart', ['$localstorage', function($localstorage) {
   //cart.items_keys = $localstorage.getObject('cart_keys');
 
   cart.addItem = function(item) {
-    console.log(item);
+    //console.log(item);
     var added = false;
     for(var i = 0; i < cart.items.length; i++) {
       if(item._id == cart.items[i]._id) {
@@ -42,9 +42,10 @@ ComponentsModule.factory('cart', ['$localstorage', function($localstorage) {
         name: item.name,
         full_name: item.full_name,
         slug: item.slug,
-        price: item.store.prices.spartangeek,
+        price: item.store.vendors.spartangeek.price,
         quantity: 1,
-        image: item.image
+        image: item.image,
+        type: item.type
       }
       cart.items.push(new_item);
       cart.persist();
@@ -52,20 +53,53 @@ ComponentsModule.factory('cart', ['$localstorage', function($localstorage) {
     console.log(cart);
   };
 
-  cart.removeItem = function(key) {
-    cart.items.splice(key, 1);
-    cart.persist();
+  cart.removeItem = function(item) {
+    for(var i = 0; i < cart.items.length; i++) {
+      if(item._id == cart.items[i]._id) {
+        if(cart.items[i].quantity > 1) {
+          cart.items[i].quantity--;
+        } else {
+          cart.items.splice(i, 1);
+        }
+        cart.persist();
+        break;
+      }
+    }
   };
 
-  cart.removeByKey = function(key) {
-    cart.items.splice(key, 1);
-    cart.persist();
-  };
+  cart.getIndividualShippingFee = function(item) {
+    if(item.type == 'case') {
+      return 320;
+    } else {
+      for(var i = 0; i < cart.items.length; i++) {
+        if(cart.items[i].type != 'case') {
+          return 60;
+        }
+      }
+      return 120;
+    }
+  }
 
-  cart.persist = function() {
-    // Use local storage to persist data
-    $localstorage.setObject('cart', cart.items);
-  };
+  cart.getShippingFee = function() {
+    if(cart.items.length > 0) {
+      var non_case_count = 0;
+      var case_count = 0;
+      for(var i = 0; i < cart.items.length; i++) {
+        if(cart.items[i].type == 'case') {
+          case_count += cart.items[i].quantity;
+        } else {
+          non_case_count += cart.items[i].quantity;
+        }
+      }
+      if(non_case_count > 0) {
+        return 120 + (non_case_count - 1) * 60 + 320 * case_count;
+      } else {
+        return 320 * case_count;
+      }
+    } else {
+      return 0;
+    }
+  }
 
   cart.getCount = function() {
     if(cart.items.length > 0) {
@@ -74,18 +108,6 @@ ComponentsModule.factory('cart', ['$localstorage', function($localstorage) {
         total += cart.items[i].quantity;
       }
       return total;
-    } else {
-      return 0;
-    }
-  }
-
-  cart.getShippingFee = function() {
-    if(cart.items.length > 0) {
-      var total = 0;
-      for(var i = 0; i < cart.items.length; i++) {
-        total += cart.items[i].quantity;
-      }
-      return 120 + (total - 1) * 60;
     } else {
       return 0;
     }
@@ -103,6 +125,11 @@ ComponentsModule.factory('cart', ['$localstorage', function($localstorage) {
     }
   }
 
+  cart.persist = function() {
+    // Use local storage to persist data
+    $localstorage.setObject('cart', cart.items);
+  };
+
   return cart;
 }]);
 
@@ -117,9 +144,12 @@ ComponentsModule.factory("ComponentsService", function(algolia) {
   };
 });
 
-ComponentsModule.controller('ComponentsController', ['$scope', '$timeout', 'ComponentsService', function($scope, $timeout, ComponentsService) {
+ComponentsModule.controller('ComponentsController', ['$scope', '$timeout', 'ComponentsService', '$route', function($scope, $timeout, ComponentsService, $route) {
 
   $scope.onlyStore = false;
+  if($scope.location.path().indexOf('tienda') > -1) {
+    $scope.onlyStore = true;
+  }
 
   $scope.results = [];
   $scope.query = '';
@@ -195,6 +225,11 @@ ComponentsModule.controller('ComponentsController', ['$scope', '$timeout', 'Comp
   };
 
   $scope.$watch("onlyStore", function(newVal, oldVal) {
+    if($scope.onlyStore) {
+      $scope.location.path('/componentes/tienda');
+    } else {
+      $scope.location.path('/componentes');
+    }
     $scope.changePage();
   });
 
@@ -209,7 +244,12 @@ ComponentsModule.controller('ComponentsController', ['$scope', '$timeout', 'Comp
 
       $scope.fetching = true;
       $scope.loading = $timeout(function() {
-        ComponentsService.index.search($scope.query, {page: 0, hitsPerPage: $scope.itemsPerPage, facets: '*'})
+        ComponentsService.index.search($scope.query, {
+          page: 0,
+          hitsPerPage: $scope.itemsPerPage,
+          facets: '*',
+          facetFilters: $scope.getFacetFilters()
+        })
         .then(function searchSuccess(response) {
             //console.log(response);
             $scope.results = response;
@@ -227,6 +267,23 @@ ComponentsModule.controller('ComponentsController', ['$scope', '$timeout', 'Comp
       $scope.reset();
     }
   };
+
+  // Hack, so we don't have to reload the controller if the route uses the same controller
+  var lastRoute = $route.current;
+  $scope.$on('$locationChangeSuccess', function(event) {
+    if(lastRoute.$$route.controller === $route.current.$$route.controller) {
+      // Will not load only if my view use the same controller
+      // We recover new params
+      new_params = $route.current.params;
+      $route.current = lastRoute;
+      $route.current.params = new_params;
+      if($scope.location.path().indexOf('tienda') > -1) {
+        $scope.onlyStore = true;
+      } else {
+        $scope.onlyStore = false;
+      }
+    }
+  });
 }]);
 
 ComponentsModule.controller('ComponentController', ['$scope', '$routeParams', '$http', 'cart', function($scope, $routeParams, $http, cart){
@@ -348,6 +405,118 @@ ComponentsModule.controller('PcBuilderController', ['$scope', function($scope) {
 
 ComponentsModule.controller('CheckoutController', ['$scope', 'cart', function($scope, cart) {
   $scope.currentStep = "cart";
+
+  $scope.payer = {
+    name: '',
+    surname: '',
+    phone: {
+      area_code: '',
+      number: ''
+    },
+    address: {
+      street_name: '',
+      street_number: '',
+      apt_number: '',
+      zip_code: ''
+    },
+    state:"Distrito Federal"
+  };
+
+  $scope.shipping_form = {
+    name: '',
+    phone_number: '',
+    address: '',
+    zip_code: '',
+    state: "Distrito Federal",
+    city: '',
+    neighborhood: '',
+    extra: {
+      between_street_1: '',
+      between_street_2: '',
+      reference: ''
+    }
+  };
+
+  $scope.current_addresses = {
+    count: 1,
+    addresses: [
+      {
+        alias: 'Mi casa',
+        name: 'Rodrigo',
+        surname: 'Contreras',
+        phone: {
+          area_code: '55',
+          number: '85584046'
+        },
+        address: {
+          street_name: 'Avenida Revolución',
+          street_number: '1034',
+          apt_number: '603',
+          zip_code: '03900',
+          state:"Distrito Federal",
+          city: "Benito Juárez",
+          neighborhood: 'San José Insurgentes'
+        }
+      },
+      {
+        alias: 'Tu casa',
+        name: 'Carlos',
+        surname: 'Fernandez',
+        phone: {
+          area_code: '55',
+          number: '85584046'
+        },
+        address: {
+          street_name: 'Avenida Revolución',
+          street_number: '1034',
+          apt_number: '603',
+          zip_code: '03900',
+          state:"Distrito Federal",
+          city: "Benito Juárez",
+          neighborhood: 'San José Insurgentes'
+        }
+      }
+    ],
+  };
+
+  $scope.selected_address = null;
+
+  $scope.getPaymentFee = function() {
+    if($scope.pay_method.value == 'withdrawal') {
+      return 0;
+    } else {
+      if($scope.pay_method.value == 'credit_card') {
+        return (cart.getTotal() + cart.getShippingFee()) * 0.04 + 10
+      } else {
+        return (cart.getTotal() + cart.getShippingFee()) * 0.041 + 4
+      }
+    }
+  }
+
+  $scope.pay_url = ''
+  $scope.status = ''
+
+  $scope.pay_method = {
+    value: 'withdrawal'
+  }
+
+  $scope.createAddress = function() {
+    $scope.status = ''
+
+    if($scope.shipping_form.name == '' || $scope.shipping_form.phone_number == '' || $scope.shipping_form.address == '' || $scope.shipping_form.zip_code == ''
+    || $scope.shipping_form.state == '' || $scope.shipping_form.city == '' || $scope.shipping_form.neighborhood == '') {
+      $scope.status = 'incomplete';
+      return;
+    }
+
+    $scope.selected_address = $scope.shipping_form;
+    $scope.selected_address.id = '';
+
+    $scope.status = 'paying';
+    $scope.currentStep = "payment";
+  };
+
+  //console.log($scope.cart.items);
 
   $scope.goToShipping = function() {
     $scope.currentStep = "address";

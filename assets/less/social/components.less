@@ -117,6 +117,13 @@
     .hit-part-number {
       font-size: 12px;
     }
+    .hit-price {
+      margin-bottom: 0;
+      margin-top: 5px;
+      font-size: 18px;
+      font-weight: 600;
+      color: @brand-primary;
+    }
   }
   .component-thumbnail {
     position: relative;
@@ -326,6 +333,36 @@
 
     &.fee {
       color: @brand-warning;
+    }
+  }
+}
+
+.subtotal-fee {
+  font-size: 18px;
+  color: @brand-primary;
+  font-weight: 700;
+}
+
+.banner {
+  overflow: hidden;
+  border-radius: 1em;
+  display: inline-block;
+  margin-top: 1em;
+  height: 220px;
+  margin-right: 1em;
+
+  &.banner-empty {
+    width: 320px;
+    background: rgba(200,200,200,1);
+    background: linear-gradient(to right, rgba(200,200,200,1) 0%, rgba(255,255,255,1) 60%);
+    margin-right: 0;
+
+    p {
+      color: #555;
+      line-height: 220px;
+      font-size: 18px;
+      text-transform: uppercase;
+      margin-left: 2em;
     }
   }
 }

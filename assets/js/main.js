@@ -71,6 +71,15 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   $routeProvider.when('/home', {
     templateUrl: '/js/partials/home.html?v=' + version
   });
+  $routeProvider.when('/terminos-y-condiciones', {
+    templateUrl: '/js/partials/terms.html?v=' + version
+  });
+  $routeProvider.when('/aviso-de-privacidad', {
+    templateUrl: '/js/partials/privacy.html?v=' + version
+  });
+  $routeProvider.when('/reglamento', {
+    templateUrl: '/js/partials/rules.html?v=' + version
+  });
   $routeProvider.when('/about', {
     templateUrl: '/js/partials/about.html?v=' + version
   });
@@ -91,6 +100,10 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
     controller: 'UserValidationController'
   });
   $routeProvider.when('/componentes', {
+    templateUrl: '/js/partials/components.html?v=' + version,
+    controller: 'ComponentsController'
+  });
+  $routeProvider.when('/componentes/tienda', {
     templateUrl: '/js/partials/components.html?v=' + version,
     controller: 'ComponentsController'
   });

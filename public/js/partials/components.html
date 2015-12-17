@@ -1,6 +1,6 @@
 <div class="global-content">
   <div class="container">
-    <div class="row" ng-if="onlyStore">
+    <div class="row" ng-if="onlyStore && false">
       <div class="col-md-12 mb-40">
         <div class="img-slider">
           <div class="main-img">
@@ -23,6 +23,16 @@
       </div>
     </div>
 
+    <section ng-if="onlyStore">
+      <div class="banner">
+        <img src="/images/shop/banners/nvidia.jpg" height="auto">
+      </div>
+
+      <div class="banner banner-empty">
+        <p>Promoción disponible</p>
+      </div>
+    </section>
+
     <div class="row">
       <div class="col-md-9">
         <div class="search">
@@ -36,16 +46,24 @@
               <div class="row">
                 <div class="col-md-3">
                   <div class="component-thumbnail">
-                    <img ng-src="https://spartangeek.com/images/products/{{ hit.image }}" alt="{{ hit.full_name || hit.name }}" ng-if="hit.image" class="portrait2">
+                    <img ng-src="https://assets.spartangeek.com/components/{{ hit.image }}" alt="{{ hit.full_name || hit.name }}" ng-if="hit.image" class="portrait2">
                     <img src="/images/noimage.jpg" alt="{{ hit.full_name || hit.name }}" ng-if="!hit.image">
                   </div>
                 </div>
                 <div class="hit-content col-md-9">
                   <p class="hit-name"><a href="/componente/{{ hit.slug }}">{{ hit.full_name || hit.name }}</a></p>
                   <p class="hit-part-number">{{ hit.part_number }}</p>
-                  <div class="btn-toolbar">
-                    <a href="#" class="btn btn-link btn-xs" ng-if="hit.activated"><i class="fa fa-cart-plus"></i> Agregar a carrito</a>
-                    <a href="#" class="btn btn-link btn-xs"><i class="fa fa-desktop"></i> Agregar a mi lista</a>
+                  <div class="row">
+                    <div class="col-sm-4">
+                      <p class="hit-price" ng-if="onlyStore">{{ hit.price | currency:'$ ':0 }}</p>
+                    </div>
+                    <div ng-class="{'col-sm-8': onlyStore, 'col-sm-12': !onlyStore}">
+                      <div class="btn-toolbar">
+                        <a href="#" class="btn btn-link btn-xs hidden" ng-if="hit.activated"><i class="fa fa-cart-plus"></i> Agregar a carrito</a>
+                        <a href="#" class="btn btn-link btn-xs hidden"><i class="fa fa-desktop"></i> Agregar a mi lista</a>
+                        <a href="/componente/{{ hit.slug }}" class="btn btn-link btn-sm"><i class="fa fa-clone"></i> Ver detalles</a>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -76,13 +94,15 @@
           </li>
         </ul>
 
-        <h4>Recomendaciones</h4>
-        <ul class="collections">
-          <li><a href="#">Los más vendidos</a></li>
-          <li><a href="#">Los más vistos</a></li>
-          <li><a href="#">Procesadores de menos de $3,000</a></li>
-          <li><a href="#">Heroes of the Storm de regalo</a></li>
-        </ul>
+        <section class="hidden">
+          <h4>Recomendaciones</h4>
+          <ul class="collections">
+            <li><a href="#">Los más vendidos</a></li>
+            <li><a href="#">Los más vistos</a></li>
+            <li><a href="#">Procesadores de menos de $3,000</a></li>
+            <li><a href="#">Heroes of the Storm de regalo</a></li>
+          </ul>
+        </section>
 
       </div>
 
