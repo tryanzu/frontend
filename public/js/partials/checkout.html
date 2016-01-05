@@ -61,7 +61,9 @@
           </tr>
         </table>
 
-        <a href="/componentes/tienda" class="btn btn-lg btn-default btn-block"><span class="label">Seguir comprando</span></a>
+        <div class="mb-40">
+          <a href="/componentes/tienda" alt="Seguir comprando" class="btn btn-lg btn-default btn-block"><span class="label">Seguir comprando</span></a>
+        </div>
       </div>
       <div class="col-md-3 col-md-offset-1" ng-if="cart.getCount() > 0">
         <h4>Subtotal por {{ cart.getCount() }} productos</h4>
@@ -79,7 +81,7 @@
 
         <hr>
 
-        <div class="row" ng-if="false || true">
+        <div class="row" ng-if="current_addresses.count > 0">
           <div class="col-md-12">
 
             <div class="a-spacing-base address-book row">
@@ -88,22 +90,20 @@
 
                 <div class="displayAddressDiv">
                   <ul class="displayAddressUL">
-                    <li class="displayAddressLI displayAddressFullName"><b>{{a.name}} {{a.surname}}</b></li>
-                    <li class="displayAddressLI displayAddressAddressLine1">{{ a.address.street_name }} {{ a.address.street_number }}, Colonia {{ a.address.neighborhood }}</li>
-                    <li class="displayAddressLI displayAddressCityStateOrRegionPostalCode">{{ a.address.city }}, {{ a.address.state }}, {{ a.address.zip_code }}</li>
-                    <li class="displayAddressLI displayAddressCountryName">México</li>
-                    <li class="displayAddressLI displayAddressPhoneNumber">Teléfono: {{ a.phone.area_code }} {{ a.phone.number }}</li>
+                    <li class="displayAddressLI displayAddressFullName"><b>{{ a.name }}</b></li>
+              <li class="displayAddressLI displayAddressAddressLine1">{{ a.address }}</li>
+              <li class="displayAddressLI displayAddressAddressLine2">{{ a.neighborhood }}</li>
+              <li class="displayAddressLI displayAddressCityStateOrRegionPostalCode">{{ a.city }}, {{ a.state }} {{ a.zip_code }}</li>
+              <li class="displayAddressLI displayAddressCountryName">México</li>
+              <li class="displayAddressLI displayAddressPhoneNumber">Teléfono: {{ a.phone_number }}</li>
                   </ul>
                 </div>
                 <div class="row">
                   <div class="col-md-12 mb-10">
-                    <a href="" class="btn btn-primary btn-block" ng-click="goToPay()">Enviar a '{{a.alias}}'</a>
+                    <a href="" class="btn btn-primary btn-block" ng-click="goToPay(a)">Enviar a '{{a.alias}}'</a>
                   </div>
                   <div class="col-md-6">
-                    <a href="" class="btn btn-default btn-sm btn-block">Editar '{{a.alias}}'</a>
-                  </div>
-                  <div class="col-md-6">
-                    <a href="" class="btn btn-default btn-sm btn-block">Eliminar '{{a.alias}}'</a>
+                    <a href="" ng-click="deleteAddress(a)" class="btn btn-default btn-sm btn-block">Eliminar dirección</a>
                   </div>
                 </div>
               </div>
@@ -134,13 +134,13 @@
               <div class='row'>
                 <div class='col-sm-8 form-group required'>
                   <label class='control-label'>Nombre / Quien recibe:</label>
-                  <input class='form-control' ng-model="shipping_form.name" size='40' type='text' placeholder="Nobody">
+                  <input class='form-control' ng-model="shipping_form.name" maxlength='40' type='text' placeholder="Nobody">
                 </div>
               </div>
               <div class='row'>
                 <div class='col-sm-8 form-group required'>
                   <label class='control-label'>Número de Teléfono</label>
-                  <input ng-model="shipping_form.phone_number" class='form-control' placeholder='5512345678' size='10' type='text'>
+                  <input ng-model="shipping_form.phone_number" class='form-control' placeholder='5512345678' maxlength='10' type='text'>
                   <span id="helpBlock" class="help-block">10 dígitos (LADA y número)</span>
                 </div>
               </div>
@@ -148,19 +148,19 @@
               <div class='row'>
                 <div class='col-sm-12 form-group required'>
                   <label class='control-label'>Dirección (calle, número de casa o interior, torre, empresa): </label>
-                  <input ng-model="shipping_form.address" autocomplete='off' class='form-control' size='80' type='text'>
+                  <input ng-model="shipping_form.address" autocomplete='off' class='form-control' maxlength='80' type='text'>
                 </div>
               </div>
 
               <div class='row'>
                 <div class='col-sm-4 form-group required'>
                   <label class='control-label'>Código Postal</label>
-                  <input ng-model="shipping_form.zip_code" autocomplete='off' class='form-control' size='5' type='text'>
+                  <input ng-model="shipping_form.zip_code" autocomplete='off' class='form-control' maxlength='5' type='text'>
                 </div>
 
                 <div class="col-sm-8 form-group required">
                     <label class='control-label'>Estado</label>
-                    <select ng-model="shipping_form.state" id="estado" name="estado" class="form-control">
+                    <select ng-model="shipping_form.state" id="estado" name="estado" maxlength="40" class="form-control">
                         <option value="Aguascalientes">Aguascalientes</option>
                         <option value="Baja California">Baja California</option>
                         <option value="Baja California Sur">Baja California Sur</option>
@@ -200,11 +200,19 @@
               <div class='row'>
                 <div class='col-sm-6 form-group required'>
                   <label class='control-label'>Ciudad / Delegación</label>
-                  <input class='form-control' ng-model="shipping_form.city" size='40' type='text' placeholder="Benito Juárez">
+                  <input class='form-control' ng-model="shipping_form.city" maxlength='40' type='text' placeholder="Benito Juárez">
                 </div>
                 <div class='col-sm-6 form-group required'>
                   <label class='control-label'>Colonia</label>
-                  <input ng-model="shipping_form.neighborhood" autocomplete='off' class='form-control' size='40' type='text' placeholder="Del Valle">
+                  <input ng-model="shipping_form.neighborhood" autocomplete='off' class='form-control' maxlength='40' type='text' placeholder="Del Valle">
+                </div>
+              </div>
+
+              <div class='row'>
+                <div class='col-sm-12 form-group required'>
+                  <label class='control-label'>Alias</label>
+                  <input ng-model="shipping_form.alias" class='form-control' placeholder='Mi casa' maxlength='20' type='text'>
+                  <span id="helpBlock" class="help-block">Para futura referencia (Mi casa, La casa de mi madre, etc)</span>
                 </div>
               </div>
 
@@ -238,50 +246,54 @@
     </div>
 
 
-    <div class="row" ng-if="currentStep == 'payment'">
+    <div class="row mb-40" ng-if="currentStep == 'payment'">
       <div class="col-md-6">
         <h3>Sumario</h3>
 
-        <h4>Pedido</h4>
-        <div ng-show="cart.items.length > 0" class="cart">
-          <div class="item" ng-repeat="item in cart.items track by $index">
-            <figure>
-              <img ng-src="https://spartangeek.com/images/products/{{ item.image }}" ng-if="item.image"></img>
-              <img src="/images/noimage.jpg" ng-if="!item.image"></img>
-            </figure>
+        <section id="selected_order" class="mb-20">
+          <h4>Pedido</h4>
+          <div ng-show="cart.items.length > 0" class="cart">
+            <div class="item" ng-repeat="item in cart.items track by $index">
+              <figure>
+                <img ng-src="https://spartangeek.com/images/products/{{ item.image }}" ng-if="item.image"></img>
+                <img src="/images/noimage.jpg" ng-if="!item.image"></img>
+              </figure>
 
-            <div class="content">
-              <span class="name">{{ item.full_name || item.name }}</span>
-              <div class="price">
-                <p>x {{ item.quantity }}</p>
-                <span>{{ item.price * item.quantity | currency:'$ ':0 }} MXN</span>
+              <div class="content">
+                <span class="name">{{ item.full_name || item.name }}</span>
+                <div class="price">
+                  <p>x {{ item.quantity }}</p>
+                  <span>{{ item.price * item.quantity | currency:'$ ':0 }} MXN</span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <table class="table table-summary">
-          <tr>
-            <th>Suma</th>
-            <td>{{ cart.getTotal() | currency:'$ ':0 }} MXN</td>
-          </tr>
-          <tr>
-            <th>Envío</th>
-            <td>{{ cart.getShippingFee() | currency:'$ ':0 }} MXN</td>
-          </tr>
-          <tr>
-            <th>Subtotal</th>
-            <td>{{ cart.getTotal() + cart.getShippingFee() | currency:'$ ':0 }} MXN</td>
-          </tr>
-          <tr ng-if="getPaymentFee() > 0">
-            <th>Comisión por método de pago elegido</th>
-            <td class="fee">{{ getPaymentFee() | currency:'$ ':0 }} MXN</td>
-          </tr>
-          <tr class="total">
-            <th>Total a Pagar</th>
-            <td>{{ cart.getTotal() + cart.getShippingFee() + getPaymentFee() | currency:'$ ':0 }} MXN</td>
-          </tr>
-        </table>
+          <table class="table table-summary">
+            <tr>
+              <th>Suma</th>
+              <td>{{ cart.getTotal() | currency:'$ ':0 }} MXN</td>
+            </tr>
+            <tr>
+              <th>Envío</th>
+              <td>{{ cart.getShippingFee() | currency:'$ ':0 }} MXN</td>
+            </tr>
+            <tr>
+              <th>Subtotal</th>
+              <td>{{ cart.getTotal() + cart.getShippingFee() | currency:'$ ':0 }} MXN</td>
+            </tr>
+            <tr ng-if="getPaymentFee() > 0" style="background-color: #FFF8F1;">
+              <th>Comisión por método de pago elegido</th>
+              <td class="fee">{{ getPaymentFee() | currency:'$ ':0 }} MXN</td>
+            </tr>
+            <tr class="total">
+              <th>Total a Pagar</th>
+              <td>{{ cart.getTotal() + cart.getShippingFee() + getPaymentFee() | currency:'$ ':0 }} MXN</td>
+            </tr>
+          </table>
+
+          <a href="" ng-click="goToCart()">Editar mi pedido</a>
+        </section>
 
         <section id="selected_address">
           <h4>Dirección de envío</h4>
@@ -295,6 +307,8 @@
               <li class="displayAddressLI displayAddressPhoneNumber">Teléfono: {{ selected_address.phone_number }}</li>
             </ul>
           </div>
+
+          <a href="" ng-click="goToShipping()">Editar dirección de envío</a>
         </section>
 
       </div>
@@ -307,40 +321,57 @@
           <div class="radio">
             <label>
               <input type="radio" ng-model="pay_method.value" name="optionsRadios" id="optionsRadios1" value="withdrawal" checked>
-              Pago con depósito o transferencia bancaria &mdash; Tienes 3 días hábiles para hacer el pago
+              Pago con depósito o transferencia bancaria &mdash; <strong>Tienes 3 días hábiles para hacer el pago</strong>
             </label>
           </div>
           <img src="/images/pay-deposit.png" alt="Pago con depósito o transferencia bancaria">
           <div class="radio">
             <label>
               <input type="radio" ng-model="pay_method.value" name="optionsRadios" id="optionsRadios2" value="credit_card">
-              Pago con tarjeta de débido o crédito &mdash; Comisión de 4%
+              Pago con tarjeta de débido o crédito &mdash; <strong>Comisión de 3.6% + $3</strong>
             </label>
           </div>
           <img src="/images/pay-card.png" alt="Pago con tarjeta de débido o crédito">
-          <div class="radio">
-            <label>
-              <input type="radio" ng-model="pay_method.value" name="optionsRadios" id="optionsRadios2" value="paypal">
-              Pago con Paypal &mdash; Comisión de 4.1%
-            </label>
-          </div>
-          <img src="/images/pay-paypal.png" alt="Pago con Paypal">
+
         </section>
 
         <hr>
 
-        <a href="" class="btn btn-primary" ng-if="pay_method.value == 'withdrawal'">Finalizar mi pedido</a>
+        <a href="" class="btn btn-primary" ng-if="pay_method.value == 'withdrawal'" ng-click="makeOrder()">Finalizar mi pedido</a>
 
-        <section ng-if="pay_method.value == 'credit_card'">
-          <form accept-charset="UTF-8" action="/" class="require-validation" data-cc-on-file="false" data-stripe-publishable-key="pk_bQQaTxnaZlzv4FnnuZ28LFHccVSaj" id="payment-form" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓" /><input name="_method" type="hidden" value="PUT" /><input name="authenticity_token" type="hidden" value="qLZ9cScer7ZxqulsUWazw4x3cSEzv899SP/7ThPCOV8=" /></div>
+        <section ng-if="pay_method.value == 'credit_card'" class="mb-40">
+          <form stripe:form="saveCustomer">
+            <fieldset>
+              <div class="form-group col-sm-8">
+                <label>Número de tarjeta</label>
+                <input type="text" size="20" data-stripe="number" class="form-control" />
+              </div>
+              <div class="form-group col-sm-4">
+                <label>CVC</label>
+                <input type="text" size="4" maxlength="4" data-stripe="cvc" class="form-control" />
+              </div>
+              <div class="form-group col-sm-6">
+                <label>Fecha de expiración</label>
+                <input type="text" size="2" maxlength="2" data-stripe="exp-month" class="form-control" />
+                <p class="help-block">Mes (MM)</p>
+              </div>
+              <div class="form-group col-sm-6">
+                <label></label>
+                <input type="text" size="4" maxlength="4" data-stripe="exp-year" class="form-control" />
+                <p class="help-block">Año (AAAA)</p>
+              </div>
+            </fieldset>
+            <button type="submit" class="btn btn-primary">Pagar y completar mi pedido</button>
+          </form>
+
+          <form accept-charset="UTF-8" action="/" class="require-validation hidden" data-cc-on-file="false" data-stripe-publishable-key="pk_bQQaTxnaZlzv4FnnuZ28LFHccVSaj" id="payment-form" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓" /><input name="_method" type="hidden" value="PUT" /><input name="authenticity_token" type="hidden" value="qLZ9cScer7ZxqulsUWazw4x3cSEzv899SP/7ThPCOV8=" /></div>
             <div class='row'>
-              <div class='col-sm-6 form-group required'>
+              <div class='col-sm-6 form-group'>
                 <label class='control-label'>Nombre</label>
                 <input class='form-control' ng-model="payer.name" size='40' type='text' placeholder="Nobody">
               </div>
-            </div>
-            <div class='row'>
-              <div class='col-sm-6 form-group card required'>
+
+              <div class='col-sm-6 form-group'>
                 <label class='control-label'>Apellido</label>
                 <input ng-model="payer.surname" autocomplete='off' class='form-control' size='40' type='text' placeholder="AcidKid">
               </div>
@@ -440,8 +471,6 @@
 
           </form>
         </section>
-
-        <a href="" class="btn btn-primary" ng-if="pay_method.value == 'paypal'">Pagar con Paypal</a>
       </div>
     </div>
   </div>

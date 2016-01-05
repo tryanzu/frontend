@@ -50,6 +50,7 @@
   <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.16/angular-sanitize.js"></script>
   <script type="text/javascript" src="//cdn.rawgit.com/auth0/angular-jwt/master/dist/angular-jwt.js"></script>
   -->
+  <script type="text/javascript" src="https://js.stripe.com/v2/"></script>
   <script src='https://cdn.firebase.com/js/client/2.2.1/firebase.js'></script>
   <script src="https://cdn.firebase.com/libs/angularfire/1.1.1/angularfire.min.js"></script>
   <script type="text/javascript" src="js/config.js"></script>
@@ -102,10 +103,13 @@
               <li><a href="/"><i class="fa fa-users"></i> Comunidad</a></li>
               <li ng-if="user.isLogged"><a href="/chat"><i class="fa fa-comment"></i> Chat</a></li>
               <li><a href="/componentes"><i class="fa fa-th-large"></i> Catálogo de componentes</a></li>
+              <li><a href="https://www.youtube.com/channel/UCk5P7-ZHAS8ddSEkUA2yXHA" alt="Canal de Youtube"><i class="fa fa-youtube-play"></i> Canal de Youtube</a></li>
               <li role="separator" class="divider"></li>
               <li><a href="/componentes/tienda"><i class="fa fa-shopping-cart"></i> Tienda de componentes</a></li>
               <li><a href="/tienda" target="_blank"><i class="fa fa-desktop"></i> Pedir una Spartana</a></li>
               <li class="divider"></li>
+              <li><a href="/reglamento"><i class="fa fa-hand-peace-o"></i> Reglamento</a></li>
+              <li><a href="/terminos-y-condiciones"><i class="fa fa-file-text"></i> Términos y Condiciones</a></li>
               <li><a href="/about"><i class="fa fa-fw fa-question icon"></i> Acerca de...</a></li>
             </ul>
           </li>
@@ -238,26 +242,6 @@
           </li>
         </ul>
 
-        <ul class="nav navbar-nav navbar-right hidden-xs" ng-if="user.isLogged && false" ng-cloak>
-          <li uib-tooltip="Monedas para comprar medallas" tooltip-placement="bottom">
-            <a>
-              <span class="icon"><i class="fa fa-usd"></i></span>
-              <span class="label"><span class="visible-lg-inline">Monedas: </span>{{ user.gaming.coins || 0 }}</span>
-            </a>
-          </li>
-          <li uib-tooltip="Cantidad de 'Me gusta' que puedes dar" tooltip-placement="bottom">
-            <a>
-              <span class="icon"><i class="sgi big"></i></span>
-              <span class="label"><span class="visible-lg-inline">Tributo: </span>{{ user.gaming.tribute || 0 }}</span>
-            </a>
-          </li>
-          <li uib-tooltip="Cantidad de 'Esto apesta' que puedes dar" tooltip-placement="bottom">
-            <a>
-              <span class="icon"><i class="sgi shit big"></i></span>
-              <span class="label"><span class="visible-lg-inline">Mierda: </span>{{ user.gaming.shit || 0 }}</span>
-            </a>
-          </li>
-        </ul>
       </div><!-- /.navbar-collapse -->
 
     </div><!-- /.container -->

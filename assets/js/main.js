@@ -11,6 +11,7 @@
 // @codekit-prepend "vendor/angular-acl.min.js"
 // @codekit-prepend "vendor/angular-timeago.js"
 // @codekit-prepend "vendor/algoliasearch.angular.min.js"
+// @codekit-prepend "vendor/stripe-angular.js"
 
 // @codekit-prepend "common/directives"
 // @codekit-prepend "common/filters"
@@ -60,7 +61,8 @@ var boardApplication = angular.module('board', [
   'uiSwitch',
   'mm.acl',
   'yaru22.angular-timeago',
-  'searchBar'
+  'searchBar',
+  'stripe'
 ]);
 
 var version = '154';
@@ -156,6 +158,9 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
 
   // use the HTML5 History API
   $locationProvider.html5Mode(true);
+
+  // Stripe
+  Stripe.setPublishableKey(stripe_public_key);
 
   // Marked
   markedProvider.setRenderer({

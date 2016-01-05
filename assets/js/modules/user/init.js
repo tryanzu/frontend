@@ -131,7 +131,7 @@ UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed
   }
 
   User.get({user_id: $routeParams.id}, function(data) {
-    console.log(data)
+    //console.log(data)
     $scope.profile = data;
     $scope.startFeed();
     $scope.new_data.username = $scope.profile.username;

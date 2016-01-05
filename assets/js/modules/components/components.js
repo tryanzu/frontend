@@ -17,7 +17,7 @@ ComponentsModule.factory('$localstorage', ['$window', function($window) {
   }
 }]);
 
-ComponentsModule.factory('cart', ['$localstorage', function($localstorage) {
+ComponentsModule.factory('cart', ['$localstorage', '$http', function($localstorage, $http) {
 
   //var cart_keys = {}
   var cart = {};
@@ -26,45 +26,54 @@ ComponentsModule.factory('cart', ['$localstorage', function($localstorage) {
   //cart.items_keys = $localstorage.getObject('cart_keys');
 
   cart.addItem = function(item) {
-    //console.log(item);
-    var added = false;
-    for(var i = 0; i < cart.items.length; i++) {
-      if(item._id == cart.items[i]._id) {
-        added = true;
-        cart.items[i].quantity++;
+    console.log(item);
+    $http.post(layer_path + 'store/cart', {"id": item._id,"vendor": "spartangeek"}).then(function success(response) {
+      console.log(response);
+      var added = false;
+      for(var i = 0; i < cart.items.length; i++) {
+        if(item._id == cart.items[i]._id) {
+          added = true;
+          cart.items[i].quantity++;
+          cart.persist();
+          break;
+        }
+      }
+      if(!added) {
+        var new_item = {
+          _id: item._id,
+          name: item.name,
+          full_name: item.full_name,
+          slug: item.slug,
+          price: item.store.vendors.spartangeek.price,
+          quantity: 1,
+          image: item.image,
+          type: item.type
+        }
+        cart.items.push(new_item);
         cart.persist();
-        break;
       }
-    }
-    if(!added) {
-      var new_item = {
-        _id: item._id,
-        name: item.name,
-        full_name: item.full_name,
-        slug: item.slug,
-        price: item.store.vendors.spartangeek.price,
-        quantity: 1,
-        image: item.image,
-        type: item.type
-      }
-      cart.items.push(new_item);
-      cart.persist();
-    }
-    console.log(cart);
+      //console.log(cart);
+    }, function(error) {
+      console.log(error);
+    })
   };
 
   cart.removeItem = function(item) {
-    for(var i = 0; i < cart.items.length; i++) {
-      if(item._id == cart.items[i]._id) {
-        if(cart.items[i].quantity > 1) {
-          cart.items[i].quantity--;
-        } else {
-          cart.items.splice(i, 1);
+    $http.delete(layer_path + 'store/cart/' + item._id).then(function success(response) {
+      for(var i = 0; i < cart.items.length; i++) {
+        if(item._id == cart.items[i]._id) {
+          if(cart.items[i].quantity > 1) {
+            cart.items[i].quantity--;
+          } else {
+            cart.items.splice(i, 1);
+          }
+          cart.persist();
+          break;
         }
-        cart.persist();
-        break;
       }
-    }
+    }, function(error) {
+      console.log(error);
+    });
   };
 
   cart.getIndividualShippingFee = function(item) {
@@ -202,7 +211,7 @@ ComponentsModule.controller('ComponentsController', ['$scope', '$timeout', 'Comp
       facetFilters: $scope.getFacetFilters()
     })
     .then(function(response) {
-      console.log(response);
+      //console.log(response);
       $scope.results = response;
       $scope.totalItems = response.nbHits;
       $scope.facets = response.facets;
@@ -403,26 +412,16 @@ ComponentsModule.controller('PcBuilderController', ['$scope', function($scope) {
 
 }]);
 
-ComponentsModule.controller('CheckoutController', ['$scope', 'cart', function($scope, cart) {
+ComponentsModule.controller('CheckoutController', ['$scope', 'cart', '$http', function($scope, cart, $http) {
   $scope.currentStep = "cart";
 
   $scope.payer = {
     name: '',
-    surname: '',
-    phone: {
-      area_code: '',
-      number: ''
-    },
-    address: {
-      street_name: '',
-      street_number: '',
-      apt_number: '',
-      zip_code: ''
-    },
-    state:"Distrito Federal"
+    surname: ''
   };
 
   $scope.shipping_form = {
+    alias: '',
     name: '',
     phone_number: '',
     address: '',
@@ -438,91 +437,178 @@ ComponentsModule.controller('CheckoutController', ['$scope', 'cart', function($s
   };
 
   $scope.current_addresses = {
-    count: 1,
-    addresses: [
-      {
-        alias: 'Mi casa',
-        name: 'Rodrigo',
-        surname: 'Contreras',
-        phone: {
-          area_code: '55',
-          number: '85584046'
-        },
-        address: {
-          street_name: 'Avenida Revolución',
-          street_number: '1034',
-          apt_number: '603',
-          zip_code: '03900',
-          state:"Distrito Federal",
-          city: "Benito Juárez",
-          neighborhood: 'San José Insurgentes'
-        }
-      },
-      {
-        alias: 'Tu casa',
-        name: 'Carlos',
-        surname: 'Fernandez',
-        phone: {
-          area_code: '55',
-          number: '85584046'
-        },
-        address: {
-          street_name: 'Avenida Revolución',
-          street_number: '1034',
-          apt_number: '603',
-          zip_code: '03900',
-          state:"Distrito Federal",
-          city: "Benito Juárez",
-          neighborhood: 'San José Insurgentes'
-        }
-      }
-    ],
+    count: 0,
+    addresses: []
   };
 
   $scope.selected_address = null;
+
+  $scope.status = ''
+
+  $scope.addresses_loaded = false;
+
+  $scope.pay_method = {
+    value: 'withdrawal'
+  }
+
+  $http.get(layer_path + 'store/cart').then(function success(response){
+    console.log(response);
+  }, function(error){
+    console.log(error);
+  });
+
+  $scope.saveCustomer = function(status, response) {
+    //$http.post('/save_customer', { token: response.id });
+    console.log(response.id);
+  };
+
+  $scope.makeOrder = function() {
+
+    var gateways = {
+      'withdrawal': 'offline',
+      'credit_card': 'stripe'
+    }
+
+    $http.post(layer_path + 'store/checkout', {
+      "gateway": gateways[$scope.pay_method.value],
+      "meta": {},
+      "ship_to": $scope.selected_address.id
+    }).then(function success(response) {
+      console.log("orden creada!");
+    }, function(error){
+      console.log(error);
+    });
+  }
 
   $scope.getPaymentFee = function() {
     if($scope.pay_method.value == 'withdrawal') {
       return 0;
     } else {
       if($scope.pay_method.value == 'credit_card') {
-        return (cart.getTotal() + cart.getShippingFee()) * 0.04 + 10
+        return Math.ceil( (cart.getTotal() + cart.getShippingFee()) * 0.042 + 3.5 );
       } else {
-        return (cart.getTotal() + cart.getShippingFee()) * 0.041 + 4
+        return Math.ceil( (cart.getTotal() + cart.getShippingFee()) * 0.04 + 4 );
       }
     }
   }
 
-  $scope.pay_url = ''
-  $scope.status = ''
+  $scope.deleteAddress = function(address) {
+    var index = $scope.current_addresses.addresses.indexOf(address);
 
-  $scope.pay_method = {
-    value: 'withdrawal'
+    if(index > -1) {
+      $http.delete(layer_path + 'store/customer/address/' + address.id).then(function success(response){
+        $scope.current_addresses.addresses.splice(index, 1);
+        $scope.current_addresses.count--;
+      }, function(error) {
+        console.log(error);
+      });
+    }
   }
 
   $scope.createAddress = function() {
     $scope.status = ''
 
     if($scope.shipping_form.name == '' || $scope.shipping_form.phone_number == '' || $scope.shipping_form.address == '' || $scope.shipping_form.zip_code == ''
-    || $scope.shipping_form.state == '' || $scope.shipping_form.city == '' || $scope.shipping_form.neighborhood == '') {
+    || $scope.shipping_form.state == '' || $scope.shipping_form.city == '' || $scope.shipping_form.neighborhood == '' || $scope.shipping_form.alias == '') {
       $scope.status = 'incomplete';
       return;
     }
 
-    $scope.selected_address = $scope.shipping_form;
-    $scope.selected_address.id = '';
+    var extra = ''
+    if($scope.shipping_form.extra.between_street_1 != '' && $scope.shipping_form.extra.between_street_2 != '') {
+      extra += 'Entre calle ' + $scope.shipping_form.extra.between_street_1 + ' y calle ' + $scope.shipping_form.extra.between_street_2 + '. ';
+    }
+    extra += $scope.shipping_form.extra.reference;
 
-    $scope.status = 'paying';
-    $scope.currentStep = "payment";
+    var new_address = {
+      name: $scope.shipping_form.alias,
+      recipient: $scope.shipping_form.name,
+      state: $scope.shipping_form.state,
+      city: $scope.shipping_form.city,
+      postal_code: $scope.shipping_form.zip_code,
+      line1: $scope.shipping_form.address,
+      line2: $scope.shipping_form.neighborhood,
+      extra: extra
+    };
+
+    $http.post(layer_path + 'store/customer/address', new_address).then(function success(response){
+      console.log(response);
+
+      $scope.selected_address = $scope.shipping_form;
+      $scope.selected_address.id = response.data.address_id;
+
+      $scope.shipping_form = {
+        alias: '',
+        name: '',
+        phone_number: '',
+        address: '',
+        zip_code: '',
+        state: "Distrito Federal",
+        city: '',
+        neighborhood: '',
+        extra: {
+          between_street_1: '',
+          between_street_2: '',
+          reference: ''
+        }
+      };
+
+      $scope.current_addresses.addresses.push($scope.selected_address);
+      $scope.current_addresses.count++;
+
+      $scope.status = 'paying';
+      $scope.currentStep = "payment";
+
+
+    }, function(error) {
+      console.log(error);
+    });
   };
 
-  //console.log($scope.cart.items);
+  $scope.goToCart = function() {
+    $scope.currentStep = "cart";
+  }
 
   $scope.goToShipping = function() {
+    if(!$scope.addresses_loaded) {
+      $http.get(layer_path + 'store/customer').then(function success(response){
+        //console.log(response);
+        var addresses = response.data.addresses;
+        $scope.current_addresses.addresses = [];
+
+        if(addresses) {
+          $scope.current_addresses.count = addresses.length;
+
+          for(var i = 0; i < addresses.length; i++) {
+            var a = {
+              alias: addresses[i].alias,
+              name: addresses[i].recipient,
+              id: addresses[i].id,
+              phone_number: addresses[i].phone,
+              address: addresses[i].address.line1,
+              zip_code: addresses[i].address.postal_code,
+              state: addresses[i].address.state,
+              city: addresses[i].address.city,
+              neighborhood: addresses[i].address.line3,
+              extra: {
+                between_street_1: '',
+                between_street_2: '',
+                reference: addresses[i].address.extra
+              }
+            };
+            $scope.current_addresses.addresses.push(a);
+          }
+        }
+      }, function(error){
+        console.log(error);
+      });
+      $scope.addresses_loaded = true;
+    }
     $scope.currentStep = "address";
   }
 
-  $scope.goToPay = function() {
+  $scope.goToPay = function(address) {
+    $scope.selected_address = address;
     $scope.currentStep = "payment";
   }
 }]);
