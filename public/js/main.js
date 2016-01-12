@@ -4828,18 +4828,27 @@ angular.module('searchBar', [
 })
 .controller('SearchController', ['$scope', '$timeout', '$http', 'algolia', function ($scope, $timeout, $http, algolia) {
   $scope.open = false;
-  $scope.hits = [];
+  $scope.hits = {
+    'posts': [],
+    'components': []
+  };
   $scope.query = '';
   $scope.loading = false;
   $scope.fetching = true;
 
   $scope.statistics = {
-    total: 0,
-    time: 0
+    'posts': {
+      total: 0,
+      time: 0
+    },
+    'components': {
+      total: 0,
+      time: 0
+    }
   }
 
   var client = algolia.Client('5AO6WVBTY2', '46253cb75bbb7b4e031d41cda14c2426');
-  var index = client.initIndex('prod_spartan');
+  //var index = client.initIndex('prod_spartan');
 
   $scope.toggle = function() {
     $scope.open = !$scope.open;
@@ -4867,12 +4876,24 @@ angular.module('searchBar', [
 
       $scope.fetching = true;
       $scope.loading = $timeout(function() {
-        index.search($scope.query)
+        var queries = [{
+          indexName: 'prod_store',
+          query: $scope.query,
+          params: {hitsPerPage: 12}
+        }, {
+          indexName: 'prod_spartan',
+          query: $scope.query,
+          params: {hitsPerPage: 10}
+        }];
+        client.search(queries)
           .then(function searchSuccess(content) {
             //console.log(content);
-            $scope.hits = content.hits;
-            $scope.statistics.total = content.nbHits;
-            $scope.statistics.time = content.processingTimeMS;
+            $scope.hits.components = content.results[0].hits;
+            $scope.statistics.components.total = content.results[0].nbHits;
+            $scope.statistics.components.time = content.results[0].processingTimeMS;
+            $scope.hits.posts = content.results[1].hits;
+            $scope.statistics.posts.total = content.results[1].nbHits;
+            $scope.statistics.posts.time = content.results[1].processingTimeMS;
           }, function searchFailure(err) {
             console.log(err);
           });
@@ -4881,7 +4902,7 @@ angular.module('searchBar', [
     }
     else
     {
-      $scope.hits = [];
+      $scope.hits.posts = [];
     }
   };
 
@@ -5417,7 +5438,7 @@ ComponentsModule.controller('CheckoutController', ['$scope', 'cart', '$http', '$
       console.log(status, response);
       $scope.current_token_error = response.error.code;
     } else {
-      console.log(response.id);
+      //console.log(response.id);
       $scope.makeOrder(response.id);
     }
   };

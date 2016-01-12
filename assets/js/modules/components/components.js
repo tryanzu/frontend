@@ -527,7 +527,7 @@ ComponentsModule.controller('CheckoutController', ['$scope', 'cart', '$http', '$
       console.log(status, response);
       $scope.current_token_error = response.error.code;
     } else {
-      console.log(response.id);
+      //console.log(response.id);
       $scope.makeOrder(response.id);
     }
   };

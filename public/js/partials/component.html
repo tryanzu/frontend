@@ -567,7 +567,7 @@
               <td uib-tooltip="El precio publicado ya no es válido, debes esperar a que lo actualicemos para poder comprar" tooltip-placement="left" ng-if="false"><i class="fa fa-shopping-cart"></i></td>
               <td>
                 <a href="" class="btn btn-success" ng-click="cart.addItem(component)" ng-if="vendor.stock != 0 && vendor.stock != null"><span class="label">Comprar</span></a>
-                <span class="label label-danger" ng-if="vendor.stock == 0 || vendor.stock == null">No se puede comprar</span>
+                <span class="label label-danger" ng-if="vendor.stock == 0 || vendor.stock == null">No disponible</span>
               </td>
             </tr>
           </table>
