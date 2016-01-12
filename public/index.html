@@ -103,7 +103,7 @@
               <li><a href="/"><i class="fa fa-users"></i> Comunidad</a></li>
               <li ng-if="user.isLogged"><a href="/chat"><i class="fa fa-comment"></i> Chat</a></li>
               <li><a href="/componentes"><i class="fa fa-th-large"></i> Catálogo de componentes</a></li>
-              <li><a href="https://www.youtube.com/channel/UCk5P7-ZHAS8ddSEkUA2yXHA" alt="Canal de Youtube"><i class="fa fa-youtube-play"></i> Canal de Youtube</a></li>
+              <li><a href="https://www.youtube.com/channel/UCk5P7-ZHAS8ddSEkUA2yXHA" alt="Canal de Youtube" target="_blank"><i class="fa fa-youtube-play"></i> Canal de Youtube</a></li>
               <li role="separator" class="divider"></li>
               <li><a href="/componentes/tienda"><i class="fa fa-shopping-cart"></i> Tienda de componentes</a></li>
               <li><a href="/tienda" target="_blank"><i class="fa fa-desktop"></i> Pedir una Spartana</a></li>
@@ -214,7 +214,7 @@
         </ul>
 
         <ul class="nav navbar-nav navbar-right" ng-if="location.path().indexOf('componente') > -1 && location.path().indexOf('checkout') < 0">
-          <li uib-dropdown>
+          <li uib-dropdown is-open="cart.isopen">
             <a href="" uib-dropdown-toggle>
               <span class="icon"><i class="fa fa-shopping-cart"></i></span>
               <span class="label visible-lg-inline">Carrito ({{ cart.getCount() }})</span></span>
@@ -234,7 +234,7 @@
               </li>
               <li ng-if="cart.items.length > 0">
                 <div class="text-center">
-                  <a href="/componentes/checkout" class="btn btn-default"><span class="label">Ir a carrito</span></a>
+                  <a href="/componentes/tienda" class="btn btn-default"><span class="label">Catálogo de componentes</span></a>
                   <a href="/componentes/checkout" class="btn btn-primary"><span class="label">Finalizar pedido</span></a>
                 </div>
               </li>

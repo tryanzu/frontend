@@ -4913,12 +4913,18 @@ ComponentsModule.factory('cart', ['$localstorage', '$http', function($localstora
   var cart = {};
 
   cart.items = $localstorage.getObject('cart');
-  //cart.items_keys = $localstorage.getObject('cart_keys');
+  cart.isopen = false;
 
   cart.addItem = function(item) {
-    console.log(item);
-    $http.post(layer_path + 'store/cart', {"id": item._id,"vendor": "spartangeek"}).then(function success(response) {
-      console.log(response);
+    //console.log(item);
+    $http.post(layer_path + 'store/cart', {
+      "id": item._id,
+      "vendor": "spartangeek"
+    }, {
+      withCredentials: true
+    }).then(function success(response) {
+      //console.log(response);
+      cart.isopen = true;
       var added = false;
       for(var i = 0; i < cart.items.length; i++) {
         if(item._id == cart.items[i]._id) {
@@ -4949,7 +4955,9 @@ ComponentsModule.factory('cart', ['$localstorage', '$http', function($localstora
   };
 
   cart.removeItem = function(item) {
-    $http.delete(layer_path + 'store/cart/' + item._id).then(function success(response) {
+    $http.delete(layer_path + 'store/cart/' + item._id, {
+      withCredentials: true
+    }).then(function success(response) {
       for(var i = 0; i < cart.items.length; i++) {
         if(item._id == cart.items[i]._id) {
           if(cart.items[i].quantity > 1) {
@@ -4966,6 +4974,11 @@ ComponentsModule.factory('cart', ['$localstorage', '$http', function($localstora
     });
   };
 
+  cart.empty = function() {
+    cart.items = [];
+    cart.persist();
+  }
+
   cart.getIndividualShippingFee = function(item) {
     if(item.type == 'case') {
       return 320;
@@ -4977,6 +4990,11 @@ ComponentsModule.factory('cart', ['$localstorage', '$http', function($localstora
       }
       return 120;
     }
+  }
+
+  cart.replaceItems = function(new_items) {
+    cart.items = new_items;
+    cart.persist();
   }
 
   cart.getShippingFee = function() {
@@ -5302,8 +5320,17 @@ ComponentsModule.controller('PcBuilderController', ['$scope', function($scope) {
 
 }]);
 
-ComponentsModule.controller('CheckoutController', ['$scope', 'cart', '$http', function($scope, cart, $http) {
+ComponentsModule.controller('CheckoutController', ['$scope', 'cart', '$http', '$timeout', function($scope, cart, $http, $timeout) {
   $scope.currentStep = "cart";
+
+  // Flags
+  $scope.f = {
+    verify_cart: false,
+    error_messages: {
+      totals: false
+    },
+    trying_to_pay: false
+  };
 
   $scope.payer = {
     name: '',
@@ -5341,32 +5368,97 @@ ComponentsModule.controller('CheckoutController', ['$scope', 'cart', '$http', fu
     value: 'withdrawal'
   }
 
-  $http.get(layer_path + 'store/cart').then(function success(response){
-    console.log(response);
-  }, function(error){
-    console.log(error);
-  });
+  $scope.current_token_error = '';
+  $scope.token_errors = {
+    "invalid_expiry_month": "El mes de expiración de tu tarjeta es inválido",
+    "invalid_expiry_year": "El año de expiración de tu tarjeta es inválido",
+    "invalid_cvc": "El código de seguridad (CVC) de tu tarjeta es inválido",
+    "incorrect_number": "El número de tarjeta es inválido"
+  };
+  $scope.current_charge_error = '';
+  $scope.charge_errors = {
+    "gateway-incorrect-num": "El número de tarjeta es incorrecto",
+    "gateway-invalid-num": "El número de tarjeta es inválido",
+    "gateway-invalid-exp-m": "El mes de expiración de tu tarjeta es inválido",
+    "gateway-invalid-exp-y": "El año de expiración de tu tarjeta es inválido",
+    "gateway-invalid-cvc": "El código de seguridad (CVC) de tu tarjeta es inválido",
+    "gateway-expired-card": "La tarjeta que estás usando está expirada.",
+    "gateway-incorrect-cvc": "El código de seguridad (CVC) es incorrecto",
+    "gateway-incorrect-zip": "No se pudo realizar el cobro a tu tarjeta",
+    "gateway-card-declined": "La tarjeta fue declinada por el banco",
+    "gateway-stripe-missing": "No se puedo realizar el cobro a tu tarjeta",
+    "gateway-processing-err": "Error al procesar tu tarjeta"
+  }
 
-  $scope.saveCustomer = function(status, response) {
-    //$http.post('/save_customer', { token: response.id });
-    console.log(response.id);
+  $scope.validateCart = function() {
+    $scope.f.verify_cart = true;
+    $http.get(layer_path + 'store/cart', {
+      withCredentials: true
+    }).then(function success(response){
+      //console.log(response);
+      for(var i = 0; i < response.data.length; i++) {
+        response.data[i]._id = response.data[i].id;
+      }
+      cart.replaceItems(response.data);
+      //console.log(cart);
+      $scope.f.verify_cart = false;
+    }, function(error){
+      console.log(error);
+    });
+  };
+  $scope.validateCart();
+
+  // After getting Stripe token, we make our API call
+  // to try to make the charge
+  $scope.createToken = function(status, response) {
+    $scope.current_token_error = '';
+    $scope.current_charge_error = '';
+    if(status == 402) {
+      console.log(status, response);
+      $scope.current_token_error = response.error.code;
+    } else {
+      console.log(response.id);
+      $scope.makeOrder(response.id);
+    }
   };
 
-  $scope.makeOrder = function() {
+  // General purpose order processor
+  $scope.makeOrder = function(token) {
+    token = (typeof token === 'undefined') ? false : token;
+
+    var meta = {};
+    if(token) {
+      meta = { token: token }
+    }
 
     var gateways = {
       'withdrawal': 'offline',
       'credit_card': 'stripe'
     }
 
+    $scope.f.error_messages.totals = false;
+    $scope.f.trying_to_pay = true;
+
     $http.post(layer_path + 'store/checkout', {
       "gateway": gateways[$scope.pay_method.value],
-      "meta": {},
-      "ship_to": $scope.selected_address.id
+      "meta": meta,
+      "ship_to": $scope.selected_address.id,
+      "total": cart.getTotal() + cart.getShippingFee() + $scope.getPaymentFee()
+    }, {
+      withCredentials: true
     }).then(function success(response) {
-      console.log("orden creada!");
+      cart.empty();
+      $scope.currentStep = "completed";
     }, function(error){
       console.log(error);
+      if(error.data.key == "bad-total") {
+        $scope.f.error_messages.totals = true;
+        $scope.currentStep = "cart";
+        $scope.validateCart();
+      } else {
+        $scope.current_charge_error = error.data.key;
+      }
+      $scope.f.trying_to_pay = false;
     });
   }
 
@@ -5375,23 +5467,10 @@ ComponentsModule.controller('CheckoutController', ['$scope', 'cart', '$http', fu
       return 0;
     } else {
       if($scope.pay_method.value == 'credit_card') {
-        return Math.ceil( (cart.getTotal() + cart.getShippingFee()) * 0.042 + 3.5 );
+        return Math.ceil( (cart.getTotal() + cart.getShippingFee()) * 0.042 + 4 );
       } else {
         return Math.ceil( (cart.getTotal() + cart.getShippingFee()) * 0.04 + 4 );
       }
-    }
-  }
-
-  $scope.deleteAddress = function(address) {
-    var index = $scope.current_addresses.addresses.indexOf(address);
-
-    if(index > -1) {
-      $http.delete(layer_path + 'store/customer/address/' + address.id).then(function success(response){
-        $scope.current_addresses.addresses.splice(index, 1);
-        $scope.current_addresses.count--;
-      }, function(error) {
-        console.log(error);
-      });
     }
   }
 
@@ -5412,13 +5491,15 @@ ComponentsModule.controller('CheckoutController', ['$scope', 'cart', '$http', fu
 
     var new_address = {
       name: $scope.shipping_form.alias,
-      recipient: $scope.shipping_form.name,
       state: $scope.shipping_form.state,
       city: $scope.shipping_form.city,
       postal_code: $scope.shipping_form.zip_code,
       line1: $scope.shipping_form.address,
-      line2: $scope.shipping_form.neighborhood,
-      extra: extra
+      line2: '',
+      extra: extra,
+      phone: $scope.shipping_form.phone_number,
+      neighborhood: $scope.shipping_form.neighborhood,
+      recipient: $scope.shipping_form.name
     };
 
     $http.post(layer_path + 'store/customer/address', new_address).then(function success(response){
@@ -5454,6 +5535,19 @@ ComponentsModule.controller('CheckoutController', ['$scope', 'cart', '$http', fu
       console.log(error);
     });
   };
+
+  $scope.deleteAddress = function(address) {
+    var index = $scope.current_addresses.addresses.indexOf(address);
+
+    if(index > -1) {
+      $http.delete(layer_path + 'store/customer/address/' + address.id).then(function success(response){
+        $scope.current_addresses.addresses.splice(index, 1);
+        $scope.current_addresses.count--;
+      }, function(error) {
+        console.log(error);
+      });
+    }
+  }
 
   $scope.goToCart = function() {
     $scope.currentStep = "cart";

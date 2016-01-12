@@ -1,7 +1,7 @@
 <main class="global-content">
   <div class="container">
 
-    <div class="row">
+    <div class="row" ng-if="currentStep != 'completed'">
       <div class="col-md-12">
         <ul class="checkout-steps">
           <li ng-class="{'active': currentStep == 'cart'}">
@@ -20,11 +20,17 @@
       </div>
     </div>
 
-    <div class="row" ng-if="currentStep == 'cart'">
+    <div class="row mb-40" ng-if="currentStep == 'cart'">
       <div class="col-md-8">
         <h3>Mi carrito actual</h3>
 
-        <div ng-show="cart.items.length > 0" class="cart">
+        <p class="alert alert-warning" ng-if="f.error_messages.totals"><strong>Revisa tu carrito</strong><br>Hubo un cambio al intentar finalizar la orden.</p>
+
+        <div class="text-center mb-40" ng-if="f.verify_cart">
+          <i class="fa fa-spinner fa-pulse fa-4x"></i>
+        </div>
+
+        <div ng-show="cart.items.length > 0 && !f.verify_cart" class="cart">
           <div class="item" ng-repeat="item in cart.items track by $index">
             <figure>
               <img ng-src="https://spartangeek.com/images/products/{{ item.image }}" ng-if="item.image"></img>
@@ -46,7 +52,7 @@
           </div>
         </div>
 
-        <table class="table table-summary">
+        <table class="table table-summary" ng-show="!f.verify_cart">
           <tr>
             <th>Total</th>
             <td>{{ cart.getTotal() | currency:'$ ':0 }} MXN</td>
@@ -73,7 +79,7 @@
       </div>
     </div>
 
-    <div class="row" ng-if="currentStep == 'address'">
+    <div class="row mb-40" ng-if="currentStep == 'address'">
       <div class="col-md-12">
         <h2>Selecciona una dirección de envío</h2>
 
@@ -245,7 +251,6 @@
       </div>
     </div>
 
-
     <div class="row mb-40" ng-if="currentStep == 'payment'">
       <div class="col-md-6">
         <h3>Sumario</h3>
@@ -328,7 +333,7 @@
           <div class="radio">
             <label>
               <input type="radio" ng-model="pay_method.value" name="optionsRadios" id="optionsRadios2" value="credit_card">
-              Pago con tarjeta de débido o crédito &mdash; <strong>Comisión de 3.6% + $3</strong>
+              Pago con tarjeta de débido o crédito &mdash; <strong>Comisión de 4.2% + $4</strong>
             </label>
           </div>
           <img src="/images/pay-card.png" alt="Pago con tarjeta de débido o crédito">
@@ -339,23 +344,27 @@
 
         <a href="" class="btn btn-primary" ng-if="pay_method.value == 'withdrawal'" ng-click="makeOrder()">Finalizar mi pedido</a>
 
+        <p class="alert alert-warning" ng-if="current_token_error != ''"><strong>Error en datos de tu tarjeta</strong><br>{{ token_errors[current_token_error] }}</p>
+
+        <p class="alert alert-warning" ng-if="current_charge_error != ''"><strong>Error al intentar hacer el pago</strong><br>{{ charge_errors[current_charge_error] }}</p>
+
         <section ng-if="pay_method.value == 'credit_card'" class="mb-40">
-          <form stripe:form="saveCustomer">
+          <form stripe:form="createToken" ng-hide="f.trying_to_pay">
             <fieldset>
               <div class="form-group col-sm-8">
                 <label>Número de tarjeta</label>
-                <input type="text" size="20" data-stripe="number" class="form-control" />
+                <input type="text" size="16" maxlength="16" data-stripe="number" class="form-control" />
               </div>
               <div class="form-group col-sm-4">
                 <label>CVC</label>
                 <input type="text" size="4" maxlength="4" data-stripe="cvc" class="form-control" />
               </div>
-              <div class="form-group col-sm-6">
+              <div class="form-group col-sm-5">
                 <label>Fecha de expiración</label>
                 <input type="text" size="2" maxlength="2" data-stripe="exp-month" class="form-control" />
                 <p class="help-block">Mes (MM)</p>
               </div>
-              <div class="form-group col-sm-6">
+              <div class="form-group col-sm-5">
                 <label></label>
                 <input type="text" size="4" maxlength="4" data-stripe="exp-year" class="form-control" />
                 <p class="help-block">Año (AAAA)</p>
@@ -364,114 +373,30 @@
             <button type="submit" class="btn btn-primary">Pagar y completar mi pedido</button>
           </form>
 
-          <form accept-charset="UTF-8" action="/" class="require-validation hidden" data-cc-on-file="false" data-stripe-publishable-key="pk_bQQaTxnaZlzv4FnnuZ28LFHccVSaj" id="payment-form" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓" /><input name="_method" type="hidden" value="PUT" /><input name="authenticity_token" type="hidden" value="qLZ9cScer7ZxqulsUWazw4x3cSEzv899SP/7ThPCOV8=" /></div>
-            <div class='row'>
-              <div class='col-sm-6 form-group'>
-                <label class='control-label'>Nombre</label>
-                <input class='form-control' ng-model="payer.name" size='40' type='text' placeholder="Nobody">
-              </div>
-
-              <div class='col-sm-6 form-group'>
-                <label class='control-label'>Apellido</label>
-                <input ng-model="payer.surname" autocomplete='off' class='form-control' size='40' type='text' placeholder="AcidKid">
-              </div>
-            </div>
-            <div class='row'>
-              <div class='col-xs-4 form-group required'>
-                <label class='control-label'>Lada</label>
-                <input ng-model="payer.phone.area_code" class='form-control' placeholder='55' size='2' type='text'>
-              </div>
-              <div class='col-xs-8 form-group required'>
-                <label class='control-label'>Teléfono</label>
-                <input ng-model="payer.phone.number" class='form-control' placeholder='12345678' size='8' type='text'>
-              </div>
-            </div>
-
-            <div class='row'>
-              <div class='col-xs-12 form-group card required'>
-                <label class='control-label'>Calle</label>
-                <input ng-model="payer.address.street_name" autocomplete='off' class='form-control' size='80' type='text'>
-              </div>
-            </div>
-
-            <div class='row'>
-              <div class='col-xs-5 form-group required'>
-                <label class='control-label'>Número exterior</label>
-                <input ng-model="payer.address.street_number" class='form-control' placeholder='1034' size='5' type='text'>
-              </div>
-              <div class='col-xs-5 form-group required'>
-                <label class='control-label'>Número interior</label>
-                <input ng-model="payer.address.apt_number" class='form-control' placeholder='4' size='5' type='text'>
-              </div>
-            </div>
-
-            <div class='row'>
-              <div class='col-xs-4 form-group card required'>
-                <label class='control-label'>Código Postal</label>
-                <input ng-model="payer.address.zip_code" autocomplete='off' class='form-control' size='5' type='text'>
-              </div>
-
-              <div class="col-xs-8 form-group required">
-                  <label class='control-label'>Estado</label>
-                  <select ng-model="payer.state" id="estado" name="estado" class="form-control">
-                      <option value="Aguascalientes">Aguascalientes</option>
-                      <option value="Baja California">Baja California</option>
-                      <option value="Baja California Sur">Baja California Sur</option>
-                      <option value="Campeche">Campeche</option>
-                      <option value="Coahuila de Zaragoza">Coahuila de Zaragoza</option>
-                      <option value="Colima">Colima</option>
-                      <option value="Chiapas">Chiapas</option>
-                      <option value="Chihuahua">Chihuahua</option>
-                      <option value="Distrito Federal" selected="selected">Distrito Federal</option>
-                      <option value="Durango">Durango</option>
-                      <option value="Guanajuato">Guanajuato</option>
-                      <option value="Guerrero">Guerrero</option>
-                      <option value="Hidalgo">Hidalgo</option>
-                      <option value="Jalisco">Jalisco</option>
-                      <option value="México">México</option>
-                      <option value="Michoacán">Michoacán</option>
-                      <option value="Morelos">Morelos</option>
-                      <option value="Nayarit">Nayarit</option>
-                      <option value="Nuevo León">Nuevo León</option>
-                      <option value="Oaxaca">Oaxaca</option>
-                      <option value="Puebla">Puebla</option>
-                      <option value="Querétaro">Querétaro</option>
-                      <option value="Quintana Roo">Quintana Roo</option>
-                      <option value="San Luis Potosí">San Luis Potosí</option>
-                      <option value="Sinaloa">Sinaloa</option>
-                      <option value="Sonora">Sonora</option>
-                      <option value="Tabasco">Tabasco</option>
-                      <option value="Tamaulipas">Tamaulipas</option>
-                      <option value="Tlaxcala">Tlaxcala</option>
-                      <option value="Veracruz">Veracruz</option>
-                      <option value="Yucatán">Yucatán</option>
-                      <option value="Zacatecas">Zacatecas</option>
-                    </select>
-              </div>
-            </div>
-
-            <div class='row'>
-              <div class='col-md-12 error form-group' ng-if="status == 'incomplete'">
-                <div class='alert-danger alert'>
-                  Por favor llena  todos los campos
-                </div>
-              </div>
-              <div class='col-md-12 error form-group' ng-if="status == 'error'">
-                <div class='alert-danger alert'>
-                  Ocurrió un error. Vuelve a intentarlo.
-                </div>
-              </div>
-            </div>
-
-            <div class="row mb-40">
-              <div class="col-md-12 text-right">
-                <a href="" ng-click="get_link()" class="btn btn-primary">Pagar y finalizar mi pedido</a>
-              </div>
-            </div>
-
-          </form>
+          <div class="text-center mb-40" ng-show="f.trying_to_pay">
+            <i class="fa fa-spinner fa-pulse fa-4x"></i>
+          </div>
         </section>
       </div>
     </div>
+
+    <div class="row mb-40" ng-if="currentStep == 'completed'">
+      <div class="col-md-12">
+        <h2 class="text-center">¡Tu orden ha sido procesada!</h2>
+
+        <div class="big-icon">
+          <i class="fa fa-check-circle-o"></i>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 col-md-offset-3">
+            <hr>
+            <p><strong>Gracias por comprar en SpartanGeek</strong><p>
+            <p>Recibirás un correo con la confirmación de tu pedido. Si tienes alguna duda puedes contactarnos a nuestro correo <strong>pedidos@spartangeek.com</strong>.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </main>
