@@ -3,8 +3,8 @@
     <nav class="side-nav index-nav" ng-if="!channel.selected.fullscreen">
       <ul class="affix">
         <li class="title-control">
-          <div class="dropdown dropdown-select class="form-control" btn-group item-count-9" dropdown>
-            <a href="#" class="dropdown-toggle btn btn-default" data-toggle="dropdown" dropdown-toggle>
+          <div class="dropdown dropdown-select class="form-control" btn-group item-count-9" uib-dropdown>
+            <a href="#" class="dropdown-toggle btn btn-default" data-toggle="dropdown" uib-dropdown-toggle>
               <span class="label">Canales disponibles</span> <i class="fa fa-fw fa-sort icon-caret"></i>
             </a>
             <ul class="dropdown-menu">
@@ -45,10 +45,10 @@
             </a>
             <div class="meta" ng-if=":: old_messages[$index-1].author.username != m.author.username">
               <a href="/u/{{ m.author.username }}/{{ m.author.id }}" class="username" target="_blank">{{ m.author.username }}</a>
-              <span class="timestamp" tooltip="{{ m.created_at | date_at }}" tooltip-popup-delay="500" tooltip-placement="right">{{ m.created_at | date:'H:mm' }}</span>
+              <span class="timestamp" uib-tooltip="{{ m.created_at | date_at }}" tooltip-popup-delay="500" tooltip-placement="right">{{ m.created_at | date:'H:mm' }}</span>
               <span class="star"></span>
             </div>
-            <span class="timestamp" ng-if=":: old_messages[$index-1].author.username == m.author.username" tooltip="{{ m.created_at | date_at }}" tooltip-popup-delay="500" tooltip-placement="right">{{ m.created_at | date:'H:mm' }}</span>
+            <span class="timestamp" ng-if=":: old_messages[$index-1].author.username == m.author.username" uib-tooltip="{{ m.created_at | date_at }}" tooltip-popup-delay="500" tooltip-placement="right">{{ m.created_at | date:'H:mm' }}</span>
             <div class="content">{{ m.content }}</div>
           </div>
           <div class="message" ng-repeat="m in messages" ng-class="::{'compact':messages[$index-1].author.username == m.author.username}">
@@ -58,10 +58,10 @@
             </a>
             <div class="meta" ng-if=":: messages[$index-1].author.username != m.author.username">
               <a href="/u/{{ m.author.username }}/{{ m.author.id }}" class="username" target="_blank">{{ m.author.username }}</a>
-              <span class="timestamp" tooltip="{{ m.created_at | date_at }}" tooltip-popup-delay="500" tooltip-placement="right">{{ m.created_at | date:'H:mm' }}</span>
+              <span class="timestamp" uib-tooltip="{{ m.created_at | date_at }}" tooltip-popup-delay="500" tooltip-placement="right">{{ m.created_at | date:'H:mm' }}</span>
               <span class="star"></span>
             </div>
-            <span class="timestamp" ng-if=":: messages[$index-1].author.username == m.author.username" tooltip="{{ m.created_at | date_at }}" tooltip-popup-delay="500" tooltip-placement="right">{{ m.created_at | date:'H:mm' }}</span>
+            <span class="timestamp" ng-if=":: messages[$index-1].author.username == m.author.username" uib-tooltip="{{ m.created_at | date_at }}" tooltip-popup-delay="500" tooltip-placement="right">{{ m.created_at | date:'H:mm' }}</span>
             <div class="content">{{ m.content }}</div>
           </div>
 
@@ -103,10 +103,10 @@
       <div class="detail-section" ng-if="!channel.selected.fullscreen || true">
         <h4>Spartanos conectados</h4>
 
-        <input type="text" ng-model="searchText" class="form-control mb-20" ng-if="can('edit-category-comments')">
+        <input type="text" ng-model="searchText.content" class="form-control mb-20" ng-if="can('edit-category-comments')">
 
         <ul class="user-status">
-          <li ng-repeat="m in members | filter:searchText | orderBy:['-status','username']" ng-class="{'online': m.status == 'online'}">
+          <li ng-repeat="m in members | filter:searchText.content | orderBy:['-status','username']" ng-class="{'online': m.status == 'online'}">
             <a href="/u/{{ m.username }}/{{ m.id }}" class="">
               <span class="avatar" title="{{ m.username }}" ng-if="!m.image">{{ m.username[0] }}</span>
               <img class="avatar" ng-src="{{ m.image }}" alt="{{ m.username }}" ng-if="m.image">

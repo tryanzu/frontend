@@ -7,10 +7,10 @@
                 <div class="col-md-9 col-xs-12">
                   <div class="user-profile">
                     <h2 class="user-identity">
-                      <div class="avatar-editor dropdown user-avatar" ng-class="{'loading': update.updating}" dropdown>
+                      <div class="avatar-editor dropdown user-avatar" ng-class="{'loading': update.updating}" uib-dropdown>
                         <img class="avatar" title="{{ profile.username }}" ng-src="{{ profile.image }}" ng-if="profile.image">
                         <span class="avatar" ng-if="!profile.image">{{ profile.username[0] }}</span>
-                        <a href="" data-toggle="dropdown" class="dropdown-toggle" ng-if="profile.id === user.info.id" dropdown-toggle ngf-drop ngf-change="upload($files)" ngf-accept="'image/*'" ngf-drag-over-class="dragover">
+                        <a href="" data-toggle="dropdown" class="dropdown-toggle" ng-if="profile.id === user.info.id" uib-dropdown-toggle ngf-drop ngf-change="upload($files)" ngf-accept="'image/*'" ngf-drag-over-class="dragover">
                           <i class="fa fa-fw fa-pencil icon" ng-if="!update.updating"></i>
                           <div class="loading-indicator" ng-if="update.updating">
                             <div class="spinner" style="position: absolute; width: 0px; z-index: auto; left: 18%; font-size: 14px;" role="progressbar">Cargando</div>
@@ -407,7 +407,7 @@
                   <p ng-if="profile.referrals.count > 0 && user.info.id !== profile.id">Esta lista es de los usuarios que se han registrado a SpartanGeek por invitación de {{ profile.username }}:</p>
 
                   <div ng-if="profile.referrals.count > 0">
-                    <a href="/u/{{ user.username}}/{{ user.id }}" class="author" tooltip="{{ user.username }}" ng-repeat="user in profile.referrals.users">
+                    <a href="/u/{{ user.username}}/{{ user.id }}" class="author" uib-tooltip="{{ user.username }}" ng-repeat="user in profile.referrals.users">
                       <img class="avatar" alt="{{ user.username }}" ng-src="{{ user.image }}" ng-if="user.image">
                       <span class="avatar" title="{{ user.username }}" ng-if="!user.image">{{ user.username[0] }}</span>
                     </a>

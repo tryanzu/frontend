@@ -1,266 +1,3 @@
-var directives = angular.module('directivesModule', []);
-
-directives.directive('adjustHeight', function($window, $document, $timeout) {
-	return {
-		restrict: 'A',
-		link: function(scope, element, attrs) {
-			scope.calculate = function() {
-        var top = $(element).offset().top;
-        var height = $(window).height();
-        var neededHeight = height - top;
-        //console.log(top, height, neededHeight, element);
-
-        $(element).css('height', neededHeight);
-      };
-      $timeout(function(){
-        scope.calculate();
-      }, 100);
-
-      $window.addEventListener('resize', function() {
-        scope.calculate();
-      });
-
-      // Listen for possible container size changes
-      scope.$on('changedContainers', function() {
-        scope.calculate();
-      });
-		}
-	};
-});
-
-directives.directive('adjustHeightChat', function($window, $document, $timeout) {
-  return {
-    restrict: 'A',
-    link: function(scope, element, attrs) {
-      scope.calculate = function() {
-        var top = $(element).offset().top;
-        var height = $(window).height();
-        var footer = $('div.footer').outerHeight();
-        var neededHeight = height - top - footer;
-        //console.log(top, height, footer, neededHeight);
-
-        $(element).css('height', neededHeight);
-      };
-      $timeout(function(){
-        scope.calculate();
-      }, 100);
-
-      $window.addEventListener('resize', function() {
-        scope.calculate();
-      });
-
-      // Listen for possible container size changes
-      scope.$on('changedContainers', function() {
-        scope.calculate();
-      });
-    }
-  };
-});
-
-directives.directive('scrollMe', function() {
-  return {
-    restrict: 'A',
-    scope: {
-      trigger: '&scrollMe'
-    },
-    link: function(scope, element, attrs) {
-      // If space is bigger, load more items
-      element.on('scroll', function() {
-        if($(this).scrollTop() + $(this).innerHeight() >= this.scrollHeight) {
-          scope.$apply(function() {
-            // Trigger scroll
-            scope.trigger();
-          });
-        }
-      });
-    }
-  }
-});
-
-directives.directive('myRefresh', ['$location', function($location) {
-  return {
-    restrict: 'A',
-    scope: {
-      trigger: '&myRefresh'
-    },
-    link: function(scope, element, attrs) {
-      element.bind('click', function() {
-        if(element[0] && element[0].href && element[0].href === $location.absUrl()){
-          //console.log("Recarga!");
-          scope.trigger();
-        }
-      });
-    }
-  };
-}]);
-
-directives.directive('markedsg', function () {
-  return {
-    restrict: 'AE',
-    replace: true,
-    scope: {
-      markedsg: '='
-    },
-    link: function (scope, element, attrs) {
-      set(scope.markedsg || element.text() || '');
-
-      if (attrs.markedsg) {
-        scope.$watch('markedsg', set);
-      }
-
-      function unindent(text) {
-        if (!text) return text;
-
-        var lines = text
-          .replace(/\t/g, '  ')
-          .split(/\r?\n/);
-
-        var i, l, min = null, line, len = lines.length;
-        for (i = 0; i < len; i++) {
-          line = lines[i];
-          l = line.match(/^(\s*)/)[0].length;
-          if (l === line.length) { continue; }
-          min = (l < min || min === null) ? l : min;
-        }
-
-        if (min !== null && min > 0) {
-          for (i = 0; i < len; i++) {
-            lines[i] = lines[i].substr(min);
-          }
-        }
-        return lines.join('\n');
-      }
-
-      function set(text) {
-        text = unindent(text || '');
-        // Parse mentions links
-        var links = $('<div>' + text + '</div>');
-        links.find('a.user-mention').each(function( index ) {
-          $(this).attr("href", "/u/"+ $(this).data('username') +"/"+ $(this).data('id'));
-          if($(this).data('comment') != undefined) {
-            $(this).before('<i class="fa fa-reply comment-response"></i>')
-          }
-        });
-        text = links.html();
-        element.html(marked(text, scope.opts || null));
-      }
-
-    }
-  };
-});
-
-
-
-var filters = angular.module('filtersModule', []);
-
-filters.filter('date_at', function() {
-	return function(input) {
-		var date = new Date(input);
-    var months = new Array("enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre");
-
-    return date.getDate() + ' de ' + months[date.getMonth()] + ' de ' + date.getFullYear();
-	};
-});
-
-filters.filter('range', function() {
-  return function(input, total) {
-    total = parseInt(total);
-    for (var i=0; i<total; i++)
-      input.push(i);
-    return input;
-  };
-});
-
-var activeReader = angular.module('activeReader', []);
-
-activeReader.factory('Bridge', function($rootScope) {
-	var bridge = {};
-	bridge.changePost = function(post) {
-		// If reader view module is active then it'll catch the request
-		$rootScope.$broadcast('resolvePost', post);
-	};
-	return bridge;
-});
-
-'use strict';
-
-var services = angular.module('sg.services', []);
-
-services.factory('AdvancedAcl', ['$rootScope', function($rootScope) {
-  return {
-    can: function(action, object, user_info, author_id, category_id) {
-      var can = false;
-
-      // If own object
-      can = can || ( $rootScope.can(action + '-own-' + object) && user_info.id === author_id );
-
-      // Or some category moderator
-      var category_owner = false;
-      if(user_info != null) {
-        if('categories' in user_info.roles[0]) {
-          category_owner = (user_info.roles[0].categories).indexOf(category_id) > -1;
-        }
-      }
-      can = can || ( $rootScope.can(action + '-category-' + object) && category_owner);
-
-      // Or supreme power
-      can = can || $rootScope.can(action + '-board-' + object);
-
-      return can;
-    }
-  };
-}]);
-
-services.service('modalService', ['$modal', function ($modal) {
-  var modalDefaults = {
-    backdrop: true,
-    keyboard: true,
-    modalFade: true,
-    windowClass: 'modal-confirm',
-    size: 'sm',
-    templateUrl: '/js/partials/modal.html'
-  };
-
-  var modalOptions = {
-    closeButtonText: 'Cerrar',
-    actionButtonText: 'Aceptar',
-    headerText: '¿Estás seguro?',
-    bodyText: '¿Quieres realizar esta acción?'
-  };
-
-  this.showModal = function (customModalDefaults, customModalOptions) {
-    if (!customModalDefaults) customModalDefaults = {};
-    customModalDefaults.backdrop = 'static';
-    return this.show(customModalDefaults, customModalOptions);
-  };
-
-  this.show = function (customModalDefaults, customModalOptions) {
-    //Create temp objects to work with since we're in a singleton service
-    var tempModalDefaults = {};
-    var tempModalOptions = {};
-
-    //Map angular-ui modal custom defaults to modal defaults defined in service
-    angular.extend(tempModalDefaults, modalDefaults, customModalDefaults);
-
-    //Map modal.html $scope custom properties to defaults defined in service
-    angular.extend(tempModalOptions, modalOptions, customModalOptions);
-
-    if (!tempModalDefaults.controller) {
-      tempModalDefaults.controller = function ($scope, $modalInstance) {
-        $scope.modalOptions = tempModalOptions;
-        $scope.modalOptions.ok = function (result) {
-          $modalInstance.close(result);
-        };
-        $scope.modalOptions.close = function (result) {
-          $modalInstance.dismiss('cancel');
-        };
-      }
-    }
-
-    return $modal.open(tempModalDefaults).result;
-  };
-}]);
-
 /**
  * marked - a markdown parser
  * Copyright (c) 2011-2014, Christopher Jeffrey. (MIT Licensed)
@@ -2019,17 +1756,6 @@ mod.directive('infiniteScroll', ['$rootScope', '$window', '$timeout',
  * angular-ui-bootstrap
  * http://angular-ui.github.io/bootstrap/
 
- * Version: 0.13.0 - 2015-05-02
- * License: MIT
- */
-angular.module("ui.bootstrap",["ui.bootstrap.tpls","ui.bootstrap.collapse","ui.bootstrap.accordion","ui.bootstrap.alert","ui.bootstrap.bindHtml","ui.bootstrap.buttons","ui.bootstrap.carousel","ui.bootstrap.dateparser","ui.bootstrap.position","ui.bootstrap.datepicker","ui.bootstrap.dropdown","ui.bootstrap.modal","ui.bootstrap.pagination","ui.bootstrap.tooltip","ui.bootstrap.popover","ui.bootstrap.progressbar","ui.bootstrap.rating","ui.bootstrap.tabs","ui.bootstrap.timepicker","ui.bootstrap.transition","ui.bootstrap.typeahead"]),angular.module("ui.bootstrap.tpls",["template/accordion/accordion-group.html","template/accordion/accordion.html","template/alert/alert.html","template/carousel/carousel.html","template/carousel/slide.html","template/datepicker/datepicker.html","template/datepicker/day.html","template/datepicker/month.html","template/datepicker/popup.html","template/datepicker/year.html","template/modal/backdrop.html","template/modal/window.html","template/pagination/pager.html","template/pagination/pagination.html","template/tooltip/tooltip-html-popup.html","template/tooltip/tooltip-html-unsafe-popup.html","template/tooltip/tooltip-popup.html","template/tooltip/tooltip-template-popup.html","template/popover/popover-template.html","template/popover/popover.html","template/progressbar/bar.html","template/progressbar/progress.html","template/progressbar/progressbar.html","template/rating/rating.html","template/tabs/tab.html","template/tabs/tabset.html","template/timepicker/timepicker.html","template/typeahead/typeahead-match.html","template/typeahead/typeahead-popup.html"]),angular.module("ui.bootstrap.collapse",[]).directive("collapse",["$animate",function(a){return{link:function(b,c,d){function e(){c.removeClass("collapse").addClass("collapsing"),a.addClass(c,"in",{to:{height:c[0].scrollHeight+"px"}}).then(f)}function f(){c.removeClass("collapsing"),c.css({height:"auto"})}function g(){c.css({height:c[0].scrollHeight+"px"}).removeClass("collapse").addClass("collapsing"),a.removeClass(c,"in",{to:{height:"0"}}).then(h)}function h(){c.css({height:"0"}),c.removeClass("collapsing"),c.addClass("collapse")}b.$watch(d.collapse,function(a){a?g():e()})}}}]),angular.module("ui.bootstrap.accordion",["ui.bootstrap.collapse"]).constant("accordionConfig",{closeOthers:!0}).controller("AccordionController",["$scope","$attrs","accordionConfig",function(a,b,c){this.groups=[],this.closeOthers=function(d){var e=angular.isDefined(b.closeOthers)?a.$eval(b.closeOthers):c.closeOthers;e&&angular.forEach(this.groups,function(a){a!==d&&(a.isOpen=!1)})},this.addGroup=function(a){var b=this;this.groups.push(a),a.$on("$destroy",function(){b.removeGroup(a)})},this.removeGroup=function(a){var b=this.groups.indexOf(a);-1!==b&&this.groups.splice(b,1)}}]).directive("accordion",function(){return{restrict:"EA",controller:"AccordionController",transclude:!0,replace:!1,templateUrl:"template/accordion/accordion.html"}}).directive("accordionGroup",function(){return{require:"^accordion",restrict:"EA",transclude:!0,replace:!0,templateUrl:"template/accordion/accordion-group.html",scope:{heading:"@",isOpen:"=?",isDisabled:"=?"},controller:function(){this.setHeading=function(a){this.heading=a}},link:function(a,b,c,d){d.addGroup(a),a.$watch("isOpen",function(b){b&&d.closeOthers(a)}),a.toggleOpen=function(){a.isDisabled||(a.isOpen=!a.isOpen)}}}}).directive("accordionHeading",function(){return{restrict:"EA",transclude:!0,template:"",replace:!0,require:"^accordionGroup",link:function(a,b,c,d,e){d.setHeading(e(a,angular.noop))}}}).directive("accordionTransclude",function(){return{require:"^accordionGroup",link:function(a,b,c,d){a.$watch(function(){return d[c.accordionTransclude]},function(a){a&&(b.html(""),b.append(a))})}}}),angular.module("ui.bootstrap.alert",[]).controller("AlertController",["$scope","$attrs",function(a,b){a.closeable="close"in b,this.close=a.close}]).directive("alert",function(){return{restrict:"EA",controller:"AlertController",templateUrl:"template/alert/alert.html",transclude:!0,replace:!0,scope:{type:"@",close:"&"}}}).directive("dismissOnTimeout",["$timeout",function(a){return{require:"alert",link:function(b,c,d,e){a(function(){e.close()},parseInt(d.dismissOnTimeout,10))}}}]),angular.module("ui.bootstrap.bindHtml",[]).directive("bindHtmlUnsafe",function(){return function(a,b,c){b.addClass("ng-binding").data("$binding",c.bindHtmlUnsafe),a.$watch(c.bindHtmlUnsafe,function(a){b.html(a||"")})}}),angular.module("ui.bootstrap.buttons",[]).constant("buttonConfig",{activeClass:"active",toggleEvent:"click"}).controller("ButtonsController",["buttonConfig",function(a){this.activeClass=a.activeClass||"active",this.toggleEvent=a.toggleEvent||"click"}]).directive("btnRadio",function(){return{require:["btnRadio","ngModel"],controller:"ButtonsController",link:function(a,b,c,d){var e=d[0],f=d[1];f.$render=function(){b.toggleClass(e.activeClass,angular.equals(f.$modelValue,a.$eval(c.btnRadio)))},b.bind(e.toggleEvent,function(){var d=b.hasClass(e.activeClass);(!d||angular.isDefined(c.uncheckable))&&a.$apply(function(){f.$setViewValue(d?null:a.$eval(c.btnRadio)),f.$render()})})}}}).directive("btnCheckbox",function(){return{require:["btnCheckbox","ngModel"],controller:"ButtonsController",link:function(a,b,c,d){function e(){return g(c.btnCheckboxTrue,!0)}function f(){return g(c.btnCheckboxFalse,!1)}function g(b,c){var d=a.$eval(b);return angular.isDefined(d)?d:c}var h=d[0],i=d[1];i.$render=function(){b.toggleClass(h.activeClass,angular.equals(i.$modelValue,e()))},b.bind(h.toggleEvent,function(){a.$apply(function(){i.$setViewValue(b.hasClass(h.activeClass)?f():e()),i.$render()})})}}}),angular.module("ui.bootstrap.carousel",[]).controller("CarouselController",["$scope","$interval","$animate",function(a,b,c){function d(a){if(angular.isUndefined(k[a].index))return k[a];{var b;k.length}for(b=0;b<k.length;++b)if(k[b].index==a)return k[b]}function e(){f();var c=+a.interval;!isNaN(c)&&c>0&&(h=b(g,c))}function f(){h&&(b.cancel(h),h=null)}function g(){var b=+a.interval;i&&!isNaN(b)&&b>0?a.next():a.pause()}var h,i,j=this,k=j.slides=a.slides=[],l=-1;j.currentSlide=null;var m=!1;j.select=a.select=function(b,d){function f(){m||(angular.extend(b,{direction:d,active:!0}),angular.extend(j.currentSlide||{},{direction:d,active:!1}),c.enabled()&&!a.noTransition&&b.$element&&(a.$currentTransition=!0,b.$element.one("$animate:close",function(){a.$currentTransition=null})),j.currentSlide=b,l=g,e())}var g=j.indexOfSlide(b);void 0===d&&(d=g>j.getCurrentIndex()?"next":"prev"),b&&b!==j.currentSlide&&f()},a.$on("$destroy",function(){m=!0}),j.getCurrentIndex=function(){return j.currentSlide&&angular.isDefined(j.currentSlide.index)?+j.currentSlide.index:l},j.indexOfSlide=function(a){return angular.isDefined(a.index)?+a.index:k.indexOf(a)},a.next=function(){var b=(j.getCurrentIndex()+1)%k.length;return a.$currentTransition?void 0:j.select(d(b),"next")},a.prev=function(){var b=j.getCurrentIndex()-1<0?k.length-1:j.getCurrentIndex()-1;return a.$currentTransition?void 0:j.select(d(b),"prev")},a.isActive=function(a){return j.currentSlide===a},a.$watch("interval",e),a.$on("$destroy",f),a.play=function(){i||(i=!0,e())},a.pause=function(){a.noPause||(i=!1,f())},j.addSlide=function(b,c){b.$element=c,k.push(b),1===k.length||b.active?(j.select(k[k.length-1]),1==k.length&&a.play()):b.active=!1},j.removeSlide=function(a){angular.isDefined(a.index)&&k.sort(function(a,b){return+a.index>+b.index});var b=k.indexOf(a);k.splice(b,1),k.length>0&&a.active?j.select(b>=k.length?k[b-1]:k[b]):l>b&&l--}}]).directive("carousel",[function(){return{restrict:"EA",transclude:!0,replace:!0,controller:"CarouselController",require:"carousel",templateUrl:"template/carousel/carousel.html",scope:{interval:"=",noTransition:"=",noPause:"="}}}]).directive("slide",function(){return{require:"^carousel",restrict:"EA",transclude:!0,replace:!0,templateUrl:"template/carousel/slide.html",scope:{active:"=?",index:"=?"},link:function(a,b,c,d){d.addSlide(a,b),a.$on("$destroy",function(){d.removeSlide(a)}),a.$watch("active",function(b){b&&d.select(a)})}}}).animation(".item",["$animate",function(a){return{beforeAddClass:function(b,c,d){if("active"==c&&b.parent()&&!b.parent().scope().noTransition){var e=!1,f=b.isolateScope().direction,g="next"==f?"left":"right";return b.addClass(f),a.addClass(b,g).then(function(){e||b.removeClass(g+" "+f),d()}),function(){e=!0}}d()},beforeRemoveClass:function(b,c,d){if("active"==c&&b.parent()&&!b.parent().scope().noTransition){var e=!1,f=b.isolateScope().direction,g="next"==f?"left":"right";return a.addClass(b,g).then(function(){e||b.removeClass(g),d()}),function(){e=!0}}d()}}}]),angular.module("ui.bootstrap.dateparser",[]).service("dateParser",["$locale","orderByFilter",function(a,b){function c(a){var c=[],d=a.split("");return angular.forEach(f,function(b,e){var f=a.indexOf(e);if(f>-1){a=a.split(""),d[f]="("+b.regex+")",a[f]="$";for(var g=f+1,h=f+e.length;h>g;g++)d[g]="",a[g]="$";a=a.join(""),c.push({index:f,apply:b.apply})}}),{regex:new RegExp("^"+d.join("")+"$"),map:b(c,"index")}}function d(a,b,c){return 1>c?!1:1===b&&c>28?29===c&&(a%4===0&&a%100!==0||a%400===0):3===b||5===b||8===b||10===b?31>c:!0}var e=/[\\\^\$\*\+\?\|\[\]\(\)\.\{\}]/g;this.parsers={};var f={yyyy:{regex:"\\d{4}",apply:function(a){this.year=+a}},yy:{regex:"\\d{2}",apply:function(a){this.year=+a+2e3}},y:{regex:"\\d{1,4}",apply:function(a){this.year=+a}},MMMM:{regex:a.DATETIME_FORMATS.MONTH.join("|"),apply:function(b){this.month=a.DATETIME_FORMATS.MONTH.indexOf(b)}},MMM:{regex:a.DATETIME_FORMATS.SHORTMONTH.join("|"),apply:function(b){this.month=a.DATETIME_FORMATS.SHORTMONTH.indexOf(b)}},MM:{regex:"0[1-9]|1[0-2]",apply:function(a){this.month=a-1}},M:{regex:"[1-9]|1[0-2]",apply:function(a){this.month=a-1}},dd:{regex:"[0-2][0-9]{1}|3[0-1]{1}",apply:function(a){this.date=+a}},d:{regex:"[1-2]?[0-9]{1}|3[0-1]{1}",apply:function(a){this.date=+a}},EEEE:{regex:a.DATETIME_FORMATS.DAY.join("|")},EEE:{regex:a.DATETIME_FORMATS.SHORTDAY.join("|")},HH:{regex:"(?:0|1)[0-9]|2[0-3]",apply:function(a){this.hours=+a}},H:{regex:"1?[0-9]|2[0-3]",apply:function(a){this.hours=+a}},mm:{regex:"[0-5][0-9]",apply:function(a){this.minutes=+a}},m:{regex:"[0-9]|[1-5][0-9]",apply:function(a){this.minutes=+a}},sss:{regex:"[0-9][0-9][0-9]",apply:function(a){this.milliseconds=+a}},ss:{regex:"[0-5][0-9]",apply:function(a){this.seconds=+a}},s:{regex:"[0-9]|[1-5][0-9]",apply:function(a){this.seconds=+a}}};this.parse=function(b,f,g){if(!angular.isString(b)||!f)return b;f=a.DATETIME_FORMATS[f]||f,f=f.replace(e,"\\$&"),this.parsers[f]||(this.parsers[f]=c(f));var h=this.parsers[f],i=h.regex,j=h.map,k=b.match(i);if(k&&k.length){var l,m;l=g?{year:g.getFullYear(),month:g.getMonth(),date:g.getDate(),hours:g.getHours(),minutes:g.getMinutes(),seconds:g.getSeconds(),milliseconds:g.getMilliseconds()}:{year:1900,month:0,date:1,hours:0,minutes:0,seconds:0,milliseconds:0};for(var n=1,o=k.length;o>n;n++){var p=j[n-1];p.apply&&p.apply.call(l,k[n])}return d(l.year,l.month,l.date)&&(m=new Date(l.year,l.month,l.date,l.hours,l.minutes,l.seconds,l.milliseconds||0)),m}}}]),angular.module("ui.bootstrap.position",[]).factory("$position",["$document","$window",function(a,b){function c(a,c){return a.currentStyle?a.currentStyle[c]:b.getComputedStyle?b.getComputedStyle(a)[c]:a.style[c]}function d(a){return"static"===(c(a,"position")||"static")}var e=function(b){for(var c=a[0],e=b.offsetParent||c;e&&e!==c&&d(e);)e=e.offsetParent;return e||c};return{position:function(b){var c=this.offset(b),d={top:0,left:0},f=e(b[0]);f!=a[0]&&(d=this.offset(angular.element(f)),d.top+=f.clientTop-f.scrollTop,d.left+=f.clientLeft-f.scrollLeft);var g=b[0].getBoundingClientRect();return{width:g.width||b.prop("offsetWidth"),height:g.height||b.prop("offsetHeight"),top:c.top-d.top,left:c.left-d.left}},offset:function(c){var d=c[0].getBoundingClientRect();return{width:d.width||c.prop("offsetWidth"),height:d.height||c.prop("offsetHeight"),top:d.top+(b.pageYOffset||a[0].documentElement.scrollTop),left:d.left+(b.pageXOffset||a[0].documentElement.scrollLeft)}},positionElements:function(a,b,c,d){var e,f,g,h,i=c.split("-"),j=i[0],k=i[1]||"center";e=d?this.offset(a):this.position(a),f=b.prop("offsetWidth"),g=b.prop("offsetHeight");var l={center:function(){return e.left+e.width/2-f/2},left:function(){return e.left},right:function(){return e.left+e.width}},m={center:function(){return e.top+e.height/2-g/2},top:function(){return e.top},bottom:function(){return e.top+e.height}};switch(j){case"right":h={top:m[k](),left:l[j]()};break;case"left":h={top:m[k](),left:e.left-f};break;case"bottom":h={top:m[j](),left:l[k]()};break;default:h={top:e.top-g,left:l[k]()}}return h}}}]),angular.module("ui.bootstrap.datepicker",["ui.bootstrap.dateparser","ui.bootstrap.position"]).constant("datepickerConfig",{formatDay:"dd",formatMonth:"MMMM",formatYear:"yyyy",formatDayHeader:"EEE",formatDayTitle:"MMMM yyyy",formatMonthTitle:"yyyy",datepickerMode:"day",minMode:"day",maxMode:"year",showWeeks:!0,startingDay:0,yearRange:20,minDate:null,maxDate:null,shortcutPropagation:!1}).controller("DatepickerController",["$scope","$attrs","$parse","$interpolate","$timeout","$log","dateFilter","datepickerConfig",function(a,b,c,d,e,f,g,h){var i=this,j={$setViewValue:angular.noop};this.modes=["day","month","year"],angular.forEach(["formatDay","formatMonth","formatYear","formatDayHeader","formatDayTitle","formatMonthTitle","minMode","maxMode","showWeeks","startingDay","yearRange","shortcutPropagation"],function(c,e){i[c]=angular.isDefined(b[c])?8>e?d(b[c])(a.$parent):a.$parent.$eval(b[c]):h[c]}),angular.forEach(["minDate","maxDate"],function(d){b[d]?a.$parent.$watch(c(b[d]),function(a){i[d]=a?new Date(a):null,i.refreshView()}):i[d]=h[d]?new Date(h[d]):null}),a.datepickerMode=a.datepickerMode||h.datepickerMode,a.maxMode=i.maxMode,a.uniqueId="datepicker-"+a.$id+"-"+Math.floor(1e4*Math.random()),angular.isDefined(b.initDate)?(this.activeDate=a.$parent.$eval(b.initDate)||new Date,a.$parent.$watch(b.initDate,function(a){a&&(j.$isEmpty(j.$modelValue)||j.$invalid)&&(i.activeDate=a,i.refreshView())})):this.activeDate=new Date,a.isActive=function(b){return 0===i.compare(b.date,i.activeDate)?(a.activeDateId=b.uid,!0):!1},this.init=function(a){j=a,j.$render=function(){i.render()}},this.render=function(){if(j.$viewValue){var a=new Date(j.$viewValue),b=!isNaN(a);b?this.activeDate=a:f.error('Datepicker directive: "ng-model" value must be a Date object, a number of milliseconds since 01.01.1970 or a string representing an RFC2822 or ISO 8601 date.'),j.$setValidity("date",b)}this.refreshView()},this.refreshView=function(){if(this.element){this._refreshView();var a=j.$viewValue?new Date(j.$viewValue):null;j.$setValidity("date-disabled",!a||this.element&&!this.isDisabled(a))}},this.createDateObject=function(a,b){var c=j.$viewValue?new Date(j.$viewValue):null;return{date:a,label:g(a,b),selected:c&&0===this.compare(a,c),disabled:this.isDisabled(a),current:0===this.compare(a,new Date),customClass:this.customClass(a)}},this.isDisabled=function(c){return this.minDate&&this.compare(c,this.minDate)<0||this.maxDate&&this.compare(c,this.maxDate)>0||b.dateDisabled&&a.dateDisabled({date:c,mode:a.datepickerMode})},this.customClass=function(b){return a.customClass({date:b,mode:a.datepickerMode})},this.split=function(a,b){for(var c=[];a.length>0;)c.push(a.splice(0,b));return c},a.select=function(b){if(a.datepickerMode===i.minMode){var c=j.$viewValue?new Date(j.$viewValue):new Date(0,0,0,0,0,0,0);c.setFullYear(b.getFullYear(),b.getMonth(),b.getDate()),j.$setViewValue(c),j.$render()}else i.activeDate=b,a.datepickerMode=i.modes[i.modes.indexOf(a.datepickerMode)-1]},a.move=function(a){var b=i.activeDate.getFullYear()+a*(i.step.years||0),c=i.activeDate.getMonth()+a*(i.step.months||0);i.activeDate.setFullYear(b,c,1),i.refreshView()},a.toggleMode=function(b){b=b||1,a.datepickerMode===i.maxMode&&1===b||a.datepickerMode===i.minMode&&-1===b||(a.datepickerMode=i.modes[i.modes.indexOf(a.datepickerMode)+b])},a.keys={13:"enter",32:"space",33:"pageup",34:"pagedown",35:"end",36:"home",37:"left",38:"up",39:"right",40:"down"};var k=function(){e(function(){i.element[0].focus()},0,!1)};a.$on("datepicker.focus",k),a.keydown=function(b){var c=a.keys[b.which];if(c&&!b.shiftKey&&!b.altKey)if(b.preventDefault(),i.shortcutPropagation||b.stopPropagation(),"enter"===c||"space"===c){if(i.isDisabled(i.activeDate))return;a.select(i.activeDate),k()}else!b.ctrlKey||"up"!==c&&"down"!==c?(i.handleKeyDown(c,b),i.refreshView()):(a.toggleMode("up"===c?1:-1),k())}}]).directive("datepicker",function(){return{restrict:"EA",replace:!0,templateUrl:"template/datepicker/datepicker.html",scope:{datepickerMode:"=?",dateDisabled:"&",customClass:"&",shortcutPropagation:"&?"},require:["datepicker","?^ngModel"],controller:"DatepickerController",link:function(a,b,c,d){var e=d[0],f=d[1];f&&e.init(f)}}}).directive("daypicker",["dateFilter",function(a){return{restrict:"EA",replace:!0,templateUrl:"template/datepicker/day.html",require:"^datepicker",link:function(b,c,d,e){function f(a,b){return 1!==b||a%4!==0||a%100===0&&a%400!==0?i[b]:29}function g(a,b){var c=new Array(b),d=new Date(a),e=0;for(d.setHours(12);b>e;)c[e++]=new Date(d),d.setDate(d.getDate()+1);return c}function h(a){var b=new Date(a);b.setDate(b.getDate()+4-(b.getDay()||7));var c=b.getTime();return b.setMonth(0),b.setDate(1),Math.floor(Math.round((c-b)/864e5)/7)+1}b.showWeeks=e.showWeeks,e.step={months:1},e.element=c;var i=[31,28,31,30,31,30,31,31,30,31,30,31];e._refreshView=function(){var c=e.activeDate.getFullYear(),d=e.activeDate.getMonth(),f=new Date(c,d,1),i=e.startingDay-f.getDay(),j=i>0?7-i:-i,k=new Date(f);j>0&&k.setDate(-j+1);for(var l=g(k,42),m=0;42>m;m++)l[m]=angular.extend(e.createDateObject(l[m],e.formatDay),{secondary:l[m].getMonth()!==d,uid:b.uniqueId+"-"+m});b.labels=new Array(7);for(var n=0;7>n;n++)b.labels[n]={abbr:a(l[n].date,e.formatDayHeader),full:a(l[n].date,"EEEE")};if(b.title=a(e.activeDate,e.formatDayTitle),b.rows=e.split(l,7),b.showWeeks){b.weekNumbers=[];for(var o=(11-e.startingDay)%7,p=b.rows.length,q=0;p>q;q++)b.weekNumbers.push(h(b.rows[q][o].date))}},e.compare=function(a,b){return new Date(a.getFullYear(),a.getMonth(),a.getDate())-new Date(b.getFullYear(),b.getMonth(),b.getDate())},e.handleKeyDown=function(a){var b=e.activeDate.getDate();if("left"===a)b-=1;else if("up"===a)b-=7;else if("right"===a)b+=1;else if("down"===a)b+=7;else if("pageup"===a||"pagedown"===a){var c=e.activeDate.getMonth()+("pageup"===a?-1:1);e.activeDate.setMonth(c,1),b=Math.min(f(e.activeDate.getFullYear(),e.activeDate.getMonth()),b)}else"home"===a?b=1:"end"===a&&(b=f(e.activeDate.getFullYear(),e.activeDate.getMonth()));e.activeDate.setDate(b)},e.refreshView()}}}]).directive("monthpicker",["dateFilter",function(a){return{restrict:"EA",replace:!0,templateUrl:"template/datepicker/month.html",require:"^datepicker",link:function(b,c,d,e){e.step={years:1},e.element=c,e._refreshView=function(){for(var c=new Array(12),d=e.activeDate.getFullYear(),f=0;12>f;f++)c[f]=angular.extend(e.createDateObject(new Date(d,f,1),e.formatMonth),{uid:b.uniqueId+"-"+f});b.title=a(e.activeDate,e.formatMonthTitle),b.rows=e.split(c,3)},e.compare=function(a,b){return new Date(a.getFullYear(),a.getMonth())-new Date(b.getFullYear(),b.getMonth())},e.handleKeyDown=function(a){var b=e.activeDate.getMonth();if("left"===a)b-=1;else if("up"===a)b-=3;else if("right"===a)b+=1;else if("down"===a)b+=3;else if("pageup"===a||"pagedown"===a){var c=e.activeDate.getFullYear()+("pageup"===a?-1:1);e.activeDate.setFullYear(c)}else"home"===a?b=0:"end"===a&&(b=11);e.activeDate.setMonth(b)},e.refreshView()}}}]).directive("yearpicker",["dateFilter",function(){return{restrict:"EA",replace:!0,templateUrl:"template/datepicker/year.html",require:"^datepicker",link:function(a,b,c,d){function e(a){return parseInt((a-1)/f,10)*f+1}var f=d.yearRange;d.step={years:f},d.element=b,d._refreshView=function(){for(var b=new Array(f),c=0,g=e(d.activeDate.getFullYear());f>c;c++)b[c]=angular.extend(d.createDateObject(new Date(g+c,0,1),d.formatYear),{uid:a.uniqueId+"-"+c});a.title=[b[0].label,b[f-1].label].join(" - "),a.rows=d.split(b,5)},d.compare=function(a,b){return a.getFullYear()-b.getFullYear()},d.handleKeyDown=function(a){var b=d.activeDate.getFullYear();"left"===a?b-=1:"up"===a?b-=5:"right"===a?b+=1:"down"===a?b+=5:"pageup"===a||"pagedown"===a?b+=("pageup"===a?-1:1)*d.step.years:"home"===a?b=e(d.activeDate.getFullYear()):"end"===a&&(b=e(d.activeDate.getFullYear())+f-1),d.activeDate.setFullYear(b)},d.refreshView()}}}]).constant("datepickerPopupConfig",{datepickerPopup:"yyyy-MM-dd",html5Types:{date:"yyyy-MM-dd","datetime-local":"yyyy-MM-ddTHH:mm:ss.sss",month:"yyyy-MM"},currentText:"Today",clearText:"Clear",closeText:"Done",closeOnDateSelection:!0,appendToBody:!1,showButtonBar:!0}).directive("datepickerPopup",["$compile","$parse","$document","$position","dateFilter","dateParser","datepickerPopupConfig",function(a,b,c,d,e,f,g){return{restrict:"EA",require:"ngModel",scope:{isOpen:"=?",currentText:"@",clearText:"@",closeText:"@",dateDisabled:"&",customClass:"&"},link:function(h,i,j,k){function l(a){return a.replace(/([A-Z])/g,function(a){return"-"+a.toLowerCase()})}function m(a){if(angular.isNumber(a)&&(a=new Date(a)),a){if(angular.isDate(a)&&!isNaN(a))return a;if(angular.isString(a)){var b=f.parse(a,o,h.date)||new Date(a);return isNaN(b)?void 0:b}return void 0}return null}function n(a,b){var c=a||b;if(angular.isNumber(c)&&(c=new Date(c)),c){if(angular.isDate(c)&&!isNaN(c))return!0;if(angular.isString(c)){var d=f.parse(c,o)||new Date(c);return!isNaN(d)}return!1}return!0}var o,p=angular.isDefined(j.closeOnDateSelection)?h.$parent.$eval(j.closeOnDateSelection):g.closeOnDateSelection,q=angular.isDefined(j.datepickerAppendToBody)?h.$parent.$eval(j.datepickerAppendToBody):g.appendToBody;h.showButtonBar=angular.isDefined(j.showButtonBar)?h.$parent.$eval(j.showButtonBar):g.showButtonBar,h.getText=function(a){return h[a+"Text"]||g[a+"Text"]};var r=!1;if(g.html5Types[j.type]?(o=g.html5Types[j.type],r=!0):(o=j.datepickerPopup||g.datepickerPopup,j.$observe("datepickerPopup",function(a){var b=a||g.datepickerPopup;if(b!==o&&(o=b,k.$modelValue=null,!o))throw new Error("datepickerPopup must have a date format specified.")})),!o)throw new Error("datepickerPopup must have a date format specified.");if(r&&j.datepickerPopup)throw new Error("HTML5 date input types do not support custom formats.");var s=angular.element("<div datepicker-popup-wrap><div datepicker></div></div>");s.attr({"ng-model":"date","ng-change":"dateSelection()"});var t=angular.element(s.children()[0]);if(r&&"month"==j.type&&(t.attr("datepicker-mode",'"month"'),t.attr("min-mode","month")),j.datepickerOptions){var u=h.$parent.$eval(j.datepickerOptions);u.initDate&&(h.initDate=u.initDate,t.attr("init-date","initDate"),delete u.initDate),angular.forEach(u,function(a,b){t.attr(l(b),a)})}h.watchData={},angular.forEach(["minDate","maxDate","datepickerMode","initDate","shortcutPropagation"],function(a){if(j[a]){var c=b(j[a]);if(h.$parent.$watch(c,function(b){h.watchData[a]=b}),t.attr(l(a),"watchData."+a),"datepickerMode"===a){var d=c.assign;h.$watch("watchData."+a,function(a,b){a!==b&&d(h.$parent,a)})}}}),j.dateDisabled&&t.attr("date-disabled","dateDisabled({ date: date, mode: mode })"),j.showWeeks&&t.attr("show-weeks",j.showWeeks),j.customClass&&t.attr("custom-class","customClass({ date: date, mode: mode })"),r?k.$formatters.push(function(a){return h.date=a,a}):(k.$$parserName="date",k.$validators.date=n,k.$parsers.unshift(m),k.$formatters.push(function(a){return h.date=a,k.$isEmpty(a)?a:e(a,o)})),h.dateSelection=function(a){angular.isDefined(a)&&(h.date=a);var b=h.date?e(h.date,o):"";i.val(b),k.$setViewValue(b),p&&(h.isOpen=!1,i[0].focus())},k.$viewChangeListeners.push(function(){h.date=f.parse(k.$viewValue,o,h.date)||new Date(k.$viewValue)});var v=function(a){h.isOpen&&a.target!==i[0]&&h.$apply(function(){h.isOpen=!1})},w=function(a){h.keydown(a)};i.bind("keydown",w),h.keydown=function(a){27===a.which?(a.preventDefault(),h.isOpen&&a.stopPropagation(),h.close()):40!==a.which||h.isOpen||(h.isOpen=!0)},h.$watch("isOpen",function(a){a?(h.$broadcast("datepicker.focus"),h.position=q?d.offset(i):d.position(i),h.position.top=h.position.top+i.prop("offsetHeight"),c.bind("click",v)):c.unbind("click",v)}),h.select=function(a){if("today"===a){var b=new Date;angular.isDate(h.date)?(a=new Date(h.date),a.setFullYear(b.getFullYear(),b.getMonth(),b.getDate())):a=new Date(b.setHours(0,0,0,0))}h.dateSelection(a)},h.close=function(){h.isOpen=!1,i[0].focus()};var x=a(s)(h);s.remove(),q?c.find("body").append(x):i.after(x),h.$on("$destroy",function(){x.remove(),i.unbind("keydown",w),c.unbind("click",v)})}}}]).directive("datepickerPopupWrap",function(){return{restrict:"EA",replace:!0,transclude:!0,templateUrl:"template/datepicker/popup.html",link:function(a,b){b.bind("click",function(a){a.preventDefault(),a.stopPropagation()})}}}),angular.module("ui.bootstrap.dropdown",["ui.bootstrap.position"]).constant("dropdownConfig",{openClass:"open"}).service("dropdownService",["$document","$rootScope",function(a,b){var c=null;this.open=function(b){c||(a.bind("click",d),a.bind("keydown",e)),c&&c!==b&&(c.isOpen=!1),c=b},this.close=function(b){c===b&&(c=null,a.unbind("click",d),a.unbind("keydown",e))};var d=function(a){if(c&&(!a||"disabled"!==c.getAutoClose())){var d=c.getToggleElement();if(!(a&&d&&d[0].contains(a.target))){var e=c.getElement();a&&"outsideClick"===c.getAutoClose()&&e&&e[0].contains(a.target)||(c.isOpen=!1,b.$$phase||c.$apply())}}},e=function(a){27===a.which&&(c.focusToggleElement(),d())}}]).controller("DropdownController",["$scope","$attrs","$parse","dropdownConfig","dropdownService","$animate","$position","$document",function(a,b,c,d,e,f,g,h){var i,j=this,k=a.$new(),l=d.openClass,m=angular.noop,n=b.onToggle?c(b.onToggle):angular.noop,o=!1;this.init=function(d){j.$element=d,b.isOpen&&(i=c(b.isOpen),m=i.assign,a.$watch(i,function(a){k.isOpen=!!a})),o=angular.isDefined(b.dropdownAppendToBody),o&&j.dropdownMenu&&(h.find("body").append(j.dropdownMenu),d.on("$destroy",function(){j.dropdownMenu.remove()}))},this.toggle=function(a){return k.isOpen=arguments.length?!!a:!k.isOpen},this.isOpen=function(){return k.isOpen},k.getToggleElement=function(){return j.toggleElement},k.getAutoClose=function(){return b.autoClose||"always"},k.getElement=function(){return j.$element},k.focusToggleElement=function(){j.toggleElement&&j.toggleElement[0].focus()},k.$watch("isOpen",function(b,c){if(o&&j.dropdownMenu){var d=g.positionElements(j.$element,j.dropdownMenu,"bottom-left",!0);j.dropdownMenu.css({top:d.top+"px",left:d.left+"px",display:b?"block":"none"})}f[b?"addClass":"removeClass"](j.$element,l),b?(k.focusToggleElement(),e.open(k)):e.close(k),m(a,b),angular.isDefined(b)&&b!==c&&n(a,{open:!!b})}),a.$on("$locationChangeSuccess",function(){k.isOpen=!1}),a.$on("$destroy",function(){k.$destroy()})}]).directive("dropdown",function(){return{controller:"DropdownController",link:function(a,b,c,d){d.init(b)}}}).directive("dropdownMenu",function(){return{restrict:"AC",require:"?^dropdown",link:function(a,b,c,d){d&&(d.dropdownMenu=b)}}}).directive("dropdownToggle",function(){return{require:"?^dropdown",link:function(a,b,c,d){if(d){d.toggleElement=b;var e=function(e){e.preventDefault(),b.hasClass("disabled")||c.disabled||a.$apply(function(){d.toggle()})};b.bind("click",e),b.attr({"aria-haspopup":!0,"aria-expanded":!1}),a.$watch(d.isOpen,function(a){b.attr("aria-expanded",!!a)}),a.$on("$destroy",function(){b.unbind("click",e)})}}}}),angular.module("ui.bootstrap.modal",[]).factory("$$stackedMap",function(){return{createNew:function(){var a=[];return{add:function(b,c){a.push({key:b,value:c})},get:function(b){for(var c=0;c<a.length;c++)if(b==a[c].key)return a[c]},keys:function(){for(var b=[],c=0;c<a.length;c++)b.push(a[c].key);return b},top:function(){return a[a.length-1]},remove:function(b){for(var c=-1,d=0;d<a.length;d++)if(b==a[d].key){c=d;break}return a.splice(c,1)[0]},removeTop:function(){return a.splice(a.length-1,1)[0]},length:function(){return a.length}}}}}).directive("modalBackdrop",["$timeout",function(a){function b(b){b.animate=!1,a(function(){b.animate=!0})}return{restrict:"EA",replace:!0,templateUrl:"template/modal/backdrop.html",compile:function(a,c){return a.addClass(c.backdropClass),b}}}]).directive("modalWindow",["$modalStack","$q",function(a,b){return{restrict:"EA",scope:{index:"@",animate:"="},replace:!0,transclude:!0,templateUrl:function(a,b){return b.templateUrl||"template/modal/window.html"},link:function(c,d,e){d.addClass(e.windowClass||""),c.size=e.size,c.close=function(b){var c=a.getTop();c&&c.value.backdrop&&"static"!=c.value.backdrop&&b.target===b.currentTarget&&(b.preventDefault(),b.stopPropagation(),a.dismiss(c.key,"backdrop click"))},c.$isRendered=!0;var f=b.defer();e.$observe("modalRender",function(a){"true"==a&&f.resolve()}),f.promise.then(function(){c.animate=!0;var b=d[0].querySelectorAll("[autofocus]");b.length?b[0].focus():d[0].focus();var e=a.getTop();e&&a.modalRendered(e.key)})}}}]).directive("modalAnimationClass",[function(){return{compile:function(a,b){b.modalAnimation&&a.addClass(b.modalAnimationClass)}}}]).directive("modalTransclude",function(){return{link:function(a,b,c,d,e){e(a.$parent,function(a){b.empty(),b.append(a)})}}}).factory("$modalStack",["$animate","$timeout","$document","$compile","$rootScope","$$stackedMap",function(a,b,c,d,e,f){function g(){for(var a=-1,b=o.keys(),c=0;c<b.length;c++)o.get(b[c]).value.backdrop&&(a=c);return a}function h(a){var b=c.find("body").eq(0),d=o.get(a).value;o.remove(a),j(d.modalDomEl,d.modalScope,function(){b.toggleClass(n,o.length()>0),i()})}function i(){if(l&&-1==g()){var a=m;j(l,m,function(){a=null}),l=void 0,m=void 0}}function j(c,d,f){function g(){g.done||(g.done=!0,c.remove(),d.$destroy(),f&&f())}d.animate=!1,c.attr("modal-animation")&&a.enabled()?c.one("$animate:close",function(){e.$evalAsync(g)}):b(g)}function k(a,b,c){return!a.value.modalScope.$broadcast("modal.closing",b,c).defaultPrevented}var l,m,n="modal-open",o=f.createNew(),p={};return e.$watch(g,function(a){m&&(m.index=a)}),c.bind("keydown",function(a){var b;27===a.which&&(b=o.top(),b&&b.value.keyboard&&(a.preventDefault(),e.$apply(function(){p.dismiss(b.key,"escape key press")})))}),p.open=function(a,b){var f=c[0].activeElement;o.add(a,{deferred:b.deferred,renderDeferred:b.renderDeferred,modalScope:b.scope,backdrop:b.backdrop,keyboard:b.keyboard});var h=c.find("body").eq(0),i=g();if(i>=0&&!l){m=e.$new(!0),m.index=i;var j=angular.element('<div modal-backdrop="modal-backdrop"></div>');j.attr("backdrop-class",b.backdropClass),b.animation&&j.attr("modal-animation","true"),l=d(j)(m),h.append(l)}var k=angular.element('<div modal-window="modal-window"></div>');k.attr({"template-url":b.windowTemplateUrl,"window-class":b.windowClass,size:b.size,index:o.length()-1,animate:"animate"}).html(b.content),b.animation&&k.attr("modal-animation","true");var p=d(k)(b.scope);o.top().value.modalDomEl=p,o.top().value.modalOpener=f,h.append(p),h.addClass(n)},p.close=function(a,b){var c=o.get(a);return c&&k(c,b,!0)?(c.value.deferred.resolve(b),h(a),c.value.modalOpener.focus(),!0):!c},p.dismiss=function(a,b){var c=o.get(a);return c&&k(c,b,!1)?(c.value.deferred.reject(b),h(a),c.value.modalOpener.focus(),!0):!c},p.dismissAll=function(a){for(var b=this.getTop();b&&this.dismiss(b.key,a);)b=this.getTop()},p.getTop=function(){return o.top()},p.modalRendered=function(a){var b=o.get(a);b&&b.value.renderDeferred.resolve()},p}]).provider("$modal",function(){var a={options:{animation:!0,backdrop:!0,keyboard:!0},$get:["$injector","$rootScope","$q","$templateRequest","$controller","$modalStack",function(b,c,d,e,f,g){function h(a){return a.template?d.when(a.template):e(angular.isFunction(a.templateUrl)?a.templateUrl():a.templateUrl)}function i(a){var c=[];return angular.forEach(a,function(a){(angular.isFunction(a)||angular.isArray(a))&&c.push(d.when(b.invoke(a)))
-}),c}var j={};return j.open=function(b){var e=d.defer(),j=d.defer(),k=d.defer(),l={result:e.promise,opened:j.promise,rendered:k.promise,close:function(a){return g.close(l,a)},dismiss:function(a){return g.dismiss(l,a)}};if(b=angular.extend({},a.options,b),b.resolve=b.resolve||{},!b.template&&!b.templateUrl)throw new Error("One of template or templateUrl options is required.");var m=d.all([h(b)].concat(i(b.resolve)));return m.then(function(a){var d=(b.scope||c).$new();d.$close=l.close,d.$dismiss=l.dismiss;var h,i={},j=1;b.controller&&(i.$scope=d,i.$modalInstance=l,angular.forEach(b.resolve,function(b,c){i[c]=a[j++]}),h=f(b.controller,i),b.controllerAs&&(d[b.controllerAs]=h)),g.open(l,{scope:d,deferred:e,renderDeferred:k,content:a[0],animation:b.animation,backdrop:b.backdrop,keyboard:b.keyboard,backdropClass:b.backdropClass,windowClass:b.windowClass,windowTemplateUrl:b.windowTemplateUrl,size:b.size})},function(a){e.reject(a)}),m.then(function(){j.resolve(!0)},function(a){j.reject(a)}),l},j}]};return a}),angular.module("ui.bootstrap.pagination",[]).controller("PaginationController",["$scope","$attrs","$parse",function(a,b,c){var d=this,e={$setViewValue:angular.noop},f=b.numPages?c(b.numPages).assign:angular.noop;this.init=function(g,h){e=g,this.config=h,e.$render=function(){d.render()},b.itemsPerPage?a.$parent.$watch(c(b.itemsPerPage),function(b){d.itemsPerPage=parseInt(b,10),a.totalPages=d.calculateTotalPages()}):this.itemsPerPage=h.itemsPerPage,a.$watch("totalItems",function(){a.totalPages=d.calculateTotalPages()}),a.$watch("totalPages",function(b){f(a.$parent,b),a.page>b?a.selectPage(b):e.$render()})},this.calculateTotalPages=function(){var b=this.itemsPerPage<1?1:Math.ceil(a.totalItems/this.itemsPerPage);return Math.max(b||0,1)},this.render=function(){a.page=parseInt(e.$viewValue,10)||1},a.selectPage=function(b,c){a.page!==b&&b>0&&b<=a.totalPages&&(c&&c.target&&c.target.blur(),e.$setViewValue(b),e.$render())},a.getText=function(b){return a[b+"Text"]||d.config[b+"Text"]},a.noPrevious=function(){return 1===a.page},a.noNext=function(){return a.page===a.totalPages}}]).constant("paginationConfig",{itemsPerPage:10,boundaryLinks:!1,directionLinks:!0,firstText:"First",previousText:"Previous",nextText:"Next",lastText:"Last",rotate:!0}).directive("pagination",["$parse","paginationConfig",function(a,b){return{restrict:"EA",scope:{totalItems:"=",firstText:"@",previousText:"@",nextText:"@",lastText:"@"},require:["pagination","?ngModel"],controller:"PaginationController",templateUrl:"template/pagination/pagination.html",replace:!0,link:function(c,d,e,f){function g(a,b,c){return{number:a,text:b,active:c}}function h(a,b){var c=[],d=1,e=b,f=angular.isDefined(k)&&b>k;f&&(l?(d=Math.max(a-Math.floor(k/2),1),e=d+k-1,e>b&&(e=b,d=e-k+1)):(d=(Math.ceil(a/k)-1)*k+1,e=Math.min(d+k-1,b)));for(var h=d;e>=h;h++){var i=g(h,h,h===a);c.push(i)}if(f&&!l){if(d>1){var j=g(d-1,"...",!1);c.unshift(j)}if(b>e){var m=g(e+1,"...",!1);c.push(m)}}return c}var i=f[0],j=f[1];if(j){var k=angular.isDefined(e.maxSize)?c.$parent.$eval(e.maxSize):b.maxSize,l=angular.isDefined(e.rotate)?c.$parent.$eval(e.rotate):b.rotate;c.boundaryLinks=angular.isDefined(e.boundaryLinks)?c.$parent.$eval(e.boundaryLinks):b.boundaryLinks,c.directionLinks=angular.isDefined(e.directionLinks)?c.$parent.$eval(e.directionLinks):b.directionLinks,i.init(j,b),e.maxSize&&c.$parent.$watch(a(e.maxSize),function(a){k=parseInt(a,10),i.render()});var m=i.render;i.render=function(){m(),c.page>0&&c.page<=c.totalPages&&(c.pages=h(c.page,c.totalPages))}}}}}]).constant("pagerConfig",{itemsPerPage:10,previousText:"« Previous",nextText:"Next »",align:!0}).directive("pager",["pagerConfig",function(a){return{restrict:"EA",scope:{totalItems:"=",previousText:"@",nextText:"@"},require:["pager","?ngModel"],controller:"PaginationController",templateUrl:"template/pagination/pager.html",replace:!0,link:function(b,c,d,e){var f=e[0],g=e[1];g&&(b.align=angular.isDefined(d.align)?b.$parent.$eval(d.align):a.align,f.init(g,a))}}}]),angular.module("ui.bootstrap.tooltip",["ui.bootstrap.position","ui.bootstrap.bindHtml"]).provider("$tooltip",function(){function a(a){var b=/[A-Z]/g,c="-";return a.replace(b,function(a,b){return(b?c:"")+a.toLowerCase()})}var b={placement:"top",animation:!0,popupDelay:0,useContentExp:!1},c={mouseenter:"mouseleave",click:"click",focus:"blur"},d={};this.options=function(a){angular.extend(d,a)},this.setTriggers=function(a){angular.extend(c,a)},this.$get=["$window","$compile","$timeout","$document","$position","$interpolate",function(e,f,g,h,i,j){return function(e,k,l,m){function n(a){var b=a||m.trigger||l,d=c[b]||b;return{show:b,hide:d}}m=angular.extend({},b,d,m);var o=a(e),p=j.startSymbol(),q=j.endSymbol(),r="<div "+o+'-popup title="'+p+"title"+q+'" '+(m.useContentExp?'content-exp="contentExp()" ':'content="'+p+"content"+q+'" ')+'placement="'+p+"placement"+q+'" popup-class="'+p+"popupClass"+q+'" animation="animation" is-open="isOpen"origin-scope="origScope" ></div>';return{restrict:"EA",compile:function(){var a=f(r);return function(b,c,d){function f(){E.isOpen?l():j()}function j(){(!D||b.$eval(d[k+"Enable"]))&&(s(),E.popupDelay?A||(A=g(o,E.popupDelay,!1),A.then(function(a){a()})):o()())}function l(){b.$apply(function(){p()})}function o(){return A=null,z&&(g.cancel(z),z=null),(m.useContentExp?E.contentExp():E.content)?(q(),x.css({top:0,left:0,display:"block"}),E.$digest(),F(),E.isOpen=!0,E.$apply(),F):angular.noop}function p(){E.isOpen=!1,g.cancel(A),A=null,E.animation?z||(z=g(r,500)):r()}function q(){x&&r(),y=E.$new(),x=a(y,function(a){B?h.find("body").append(a):c.after(a)}),y.$watch(function(){g(F,0,!1)}),m.useContentExp&&y.$watch("contentExp()",function(a){!a&&E.isOpen&&p()})}function r(){z=null,x&&(x.remove(),x=null),y&&(y.$destroy(),y=null)}function s(){t(),u(),v()}function t(){E.popupClass=d[k+"Class"]}function u(){var a=d[k+"Placement"];E.placement=angular.isDefined(a)?a:m.placement}function v(){var a=d[k+"PopupDelay"],b=parseInt(a,10);E.popupDelay=isNaN(b)?m.popupDelay:b}function w(){var a=d[k+"Trigger"];G(),C=n(a),C.show===C.hide?c.bind(C.show,f):(c.bind(C.show,j),c.bind(C.hide,l))}var x,y,z,A,B=angular.isDefined(m.appendToBody)?m.appendToBody:!1,C=n(void 0),D=angular.isDefined(d[k+"Enable"]),E=b.$new(!0),F=function(){if(x){var a=i.positionElements(c,x,E.placement,B);a.top+="px",a.left+="px",x.css(a)}};E.origScope=b,E.isOpen=!1,E.contentExp=function(){return b.$eval(d[e])},m.useContentExp||d.$observe(e,function(a){E.content=a,!a&&E.isOpen&&p()}),d.$observe("disabled",function(a){a&&E.isOpen&&p()}),d.$observe(k+"Title",function(a){E.title=a});var G=function(){c.unbind(C.show,j),c.unbind(C.hide,l)};w();var H=b.$eval(d[k+"Animation"]);E.animation=angular.isDefined(H)?!!H:m.animation;var I=b.$eval(d[k+"AppendToBody"]);B=angular.isDefined(I)?I:B,B&&b.$on("$locationChangeSuccess",function(){E.isOpen&&p()}),b.$on("$destroy",function(){g.cancel(z),g.cancel(A),G(),r(),E=null})}}}}}]}).directive("tooltipTemplateTransclude",["$animate","$sce","$compile","$templateRequest",function(a,b,c,d){return{link:function(e,f,g){var h,i,j,k=e.$eval(g.tooltipTemplateTranscludeScope),l=0,m=function(){i&&(i.remove(),i=null),h&&(h.$destroy(),h=null),j&&(a.leave(j).then(function(){i=null}),i=j,j=null)};e.$watch(b.parseAsResourceUrl(g.tooltipTemplateTransclude),function(b){var g=++l;b?(d(b,!0).then(function(d){if(g===l){var e=k.$new(),i=d,n=c(i)(e,function(b){m(),a.enter(b,f)});h=e,j=n,h.$emit("$includeContentLoaded",b)}},function(){g===l&&(m(),e.$emit("$includeContentError",b))}),e.$emit("$includeContentRequested",b)):m()}),e.$on("$destroy",m)}}}]).directive("tooltipClasses",function(){return{restrict:"A",link:function(a,b,c){a.placement&&b.addClass(a.placement),a.popupClass&&b.addClass(a.popupClass),a.animation()&&b.addClass(c.tooltipAnimationClass)}}}).directive("tooltipPopup",function(){return{restrict:"EA",replace:!0,scope:{content:"@",placement:"@",popupClass:"@",animation:"&",isOpen:"&"},templateUrl:"template/tooltip/tooltip-popup.html"}}).directive("tooltip",["$tooltip",function(a){return a("tooltip","tooltip","mouseenter")}]).directive("tooltipTemplatePopup",function(){return{restrict:"EA",replace:!0,scope:{contentExp:"&",placement:"@",popupClass:"@",animation:"&",isOpen:"&",originScope:"&"},templateUrl:"template/tooltip/tooltip-template-popup.html"}}).directive("tooltipTemplate",["$tooltip",function(a){return a("tooltipTemplate","tooltip","mouseenter",{useContentExp:!0})}]).directive("tooltipHtmlPopup",function(){return{restrict:"EA",replace:!0,scope:{contentExp:"&",placement:"@",popupClass:"@",animation:"&",isOpen:"&"},templateUrl:"template/tooltip/tooltip-html-popup.html"}}).directive("tooltipHtml",["$tooltip",function(a){return a("tooltipHtml","tooltip","mouseenter",{useContentExp:!0})}]).directive("tooltipHtmlUnsafePopup",function(){return{restrict:"EA",replace:!0,scope:{content:"@",placement:"@",popupClass:"@",animation:"&",isOpen:"&"},templateUrl:"template/tooltip/tooltip-html-unsafe-popup.html"}}).value("tooltipHtmlUnsafeSuppressDeprecated",!1).directive("tooltipHtmlUnsafe",["$tooltip","tooltipHtmlUnsafeSuppressDeprecated","$log",function(a,b,c){return b||c.warn("tooltip-html-unsafe is now deprecated. Use tooltip-html or tooltip-template instead."),a("tooltipHtmlUnsafe","tooltip","mouseenter")}]),angular.module("ui.bootstrap.popover",["ui.bootstrap.tooltip"]).directive("popoverTemplatePopup",function(){return{restrict:"EA",replace:!0,scope:{title:"@",contentExp:"&",placement:"@",popupClass:"@",animation:"&",isOpen:"&",originScope:"&"},templateUrl:"template/popover/popover-template.html"}}).directive("popoverTemplate",["$tooltip",function(a){return a("popoverTemplate","popover","click",{useContentExp:!0})}]).directive("popoverPopup",function(){return{restrict:"EA",replace:!0,scope:{title:"@",content:"@",placement:"@",popupClass:"@",animation:"&",isOpen:"&"},templateUrl:"template/popover/popover.html"}}).directive("popover",["$tooltip",function(a){return a("popover","popover","click")}]),angular.module("ui.bootstrap.progressbar",[]).constant("progressConfig",{animate:!0,max:100}).controller("ProgressController",["$scope","$attrs","progressConfig",function(a,b,c){var d=this,e=angular.isDefined(b.animate)?a.$parent.$eval(b.animate):c.animate;this.bars=[],a.max=angular.isDefined(a.max)?a.max:c.max,this.addBar=function(b,c){e||c.css({transition:"none"}),this.bars.push(b),b.$watch("value",function(c){b.percent=+(100*c/a.max).toFixed(2)}),b.$on("$destroy",function(){c=null,d.removeBar(b)})},this.removeBar=function(a){this.bars.splice(this.bars.indexOf(a),1)}}]).directive("progress",function(){return{restrict:"EA",replace:!0,transclude:!0,controller:"ProgressController",require:"progress",scope:{},templateUrl:"template/progressbar/progress.html"}}).directive("bar",function(){return{restrict:"EA",replace:!0,transclude:!0,require:"^progress",scope:{value:"=",max:"=?",type:"@"},templateUrl:"template/progressbar/bar.html",link:function(a,b,c,d){d.addBar(a,b)}}}).directive("progressbar",function(){return{restrict:"EA",replace:!0,transclude:!0,controller:"ProgressController",scope:{value:"=",max:"=?",type:"@"},templateUrl:"template/progressbar/progressbar.html",link:function(a,b,c,d){d.addBar(a,angular.element(b.children()[0]))}}}),angular.module("ui.bootstrap.rating",[]).constant("ratingConfig",{max:5,stateOn:null,stateOff:null}).controller("RatingController",["$scope","$attrs","ratingConfig",function(a,b,c){var d={$setViewValue:angular.noop};this.init=function(e){d=e,d.$render=this.render,d.$formatters.push(function(a){return angular.isNumber(a)&&a<<0!==a&&(a=Math.round(a)),a}),this.stateOn=angular.isDefined(b.stateOn)?a.$parent.$eval(b.stateOn):c.stateOn,this.stateOff=angular.isDefined(b.stateOff)?a.$parent.$eval(b.stateOff):c.stateOff;var f=angular.isDefined(b.ratingStates)?a.$parent.$eval(b.ratingStates):new Array(angular.isDefined(b.max)?a.$parent.$eval(b.max):c.max);a.range=this.buildTemplateObjects(f)},this.buildTemplateObjects=function(a){for(var b=0,c=a.length;c>b;b++)a[b]=angular.extend({index:b},{stateOn:this.stateOn,stateOff:this.stateOff},a[b]);return a},a.rate=function(b){!a.readonly&&b>=0&&b<=a.range.length&&(d.$setViewValue(b),d.$render())},a.enter=function(b){a.readonly||(a.value=b),a.onHover({value:b})},a.reset=function(){a.value=d.$viewValue,a.onLeave()},a.onKeydown=function(b){/(37|38|39|40)/.test(b.which)&&(b.preventDefault(),b.stopPropagation(),a.rate(a.value+(38===b.which||39===b.which?1:-1)))},this.render=function(){a.value=d.$viewValue}}]).directive("rating",function(){return{restrict:"EA",require:["rating","ngModel"],scope:{readonly:"=?",onHover:"&",onLeave:"&"},controller:"RatingController",templateUrl:"template/rating/rating.html",replace:!0,link:function(a,b,c,d){var e=d[0],f=d[1];e.init(f)}}}),angular.module("ui.bootstrap.tabs",[]).controller("TabsetController",["$scope",function(a){var b=this,c=b.tabs=a.tabs=[];b.select=function(a){angular.forEach(c,function(b){b.active&&b!==a&&(b.active=!1,b.onDeselect())}),a.active=!0,a.onSelect()},b.addTab=function(a){c.push(a),1===c.length&&a.active!==!1?a.active=!0:a.active?b.select(a):a.active=!1},b.removeTab=function(a){var e=c.indexOf(a);if(a.active&&c.length>1&&!d){var f=e==c.length-1?e-1:e+1;b.select(c[f])}c.splice(e,1)};var d;a.$on("$destroy",function(){d=!0})}]).directive("tabset",function(){return{restrict:"EA",transclude:!0,replace:!0,scope:{type:"@"},controller:"TabsetController",templateUrl:"template/tabs/tabset.html",link:function(a,b,c){a.vertical=angular.isDefined(c.vertical)?a.$parent.$eval(c.vertical):!1,a.justified=angular.isDefined(c.justified)?a.$parent.$eval(c.justified):!1}}}).directive("tab",["$parse","$log",function(a,b){return{require:"^tabset",restrict:"EA",replace:!0,templateUrl:"template/tabs/tab.html",transclude:!0,scope:{active:"=?",heading:"@",onSelect:"&select",onDeselect:"&deselect"},controller:function(){},compile:function(c,d,e){return function(c,d,f,g){c.$watch("active",function(a){a&&g.select(c)}),c.disabled=!1,f.disable&&c.$parent.$watch(a(f.disable),function(a){c.disabled=!!a}),f.disabled&&(b.warn('Use of "disabled" attribute has been deprecated, please use "disable"'),c.$parent.$watch(a(f.disabled),function(a){c.disabled=!!a})),c.select=function(){c.disabled||(c.active=!0)},g.addTab(c),c.$on("$destroy",function(){g.removeTab(c)}),c.$transcludeFn=e}}}}]).directive("tabHeadingTransclude",[function(){return{restrict:"A",require:"^tab",link:function(a,b){a.$watch("headingElement",function(a){a&&(b.html(""),b.append(a))})}}}]).directive("tabContentTransclude",function(){function a(a){return a.tagName&&(a.hasAttribute("tab-heading")||a.hasAttribute("data-tab-heading")||"tab-heading"===a.tagName.toLowerCase()||"data-tab-heading"===a.tagName.toLowerCase())}return{restrict:"A",require:"^tabset",link:function(b,c,d){var e=b.$eval(d.tabContentTransclude);e.$transcludeFn(e.$parent,function(b){angular.forEach(b,function(b){a(b)?e.headingElement=b:c.append(b)})})}}}),angular.module("ui.bootstrap.timepicker",[]).constant("timepickerConfig",{hourStep:1,minuteStep:1,showMeridian:!0,meridians:null,readonlyInput:!1,mousewheel:!0,arrowkeys:!0}).controller("TimepickerController",["$scope","$attrs","$parse","$log","$locale","timepickerConfig",function(a,b,c,d,e,f){function g(){var b=parseInt(a.hours,10),c=a.showMeridian?b>0&&13>b:b>=0&&24>b;return c?(a.showMeridian&&(12===b&&(b=0),a.meridian===p[1]&&(b+=12)),b):void 0}function h(){var b=parseInt(a.minutes,10);return b>=0&&60>b?b:void 0}function i(a){return angular.isDefined(a)&&a.toString().length<2?"0"+a:a.toString()}function j(a){k(),o.$setViewValue(new Date(n)),l(a)}function k(){o.$setValidity("time",!0),a.invalidHours=!1,a.invalidMinutes=!1}function l(b){var c=n.getHours(),d=n.getMinutes();a.showMeridian&&(c=0===c||12===c?12:c%12),a.hours="h"===b?c:i(c),"m"!==b&&(a.minutes=i(d)),a.meridian=n.getHours()<12?p[0]:p[1]}function m(a){var b=new Date(n.getTime()+6e4*a);n.setHours(b.getHours(),b.getMinutes()),j()}var n=new Date,o={$setViewValue:angular.noop},p=angular.isDefined(b.meridians)?a.$parent.$eval(b.meridians):f.meridians||e.DATETIME_FORMATS.AMPMS;this.init=function(c,d){o=c,o.$render=this.render,o.$formatters.unshift(function(a){return a?new Date(a):null});var e=d.eq(0),g=d.eq(1),h=angular.isDefined(b.mousewheel)?a.$parent.$eval(b.mousewheel):f.mousewheel;h&&this.setupMousewheelEvents(e,g);var i=angular.isDefined(b.arrowkeys)?a.$parent.$eval(b.arrowkeys):f.arrowkeys;i&&this.setupArrowkeyEvents(e,g),a.readonlyInput=angular.isDefined(b.readonlyInput)?a.$parent.$eval(b.readonlyInput):f.readonlyInput,this.setupInputEvents(e,g)};var q=f.hourStep;b.hourStep&&a.$parent.$watch(c(b.hourStep),function(a){q=parseInt(a,10)});var r=f.minuteStep;b.minuteStep&&a.$parent.$watch(c(b.minuteStep),function(a){r=parseInt(a,10)}),a.showMeridian=f.showMeridian,b.showMeridian&&a.$parent.$watch(c(b.showMeridian),function(b){if(a.showMeridian=!!b,o.$error.time){var c=g(),d=h();angular.isDefined(c)&&angular.isDefined(d)&&(n.setHours(c),j())}else l()}),this.setupMousewheelEvents=function(b,c){var d=function(a){a.originalEvent&&(a=a.originalEvent);var b=a.wheelDelta?a.wheelDelta:-a.deltaY;return a.detail||b>0};b.bind("mousewheel wheel",function(b){a.$apply(d(b)?a.incrementHours():a.decrementHours()),b.preventDefault()}),c.bind("mousewheel wheel",function(b){a.$apply(d(b)?a.incrementMinutes():a.decrementMinutes()),b.preventDefault()})},this.setupArrowkeyEvents=function(b,c){b.bind("keydown",function(b){38===b.which?(b.preventDefault(),a.incrementHours(),a.$apply()):40===b.which&&(b.preventDefault(),a.decrementHours(),a.$apply())}),c.bind("keydown",function(b){38===b.which?(b.preventDefault(),a.incrementMinutes(),a.$apply()):40===b.which&&(b.preventDefault(),a.decrementMinutes(),a.$apply())})},this.setupInputEvents=function(b,c){if(a.readonlyInput)return a.updateHours=angular.noop,void(a.updateMinutes=angular.noop);var d=function(b,c){o.$setViewValue(null),o.$setValidity("time",!1),angular.isDefined(b)&&(a.invalidHours=b),angular.isDefined(c)&&(a.invalidMinutes=c)};a.updateHours=function(){var a=g();angular.isDefined(a)?(n.setHours(a),j("h")):d(!0)},b.bind("blur",function(){!a.invalidHours&&a.hours<10&&a.$apply(function(){a.hours=i(a.hours)})}),a.updateMinutes=function(){var a=h();angular.isDefined(a)?(n.setMinutes(a),j("m")):d(void 0,!0)},c.bind("blur",function(){!a.invalidMinutes&&a.minutes<10&&a.$apply(function(){a.minutes=i(a.minutes)})})},this.render=function(){var a=o.$viewValue;isNaN(a)?(o.$setValidity("time",!1),d.error('Timepicker directive: "ng-model" value must be a Date object, a number of milliseconds since 01.01.1970 or a string representing an RFC2822 or ISO 8601 date.')):(a&&(n=a),k(),l())},a.incrementHours=function(){m(60*q)},a.decrementHours=function(){m(60*-q)},a.incrementMinutes=function(){m(r)},a.decrementMinutes=function(){m(-r)},a.toggleMeridian=function(){m(720*(n.getHours()<12?1:-1))}}]).directive("timepicker",function(){return{restrict:"EA",require:["timepicker","?^ngModel"],controller:"TimepickerController",replace:!0,scope:{},templateUrl:"template/timepicker/timepicker.html",link:function(a,b,c,d){var e=d[0],f=d[1];f&&e.init(f,b.find("input"))}}}),angular.module("ui.bootstrap.transition",[]).value("$transitionSuppressDeprecated",!1).factory("$transition",["$q","$timeout","$rootScope","$log","$transitionSuppressDeprecated",function(a,b,c,d,e){function f(a){for(var b in a)if(void 0!==h.style[b])return a[b]}e||d.warn("$transition is now deprecated. Use $animate from ngAnimate instead.");var g=function(d,e,f){f=f||{};var h=a.defer(),i=g[f.animation?"animationEndEventName":"transitionEndEventName"],j=function(){c.$apply(function(){d.unbind(i,j),h.resolve(d)})};return i&&d.bind(i,j),b(function(){angular.isString(e)?d.addClass(e):angular.isFunction(e)?e(d):angular.isObject(e)&&d.css(e),i||h.resolve(d)}),h.promise.cancel=function(){i&&d.unbind(i,j),h.reject("Transition cancelled")},h.promise},h=document.createElement("trans"),i={WebkitTransition:"webkitTransitionEnd",MozTransition:"transitionend",OTransition:"oTransitionEnd",transition:"transitionend"},j={WebkitTransition:"webkitAnimationEnd",MozTransition:"animationend",OTransition:"oAnimationEnd",transition:"animationend"};return g.transitionEndEventName=f(i),g.animationEndEventName=f(j),g}]),angular.module("ui.bootstrap.typeahead",["ui.bootstrap.position","ui.bootstrap.bindHtml"]).factory("typeaheadParser",["$parse",function(a){var b=/^\s*([\s\S]+?)(?:\s+as\s+([\s\S]+?))?\s+for\s+(?:([\$\w][\$\w\d]*))\s+in\s+([\s\S]+?)$/;return{parse:function(c){var d=c.match(b);if(!d)throw new Error('Expected typeahead specification in form of "_modelValue_ (as _label_)? for _item_ in _collection_" but got "'+c+'".');return{itemName:d[3],source:a(d[4]),viewMapper:a(d[2]||d[1]),modelMapper:a(d[1])}}}}]).directive("typeahead",["$compile","$parse","$q","$timeout","$document","$position","typeaheadParser",function(a,b,c,d,e,f,g){var h=[9,13,27,38,40];return{require:"ngModel",link:function(i,j,k,l){var m,n=i.$eval(k.typeaheadMinLength)||1,o=i.$eval(k.typeaheadWaitMs)||0,p=i.$eval(k.typeaheadEditable)!==!1,q=b(k.typeaheadLoading).assign||angular.noop,r=b(k.typeaheadOnSelect),s=k.typeaheadInputFormatter?b(k.typeaheadInputFormatter):void 0,t=k.typeaheadAppendToBody?i.$eval(k.typeaheadAppendToBody):!1,u=i.$eval(k.typeaheadFocusFirst)!==!1,v=b(k.ngModel).assign,w=g.parse(k.typeahead),x=i.$new();i.$on("$destroy",function(){x.$destroy()});var y="typeahead-"+x.$id+"-"+Math.floor(1e4*Math.random());j.attr({"aria-autocomplete":"list","aria-expanded":!1,"aria-owns":y});var z=angular.element("<div typeahead-popup></div>");z.attr({id:y,matches:"matches",active:"activeIdx",select:"select(activeIdx)",query:"query",position:"position"}),angular.isDefined(k.typeaheadTemplateUrl)&&z.attr("template-url",k.typeaheadTemplateUrl);var A=function(){x.matches=[],x.activeIdx=-1,j.attr("aria-expanded",!1)},B=function(a){return y+"-option-"+a};x.$watch("activeIdx",function(a){0>a?j.removeAttr("aria-activedescendant"):j.attr("aria-activedescendant",B(a))});var C=function(a){var b={$viewValue:a};q(i,!0),c.when(w.source(i,b)).then(function(c){var d=a===l.$viewValue;if(d&&m)if(c&&c.length>0){x.activeIdx=u?0:-1,x.matches.length=0;for(var e=0;e<c.length;e++)b[w.itemName]=c[e],x.matches.push({id:B(e),label:w.viewMapper(x,b),model:c[e]});x.query=a,x.position=t?f.offset(j):f.position(j),x.position.top=x.position.top+j.prop("offsetHeight"),j.attr("aria-expanded",!0)}else A();d&&q(i,!1)},function(){A(),q(i,!1)})};A(),x.query=void 0;var D,E=function(a){D=d(function(){C(a)},o)},F=function(){D&&d.cancel(D)};l.$parsers.unshift(function(a){return m=!0,a&&a.length>=n?o>0?(F(),E(a)):C(a):(q(i,!1),F(),A()),p?a:a?void l.$setValidity("editable",!1):(l.$setValidity("editable",!0),a)}),l.$formatters.push(function(a){var b,c,d={};return p||l.$setValidity("editable",!0),s?(d.$model=a,s(i,d)):(d[w.itemName]=a,b=w.viewMapper(i,d),d[w.itemName]=void 0,c=w.viewMapper(i,d),b!==c?b:a)}),x.select=function(a){var b,c,e={};e[w.itemName]=c=x.matches[a].model,b=w.modelMapper(i,e),v(i,b),l.$setValidity("editable",!0),l.$setValidity("parse",!0),r(i,{$item:c,$model:b,$label:w.viewMapper(i,e)}),A(),d(function(){j[0].focus()},0,!1)},j.bind("keydown",function(a){0!==x.matches.length&&-1!==h.indexOf(a.which)&&(-1!=x.activeIdx||13!==a.which&&9!==a.which)&&(a.preventDefault(),40===a.which?(x.activeIdx=(x.activeIdx+1)%x.matches.length,x.$digest()):38===a.which?(x.activeIdx=(x.activeIdx>0?x.activeIdx:x.matches.length)-1,x.$digest()):13===a.which||9===a.which?x.$apply(function(){x.select(x.activeIdx)}):27===a.which&&(a.stopPropagation(),A(),x.$digest()))}),j.bind("blur",function(){m=!1});var G=function(a){j[0]!==a.target&&(A(),x.$digest())};e.bind("click",G),i.$on("$destroy",function(){e.unbind("click",G),t&&H.remove(),z.remove()});var H=a(z)(x);t?e.find("body").append(H):j.after(H)}}}]).directive("typeaheadPopup",function(){return{restrict:"EA",scope:{matches:"=",query:"=",active:"=",position:"=",select:"&"},replace:!0,templateUrl:"template/typeahead/typeahead-popup.html",link:function(a,b,c){a.templateUrl=c.templateUrl,a.isOpen=function(){return a.matches.length>0},a.isActive=function(b){return a.active==b},a.selectActive=function(b){a.active=b},a.selectMatch=function(b){a.select({activeIdx:b})}}}}).directive("typeaheadMatch",["$templateRequest","$compile","$parse",function(a,b,c){return{restrict:"EA",scope:{index:"=",match:"=",query:"="},link:function(d,e,f){var g=c(f.templateUrl)(d.$parent)||"template/typeahead/typeahead-match.html";a(g).then(function(a){b(a.trim())(d,function(a){e.replaceWith(a)})})}}}]).filter("typeaheadHighlight",function(){function a(a){return a.replace(/([.?*+^$[\]\\(){}|-])/g,"\\$1")}return function(b,c){return c?(""+b).replace(new RegExp(a(c),"gi"),"<strong>$&</strong>"):b}}),angular.module("template/accordion/accordion-group.html",[]).run(["$templateCache",function(a){a.put("template/accordion/accordion-group.html",'<div class="panel panel-default">\n  <div class="panel-heading">\n    <h4 class="panel-title">\n      <a href="javascript:void(0)" tabindex="0" class="accordion-toggle" ng-click="toggleOpen()" accordion-transclude="heading"><span ng-class="{\'text-muted\': isDisabled}">{{heading}}</span></a>\n    </h4>\n  </div>\n  <div class="panel-collapse collapse" collapse="!isOpen">\n	  <div class="panel-body" ng-transclude></div>\n  </div>\n</div>\n')}]),angular.module("template/accordion/accordion.html",[]).run(["$templateCache",function(a){a.put("template/accordion/accordion.html",'<div class="panel-group" ng-transclude></div>')}]),angular.module("template/alert/alert.html",[]).run(["$templateCache",function(a){a.put("template/alert/alert.html",'<div class="alert" ng-class="[\'alert-\' + (type || \'warning\'), closeable ? \'alert-dismissable\' : null]" role="alert">\n    <button ng-show="closeable" type="button" class="close" ng-click="close()">\n        <span aria-hidden="true">&times;</span>\n        <span class="sr-only">Close</span>\n    </button>\n    <div ng-transclude></div>\n</div>\n')}]),angular.module("template/carousel/carousel.html",[]).run(["$templateCache",function(a){a.put("template/carousel/carousel.html",'<div ng-mouseenter="pause()" ng-mouseleave="play()" class="carousel" ng-swipe-right="prev()" ng-swipe-left="next()">\n    <ol class="carousel-indicators" ng-show="slides.length > 1">\n        <li ng-repeat="slide in slides | orderBy:\'index\' track by $index" ng-class="{active: isActive(slide)}" ng-click="select(slide)"></li>\n    </ol>\n    <div class="carousel-inner" ng-transclude></div>\n    <a class="left carousel-control" ng-click="prev()" ng-show="slides.length > 1"><span class="glyphicon glyphicon-chevron-left"></span></a>\n    <a class="right carousel-control" ng-click="next()" ng-show="slides.length > 1"><span class="glyphicon glyphicon-chevron-right"></span></a>\n</div>\n')}]),angular.module("template/carousel/slide.html",[]).run(["$templateCache",function(a){a.put("template/carousel/slide.html",'<div ng-class="{\n    \'active\': active\n  }" class="item text-center" ng-transclude></div>\n')}]),angular.module("template/datepicker/datepicker.html",[]).run(["$templateCache",function(a){a.put("template/datepicker/datepicker.html",'<div ng-switch="datepickerMode" role="application" ng-keydown="keydown($event)">\n  <daypicker ng-switch-when="day" tabindex="0"></daypicker>\n  <monthpicker ng-switch-when="month" tabindex="0"></monthpicker>\n  <yearpicker ng-switch-when="year" tabindex="0"></yearpicker>\n</div>')}]),angular.module("template/datepicker/day.html",[]).run(["$templateCache",function(a){a.put("template/datepicker/day.html",'<table role="grid" aria-labelledby="{{uniqueId}}-title" aria-activedescendant="{{activeDateId}}">\n  <thead>\n    <tr>\n      <th><button type="button" class="btn btn-default btn-sm pull-left" ng-click="move(-1)" tabindex="-1"><i class="glyphicon glyphicon-chevron-left"></i></button></th>\n      <th colspan="{{5 + showWeeks}}"><button id="{{uniqueId}}-title" role="heading" aria-live="assertive" aria-atomic="true" type="button" class="btn btn-default btn-sm" ng-click="toggleMode()" ng-disabled="datepickerMode === maxMode" tabindex="-1" style="width:100%;"><strong>{{title}}</strong></button></th>\n      <th><button type="button" class="btn btn-default btn-sm pull-right" ng-click="move(1)" tabindex="-1"><i class="glyphicon glyphicon-chevron-right"></i></button></th>\n    </tr>\n    <tr>\n      <th ng-show="showWeeks" class="text-center"></th>\n      <th ng-repeat="label in labels track by $index" class="text-center"><small aria-label="{{label.full}}">{{label.abbr}}</small></th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr ng-repeat="row in rows track by $index">\n      <td ng-show="showWeeks" class="text-center h6"><em>{{ weekNumbers[$index] }}</em></td>\n      <td ng-repeat="dt in row track by dt.date" class="text-center" role="gridcell" id="{{dt.uid}}" aria-disabled="{{!!dt.disabled}}" ng-class="dt.customClass">\n        <button type="button" style="width:100%;" class="btn btn-default btn-sm" ng-class="{\'btn-info\': dt.selected, active: isActive(dt)}" ng-click="select(dt.date)" ng-disabled="dt.disabled" tabindex="-1"><span ng-class="{\'text-muted\': dt.secondary, \'text-info\': dt.current}">{{dt.label}}</span></button>\n      </td>\n    </tr>\n  </tbody>\n</table>\n')}]),angular.module("template/datepicker/month.html",[]).run(["$templateCache",function(a){a.put("template/datepicker/month.html",'<table role="grid" aria-labelledby="{{uniqueId}}-title" aria-activedescendant="{{activeDateId}}">\n  <thead>\n    <tr>\n      <th><button type="button" class="btn btn-default btn-sm pull-left" ng-click="move(-1)" tabindex="-1"><i class="glyphicon glyphicon-chevron-left"></i></button></th>\n      <th><button id="{{uniqueId}}-title" role="heading" aria-live="assertive" aria-atomic="true" type="button" class="btn btn-default btn-sm" ng-click="toggleMode()" ng-disabled="datepickerMode === maxMode" tabindex="-1" style="width:100%;"><strong>{{title}}</strong></button></th>\n      <th><button type="button" class="btn btn-default btn-sm pull-right" ng-click="move(1)" tabindex="-1"><i class="glyphicon glyphicon-chevron-right"></i></button></th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr ng-repeat="row in rows track by $index">\n      <td ng-repeat="dt in row track by dt.date" class="text-center" role="gridcell" id="{{dt.uid}}" aria-disabled="{{!!dt.disabled}}">\n        <button type="button" style="width:100%;" class="btn btn-default" ng-class="{\'btn-info\': dt.selected, active: isActive(dt)}" ng-click="select(dt.date)" ng-disabled="dt.disabled" tabindex="-1"><span ng-class="{\'text-info\': dt.current}">{{dt.label}}</span></button>\n      </td>\n    </tr>\n  </tbody>\n</table>\n')}]),angular.module("template/datepicker/popup.html",[]).run(["$templateCache",function(a){a.put("template/datepicker/popup.html",'<ul class="dropdown-menu" ng-style="{display: (isOpen && \'block\') || \'none\', top: position.top+\'px\', left: position.left+\'px\'}" ng-keydown="keydown($event)">\n	<li ng-transclude></li>\n	<li ng-if="showButtonBar" style="padding:10px 9px 2px">\n		<span class="btn-group pull-left">\n			<button type="button" class="btn btn-sm btn-info" ng-click="select(\'today\')">{{ getText(\'current\') }}</button>\n			<button type="button" class="btn btn-sm btn-danger" ng-click="select(null)">{{ getText(\'clear\') }}</button>\n		</span>\n		<button type="button" class="btn btn-sm btn-success pull-right" ng-click="close()">{{ getText(\'close\') }}</button>\n	</li>\n</ul>\n')}]),angular.module("template/datepicker/year.html",[]).run(["$templateCache",function(a){a.put("template/datepicker/year.html",'<table role="grid" aria-labelledby="{{uniqueId}}-title" aria-activedescendant="{{activeDateId}}">\n  <thead>\n    <tr>\n      <th><button type="button" class="btn btn-default btn-sm pull-left" ng-click="move(-1)" tabindex="-1"><i class="glyphicon glyphicon-chevron-left"></i></button></th>\n      <th colspan="3"><button id="{{uniqueId}}-title" role="heading" aria-live="assertive" aria-atomic="true" type="button" class="btn btn-default btn-sm" ng-click="toggleMode()" ng-disabled="datepickerMode === maxMode" tabindex="-1" style="width:100%;"><strong>{{title}}</strong></button></th>\n      <th><button type="button" class="btn btn-default btn-sm pull-right" ng-click="move(1)" tabindex="-1"><i class="glyphicon glyphicon-chevron-right"></i></button></th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr ng-repeat="row in rows track by $index">\n      <td ng-repeat="dt in row track by dt.date" class="text-center" role="gridcell" id="{{dt.uid}}" aria-disabled="{{!!dt.disabled}}">\n        <button type="button" style="width:100%;" class="btn btn-default" ng-class="{\'btn-info\': dt.selected, active: isActive(dt)}" ng-click="select(dt.date)" ng-disabled="dt.disabled" tabindex="-1"><span ng-class="{\'text-info\': dt.current}">{{dt.label}}</span></button>\n      </td>\n    </tr>\n  </tbody>\n</table>\n')
-}]),angular.module("template/modal/backdrop.html",[]).run(["$templateCache",function(a){a.put("template/modal/backdrop.html",'<div class="modal-backdrop"\n     modal-animation-class="fade"\n     ng-class="{in: animate}"\n     ng-style="{\'z-index\': 1040 + (index && 1 || 0) + index*10}"\n></div>\n')}]),angular.module("template/modal/window.html",[]).run(["$templateCache",function(a){a.put("template/modal/window.html",'<div modal-render="{{$isRendered}}" tabindex="-1" role="dialog" class="modal"\n    modal-animation-class="fade"\n	ng-class="{in: animate}" ng-style="{\'z-index\': 1050 + index*10, display: \'block\'}" ng-click="close($event)">\n    <div class="modal-dialog" ng-class="size ? \'modal-\' + size : \'\'"><div class="modal-content" modal-transclude></div></div>\n</div>\n')}]),angular.module("template/pagination/pager.html",[]).run(["$templateCache",function(a){a.put("template/pagination/pager.html",'<ul class="pager">\n  <li ng-class="{disabled: noPrevious(), previous: align}"><a href ng-click="selectPage(page - 1, $event)">{{getText(\'previous\')}}</a></li>\n  <li ng-class="{disabled: noNext(), next: align}"><a href ng-click="selectPage(page + 1, $event)">{{getText(\'next\')}}</a></li>\n</ul>')}]),angular.module("template/pagination/pagination.html",[]).run(["$templateCache",function(a){a.put("template/pagination/pagination.html",'<ul class="pagination">\n  <li ng-if="boundaryLinks" ng-class="{disabled: noPrevious()}"><a href ng-click="selectPage(1, $event)">{{getText(\'first\')}}</a></li>\n  <li ng-if="directionLinks" ng-class="{disabled: noPrevious()}"><a href ng-click="selectPage(page - 1, $event)">{{getText(\'previous\')}}</a></li>\n  <li ng-repeat="page in pages track by $index" ng-class="{active: page.active}"><a href ng-click="selectPage(page.number, $event)">{{page.text}}</a></li>\n  <li ng-if="directionLinks" ng-class="{disabled: noNext()}"><a href ng-click="selectPage(page + 1, $event)">{{getText(\'next\')}}</a></li>\n  <li ng-if="boundaryLinks" ng-class="{disabled: noNext()}"><a href ng-click="selectPage(totalPages, $event)">{{getText(\'last\')}}</a></li>\n</ul>')}]),angular.module("template/tooltip/tooltip-html-popup.html",[]).run(["$templateCache",function(a){a.put("template/tooltip/tooltip-html-popup.html",'<div class="tooltip"\n  tooltip-animation-class="fade"\n  tooltip-classes\n  ng-class="{ in: isOpen() }">\n  <div class="tooltip-arrow"></div>\n  <div class="tooltip-inner" ng-bind-html="contentExp()"></div>\n</div>\n')}]),angular.module("template/tooltip/tooltip-html-unsafe-popup.html",[]).run(["$templateCache",function(a){a.put("template/tooltip/tooltip-html-unsafe-popup.html",'<div class="tooltip"\n  tooltip-animation-class="fade"\n  tooltip-classes\n  ng-class="{ in: isOpen() }">\n  <div class="tooltip-arrow"></div>\n  <div class="tooltip-inner" bind-html-unsafe="content"></div>\n</div>\n')}]),angular.module("template/tooltip/tooltip-popup.html",[]).run(["$templateCache",function(a){a.put("template/tooltip/tooltip-popup.html",'<div class="tooltip"\n  tooltip-animation-class="fade"\n  tooltip-classes\n  ng-class="{ in: isOpen() }">\n  <div class="tooltip-arrow"></div>\n  <div class="tooltip-inner" ng-bind="content"></div>\n</div>\n')}]),angular.module("template/tooltip/tooltip-template-popup.html",[]).run(["$templateCache",function(a){a.put("template/tooltip/tooltip-template-popup.html",'<div class="tooltip"\n  tooltip-animation-class="fade"\n  tooltip-classes\n  ng-class="{ in: isOpen() }">\n  <div class="tooltip-arrow"></div>\n  <div class="tooltip-inner"\n    tooltip-template-transclude="contentExp()"\n    tooltip-template-transclude-scope="originScope()"></div>\n</div>\n')}]),angular.module("template/popover/popover-template.html",[]).run(["$templateCache",function(a){a.put("template/popover/popover-template.html",'<div class="popover"\n  tooltip-animation-class="fade"\n  tooltip-classes\n  ng-class="{ in: isOpen() }">\n  <div class="arrow"></div>\n\n  <div class="popover-inner">\n      <h3 class="popover-title" ng-bind="title" ng-if="title"></h3>\n      <div class="popover-content"\n        tooltip-template-transclude="contentExp()"\n        tooltip-template-transclude-scope="originScope()"></div>\n  </div>\n</div>\n')}]),angular.module("template/popover/popover-window.html",[]).run(["$templateCache",function(a){a.put("template/popover/popover-window.html",'<div class="popover {{placement}}" ng-class="{ in: isOpen, fade: animation }">\n  <div class="arrow"></div>\n\n  <div class="popover-inner">\n      <h3 class="popover-title" ng-bind="title" ng-show="title"></h3>\n      <div class="popover-content" tooltip-template-transclude></div>\n  </div>\n</div>\n')}]),angular.module("template/popover/popover.html",[]).run(["$templateCache",function(a){a.put("template/popover/popover.html",'<div class="popover"\n  tooltip-animation-class="fade"\n  tooltip-classes\n  ng-class="{ in: isOpen() }">\n  <div class="arrow"></div>\n\n  <div class="popover-inner">\n      <h3 class="popover-title" ng-bind="title" ng-if="title"></h3>\n      <div class="popover-content" ng-bind="content"></div>\n  </div>\n</div>\n')}]),angular.module("template/progressbar/bar.html",[]).run(["$templateCache",function(a){a.put("template/progressbar/bar.html",'<div class="progress-bar" ng-class="type && \'progress-bar-\' + type" role="progressbar" aria-valuenow="{{value}}" aria-valuemin="0" aria-valuemax="{{max}}" ng-style="{width: (percent < 100 ? percent : 100) + \'%\'}" aria-valuetext="{{percent | number:0}}%" ng-transclude></div>\n')}]),angular.module("template/progressbar/progress.html",[]).run(["$templateCache",function(a){a.put("template/progressbar/progress.html",'<div class="progress" ng-transclude></div>')}]),angular.module("template/progressbar/progressbar.html",[]).run(["$templateCache",function(a){a.put("template/progressbar/progressbar.html",'<div class="progress">\n  <div class="progress-bar" ng-class="type && \'progress-bar-\' + type" role="progressbar" aria-valuenow="{{value}}" aria-valuemin="0" aria-valuemax="{{max}}" ng-style="{width: (percent < 100 ? percent : 100) + \'%\'}" aria-valuetext="{{percent | number:0}}%" ng-transclude></div>\n</div>\n')}]),angular.module("template/rating/rating.html",[]).run(["$templateCache",function(a){a.put("template/rating/rating.html",'<span ng-mouseleave="reset()" ng-keydown="onKeydown($event)" tabindex="0" role="slider" aria-valuemin="0" aria-valuemax="{{range.length}}" aria-valuenow="{{value}}">\n    <i ng-repeat="r in range track by $index" ng-mouseenter="enter($index + 1)" ng-click="rate($index + 1)" class="glyphicon" ng-class="$index < value && (r.stateOn || \'glyphicon-star\') || (r.stateOff || \'glyphicon-star-empty\')">\n        <span class="sr-only">({{ $index < value ? \'*\' : \' \' }})</span>\n    </i>\n</span>')}]),angular.module("template/tabs/tab.html",[]).run(["$templateCache",function(a){a.put("template/tabs/tab.html",'<li ng-class="{active: active, disabled: disabled}">\n  <a href ng-click="select()" tab-heading-transclude>{{heading}}</a>\n</li>\n')}]),angular.module("template/tabs/tabset.html",[]).run(["$templateCache",function(a){a.put("template/tabs/tabset.html",'<div>\n  <ul class="nav nav-{{type || \'tabs\'}}" ng-class="{\'nav-stacked\': vertical, \'nav-justified\': justified}" ng-transclude></ul>\n  <div class="tab-content">\n    <div class="tab-pane" \n         ng-repeat="tab in tabs" \n         ng-class="{active: tab.active}"\n         tab-content-transclude="tab">\n    </div>\n  </div>\n</div>\n')}]),angular.module("template/timepicker/timepicker.html",[]).run(["$templateCache",function(a){a.put("template/timepicker/timepicker.html",'<table>\n	<tbody>\n		<tr class="text-center">\n			<td><a ng-click="incrementHours()" class="btn btn-link"><span class="glyphicon glyphicon-chevron-up"></span></a></td>\n			<td>&nbsp;</td>\n			<td><a ng-click="incrementMinutes()" class="btn btn-link"><span class="glyphicon glyphicon-chevron-up"></span></a></td>\n			<td ng-show="showMeridian"></td>\n		</tr>\n		<tr>\n			<td class="form-group" ng-class="{\'has-error\': invalidHours}">\n				<input style="width:50px;" type="text" ng-model="hours" ng-change="updateHours()" class="form-control text-center" ng-readonly="readonlyInput" maxlength="2">\n			</td>\n			<td>:</td>\n			<td class="form-group" ng-class="{\'has-error\': invalidMinutes}">\n				<input style="width:50px;" type="text" ng-model="minutes" ng-change="updateMinutes()" class="form-control text-center" ng-readonly="readonlyInput" maxlength="2">\n			</td>\n			<td ng-show="showMeridian"><button type="button" class="btn btn-default text-center" ng-click="toggleMeridian()">{{meridian}}</button></td>\n		</tr>\n		<tr class="text-center">\n			<td><a ng-click="decrementHours()" class="btn btn-link"><span class="glyphicon glyphicon-chevron-down"></span></a></td>\n			<td>&nbsp;</td>\n			<td><a ng-click="decrementMinutes()" class="btn btn-link"><span class="glyphicon glyphicon-chevron-down"></span></a></td>\n			<td ng-show="showMeridian"></td>\n		</tr>\n	</tbody>\n</table>\n')}]),angular.module("template/typeahead/typeahead-match.html",[]).run(["$templateCache",function(a){a.put("template/typeahead/typeahead-match.html",'<a tabindex="-1" bind-html-unsafe="match.label | typeaheadHighlight:query"></a>')}]),angular.module("template/typeahead/typeahead-popup.html",[]).run(["$templateCache",function(a){a.put("template/typeahead/typeahead-popup.html",'<ul class="dropdown-menu" ng-show="isOpen()" ng-style="{top: position.top+\'px\', left: position.left+\'px\'}" style="display: block;" role="listbox" aria-hidden="{{!isOpen()}}">\n    <li ng-repeat="match in matches track by $index" ng-class="{active: isActive($index) }" ng-mouseenter="selectActive($index)" ng-click="selectMatch($index)" role="option" id="{{match.id}}">\n        <div typeahead-match index="$index" match="match" query="query" template-url="templateUrl"></div>\n    </li>\n</ul>\n')}]),!angular.$$csp()&&angular.element(document).find("head").prepend('<style type="text/css">.ng-animate.item:not(.left):not(.right){-webkit-transition:0s ease-in-out left;transition:0s ease-in-out left}</style>');
-
-/*
- * angular-ui-bootstrap
- * http://angular-ui.github.io/bootstrap/
-
  * Version: 0.14.3 - 2015-10-23
  * License: MIT
  */
@@ -2600,6 +2326,8 @@ return a>v||p>a&&u>a},a.noDecrementHours=function(){var a=n(p,60*-s);return u>a|
 
 })(window, angular);
 
+!function(){angular.module("angular-jwt",["angular-jwt.interceptor","angular-jwt.jwt"]),angular.module("angular-jwt.interceptor",[]).provider("jwtInterceptor",function(){this.urlParam=null,this.authHeader="Authorization",this.authPrefix="Bearer ",this.tokenGetter=function(){return null};var e=this;this.$get=["$q","$injector","$rootScope",function(r,t,a){return{request:function(a){if(a.skipAuthorization)return a;if(e.urlParam){if(a.params=a.params||{},a.params[e.urlParam])return a}else if(a.headers=a.headers||{},a.headers[e.authHeader])return a;var n=r.when(t.invoke(e.tokenGetter,this,{config:a}));return n.then(function(r){return r&&(e.urlParam?a.params[e.urlParam]=r:a.headers[e.authHeader]=e.authPrefix+r),a})},responseError:function(e){return 401===e.status&&a.$broadcast("unauthenticated",e),r.reject(e)}}}]}),angular.module("angular-jwt.jwt",[]).service("jwtHelper",function(){this.urlBase64Decode=function(e){var r=e.replace(/-/g,"+").replace(/_/g,"/");switch(r.length%4){case 0:break;case 2:r+="==";break;case 3:r+="=";break;default:throw"Illegal base64url string!"}return decodeURIComponent(escape(window.atob(r)))},this.decodeToken=function(e){var r=e.split(".");if(3!==r.length)throw new Error("JWT must have 3 parts");var t=this.urlBase64Decode(r[1]);if(!t)throw new Error("Cannot decode the token");return JSON.parse(t)},this.getTokenExpirationDate=function(e){var r;if(r=this.decodeToken(e),"undefined"==typeof r.exp)return null;var t=new Date(0);return t.setUTCSeconds(r.exp),t},this.isTokenExpired=function(e,r){var t=this.getTokenExpirationDate(e);return r=r||0,null===t?!1:!(t.valueOf()>(new Date).valueOf()+1e3*r)}})}();
+
 /*! 5.0.9 */
 !function(){function a(a,b){window.XMLHttpRequest.prototype[a]=b(window.XMLHttpRequest.prototype[a])}function b(a,b,c){try{Object.defineProperty(a,b,{get:c})}catch(d){}}if(window.FileAPI||(window.FileAPI={}),FileAPI.shouldLoad=window.XMLHttpRequest&&!window.FormData||FileAPI.forceLoad,FileAPI.shouldLoad){var c=function(a){if(!a.__listeners){a.upload||(a.upload={}),a.__listeners=[];var b=a.upload.addEventListener;a.upload.addEventListener=function(c,d){a.__listeners[c]=d,b&&b.apply(this,arguments)}}};a("open",function(a){return function(b,d,e){c(this),this.__url=d;try{a.apply(this,[b,d,e])}catch(f){f.message.indexOf("Access is denied")>-1&&(this.__origError=f,a.apply(this,[b,"_fix_for_ie_crossdomain__",e]))}}}),a("getResponseHeader",function(a){return function(b){return this.__fileApiXHR&&this.__fileApiXHR.getResponseHeader?this.__fileApiXHR.getResponseHeader(b):null==a?null:a.apply(this,[b])}}),a("getAllResponseHeaders",function(a){return function(){return this.__fileApiXHR&&this.__fileApiXHR.getAllResponseHeaders?this.__fileApiXHR.getAllResponseHeaders():null==a?null:a.apply(this)}}),a("abort",function(a){return function(){return this.__fileApiXHR&&this.__fileApiXHR.abort?this.__fileApiXHR.abort():null==a?null:a.apply(this)}}),a("setRequestHeader",function(a){return function(b,d){if("__setXHR_"===b){c(this);var e=d(this);e instanceof Function&&e(this)}else this.__requestHeaders=this.__requestHeaders||{},this.__requestHeaders[b]=d,a.apply(this,arguments)}}),a("send",function(a){return function(){var c=this;if(arguments[0]&&arguments[0].__isFileAPIShim){var d=arguments[0],e={url:c.__url,jsonp:!1,cache:!0,complete:function(a,d){c.__completed=!0,!a&&c.__listeners.load&&c.__listeners.load({type:"load",loaded:c.__loaded,total:c.__total,target:c,lengthComputable:!0}),!a&&c.__listeners.loadend&&c.__listeners.loadend({type:"loadend",loaded:c.__loaded,total:c.__total,target:c,lengthComputable:!0}),"abort"===a&&c.__listeners.abort&&c.__listeners.abort({type:"abort",loaded:c.__loaded,total:c.__total,target:c,lengthComputable:!0}),void 0!==d.status&&b(c,"status",function(){return 0===d.status&&a&&"abort"!==a?500:d.status}),void 0!==d.statusText&&b(c,"statusText",function(){return d.statusText}),b(c,"readyState",function(){return 4}),void 0!==d.response&&b(c,"response",function(){return d.response});var e=d.responseText||(a&&0===d.status&&"abort"!==a?a:void 0);b(c,"responseText",function(){return e}),b(c,"response",function(){return e}),a&&b(c,"err",function(){return a}),c.__fileApiXHR=d,c.onreadystatechange&&c.onreadystatechange(),c.onload&&c.onload()},progress:function(a){if(a.target=c,c.__listeners.progress&&c.__listeners.progress(a),c.__total=a.total,c.__loaded=a.loaded,a.total===a.loaded){var b=this;setTimeout(function(){c.__completed||(c.getAllResponseHeaders=function(){},b.complete(null,{status:204,statusText:"No Content"}))},FileAPI.noContentTimeout||1e4)}},headers:c.__requestHeaders};e.data={},e.files={};for(var f=0;f<d.data.length;f++){var g=d.data[f];null!=g.val&&null!=g.val.name&&null!=g.val.size&&null!=g.val.type?e.files[g.key]=g.val:e.data[g.key]=g.val}setTimeout(function(){if(!FileAPI.hasFlash)throw'Adode Flash Player need to be installed. To check ahead use "FileAPI.hasFlash"';c.__fileApiXHR=FileAPI.upload(e)},1)}else{if(this.__origError)throw this.__origError;a.apply(c,arguments)}}}),window.XMLHttpRequest.__isFileAPIShim=!0,window.FormData=FormData=function(){return{append:function(a,b,c){b.__isFileAPIBlobShim&&(b=b.data[0]),this.data.push({key:a,val:b,name:c})},data:[],__isFileAPIShim:!0}},window.Blob=Blob=function(a){return{data:a,__isFileAPIBlobShim:!0}}}}(),function(){function a(a){return"input"===a[0].tagName.toLowerCase()&&a.attr("type")&&"file"===a.attr("type").toLowerCase()}function b(){try{var a=new ActiveXObject("ShockwaveFlash.ShockwaveFlash");if(a)return!0}catch(b){if(void 0!==navigator.mimeTypes["application/x-shockwave-flash"])return!0}return!1}function c(a){var b=0,c=0;if(window.jQuery)return jQuery(a).offset();if(a.offsetParent)do b+=a.offsetLeft-a.scrollLeft,c+=a.offsetTop-a.scrollTop,a=a.offsetParent;while(a);return{left:b,top:c}}if(FileAPI.shouldLoad){if(FileAPI.forceLoad&&(FileAPI.html5=!1),!FileAPI.upload){var d,e,f,g,h,i=document.createElement("script"),j=document.getElementsByTagName("script");if(window.FileAPI.jsUrl)d=window.FileAPI.jsUrl;else if(window.FileAPI.jsPath)e=window.FileAPI.jsPath;else for(f=0;f<j.length;f++)if(h=j[f].src,g=h.search(/\/ng\-file\-upload[\-a-zA-z0-9\.]*\.js/),g>-1){e=h.substring(0,g+1);break}null==FileAPI.staticPath&&(FileAPI.staticPath=e),i.setAttribute("src",d||e+"FileAPI.min.js"),document.getElementsByTagName("head")[0].appendChild(i),FileAPI.hasFlash=b()}FileAPI.ngfFixIE=function(d,e,f,g){if(!b())throw'Adode Flash Player need to be installed. To check ahead use "FileAPI.hasFlash"';var h=function(){if(d.attr("disabled"))d.$$ngfRefElem.removeClass("js-fileapi-wrapper");else{var b=d.$$ngfRefElem;b?f(d.$$ngfRefElem):(b=d.$$ngfRefElem=e(),b.addClass("js-fileapi-wrapper"),!a(d),setTimeout(function(){b.bind("mouseenter",h)},10),b.bind("change",function(a){i.apply(this,[a]),g.apply(this,[a])})),a(d)||b.css("position","absolute").css("top",c(d[0]).top+"px").css("left",c(d[0]).left+"px").css("width",d[0].offsetWidth+"px").css("height",d[0].offsetHeight+"px").css("filter","alpha(opacity=0)").css("display",d.css("display")).css("overflow","hidden").css("z-index","900000").css("visibility","visible")}};d.bind("mouseenter",h);var i=function(a){for(var b=FileAPI.getFiles(a),c=0;c<b.length;c++)void 0===b[c].size&&(b[c].size=0),void 0===b[c].name&&(b[c].name="file"),void 0===b[c].type&&(b[c].type="undefined");a.target||(a.target={}),a.target.files=b,a.target.files!==b&&(a.__files_=b),(a.__files_||a.target.files).item=function(b){return(a.__files_||a.target.files)[b]||null}}},FileAPI.disableFileInput=function(a,b){b?a.removeClass("js-fileapi-wrapper"):a.addClass("js-fileapi-wrapper")}}}(),window.FileReader||(window.FileReader=function(){var a=this,b=!1;this.listeners={},this.addEventListener=function(b,c){a.listeners[b]=a.listeners[b]||[],a.listeners[b].push(c)},this.removeEventListener=function(b,c){a.listeners[b]&&a.listeners[b].splice(a.listeners[b].indexOf(c),1)},this.dispatchEvent=function(b){var c=a.listeners[b.type];if(c)for(var d=0;d<c.length;d++)c[d].call(a,b)},this.onabort=this.onerror=this.onload=this.onloadstart=this.onloadend=this.onprogress=null;var c=function(b,c){var d={type:b,target:a,loaded:c.loaded,total:c.total,error:c.error};return null!=c.result&&(d.target.result=c.result),d},d=function(d){b||(b=!0,a.onloadstart&&a.onloadstart(c("loadstart",d)));var e;"load"===d.type?(a.onloadend&&a.onloadend(c("loadend",d)),e=c("load",d),a.onload&&a.onload(e),a.dispatchEvent(e)):"progress"===d.type?(e=c("progress",d),a.onprogress&&a.onprogress(e),a.dispatchEvent(e)):(e=c("error",d),a.onerror&&a.onerror(e),a.dispatchEvent(e))};this.readAsArrayBuffer=function(a){FileAPI.readAsBinaryString(a,d)},this.readAsBinaryString=function(a){FileAPI.readAsBinaryString(a,d)},this.readAsDataURL=function(a){FileAPI.readAsDataURL(a,d)},this.readAsText=function(a){FileAPI.readAsText(a,d)}}),!window.XMLHttpRequest||window.FileAPI&&FileAPI.shouldLoad||(window.XMLHttpRequest.prototype.setRequestHeader=function(a){return function(b,c){if("__setXHR_"===b){var d=c(this);d instanceof Function&&d(this)}else a.apply(this,arguments)}}(window.XMLHttpRequest.prototype.setRequestHeader));var ngFileUpload=angular.module("ngFileUpload",[]);ngFileUpload.version="5.0.9",ngFileUpload.service("Upload",["$http","$q","$timeout",function(a,b,c){function d(d){d.method=d.method||"POST",d.headers=d.headers||{};var e=b.defer(),f=e.promise;return d.headers.__setXHR_=function(){return function(a){a&&(d.__XHR=a,d.xhrFn&&d.xhrFn(a),a.upload.addEventListener("progress",function(a){a.config=d,e.notify?e.notify(a):f.progressFunc&&c(function(){f.progressFunc(a)})},!1),a.upload.addEventListener("load",function(a){a.lengthComputable&&(a.config=d,e.notify?e.notify(a):f.progressFunc&&c(function(){f.progressFunc(a)}))},!1))}},a(d).then(function(a){e.resolve(a)},function(a){e.reject(a)},function(a){e.notify(a)}),f.success=function(a){return f.then(function(b){a(b.data,b.status,b.headers,d)}),f},f.error=function(a){return f.then(null,function(b){a(b.data,b.status,b.headers,d)}),f},f.progress=function(a){return f.progressFunc=a,f.then(null,null,function(b){a(b)}),f},f.abort=function(){return d.__XHR&&c(function(){d.__XHR.abort()}),f},f.xhr=function(a){return d.xhrFn=function(b){return function(){b&&b.apply(f,arguments),a.apply(f,arguments)}}(d.xhrFn),f},f}this.upload=function(a){function b(c,d,e){if(void 0!==d)if(angular.isDate(d)&&(d=d.toISOString()),angular.isString(d))c.append(e,d);else if("form"===a.sendFieldsAs)if(angular.isObject(d))for(var f in d)d.hasOwnProperty(f)&&b(c,d[f],e+"["+f+"]");else c.append(e,d);else d=angular.isString(d)?d:JSON.stringify(d),"json-blob"===a.sendFieldsAs?c.append(e,new Blob([d],{type:"application/json"})):c.append(e,d)}return a.headers=a.headers||{},a.headers["Content-Type"]=void 0,a.transformRequest=a.transformRequest?angular.isArray(a.transformRequest)?a.transformRequest:[a.transformRequest]:[],a.transformRequest.push(function(c){var d,e=new FormData,f={};for(d in a.fields)a.fields.hasOwnProperty(d)&&(f[d]=a.fields[d]);c&&(f.data=c);for(d in f)if(f.hasOwnProperty(d)){var g=f[d];a.formDataAppender?a.formDataAppender(e,d,g):b(e,g,d)}if(null!=a.file){var h=a.fileFormDataName||"file";if(angular.isArray(a.file))for(var i=angular.isString(h),j=0;j<a.file.length;j++)e.append(i?h:h[j],a.file[j],a.fileName&&a.fileName[j]||a.file[j].name);else e.append(h,a.file,a.fileName||a.file.name)}return e}),d(a)},this.http=function(b){return b.transformRequest=b.transformRequest||function(b){return window.ArrayBuffer&&b instanceof window.ArrayBuffer||b instanceof Blob?b:a.defaults.transformRequest[0](arguments)},d(b)}}]),function(){function a(a,e,f,g,h,i,j){function k(){return"input"===e[0].tagName.toLowerCase()&&f.type&&"file"===f.type.toLowerCase()}function l(b){if(!r){r=!0;try{for(var e=b.__files_||b.target&&b.target.files,j=[],k=[],l=0;l<e.length;l++){var m=e.item(l);c(a,h,f,m,b)?j.push(m):k.push(m)}d(h,i,a,g,f,f.ngfChange||f.ngfSelect,j,k,b),0===j.length&&(b.target.value=j)}finally{r=!1}}}function m(b){f.ngfMultiple&&b.attr("multiple",h(f.ngfMultiple)(a)),f.ngfCapture&&b.attr("capture",h(f.ngfCapture)(a)),f.accept&&b.attr("accept",f.accept);for(var c=0;c<e[0].attributes.length;c++){var d=e[0].attributes[c];(k()&&"type"!==d.name||"type"!==d.name&&"class"!==d.name&&"id"!==d.name&&"style"!==d.name)&&b.attr(d.name,d.value)}}function n(b,c){if(!c&&(b||k()))return e.$$ngfRefElem||e;var d=angular.element('<input type="file">');return m(d),k()?(e.replaceWith(d),e=d,d.attr("__ngf_gen__",!0),j(e)(a)):(d.css("visibility","hidden").css("position","absolute").css("overflow","hidden").css("width","0px").css("height","0px").css("z-index","-100000").css("border","none").css("margin","0px").css("padding","0px").attr("tabindex","-1"),e.$$ngfRefElem&&e.$$ngfRefElem.remove(),e.$$ngfRefElem=d,document.body.appendChild(d[0])),d}function o(b){d(h,i,a,g,f,f.ngfChange||f.ngfSelect,[],[],b,!0)}function p(c){function d(a){a&&i[0].click(),(k()||!a)&&e.bind("click touchend",p)}if(e.attr("disabled")||q)return!1;null!=c&&(c.preventDefault(),c.stopPropagation());var g=h(f.ngfResetOnClick)(a)!==!1,i=n(c,g);return i&&((!c||g)&&i.bind("change",l),c&&g&&h(f.ngfResetModelOnClick)(a)!==!1&&o(c),b(navigator.userAgent)?setTimeout(function(){d(c)},0):d(c)),!1}if(!e.attr("__ngf_gen__")){a.$on("$destroy",function(){e.$$ngfRefElem&&e.$$ngfRefElem.remove()});var q=!1;-1===f.ngfSelect.search(/\W+$files\W+/)&&a.$watch(f.ngfSelect,function(a){q=a===!1});var r=!1;window.FileAPI&&window.FileAPI.ngfFixIE?window.FileAPI.ngfFixIE(e,n,m,l):p()}}function b(a){var b=a.match(/Android[^\d]*(\d+)\.(\d+)/);return b&&b.length>2?parseInt(b[1])<4||4===parseInt(b[1])&&parseInt(b[2])<4:/.*Windows.*Safari.*/.test(a)}ngFileUpload.directive("ngfSelect",["$parse","$timeout","$compile",function(b,c,d){return{restrict:"AEC",require:"?ngModel",link:function(e,f,g,h){a(e,f,g,h,b,c,d)}}}]),ngFileUpload.validate=function(a,b,c,d,e){function f(a){if(a.length>2&&"/"===a[0]&&"/"===a[a.length-1])return a.substring(1,a.length-1);var b=a.split(","),c="";if(b.length>1)for(var d=0;d<b.length;d++)c+="("+f(b[d])+")",d<b.length-1&&(c+="|");else 0===a.indexOf(".")&&(a="*"+a),c="^"+a.replace(new RegExp("[.\\\\+*?\\[\\^\\]$(){}=!<>|:\\-]","g"),"\\$&")+"$",c=c.replace(/\\\*/g,".*").replace(/\\\?/g,".");return c}var g=b(c.ngfAccept)(a,{$file:d,$event:e}),h=b(c.ngfMaxSize)(a,{$file:d,$event:e})||9007199254740991,i=b(c.ngfMinSize)(a,{$file:d,$event:e})||-1;if(null!=g&&angular.isString(g)){var j=new RegExp(f(g),"gi");g=null!=d.type&&j.test(d.type.toLowerCase())||null!=d.name&&j.test(d.name.toLowerCase())}return(null==g||g)&&(null==d.size||d.size<h&&d.size>i)},ngFileUpload.updateModel=function(a,b,c,d,e,f,g,h,i,j){function k(){if(a(e.ngfKeep)(c)===!0){var j=(d.$modelValue||[]).slice(0);if(g&&g.length)if(a(e.ngfKeepDistinct)(c)===!0){for(var k=j.length,l=0;l<g.length;l++){for(var m=0;k>m&&g[l].name!==j[m].name;m++);m===k&&j.push(g[l])}g=j}else g=j.concat(g);else g=j}d&&(a(e.ngModel).assign(c,g),b(function(){d&&d.$setViewValue(null!=g&&0===g.length?null:g)})),e.ngModelRejected&&a(e.ngModelRejected).assign(c,h),f&&a(f)(c,{$files:g,$rejectedFiles:h,$event:i})}j?k():b(function(){k()})};var c=ngFileUpload.validate,d=ngFileUpload.updateModel}(),function(){function a(a,e,f,g,h,i,j){function k(a,b,d){var e=!0,f=d.dataTransfer.items;if(null!=f)for(var g=0;g<f.length&&e;g++)e=e&&("file"===f[g].kind||""===f[g].kind)&&c(a,h,b,f[g],d);var i=h(b.ngfDragOverClass)(a,{$event:d});return i&&(i.delay&&(r=i.delay),i.accept&&(i=e?i.accept:i.reject)),i||b.ngfDragOverClass||"dragover"}function l(b,d,e,g){function k(d){c(a,h,f,d,b)?m.push(d):n.push(d)}function l(a,b,c){if(null!=b)if(b.isDirectory){var d=(c||"")+b.name;k({name:b.name,type:"directory",path:d});var e=b.createReader(),f=[];p++;var g=function(){e.readEntries(function(d){try{if(d.length)f=f.concat(Array.prototype.slice.call(d||[],0)),g();else{for(var e=0;e<f.length;e++)l(a,f[e],(c?c:"")+b.name+"/");p--}}catch(h){p--,console.error(h)}},function(){p--})};g()}else p++,b.file(function(a){try{p--,a.path=(c?c:"")+a.name,k(a)}catch(b){p--,console.error(b)}},function(){p--})}var m=[],n=[],o=b.dataTransfer.items,p=0;if(o&&o.length>0&&"file"!==j.protocol())for(var q=0;q<o.length;q++){if(o[q].webkitGetAsEntry&&o[q].webkitGetAsEntry()&&o[q].webkitGetAsEntry().isDirectory){var r=o[q].webkitGetAsEntry();if(r.isDirectory&&!e)continue;null!=r&&l(m,r)}else{var s=o[q].getAsFile();null!=s&&k(s)}if(!g&&m.length>0)break}else{var t=b.dataTransfer.files;if(null!=t)for(var u=0;u<t.length&&(k(t.item(u)),g||!(m.length>0));u++);}var v=0;!function w(a){i(function(){if(p)10*v++<2e4&&w(10);else{if(!g&&m.length>1){for(q=0;"directory"===m[q].type;)q++;m=[m[q]]}d(m,n)}},a||0)}()}var m=b();if(f.dropAvailable&&i(function(){a[f.dropAvailable]?a[f.dropAvailable].value=m:a[f.dropAvailable]=m}),!m)return void(h(f.ngfHideOnDropNotAvailable)(a)===!0&&e.css("display","none"));var n=!1;-1===f.ngfDrop.search(/\W+$files\W+/)&&a.$watch(f.ngfDrop,function(a){n=a===!1});var o,p=null,q=h(f.ngfStopPropagation),r=1;e[0].addEventListener("dragover",function(b){if(!e.attr("disabled")&&!n){if(b.preventDefault(),q(a)&&b.stopPropagation(),navigator.userAgent.indexOf("Chrome")>-1){var c=b.dataTransfer.effectAllowed;b.dataTransfer.dropEffect="move"===c||"linkMove"===c?"move":"copy"}i.cancel(p),a.actualDragOverClass||(o=k(a,f,b)),e.addClass(o)}},!1),e[0].addEventListener("dragenter",function(b){e.attr("disabled")||n||(b.preventDefault(),q(a)&&b.stopPropagation())},!1),e[0].addEventListener("dragleave",function(){e.attr("disabled")||n||(p=i(function(){e.removeClass(o),o=null},r||1))},!1),e[0].addEventListener("drop",function(b){e.attr("disabled")||n||(b.preventDefault(),q(a)&&b.stopPropagation(),e.removeClass(o),o=null,l(b,function(c,e){d(h,i,a,g,f,f.ngfChange||f.ngfDrop,c,e,b)},h(f.ngfAllowDir)(a)!==!1,f.multiple||h(f.ngfMultiple)(a)))},!1)}function b(){var a=document.createElement("div");return"draggable"in a&&"ondrop"in a}var c=ngFileUpload.validate,d=ngFileUpload.updateModel;ngFileUpload.directive("ngfDrop",["$parse","$timeout","$location",function(b,c,d){return{restrict:"AEC",require:"?ngModel",link:function(e,f,g,h){a(e,f,g,h,b,c,d)}}}]),ngFileUpload.directive("ngfNoFileDrop",function(){return function(a,c){b()&&c.css("display","none")}}),ngFileUpload.directive("ngfDropAvailable",["$parse","$timeout",function(a,c){return function(d,e,f){if(b()){var g=a(f.ngfDropAvailable);c(function(){g(d),g.assign&&g.assign(d,!0)})}}}]),ngFileUpload.directive("ngfSrc",["$parse","$timeout",function(a,b){return{restrict:"AE",link:function(d,e,f){window.FileReader&&d.$watch(f.ngfSrc,function(g){g&&c(d,a,f,g,null)&&(!window.FileAPI||-1===navigator.userAgent.indexOf("MSIE 8")||g.size<2e4)&&(!window.FileAPI||-1===navigator.userAgent.indexOf("MSIE 9")||g.size<4e6)?b(function(){var a=window.URL||window.webkitURL;if(a&&a.createObjectURL)e.attr("src",a.createObjectURL(g));else{var c=new FileReader;c.readAsDataURL(g),c.onload=function(a){b(function(){e.attr("src",a.target.result)})}}}):e.attr("src",f.ngfDefaultSrc||"")})}}}])}();
 
@@ -3015,6 +2743,291 @@ angular.module('yaru22.angular-timeago', []).directive('timeAgo', [
 !function(e){var t;"undefined"!=typeof window?t=window:"undefined"!=typeof self&&(t=self),t.ALGOLIA_MIGRATION_LAYER=e()}(function(){return function e(t,n,r){function o(s,a){if(!n[s]){if(!t[s]){var u="function"==typeof require&&require;if(!a&&u)return u(s,!0);if(i)return i(s,!0);var c=new Error("Cannot find module '"+s+"'");throw c.code="MODULE_NOT_FOUND",c}var l=n[s]={exports:{}};t[s][0].call(l.exports,function(e){var n=t[s][1][e];return o(n?n:e)},l,l.exports,e,t,n,r)}return n[s].exports}for(var i="function"==typeof require&&require,s=0;s<r.length;s++)o(r[s]);return o}({1:[function(e,t,n){function r(e,t){for(var n in t)e.setAttribute(n,t[n])}function o(e,t){e.onload=function(){this.onerror=this.onload=null,t(null,e)},e.onerror=function(){this.onerror=this.onload=null,t(new Error("Failed to load "+this.src),e)}}function i(e,t){e.onreadystatechange=function(){("complete"==this.readyState||"loaded"==this.readyState)&&(this.onreadystatechange=null,t(null,e))}}t.exports=function(e,t,n){var s=document.head||document.getElementsByTagName("head")[0],a=document.createElement("script");"function"==typeof t&&(n=t,t={}),t=t||{},n=n||function(){},a.type=t.type||"text/javascript",a.charset=t.charset||"utf8",a.async="async"in t?!!t.async:!0,a.src=e,t.attrs&&r(a,t.attrs),t.text&&(a.text=""+t.text);var u="onload"in a?o:i;u(a,n),a.onload||o(a,n),s.appendChild(a)}},{}],2:[function(e,t,n){"use strict";function r(e){for(var t=new RegExp("cdn\\.jsdelivr\\.net/algoliasearch/latest/"+e.replace(".","\\.")+"(?:\\.min)?\\.js$"),n=document.getElementsByTagName("script"),r=!1,o=0,i=n.length;i>o;o++)if(n[o].src&&t.test(n[o].src)){r=!0;break}return r}t.exports=r},{}],3:[function(e,t,n){"use strict";function r(t){var n=e(1),r="//cdn.jsdelivr.net/algoliasearch/2/"+t+".min.js",i="-- AlgoliaSearch `latest` warning --\nWarning, you are using the `latest` version string from jsDelivr to load the AlgoliaSearch library.\nUsing `latest` is no more recommended, you should load //cdn.jsdelivr.net/algoliasearch/2/algoliasearch.min.js\n\nAlso, we updated the AlgoliaSearch JavaScript client to V3. If you want to upgrade,\nplease read our migration guide at https://github.com/algolia/algoliasearch-client-js/wiki/Migration-guide-from-2.x.x-to-3.x.x\n-- /AlgoliaSearch  `latest` warning --";window.console&&(window.console.warn?window.console.warn(i):window.console.log&&window.console.log(i));try{document.write("<script>window.ALGOLIA_SUPPORTS_DOCWRITE = true</script>"),window.ALGOLIA_SUPPORTS_DOCWRITE===!0?(document.write('<script src="'+r+'"></script>'),o("document.write")()):n(r,o("DOMElement"))}catch(s){n(r,o("DOMElement"))}}function o(e){return function(){var t="AlgoliaSearch: loaded V2 script using "+e;window.console&&window.console.log&&window.console.log(t)}}t.exports=r},{1:1}],4:[function(e,t,n){"use strict";function r(){var e="-- AlgoliaSearch V2 => V3 error --\nYou are trying to use a new version of the AlgoliaSearch JavaScript client with an old notation.\nPlease read our migration guide at https://github.com/algolia/algoliasearch-client-js/wiki/Migration-guide-from-2.x.x-to-3.x.x\n-- /AlgoliaSearch V2 => V3 error --";window.AlgoliaSearch=function(){throw new Error(e)},window.AlgoliaSearchHelper=function(){throw new Error(e)},window.AlgoliaExplainResults=function(){throw new Error(e)}}t.exports=r},{}],5:[function(e,t,n){"use strict";function r(t){var n=e(2),r=e(3),o=e(4);n(t)?r(t):o()}r("algoliasearch.angular")},{2:2,3:3,4:4}]},{},[5])(5)}),function e(t,n,r){function o(s,a){if(!n[s]){if(!t[s]){var u="function"==typeof require&&require;if(!a&&u)return u(s,!0);if(i)return i(s,!0);var c=new Error("Cannot find module '"+s+"'");throw c.code="MODULE_NOT_FOUND",c}var l=n[s]={exports:{}};t[s][0].call(l.exports,function(e){var n=t[s][1][e];return o(n?n:e)},l,l.exports,e,t,n,r)}return n[s].exports}for(var i="function"==typeof require&&require,s=0;s<r.length;s++)o(r[s]);return o}({1:[function(e,t,n){function r(){this._events=this._events||{},this._maxListeners=this._maxListeners||void 0}function o(e){return"function"==typeof e}function i(e){return"number"==typeof e}function s(e){return"object"==typeof e&&null!==e}function a(e){return void 0===e}t.exports=r,r.EventEmitter=r,r.prototype._events=void 0,r.prototype._maxListeners=void 0,r.defaultMaxListeners=10,r.prototype.setMaxListeners=function(e){if(!i(e)||0>e||isNaN(e))throw TypeError("n must be a positive number");return this._maxListeners=e,this},r.prototype.emit=function(e){var t,n,r,i,u,c;if(this._events||(this._events={}),"error"===e&&(!this._events.error||s(this._events.error)&&!this._events.error.length)){if(t=arguments[1],t instanceof Error)throw t;throw TypeError('Uncaught, unspecified "error" event.')}if(n=this._events[e],a(n))return!1;if(o(n))switch(arguments.length){case 1:n.call(this);break;case 2:n.call(this,arguments[1]);break;case 3:n.call(this,arguments[1],arguments[2]);break;default:for(r=arguments.length,i=new Array(r-1),u=1;r>u;u++)i[u-1]=arguments[u];n.apply(this,i)}else if(s(n)){for(r=arguments.length,i=new Array(r-1),u=1;r>u;u++)i[u-1]=arguments[u];for(c=n.slice(),r=c.length,u=0;r>u;u++)c[u].apply(this,i)}return!0},r.prototype.addListener=function(e,t){var n;if(!o(t))throw TypeError("listener must be a function");if(this._events||(this._events={}),this._events.newListener&&this.emit("newListener",e,o(t.listener)?t.listener:t),this._events[e]?s(this._events[e])?this._events[e].push(t):this._events[e]=[this._events[e],t]:this._events[e]=t,s(this._events[e])&&!this._events[e].warned){var n;n=a(this._maxListeners)?r.defaultMaxListeners:this._maxListeners,n&&n>0&&this._events[e].length>n&&(this._events[e].warned=!0,console.error("(node) warning: possible EventEmitter memory leak detected. %d listeners added. Use emitter.setMaxListeners() to increase limit.",this._events[e].length),"function"==typeof console.trace&&console.trace())}return this},r.prototype.on=r.prototype.addListener,r.prototype.once=function(e,t){function n(){this.removeListener(e,n),r||(r=!0,t.apply(this,arguments))}if(!o(t))throw TypeError("listener must be a function");var r=!1;return n.listener=t,this.on(e,n),this},r.prototype.removeListener=function(e,t){var n,r,i,a;if(!o(t))throw TypeError("listener must be a function");if(!this._events||!this._events[e])return this;if(n=this._events[e],i=n.length,r=-1,n===t||o(n.listener)&&n.listener===t)delete this._events[e],this._events.removeListener&&this.emit("removeListener",e,t);else if(s(n)){for(a=i;a-->0;)if(n[a]===t||n[a].listener&&n[a].listener===t){r=a;break}if(0>r)return this;1===n.length?(n.length=0,delete this._events[e]):n.splice(r,1),this._events.removeListener&&this.emit("removeListener",e,t)}return this},r.prototype.removeAllListeners=function(e){var t,n;if(!this._events)return this;if(!this._events.removeListener)return 0===arguments.length?this._events={}:this._events[e]&&delete this._events[e],this;if(0===arguments.length){for(t in this._events)"removeListener"!==t&&this.removeAllListeners(t);return this.removeAllListeners("removeListener"),this._events={},this}if(n=this._events[e],o(n))this.removeListener(e,n);else for(;n.length;)this.removeListener(e,n[n.length-1]);return delete this._events[e],this},r.prototype.listeners=function(e){var t;return t=this._events&&this._events[e]?o(this._events[e])?[this._events[e]]:this._events[e].slice():[]},r.listenerCount=function(e,t){var n;return n=e._events&&e._events[t]?o(e._events[t])?1:e._events[t].length:0}},{}],2:[function(e,t,n){function r(){l=!1,a.length?c=a.concat(c):f=-1,c.length&&o()}function o(){if(!l){var e=setTimeout(r);l=!0;for(var t=c.length;t;){for(a=c,c=[];++f<t;)a&&a[f].run();f=-1,t=c.length}a=null,l=!1,clearTimeout(e)}}function i(e,t){this.fun=e,this.array=t}function s(){}var a,u=t.exports={},c=[],l=!1,f=-1;u.nextTick=function(e){var t=new Array(arguments.length-1);if(arguments.length>1)for(var n=1;n<arguments.length;n++)t[n-1]=arguments[n];c.push(new i(e,t)),1!==c.length||l||setTimeout(o,0)},i.prototype.run=function(){this.fun.apply(null,this.array)},u.title="browser",u.browser=!0,u.env={},u.argv=[],u.version="",u.versions={},u.on=s,u.addListener=s,u.once=s,u.off=s,u.removeListener=s,u.removeAllListeners=s,u.emit=s,u.binding=function(e){throw new Error("process.binding is not supported")},u.cwd=function(){return"/"},u.chdir=function(e){throw new Error("process.chdir is not supported")},u.umask=function(){return 0}},{}],3:[function(e,t,n){"use strict";function r(e,t){return Object.prototype.hasOwnProperty.call(e,t)}t.exports=function(e,t,n,i){t=t||"&",n=n||"=";var s={};if("string"!=typeof e||0===e.length)return s;var a=/\+/g;e=e.split(t);var u=1e3;i&&"number"==typeof i.maxKeys&&(u=i.maxKeys);var c=e.length;u>0&&c>u&&(c=u);for(var l=0;c>l;++l){var f,d,h,p,y=e[l].replace(a,"%20"),m=y.indexOf(n);m>=0?(f=y.substr(0,m),d=y.substr(m+1)):(f=y,d=""),h=decodeURIComponent(f),p=decodeURIComponent(d),r(s,h)?o(s[h])?s[h].push(p):s[h]=[s[h],p]:s[h]=p}return s};var o=Array.isArray||function(e){return"[object Array]"===Object.prototype.toString.call(e)}},{}],4:[function(e,t,n){"use strict";function r(e,t){if(e.map)return e.map(t);for(var n=[],r=0;r<e.length;r++)n.push(t(e[r],r));return n}var o=function(e){switch(typeof e){case"string":return e;case"boolean":return e?"true":"false";case"number":return isFinite(e)?e:"";default:return""}};t.exports=function(e,t,n,a){return t=t||"&",n=n||"=",null===e&&(e=void 0),"object"==typeof e?r(s(e),function(s){var a=encodeURIComponent(o(s))+n;return i(e[s])?r(e[s],function(e){return a+encodeURIComponent(o(e))}).join(t):a+encodeURIComponent(o(e[s]))}).join(t):a?encodeURIComponent(o(a))+n+encodeURIComponent(o(e)):""};var i=Array.isArray||function(e){return"[object Array]"===Object.prototype.toString.call(e)},s=Object.keys||function(e){var t=[];for(var n in e)Object.prototype.hasOwnProperty.call(e,n)&&t.push(n);return t}},{}],5:[function(e,t,n){"use strict";n.decode=n.parse=e(3),n.encode=n.stringify=e(4)},{3:3,4:4}],6:[function(e,t,n){function r(){return"WebkitAppearance"in document.documentElement.style||window.console&&(console.firebug||console.exception&&console.table)||navigator.userAgent.toLowerCase().match(/firefox\/(\d+)/)&&parseInt(RegExp.$1,10)>=31}function o(){var e=arguments,t=this.useColors;if(e[0]=(t?"%c":"")+this.namespace+(t?" %c":" ")+e[0]+(t?"%c ":" ")+"+"+n.humanize(this.diff),!t)return e;var r="color: "+this.color;e=[e[0],r,"color: inherit"].concat(Array.prototype.slice.call(e,1));var o=0,i=0;return e[0].replace(/%[a-z%]/g,function(e){"%%"!==e&&(o++,"%c"===e&&(i=o))}),e.splice(i,0,r),e}function i(){return"object"==typeof console&&console.log&&Function.prototype.apply.call(console.log,console,arguments)}function s(e){try{null==e?n.storage.removeItem("debug"):n.storage.debug=e}catch(t){}}function a(){var e;try{e=n.storage.debug}catch(t){}return e}function u(){try{return window.localStorage}catch(e){}}n=t.exports=e(7),n.log=i,n.formatArgs=o,n.save=s,n.load=a,n.useColors=r,n.storage="undefined"!=typeof chrome&&"undefined"!=typeof chrome.storage?chrome.storage.local:u(),n.colors=["lightseagreen","forestgreen","goldenrod","dodgerblue","darkorchid","crimson"],n.formatters.j=function(e){return JSON.stringify(e)},n.enable(a())},{7:7}],7:[function(e,t,n){function r(){return n.colors[l++%n.colors.length]}function o(e){function t(){}function o(){var e=o,t=+new Date,i=t-(c||t);e.diff=i,e.prev=c,e.curr=t,c=t,null==e.useColors&&(e.useColors=n.useColors()),null==e.color&&e.useColors&&(e.color=r());var s=Array.prototype.slice.call(arguments);s[0]=n.coerce(s[0]),"string"!=typeof s[0]&&(s=["%o"].concat(s));var a=0;s[0]=s[0].replace(/%([a-z%])/g,function(t,r){if("%%"===t)return t;a++;var o=n.formatters[r];if("function"==typeof o){var i=s[a];t=o.call(e,i),s.splice(a,1),a--}return t}),"function"==typeof n.formatArgs&&(s=n.formatArgs.apply(e,s));var u=o.log||n.log||console.log.bind(console);u.apply(e,s)}t.enabled=!1,o.enabled=!0;var i=n.enabled(e)?o:t;return i.namespace=e,i}function i(e){n.save(e);for(var t=(e||"").split(/[\s,]+/),r=t.length,o=0;r>o;o++)t[o]&&(e=t[o].replace(/\*/g,".*?"),"-"===e[0]?n.skips.push(new RegExp("^"+e.substr(1)+"$")):n.names.push(new RegExp("^"+e+"$")))}function s(){n.enable("")}function a(e){var t,r;for(t=0,r=n.skips.length;r>t;t++)if(n.skips[t].test(e))return!1;for(t=0,r=n.names.length;r>t;t++)if(n.names[t].test(e))return!0;return!1}function u(e){return e instanceof Error?e.stack||e.message:e}n=t.exports=o,n.coerce=u,n.disable=s,n.enable=i,n.enabled=a,n.humanize=e(8),n.names=[],n.skips=[],n.formatters={};var c,l=0},{8:8}],8:[function(e,t,n){function r(e){if(e=""+e,!(e.length>1e4)){var t=/^((?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|years?|yrs?|y)?$/i.exec(e);if(t){var n=parseFloat(t[1]),r=(t[2]||"ms").toLowerCase();switch(r){case"years":case"year":case"yrs":case"yr":case"y":return n*f;case"days":case"day":case"d":return n*l;case"hours":case"hour":case"hrs":case"hr":case"h":return n*c;case"minutes":case"minute":case"mins":case"min":case"m":return n*u;case"seconds":case"second":case"secs":case"sec":case"s":return n*a;case"milliseconds":case"millisecond":case"msecs":case"msec":case"ms":return n}}}}function o(e){return e>=l?Math.round(e/l)+"d":e>=c?Math.round(e/c)+"h":e>=u?Math.round(e/u)+"m":e>=a?Math.round(e/a)+"s":e+"ms"}function i(e){return s(e,l,"day")||s(e,c,"hour")||s(e,u,"minute")||s(e,a,"second")||e+" ms"}function s(e,t,n){return t>e?void 0:1.5*t>e?Math.floor(e/t)+" "+n:Math.ceil(e/t)+" "+n+"s"}var a=1e3,u=60*a,c=60*u,l=24*c,f=365.25*l;t.exports=function(e,t){return t=t||{},"string"==typeof e?r(e):t["long"]?i(e):o(e)}},{}],9:[function(e,t,n){(function(n,r){(function(){"use strict";function o(e){return"function"==typeof e||"object"==typeof e&&null!==e}function i(e){return"function"==typeof e}function s(e){return"object"==typeof e&&null!==e}function a(e){Q=e}function u(e){W=e}function c(){return function(){n.nextTick(p)}}function l(){return function(){K(p)}}function f(){var e=0,t=new z(p),n=document.createTextNode("");return t.observe(n,{characterData:!0}),function(){n.data=e=++e%2}}function d(){var e=new MessageChannel;return e.port1.onmessage=p,function(){e.port2.postMessage(0)}}function h(){return function(){setTimeout(p,1)}}function p(){for(var e=0;V>e;e+=2){var t=te[e],n=te[e+1];t(n),te[e]=void 0,te[e+1]=void 0}V=0}function y(){try{var t=e,n=t("vertx");return K=n.runOnLoop||n.runOnContext,l()}catch(r){return h()}}function m(){}function v(){return new TypeError("You cannot resolve a promise with itself")}function g(){return new TypeError("A promises callback cannot return that same promise.")}function b(e){try{return e.then}catch(t){return ie.error=t,ie}}function w(e,t,n,r){try{e.call(t,n,r)}catch(o){return o}}function _(e,t,n){W(function(e){var r=!1,o=w(n,t,function(n){r||(r=!0,t!==n?T(e,n):S(e,n))},function(t){r||(r=!0,k(e,t))},"Settle: "+(e._label||" unknown promise"));!r&&o&&(r=!0,k(e,o))},e)}function x(e,t){t._state===re?S(e,t._result):t._state===oe?k(e,t._result):R(t,void 0,function(t){T(e,t)},function(t){k(e,t)})}function j(e,t){if(t.constructor===e.constructor)x(e,t);else{var n=b(t);n===ie?k(e,ie.error):void 0===n?S(e,t):i(n)?_(e,t,n):S(e,t)}}function T(e,t){e===t?k(e,v()):o(t)?j(e,t):S(e,t)}function A(e){e._onerror&&e._onerror(e._result),O(e)}function S(e,t){e._state===ne&&(e._result=t,e._state=re,0!==e._subscribers.length&&W(O,e))}function k(e,t){e._state===ne&&(e._state=oe,e._result=t,W(A,e))}function R(e,t,n,r){var o=e._subscribers,i=o.length;e._onerror=null,o[i]=t,o[i+re]=n,o[i+oe]=r,0===i&&e._state&&W(O,e)}function O(e){var t=e._subscribers,n=e._state;if(0!==t.length){for(var r,o,i=e._result,s=0;s<t.length;s+=3)r=t[s],o=t[s+n],r?q(n,r,o,i):o(i);e._subscribers.length=0}}function I(){this.error=null}function P(e,t){try{return e(t)}catch(n){return se.error=n,se}}function q(e,t,n,r){var o,s,a,u,c=i(n);if(c){if(o=P(n,r),o===se?(u=!0,s=o.error,o=null):a=!0,t===o)return void k(t,g())}else o=r,a=!0;t._state!==ne||(c&&a?T(t,o):u?k(t,s):e===re?S(t,o):e===oe&&k(t,o))}function U(e,t){try{t(function(t){T(e,t)},function(t){k(e,t)})}catch(n){k(e,n)}}function E(e,t){var n=this;n._instanceConstructor=e,n.promise=new e(m),n._validateInput(t)?(n._input=t,n.length=t.length,n._remaining=t.length,n._init(),0===n.length?S(n.promise,n._result):(n.length=n.length||0,n._enumerate(),0===n._remaining&&S(n.promise,n._result))):k(n.promise,n._validationError())}function C(e){return new ae(this,e).promise}function N(e){function t(e){T(o,e)}function n(e){k(o,e)}var r=this,o=new r(m);if(!$(e))return k(o,new TypeError("You must pass an array to race.")),o;for(var i=e.length,s=0;o._state===ne&&i>s;s++)R(r.resolve(e[s]),void 0,t,n);return o}function L(e){var t=this;if(e&&"object"==typeof e&&e.constructor===t)return e;var n=new t(m);return T(n,e),n}function D(e){var t=this,n=new t(m);return k(n,e),n}function M(){throw new TypeError("You must pass a resolver function as the first argument to the promise constructor")}function H(){throw new TypeError("Failed to construct 'Promise': Please use the 'new' operator, this object constructor cannot be called as a function.")}function J(e){this._id=de++,this._state=void 0,this._result=void 0,this._subscribers=[],m!==e&&(i(e)||M(),this instanceof J||H(),U(this,e))}function B(){var e;if("undefined"!=typeof r)e=r;else if("undefined"!=typeof self)e=self;else try{e=Function("return this")()}catch(t){throw new Error("polyfill failed because global object is unavailable in this environment")}var n=e.Promise;(!n||"[object Promise]"!==Object.prototype.toString.call(n.resolve())||n.cast)&&(e.Promise=he)}var F;F=Array.isArray?Array.isArray:function(e){return"[object Array]"===Object.prototype.toString.call(e)};var K,Q,G,$=F,V=0,W=({}.toString,function(e,t){te[V]=e,te[V+1]=t,V+=2,2===V&&(Q?Q(p):G())}),X="undefined"!=typeof window?window:void 0,Y=X||{},z=Y.MutationObserver||Y.WebKitMutationObserver,Z="undefined"!=typeof n&&"[object process]"==={}.toString.call(n),ee="undefined"!=typeof Uint8ClampedArray&&"undefined"!=typeof importScripts&&"undefined"!=typeof MessageChannel,te=new Array(1e3);G=Z?c():z?f():ee?d():void 0===X&&"function"==typeof e?y():h();var ne=void 0,re=1,oe=2,ie=new I,se=new I;E.prototype._validateInput=function(e){return $(e)},E.prototype._validationError=function(){return new Error("Array Methods must be provided an Array")},E.prototype._init=function(){this._result=new Array(this.length)};var ae=E;E.prototype._enumerate=function(){for(var e=this,t=e.length,n=e.promise,r=e._input,o=0;n._state===ne&&t>o;o++)e._eachEntry(r[o],o)},E.prototype._eachEntry=function(e,t){var n=this,r=n._instanceConstructor;s(e)?e.constructor===r&&e._state!==ne?(e._onerror=null,n._settledAt(e._state,t,e._result)):n._willSettleAt(r.resolve(e),t):(n._remaining--,n._result[t]=e)},E.prototype._settledAt=function(e,t,n){var r=this,o=r.promise;o._state===ne&&(r._remaining--,e===oe?k(o,n):r._result[t]=n),0===r._remaining&&S(o,r._result)},E.prototype._willSettleAt=function(e,t){var n=this;R(e,void 0,function(e){n._settledAt(re,t,e)},function(e){n._settledAt(oe,t,e)})};var ue=C,ce=N,le=L,fe=D,de=0,he=J;J.all=ue,J.race=ce,J.resolve=le,J.reject=fe,J._setScheduler=a,J._setAsap=u,J._asap=W,J.prototype={constructor:J,then:function(e,t){var n=this,r=n._state;if(r===re&&!e||r===oe&&!t)return this;var o=new this.constructor(m),i=n._result;if(r){var s=arguments[r-1];W(function(){q(r,o,s,i)})}else R(n,o,e,t);return o},"catch":function(e){return this.then(null,e)}};var pe=B,ye={Promise:he,polyfill:pe};"function"==typeof define&&define.amd?define(function(){return ye}):"undefined"!=typeof t&&t.exports?t.exports=ye:"undefined"!=typeof this&&(this.ES6Promise=ye),pe()}).call(this)}).call(this,e(2),"undefined"!=typeof global?global:"undefined"!=typeof self?self:"undefined"!=typeof window?window:{})},{2:2}],10:[function(e,t,n){"function"==typeof Object.create?t.exports=function(e,t){e.super_=t,e.prototype=Object.create(t.prototype,{constructor:{value:e,enumerable:!1,writable:!0,configurable:!0}})}:t.exports=function(e,t){e.super_=t;var n=function(){};n.prototype=t.prototype,e.prototype=new n,e.prototype.constructor=e}},{}],11:[function(e,t,n){var r=e(14),o=e(18),i=e(30),s=i(r,o);t.exports=s},{14:14,18:18,30:30}],12:[function(e,t,n){function r(e,t){if("function"!=typeof e)throw new TypeError(o);return t=i(void 0===t?e.length-1:+t||0,0),function(){for(var n=arguments,r=-1,o=i(n.length-t,0),s=Array(o);++r<o;)s[r]=n[t+r];switch(t){case 0:return e.call(this,s);case 1:return e.call(this,n[0],s);case 2:return e.call(this,n[0],n[1],s)}var a=Array(t+1);for(r=-1;++r<t;)a[r]=n[r];return a[t]=s,e.apply(this,a)}}var o="Expected a function",i=Math.max;t.exports=r},{}],13:[function(e,t,n){function r(e,t){var n=-1,r=e.length;for(t||(t=Array(r));++n<r;)t[n]=e[n];return t}t.exports=r},{}],14:[function(e,t,n){function r(e,t){for(var n=-1,r=e.length;++n<r&&t(e[n],n,e)!==!1;);return e}t.exports=r},{}],15:[function(e,t,n){function r(e,t){return null==t?e:o(t,i(t),e)}var o=e(17),i=e(53);t.exports=r},{17:17,53:53}],16:[function(e,t,n){function r(e,t,n,p,y,m,v){var b;if(n&&(b=y?n(e,p,y):n(e)),void 0!==b)return b;if(!d(e))return e;var w=f(e);if(w){if(b=u(e),!t)return o(e,b)}else{var x=D.call(e),j=x==g;if(x!=_&&x!=h&&(!j||y))return N[x]?c(e,x,t):y?e:{};if(b=l(j?{}:e),!t)return s(b,e)}m||(m=[]),v||(v=[]);for(var T=m.length;T--;)if(m[T]==e)return v[T];return m.push(e),v.push(b),(w?i:a)(e,function(o,i){b[i]=r(o,t,n,i,e,m,v)}),b}var o=e(13),i=e(14),s=e(15),a=e(21),u=e(33),c=e(34),l=e(35),f=e(46),d=e(49),h="[object Arguments]",p="[object Array]",y="[object Boolean]",m="[object Date]",v="[object Error]",g="[object Function]",b="[object Map]",w="[object Number]",_="[object Object]",x="[object RegExp]",j="[object Set]",T="[object String]",A="[object WeakMap]",S="[object ArrayBuffer]",k="[object Float32Array]",R="[object Float64Array]",O="[object Int8Array]",I="[object Int16Array]",P="[object Int32Array]",q="[object Uint8Array]",U="[object Uint8ClampedArray]",E="[object Uint16Array]",C="[object Uint32Array]",N={};N[h]=N[p]=N[S]=N[y]=N[m]=N[k]=N[R]=N[O]=N[I]=N[P]=N[w]=N[_]=N[x]=N[T]=N[q]=N[U]=N[E]=N[C]=!0,N[v]=N[g]=N[b]=N[j]=N[A]=!1;var L=Object.prototype,D=L.toString;t.exports=r},{13:13,14:14,15:15,21:21,33:33,34:34,35:35,46:46,49:49}],17:[function(e,t,n){function r(e,t,n){n||(n={});for(var r=-1,o=t.length;++r<o;){var i=t[r];n[i]=e[i]}return n}t.exports=r},{}],18:[function(e,t,n){var r=e(21),o=e(28),i=o(r);t.exports=i},{21:21,28:28}],19:[function(e,t,n){var r=e(29),o=r();t.exports=o},{29:29}],20:[function(e,t,n){function r(e,t){return o(e,t,i)}var o=e(19),i=e(54);t.exports=r},{19:19,54:54}],21:[function(e,t,n){function r(e,t){return o(e,t,i)}var o=e(19),i=e(53);t.exports=r},{19:19,53:53}],22:[function(e,t,n){function r(e,t,n,d,h){if(!u(e))return e;var p=a(t)&&(s(t)||l(t)),y=p?void 0:f(t);return o(y||t,function(o,s){if(y&&(s=o,o=t[s]),c(o))d||(d=[]),h||(h=[]),i(e,t,s,r,n,d,h);else{var a=e[s],u=n?n(a,o,s,e,t):void 0,l=void 0===u;l&&(u=o),void 0===u&&(!p||s in e)||!l&&(u===u?u===a:a!==a)||(e[s]=u)}}),e}var o=e(14),i=e(23),s=e(46),a=e(36),u=e(49),c=e(40),l=e(51),f=e(53);t.exports=r},{14:14,23:23,36:36,40:40,46:46,49:49,51:51,53:53}],23:[function(e,t,n){function r(e,t,n,r,f,d,h){for(var p=d.length,y=t[n];p--;)if(d[p]==y)return void(e[n]=h[p]);var m=e[n],v=f?f(m,y,n,e,t):void 0,g=void 0===v;g&&(v=y,a(y)&&(s(y)||c(y))?v=s(m)?m:a(m)?o(m):[]:u(y)||i(y)?v=i(m)?l(m):u(m)?m:{}:g=!1),d.push(y),h.push(v),g?e[n]=r(v,y,f,d,h):(v===v?v!==m:m===m)&&(e[n]=v)}var o=e(13),i=e(45),s=e(46),a=e(36),u=e(50),c=e(51),l=e(52);t.exports=r},{13:13,36:36,45:45,46:46,50:50,51:51,52:52}],24:[function(e,t,n){function r(e){return function(t){return null==t?void 0:t[e]}}t.exports=r},{}],25:[function(e,t,n){function r(e,t,n){if("function"!=typeof e)return o;if(void 0===t)return e;switch(n){case 1:return function(n){return e.call(t,n)};case 3:return function(n,r,o){return e.call(t,n,r,o)};case 4:return function(n,r,o,i){return e.call(t,n,r,o,i)};case 5:return function(n,r,o,i,s){return e.call(t,n,r,o,i,s)}}return function(){return e.apply(t,arguments)}}var o=e(56);t.exports=r},{56:56}],26:[function(e,t,n){(function(e){function n(e){var t=new r(e.byteLength),n=new o(t);return n.set(new o(e)),t}var r=e.ArrayBuffer,o=e.Uint8Array;t.exports=n}).call(this,"undefined"!=typeof global?global:"undefined"!=typeof self?self:"undefined"!=typeof window?window:{})},{}],27:[function(e,t,n){function r(e){return s(function(t,n){var r=-1,s=null==t?0:n.length,a=s>2?n[s-2]:void 0,u=s>2?n[2]:void 0,c=s>1?n[s-1]:void 0;for("function"==typeof a?(a=o(a,c,5),s-=2):(a="function"==typeof c?c:void 0,s-=a?1:0),u&&i(n[0],n[1],u)&&(a=3>s?void 0:a,s=1);++r<s;){var l=n[r];l&&e(t,l,a)}return t})}var o=e(25),i=e(38),s=e(12);t.exports=r},{12:12,25:25,38:38}],28:[function(e,t,n){function r(e,t){return function(n,r){var a=n?o(n):0;if(!i(a))return e(n,r);for(var u=t?a:-1,c=s(n);(t?u--:++u<a)&&r(c[u],u,c)!==!1;);return n}}var o=e(31),i=e(39),s=e(42);t.exports=r},{31:31,39:39,42:42}],29:[function(e,t,n){function r(e){return function(t,n,r){for(var i=o(t),s=r(t),a=s.length,u=e?a:-1;e?u--:++u<a;){var c=s[u];if(n(i[c],c,i)===!1)break}return t}}var o=e(42);t.exports=r},{42:42}],30:[function(e,t,n){function r(e,t){return function(n,r,s){return"function"==typeof r&&void 0===s&&i(n)?e(n,r):t(n,o(r,s,3))}}var o=e(25),i=e(46);t.exports=r},{25:25,46:46}],31:[function(e,t,n){var r=e(24),o=r("length");t.exports=o},{24:24}],32:[function(e,t,n){function r(e,t){var n=null==e?void 0:e[t];return o(n)?n:void 0}var o=e(48);t.exports=r},{48:48}],33:[function(e,t,n){function r(e){var t=e.length,n=new e.constructor(t);return t&&"string"==typeof e[0]&&i.call(e,"index")&&(n.index=e.index,n.input=e.input),n}var o=Object.prototype,i=o.hasOwnProperty;t.exports=r},{}],34:[function(e,t,n){function r(e,t,n){var r=e.constructor;switch(t){case l:return o(e);case i:case s:return new r(+e);case f:case d:case h:case p:case y:case m:case v:case g:case b:var _=e.buffer;return new r(n?o(_):_,e.byteOffset,e.length);case a:case c:return new r(e);case u:var x=new r(e.source,w.exec(e));x.lastIndex=e.lastIndex}return x}var o=e(26),i="[object Boolean]",s="[object Date]",a="[object Number]",u="[object RegExp]",c="[object String]",l="[object ArrayBuffer]",f="[object Float32Array]",d="[object Float64Array]",h="[object Int8Array]",p="[object Int16Array]",y="[object Int32Array]",m="[object Uint8Array]",v="[object Uint8ClampedArray]",g="[object Uint16Array]",b="[object Uint32Array]",w=/\w*$/;t.exports=r},{26:26}],35:[function(e,t,n){function r(e){var t=e.constructor;return"function"==typeof t&&t instanceof t||(t=Object),new t}t.exports=r},{}],36:[function(e,t,n){function r(e){return null!=e&&i(o(e))}var o=e(31),i=e(39);t.exports=r},{31:31,39:39}],37:[function(e,t,n){function r(e,t){return e="number"==typeof e||o.test(e)?+e:-1,t=null==t?i:t,e>-1&&e%1==0&&t>e}var o=/^\d+$/,i=9007199254740991;t.exports=r},{}],38:[function(e,t,n){function r(e,t,n){if(!s(n))return!1;var r=typeof t;if("number"==r?o(n)&&i(t,n.length):"string"==r&&t in n){var a=n[t];return e===e?e===a:a!==a}return!1}var o=e(36),i=e(37),s=e(49);t.exports=r},{36:36,37:37,49:49}],39:[function(e,t,n){function r(e){return"number"==typeof e&&e>-1&&e%1==0&&o>=e}var o=9007199254740991;t.exports=r},{}],40:[function(e,t,n){function r(e){return!!e&&"object"==typeof e}t.exports=r},{}],41:[function(e,t,n){function r(e){for(var t=u(e),n=t.length,r=n&&e.length,c=!!r&&a(r)&&(i(e)||o(e)),f=-1,d=[];++f<n;){var h=t[f];(c&&s(h,r)||l.call(e,h))&&d.push(h)}return d}var o=e(45),i=e(46),s=e(37),a=e(39),u=e(54),c=Object.prototype,l=c.hasOwnProperty;t.exports=r},{37:37,39:39,45:45,46:46,54:54}],42:[function(e,t,n){function r(e){return o(e)?e:Object(e)}var o=e(49);t.exports=r},{49:49}],43:[function(e,t,n){function r(e,t,n,r){return t&&"boolean"!=typeof t&&s(e,t,n)?t=!1:"function"==typeof t&&(r=n,n=t,t=!1),"function"==typeof n?o(e,t,i(n,r,3)):o(e,t)}var o=e(16),i=e(25),s=e(38);t.exports=r},{16:16,25:25,38:38}],44:[function(e,t,n){function r(e,t,n){return"function"==typeof t?o(e,!0,i(t,n,3)):o(e,!0)}var o=e(16),i=e(25);t.exports=r},{16:16,25:25}],45:[function(e,t,n){function r(e){return i(e)&&o(e)&&a.call(e,"callee")&&!u.call(e,"callee")}var o=e(36),i=e(40),s=Object.prototype,a=s.hasOwnProperty,u=s.propertyIsEnumerable;t.exports=r},{36:36,40:40}],46:[function(e,t,n){var r=e(32),o=e(39),i=e(40),s="[object Array]",a=Object.prototype,u=a.toString,c=r(Array,"isArray"),l=c||function(e){return i(e)&&o(e.length)&&u.call(e)==s};t.exports=l},{32:32,39:39,40:40}],47:[function(e,t,n){function r(e){return o(e)&&a.call(e)==i}var o=e(49),i="[object Function]",s=Object.prototype,a=s.toString;t.exports=r},{49:49}],48:[function(e,t,n){function r(e){return null==e?!1:o(e)?l.test(u.call(e)):i(e)&&s.test(e)}var o=e(47),i=e(40),s=/^\[object .+?Constructor\]$/,a=Object.prototype,u=Function.prototype.toString,c=a.hasOwnProperty,l=RegExp("^"+u.call(c).replace(/[\\^$.*+?()[\]{}|]/g,"\\$&").replace(/hasOwnProperty|(function).*?(?=\\\()| for .+?(?=\\\])/g,"$1.*?")+"$");t.exports=r},{40:40,47:47}],49:[function(e,t,n){function r(e){var t=typeof e;return!!e&&("object"==t||"function"==t)}t.exports=r},{}],50:[function(e,t,n){function r(e){var t;if(!s(e)||l.call(e)!=a||i(e)||!c.call(e,"constructor")&&(t=e.constructor,"function"==typeof t&&!(t instanceof t)))return!1;var n;return o(e,function(e,t){n=t}),void 0===n||c.call(e,n)}var o=e(20),i=e(45),s=e(40),a="[object Object]",u=Object.prototype,c=u.hasOwnProperty,l=u.toString;t.exports=r},{20:20,40:40,45:45}],51:[function(e,t,n){function r(e){return i(e)&&o(e.length)&&!!O[P.call(e)]}var o=e(39),i=e(40),s="[object Arguments]",a="[object Array]",u="[object Boolean]",c="[object Date]",l="[object Error]",f="[object Function]",d="[object Map]",h="[object Number]",p="[object Object]",y="[object RegExp]",m="[object Set]",v="[object String]",g="[object WeakMap]",b="[object ArrayBuffer]",w="[object Float32Array]",_="[object Float64Array]",x="[object Int8Array]",j="[object Int16Array]",T="[object Int32Array]",A="[object Uint8Array]",S="[object Uint8ClampedArray]",k="[object Uint16Array]",R="[object Uint32Array]",O={};O[w]=O[_]=O[x]=O[j]=O[T]=O[A]=O[S]=O[k]=O[R]=!0,O[s]=O[a]=O[b]=O[u]=O[c]=O[l]=O[f]=O[d]=O[h]=O[p]=O[y]=O[m]=O[v]=O[g]=!1;var I=Object.prototype,P=I.toString;t.exports=r},{39:39,40:40}],52:[function(e,t,n){function r(e){return o(e,i(e))}var o=e(17),i=e(54);t.exports=r},{17:17,54:54}],53:[function(e,t,n){var r=e(32),o=e(36),i=e(49),s=e(41),a=r(Object,"keys"),u=a?function(e){var t=null==e?void 0:e.constructor;return"function"==typeof t&&t.prototype===e||"function"!=typeof e&&o(e)?s(e):i(e)?a(e):[]}:s;t.exports=u},{32:32,36:36,41:41,49:49}],54:[function(e,t,n){function r(e){if(null==e)return[];u(e)||(e=Object(e));var t=e.length;t=t&&a(t)&&(i(e)||o(e))&&t||0;for(var n=e.constructor,r=-1,c="function"==typeof n&&n.prototype===e,f=Array(t),d=t>0;++r<t;)f[r]=r+"";for(var h in e)d&&s(h,t)||"constructor"==h&&(c||!l.call(e,h))||f.push(h);return f}var o=e(45),i=e(46),s=e(37),a=e(39),u=e(49),c=Object.prototype,l=c.hasOwnProperty;t.exports=r},{37:37,39:39,45:45,46:46,49:49}],55:[function(e,t,n){var r=e(22),o=e(27),i=o(r);t.exports=i},{22:22,27:27}],56:[function(e,t,n){function r(e){return e}t.exports=r},{}],57:[function(e,t,n){(function(n){"use strict";function r(t,n,r){var s=e(6)("algoliasearch"),a=e(43),u=e(46),c="Usage: algoliasearch(applicationID, apiKey, opts)";if(!t)throw new f.AlgoliaSearchError("Please provide an application ID. "+c);if(!n)throw new f.AlgoliaSearchError("Please provide an API key. "+c);this.applicationID=t,this.apiKey=n;var l=[this.applicationID+"-1.algolianet.com",this.applicationID+"-2.algolianet.com",this.applicationID+"-3.algolianet.com"];this.hosts={read:[],write:[]},this.hostIndex={read:0,write:0},r=r||{};var d=r.protocol||"https:",h=void 0===r.timeout?2e3:r.timeout;if(/:$/.test(d)||(d+=":"),"http:"!==r.protocol&&"https:"!==r.protocol)throw new f.AlgoliaSearchError("protocol must be `http:` or `https:` (was `"+r.protocol+"`)");r.hosts?u(r.hosts)?(this.hosts.read=a(r.hosts),this.hosts.write=a(r.hosts)):(this.hosts.read=a(r.hosts.read),
 this.hosts.write=a(r.hosts.write)):(this.hosts.read=[this.applicationID+"-dsn.algolia.net"].concat(l),this.hosts.write=[this.applicationID+".algolia.net"].concat(l)),this.hosts.read=o(this.hosts.read,i(d)),this.hosts.write=o(this.hosts.write,i(d)),this.requestTimeout=h,this.extraHeaders=[],this.cache={},this._ua=r._ua,this._useCache=void 0===r._useCache?!0:r._useCache,this._setTimeout=r._setTimeout,s("init done, %j",this)}function o(e,t){for(var n=[],r=0;r<e.length;++r)n.push(t(e[r],r));return n}function i(e){return function(t){return e+"//"+t.toLowerCase()}}function s(){var e="Not implemented in this environment.\nIf you feel this is a mistake, write to support@algolia.com";throw new f.AlgoliaSearchError(e)}function a(e,t){var n=e.toLowerCase().replace(".","").replace("()","");return"algoliasearch: `"+e+"` was replaced by `"+t+"`. Please see https://github.com/algolia/algoliasearch-client-js/wiki/Deprecated#"+n}function u(e,t){t(e,0)}function c(e,t){function n(){return r||(console.log(t),r=!0),e.apply(this,arguments)}var r=!1;return n}function l(e){if(void 0===Array.prototype.toJSON)return JSON.stringify(e);var t=Array.prototype.toJSON;delete Array.prototype.toJSON;var n=JSON.stringify(e);return Array.prototype.toJSON=t,n}t.exports=r;var f=e(64);r.prototype={deleteIndex:function(e,t){return this._jsonRequest({method:"DELETE",url:"/1/indexes/"+encodeURIComponent(e),hostType:"write",callback:t})},moveIndex:function(e,t,n){var r={operation:"move",destination:t};return this._jsonRequest({method:"POST",url:"/1/indexes/"+encodeURIComponent(e)+"/operation",body:r,hostType:"write",callback:n})},copyIndex:function(e,t,n){var r={operation:"copy",destination:t};return this._jsonRequest({method:"POST",url:"/1/indexes/"+encodeURIComponent(e)+"/operation",body:r,hostType:"write",callback:n})},getLogs:function(e,t,n){return 0===arguments.length||"function"==typeof e?(n=e,e=0,t=10):(1===arguments.length||"function"==typeof t)&&(n=t,t=10),this._jsonRequest({method:"GET",url:"/1/logs?offset="+e+"&length="+t,hostType:"read",callback:n})},listIndexes:function(e,t){var n="";return void 0===e||"function"==typeof e?t=e:n="?page="+e,this._jsonRequest({method:"GET",url:"/1/indexes"+n,hostType:"read",callback:t})},initIndex:function(e){return new this.Index(this,e)},listUserKeys:function(e){return this._jsonRequest({method:"GET",url:"/1/keys",hostType:"read",callback:e})},getUserKeyACL:function(e,t){return this._jsonRequest({method:"GET",url:"/1/keys/"+e,hostType:"read",callback:t})},deleteUserKey:function(e,t){return this._jsonRequest({method:"DELETE",url:"/1/keys/"+e,hostType:"write",callback:t})},addUserKey:function(e,t,n){(1===arguments.length||"function"==typeof t)&&(n=t,t=null);var r={acl:e};return t&&(r.validity=t.validity,r.maxQueriesPerIPPerHour=t.maxQueriesPerIPPerHour,r.maxHitsPerQuery=t.maxHitsPerQuery,r.indexes=t.indexes,r.description=t.description,t.queryParameters&&(r.queryParameters=this._getSearchParams(t.queryParameters,"")),r.referers=t.referers),this._jsonRequest({method:"POST",url:"/1/keys",body:r,hostType:"write",callback:n})},addUserKeyWithValidity:c(function(e,t,n){return this.addUserKey(e,t,n)},a("client.addUserKeyWithValidity()","client.addUserKey()")),updateUserKey:function(e,t,n,r){(2===arguments.length||"function"==typeof n)&&(r=n,n=null);var o={acl:t};return n&&(o.validity=n.validity,o.maxQueriesPerIPPerHour=n.maxQueriesPerIPPerHour,o.maxHitsPerQuery=n.maxHitsPerQuery,o.indexes=n.indexes,o.description=n.description,n.queryParameters&&(o.queryParameters=this._getSearchParams(n.queryParameters,"")),o.referers=n.referers),this._jsonRequest({method:"PUT",url:"/1/keys/"+e,body:o,hostType:"write",callback:r})},setSecurityTags:function(e){if("[object Array]"===Object.prototype.toString.call(e)){for(var t=[],n=0;n<e.length;++n)if("[object Array]"===Object.prototype.toString.call(e[n])){for(var r=[],o=0;o<e[n].length;++o)r.push(e[n][o]);t.push("("+r.join(",")+")")}else t.push(e[n]);e=t.join(",")}this.securityTags=e},setUserToken:function(e){this.userToken=e},startQueriesBatch:c(function(){this._batch=[]},a("client.startQueriesBatch()","client.search()")),addQueryInBatch:c(function(e,t,n){this._batch.push({indexName:e,query:t,params:n})},a("client.addQueryInBatch()","client.search()")),clearCache:function(){this.cache={}},sendQueriesBatch:c(function(e){return this.search(this._batch,e)},a("client.sendQueriesBatch()","client.search()")),setRequestTimeout:function(e){e&&(this.requestTimeout=parseInt(e,10))},search:function(e,t){var n=this,r={requests:o(e,function(e){var t="";return void 0!==e.query&&(t+="query="+encodeURIComponent(e.query)),{indexName:e.indexName,params:n._getSearchParams(e.params,t)}})};return this._jsonRequest({cache:this.cache,method:"POST",url:"/1/indexes/*/queries",body:r,hostType:"read",callback:t})},batch:function(e,t){return this._jsonRequest({method:"POST",url:"/1/indexes/*/batch",body:{requests:e},hostType:"write",callback:t})},destroy:s,enableRateLimitForward:s,disableRateLimitForward:s,useSecuredAPIKey:s,disableSecuredAPIKey:s,generateSecuredApiKey:s,Index:function(e,t){this.indexName=t,this.as=e,this.typeAheadArgs=null,this.typeAheadValueOption=null,this.cache={}},setExtraHeader:function(e,t){this.extraHeaders.push({name:e.toLowerCase(),value:t})},addAlgoliaAgent:function(e){this._ua+=";"+e},_sendQueriesBatch:function(e,t){function n(){for(var t="",n=0;n<e.requests.length;++n){var r="/1/indexes/"+encodeURIComponent(e.requests[n].indexName)+"?"+e.requests[n].params;t+=n+"="+encodeURIComponent(r)+"&"}return t}return this._jsonRequest({cache:this.cache,method:"POST",url:"/1/indexes/*/queries",body:e,hostType:"read",fallback:{method:"GET",url:"/1/indexes/*",body:{params:n()}},callback:t})},_jsonRequest:function(t){function r(e,u){function h(e){var t=e&&e.body&&e.body.message&&e.body.status||e.statusCode||e&&e.body&&200;i("received response: statusCode: %s, computed statusCode: %d, headers: %j",e.statusCode,t,e.headers),n.env.DEBUG&&-1!==n.env.DEBUG.indexOf("debugBody")&&i("body: %j",e.body);var r=200===t||201===t,o=!r&&4!==Math.floor(t/100)&&1!==Math.floor(t/100);if(a._useCache&&r&&s&&(s[m]=e.responseText),r)return e.body;if(o)return c+=1,y();var u=new f.AlgoliaSearchError(e.body&&e.body.message);return a._promise.reject(u)}function p(n){return i("error: %s, stack: %s",n.message,n.stack),n instanceof f.AlgoliaSearchError||(n=new f.Unknown(n&&n.message,n)),c+=1,n instanceof f.Unknown||n instanceof f.UnparsableJSON||c>=a.hosts[t.hostType].length&&(d||!t.fallback||!a._request.fallback)?a._promise.reject(n):(a.hostIndex[t.hostType]=++a.hostIndex[t.hostType]%a.hosts[t.hostType].length,n instanceof f.RequestTimeout?y():(a._request.fallback&&!a.useFallback&&(a.useFallback=!0),r(e,u)))}function y(){return a.hostIndex[t.hostType]=++a.hostIndex[t.hostType]%a.hosts[t.hostType].length,u.timeout=a.requestTimeout*(c+1),r(e,u)}var m;if(a._useCache&&(m=t.url),a._useCache&&o&&(m+="_body_"+u.body),a._useCache&&s&&void 0!==s[m])return i("serving response from cache"),a._promise.resolve(JSON.parse(s[m]));if(c>=a.hosts[t.hostType].length||a.useFallback&&!d)return t.fallback&&a._request.fallback&&!d?(i("switching to fallback"),c=0,u.method=t.fallback.method,u.url=t.fallback.url,u.jsonBody=t.fallback.body,u.jsonBody&&(u.body=l(u.jsonBody)),u.timeout=a.requestTimeout*(c+1),a.hostIndex[t.hostType]=0,d=!0,r(a._request.fallback,u)):(i("could not get any response"),a._promise.reject(new f.AlgoliaSearchError("Cannot connect to the AlgoliaSearch API. Send an email to support@algolia.com to report and resolve the issue. Application id was: "+a.applicationID)));var v=a.hosts[t.hostType][a.hostIndex[t.hostType]]+u.url,g={body:o,jsonBody:t.body,method:u.method,headers:a._computeRequestHeaders(),timeout:u.timeout,debug:i};return i("method: %s, url: %s, headers: %j, timeout: %d",g.method,v,g.headers,g.timeout),e===a._request.fallback&&i("using fallback"),e.call(a,v,g).then(h,p)}var o,i=e(6)("algoliasearch:"+t.url),s=t.cache,a=this,c=0,d=!1;void 0!==t.body&&(o=l(t.body)),i("request start");var h=a.useFallback&&t.fallback,p=h?t.fallback:t,y=r(h?a._request.fallback:a._request,{url:p.url,method:p.method,body:o,jsonBody:t.body,timeout:a.requestTimeout*(c+1)});return t.callback?void y.then(function(e){u(function(){t.callback(null,e)},a._setTimeout||setTimeout)},function(e){u(function(){t.callback(e)},a._setTimeout||setTimeout)}):y},_getSearchParams:function(e,t){if(this._isUndefined(e)||null===e)return t;for(var n in e)null!==n&&void 0!==e[n]&&e.hasOwnProperty(n)&&(t+=""===t?"":"&",t+=n+"="+encodeURIComponent("[object Array]"===Object.prototype.toString.call(e[n])?l(e[n]):e[n]));return t},_isUndefined:function(e){return void 0===e},_computeRequestHeaders:function(){var t=e(11),n={"x-algolia-api-key":this.apiKey,"x-algolia-application-id":this.applicationID,"x-algolia-agent":this._ua};return this.userToken&&(n["x-algolia-usertoken"]=this.userToken),this.securityTags&&(n["x-algolia-tagfilters"]=this.securityTags),this.extraHeaders&&t(this.extraHeaders,function(e){n[e.name]=e.value}),n}},r.prototype.Index.prototype={clearCache:function(){this.cache={}},addObject:function(e,t,n){var r=this;return(1===arguments.length||"function"==typeof t)&&(n=t,t=void 0),this.as._jsonRequest({method:void 0!==t?"PUT":"POST",url:"/1/indexes/"+encodeURIComponent(r.indexName)+(void 0!==t?"/"+encodeURIComponent(t):""),body:e,hostType:"write",callback:n})},addObjects:function(e,t){for(var n=this,r={requests:[]},o=0;o<e.length;++o){var i={action:"addObject",body:e[o]};r.requests.push(i)}return this.as._jsonRequest({method:"POST",url:"/1/indexes/"+encodeURIComponent(n.indexName)+"/batch",body:r,hostType:"write",callback:t})},getObject:function(e,t,n){var r=this;(1===arguments.length||"function"==typeof t)&&(n=t,t=void 0);var o="";if(void 0!==t){o="?attributes=";for(var i=0;i<t.length;++i)0!==i&&(o+=","),o+=t[i]}return this.as._jsonRequest({method:"GET",url:"/1/indexes/"+encodeURIComponent(r.indexName)+"/"+encodeURIComponent(e)+o,hostType:"read",callback:n})},getObjects:function(e,t,n){var r=this;(1===arguments.length||"function"==typeof t)&&(n=t,t=void 0);var i={requests:o(e,function(e){var n={indexName:r.indexName,objectID:e};return t&&(n.attributesToRetrieve=t.join(",")),n})};return this.as._jsonRequest({method:"POST",url:"/1/indexes/*/objects",hostType:"read",body:i,callback:n})},partialUpdateObject:function(e,t){var n=this;return this.as._jsonRequest({method:"POST",url:"/1/indexes/"+encodeURIComponent(n.indexName)+"/"+encodeURIComponent(e.objectID)+"/partial",body:e,hostType:"write",callback:t})},partialUpdateObjects:function(e,t){for(var n=this,r={requests:[]},o=0;o<e.length;++o){var i={action:"partialUpdateObject",objectID:e[o].objectID,body:e[o]};r.requests.push(i)}return this.as._jsonRequest({method:"POST",url:"/1/indexes/"+encodeURIComponent(n.indexName)+"/batch",body:r,hostType:"write",callback:t})},saveObject:function(e,t){var n=this;return this.as._jsonRequest({method:"PUT",url:"/1/indexes/"+encodeURIComponent(n.indexName)+"/"+encodeURIComponent(e.objectID),body:e,hostType:"write",callback:t})},saveObjects:function(e,t){for(var n=this,r={requests:[]},o=0;o<e.length;++o){var i={action:"updateObject",objectID:e[o].objectID,body:e[o]};r.requests.push(i)}return this.as._jsonRequest({method:"POST",url:"/1/indexes/"+encodeURIComponent(n.indexName)+"/batch",body:r,hostType:"write",callback:t})},deleteObject:function(e,t){if("function"==typeof e||"string"!=typeof e&&"number"!=typeof e){var n=new f.AlgoliaSearchError("Cannot delete an object without an objectID");return t=e,"function"==typeof t?t(n):this.as._promise.reject(n)}var r=this;return this.as._jsonRequest({method:"DELETE",url:"/1/indexes/"+encodeURIComponent(r.indexName)+"/"+encodeURIComponent(e),hostType:"write",callback:t})},deleteObjects:function(e,t){var n=this,r={requests:o(e,function(e){return{action:"deleteObject",objectID:e,body:{objectID:e}}})};return this.as._jsonRequest({method:"POST",url:"/1/indexes/"+encodeURIComponent(n.indexName)+"/batch",body:r,hostType:"write",callback:t})},deleteByQuery:function(t,n,r){function i(e){if(0===e.nbHits)return e;var t=o(e.hits,function(e){return e.objectID});return d.deleteObjects(t).then(s).then(a)}function s(e){return d.waitTask(e.taskID)}function a(){return d.deleteByQuery(t,n)}function c(){u(function(){r(null)},h._setTimeout||setTimeout)}function l(e){u(function(){r(e)},h._setTimeout||setTimeout)}var f=e(43),d=this,h=d.as;1===arguments.length||"function"==typeof n?(r=n,n={}):n=f(n),n.attributesToRetrieve="objectID",n.hitsPerPage=1e3,n.distinct=!1,this.clearCache();var p=this.search(t,n).then(i);return r?void p.then(c,l):p},search:function(e,t,n){if("function"==typeof e&&"object"==typeof t||"object"==typeof n)throw new f.AlgoliaSearchError("index.search usage is index.search(query, params, cb)");0===arguments.length||"function"==typeof e?(n=e,e=""):(1===arguments.length||"function"==typeof t)&&(n=t,t=void 0),"object"==typeof e&&null!==e?(t=e,e=void 0):(void 0===e||null===e)&&(e="");var r="";return void 0!==e&&(r+="query="+encodeURIComponent(e)),void 0!==t&&(r=this.as._getSearchParams(t,r)),this._search(r,n)},browse:function(t,n,r){var o,i,s=e(55),a=this;0===arguments.length||1===arguments.length&&"function"==typeof arguments[0]?(o=0,r=arguments[0],t=void 0):"number"==typeof arguments[0]?(o=arguments[0],"number"==typeof arguments[1]?i=arguments[1]:"function"==typeof arguments[1]&&(r=arguments[1],i=void 0),t=void 0,n=void 0):"object"==typeof arguments[0]?("function"==typeof arguments[1]&&(r=arguments[1]),n=arguments[0],t=void 0):"string"==typeof arguments[0]&&"function"==typeof arguments[1]&&(r=arguments[1],n=void 0),n=s({},n||{},{page:o,hitsPerPage:i,query:t});var u=this.as._getSearchParams(n,"");return this.as._jsonRequest({method:"GET",url:"/1/indexes/"+encodeURIComponent(a.indexName)+"/browse?"+u,hostType:"read",callback:r})},browseFrom:function(e,t){return this.as._jsonRequest({method:"GET",url:"/1/indexes/"+encodeURIComponent(this.indexName)+"/browse?cursor="+encodeURIComponent(e),hostType:"read",callback:t})},browseAll:function(t,n){function r(e){if(!a._stopped){var t;t=void 0!==e?"cursor="+encodeURIComponent(e):l,u._jsonRequest({method:"GET",url:"/1/indexes/"+encodeURIComponent(c.indexName)+"/browse?"+t,hostType:"read",callback:o})}}function o(e,t){return a._stopped?void 0:e?void a._error(e):(a._result(t),void 0===t.cursor?void a._end():void r(t.cursor))}"object"==typeof t&&(n=t,t=void 0);var i=e(55),s=e(58),a=new s,u=this.as,c=this,l=u._getSearchParams(i({},n||{},{query:t}),"");return r(),a},ttAdapter:function(e){var t=this;return function(n,r,o){var i;i="function"==typeof o?o:r,t.search(n,e,function(e,t){return e?void i(e):void i(t.hits)})}},waitTask:function(e,t){function n(){return l._jsonRequest({method:"GET",hostType:"read",url:"/1/indexes/"+encodeURIComponent(c.indexName)+"/task/"+e}).then(function(e){a++;var t=i*a*a;return t>s&&(t=s),"published"!==e.status?l._promise.delay(t).then(n):e})}function r(e){u(function(){t(null,e)},l._setTimeout||setTimeout)}function o(e){u(function(){t(e)},l._setTimeout||setTimeout)}var i=100,s=5e3,a=0,c=this,l=c.as,f=n();return t?void f.then(r,o):f},clearIndex:function(e){var t=this;return this.as._jsonRequest({method:"POST",url:"/1/indexes/"+encodeURIComponent(t.indexName)+"/clear",hostType:"write",callback:e})},getSettings:function(e){var t=this;return this.as._jsonRequest({method:"GET",url:"/1/indexes/"+encodeURIComponent(t.indexName)+"/settings",hostType:"read",callback:e})},setSettings:function(e,t){var n=this;return this.as._jsonRequest({method:"PUT",url:"/1/indexes/"+encodeURIComponent(n.indexName)+"/settings",hostType:"write",body:e,callback:t})},listUserKeys:function(e){var t=this;return this.as._jsonRequest({method:"GET",url:"/1/indexes/"+encodeURIComponent(t.indexName)+"/keys",hostType:"read",callback:e})},getUserKeyACL:function(e,t){var n=this;return this.as._jsonRequest({method:"GET",url:"/1/indexes/"+encodeURIComponent(n.indexName)+"/keys/"+e,hostType:"read",callback:t})},deleteUserKey:function(e,t){var n=this;return this.as._jsonRequest({method:"DELETE",url:"/1/indexes/"+encodeURIComponent(n.indexName)+"/keys/"+e,hostType:"write",callback:t})},addUserKey:function(e,t,n){(1===arguments.length||"function"==typeof t)&&(n=t,t=null);var r={acl:e};return t&&(r.validity=t.validity,r.maxQueriesPerIPPerHour=t.maxQueriesPerIPPerHour,r.maxHitsPerQuery=t.maxHitsPerQuery,r.description=t.description,t.queryParameters&&(r.queryParameters=this.as._getSearchParams(t.queryParameters,"")),r.referers=t.referers),this.as._jsonRequest({method:"POST",url:"/1/indexes/"+encodeURIComponent(this.indexName)+"/keys",body:r,hostType:"write",callback:n})},addUserKeyWithValidity:c(function(e,t,n){return this.addUserKey(e,t,n)},a("index.addUserKeyWithValidity()","index.addUserKey()")),updateUserKey:function(e,t,n,r){(2===arguments.length||"function"==typeof n)&&(r=n,n=null);var o={acl:t};return n&&(o.validity=n.validity,o.maxQueriesPerIPPerHour=n.maxQueriesPerIPPerHour,o.maxHitsPerQuery=n.maxHitsPerQuery,o.description=n.description,n.queryParameters&&(o.queryParameters=this.as._getSearchParams(n.queryParameters,"")),o.referers=n.referers),this.as._jsonRequest({method:"PUT",url:"/1/indexes/"+encodeURIComponent(this.indexName)+"/keys/"+e,body:o,hostType:"write",callback:r})},_search:function(e,t){return this.as._jsonRequest({cache:this.cache,method:"POST",url:"/1/indexes/"+encodeURIComponent(this.indexName)+"/query",body:{params:e},hostType:"read",fallback:{method:"GET",url:"/1/indexes/"+encodeURIComponent(this.indexName),body:{params:e}},callback:t})},as:null,indexName:null,typeAheadArgs:null,typeAheadValueOption:null}}).call(this,e(2))},{11:11,2:2,43:43,46:46,55:55,58:58,6:6,64:64}],58:[function(e,t,n){"use strict";function r(){}t.exports=r;var o=e(10),i=e(1).EventEmitter;o(r,i),r.prototype.stop=function(){this._stopped=!0,this._clean()},r.prototype._end=function(){this.emit("end"),this._clean()},r.prototype._error=function(e){this.emit("error",e),this._clean()},r.prototype._result=function(e){this.emit("result",e)},r.prototype._clean=function(){this.removeAllListeners("stop"),this.removeAllListeners("end"),this.removeAllListeners("error"),this.removeAllListeners("result")}},{1:1,10:10}],59:[function(e,t,n){"use strict";var r=e(10),o=e(11),i=e(57),s=e(64),a=e(62),u=e(63);window.algoliasearch=e(60),window.angular.module("algoliasearch",[]).service("algolia",["$http","$q","$timeout",function(t,n,c){function l(t,n,r){var o=e(44),i=e(61);return r=o(r||{}),void 0===r.protocol&&(r.protocol=i()),r._ua=r._ua||l.ua,new f(t,n,r)}function f(){i.apply(this,arguments)}return l.version=e(65),l.ua="Algolia for AngularJS "+l.version,window.__algolia={debug:e(6),algoliasearch:l},r(f,i),f.prototype._request=function(e,r){function i(e){d({statusCode:e.status,headers:e.headers,body:e.data,responseText:e.responseText})}function u(e){return l?void 0:0===e.status?void h(new s.Network({more:e})):void d({body:e.data,statusCode:e.status})}var l,f=n.defer(),d=f.resolve,h=f.reject,p=r.body;e=a(e,r.headers);var y=n.defer(),m=y.promise;c(function(){l=!0,y.resolve("test"),h(new s.RequestTimeout)},r.timeout);var v={};return o(t.defaults.headers.common,function(e,t){v[t]=void 0}),v.accept="application/json",p&&("POST"===r.method?v["content-type"]="application/x-www-form-urlencoded":v["content-type"]="application/json"),t({url:e,method:r.method,data:p,cache:!1,timeout:m,headers:v,withCredentials:!1}).then(i,u),f.promise},f.prototype._request.fallback=function(e,t){e=a(e,t.headers);var r=n.defer(),o=r.resolve,i=r.reject;return u(e,t,function(e,t){return e?void i(e):void o(t)}),r.promise},f.prototype._promise={reject:function(e){return n.reject(e)},resolve:function(e){return n.when(e)},delay:function(e){var t=n.defer(),r=t.resolve;return c(r,e),t.promise}},{Client:function(e,t,n){return l(e,t,n)},ua:l.ua,version:l.version}}])},{10:10,11:11,44:44,57:57,6:6,60:60,61:61,62:62,63:63,64:64,65:65}],60:[function(e,t,n){"use strict";function r(t,n,i){var s=e(44),a=e(61);return i=s(i||{}),void 0===i.protocol&&(i.protocol=a()),i._ua=i._ua||r.ua,new o(t,n,i)}function o(){a.apply(this,arguments)}t.exports=r;var i=e(10),s=window.Promise||e(9).Promise,a=e(57),u=e(64),c=e(62),l=e(63);r.version=e(65),r.ua="Algolia for vanilla JavaScript "+r.version,window.__algolia={debug:e(6),algoliasearch:r};var f={hasXMLHttpRequest:"XMLHttpRequest"in window,hasXDomainRequest:"XDomainRequest"in window,cors:"withCredentials"in new XMLHttpRequest,timeout:"timeout"in new XMLHttpRequest};i(o,a),o.prototype._request=function(e,t){return new s(function(n,r){function o(){if(!l){f.timeout||clearTimeout(a);var e;try{e={body:JSON.parse(h.responseText),responseText:h.responseText,statusCode:h.status,headers:h.getAllResponseHeaders&&h.getAllResponseHeaders()||{}}}catch(t){e=new u.UnparsableJSON({more:h.responseText})}e instanceof u.UnparsableJSON?r(e):n(e)}}function i(e){l||(f.timeout||clearTimeout(a),r(new u.Network({more:e})))}function s(){f.timeout||(l=!0,h.abort()),r(new u.RequestTimeout)}if(!f.cors&&!f.hasXDomainRequest)return void r(new u.Network("CORS not supported"));e=c(e,t.headers);var a,l,d=t.body,h=f.cors?new XMLHttpRequest:new XDomainRequest;h instanceof XMLHttpRequest?h.open(t.method,e,!0):h.open(t.method,e),f.cors&&(d&&("POST"===t.method?h.setRequestHeader("content-type","application/x-www-form-urlencoded"):h.setRequestHeader("content-type","application/json")),h.setRequestHeader("accept","application/json")),h.onprogress=function(){},h.onload=o,h.onerror=i,f.timeout?(h.timeout=t.timeout,h.ontimeout=s):a=setTimeout(s,t.timeout),h.send(d)})},o.prototype._request.fallback=function(e,t){return e=c(e,t.headers),new s(function(n,r){l(e,t,function(e,t){return e?void r(e):void n(t)})})},o.prototype._promise={reject:function(e){return s.reject(e)},resolve:function(e){return s.resolve(e)},delay:function(e){return new s(function(t){setTimeout(t,e)})}}},{10:10,44:44,57:57,6:6,61:61,62:62,63:63,64:64,65:65,9:9}],61:[function(e,t,n){"use strict";function r(){var e=window.document.location.protocol;return"http:"!==e&&"https:"!==e&&(e="http:"),e}t.exports=r},{}],62:[function(e,t,n){"use strict";function r(e,t){return e+=/\?/.test(e)?"&":"?",e+o.encode(t)}t.exports=r;var o=e(5)},{5:5}],63:[function(e,t,n){"use strict";function r(e,t,n){function r(){t.debug("JSONP: success"),y||f||(y=!0,l||(t.debug("JSONP: Fail. Script loaded but did not call the callback"),a(),n(new o.JSONPScriptFail)))}function s(){("loaded"===this.readyState||"complete"===this.readyState)&&r()}function a(){clearTimeout(m),h.onload=null,h.onreadystatechange=null,h.onerror=null,d.removeChild(h);try{delete window[p],delete window[p+"_loaded"]}catch(e){window[p]=null,window[p+"_loaded"]=null}}function u(){t.debug("JSONP: Script timeout"),f=!0,a(),n(new o.RequestTimeout)}function c(){t.debug("JSONP: Script error"),y||f||(a(),n(new o.JSONPScriptError))}if("GET"!==t.method)return void n(new Error("Method "+t.method+" "+e+" is not supported by JSONP."));t.debug("JSONP: start");var l=!1,f=!1;i+=1;var d=document.getElementsByTagName("head")[0],h=document.createElement("script"),p="algoliaJSONP_"+i,y=!1;window[p]=function(e){try{delete window[p]}catch(t){window[p]=void 0}f||(l=!0,a(),n(null,{body:e}))},e+="&callback="+p,t.jsonBody&&t.jsonBody.params&&(e+="&"+t.jsonBody.params);var m=setTimeout(u,t.timeout);h.onreadystatechange=s,h.onload=r,h.onerror=c,h.async=!0,h.defer=!0,h.src=e,d.appendChild(h)}t.exports=r;var o=e(64),i=0},{64:64}],64:[function(e,t,n){"use strict";function r(t,n){var r=e(11),o=this;"function"==typeof Error.captureStackTrace?Error.captureStackTrace(this,this.constructor):o.stack=(new Error).stack||"Cannot get a stacktrace, browser is too old",this.name=this.constructor.name,this.message=t||"Unknown error",n&&r(n,function(e,t){o[t]=e})}function o(e,t){function n(){var n=Array.prototype.slice.call(arguments,0);"string"!=typeof n[0]&&n.unshift(t),r.apply(this,n),this.name="AlgoliaSearch"+e+"Error"}return i(n,r),n}var i=e(10);i(r,Error),t.exports={AlgoliaSearchError:r,UnparsableJSON:o("UnparsableJSON","Could not parse the incoming response as JSON, see err.more for details"),RequestTimeout:o("RequestTimeout","Request timedout before getting a response"),Network:o("Network","Network issue, see err.more for details"),JSONPScriptFail:o("JSONPScriptFail","<script> was loaded but did not call our provided callback"),JSONPScriptError:o("JSONPScriptError","<script> unable to load due to an `error` event on it"),Unknown:o("Unknown","Unknown error occured")}},{10:10,11:11}],65:[function(e,t,n){"use strict";t.exports="3.8.1"},{}]},{},[59]);
 
+angular.module('stripe', []).directive('stripeForm', ['$window',
+function($window) {
+
+  var directive = { restrict: 'A' };
+  directive.link = function(scope, element, attributes) {
+    var form = angular.element(element);
+    form.bind('submit', function() {
+      var button = form.find('button');
+      button.prop('disabled', true);
+      $window.Stripe.createToken(form[0], function() {
+        button.prop('disabled', false);
+        var args = arguments;
+        scope.$apply(function() {
+          scope.$eval(attributes.stripeForm).apply(scope, args);
+        });
+      });
+    });
+  };
+  return directive;
+
+}]);
+
+var directives = angular.module('directivesModule', []);
+
+directives.directive('adjustHeight', function($window, $document, $timeout) {
+	return {
+		restrict: 'A',
+		link: function(scope, element, attrs) {
+			scope.calculate = function() {
+        var top = $(element).offset().top;
+        var height = $(window).height();
+        var neededHeight = height - top;
+        //console.log(top, height, neededHeight, element);
+
+        $(element).css('height', neededHeight);
+      };
+      $timeout(function(){
+        scope.calculate();
+      }, 100);
+
+      $window.addEventListener('resize', function() {
+        scope.calculate();
+      });
+
+      // Listen for possible container size changes
+      scope.$on('changedContainers', function() {
+        scope.calculate();
+      });
+		}
+	};
+});
+
+directives.directive('adjustHeightChat', function($window, $document, $timeout) {
+  return {
+    restrict: 'A',
+    link: function(scope, element, attrs) {
+      scope.calculate = function() {
+        var top = $(element).offset().top;
+        var height = $(window).height();
+        var footer = $('div.footer').outerHeight();
+        var neededHeight = height - top - footer;
+        //console.log(top, height, footer, neededHeight);
+
+        $(element).css('height', neededHeight);
+      };
+      $timeout(function(){
+        scope.calculate();
+      }, 100);
+
+      $window.addEventListener('resize', function() {
+        scope.calculate();
+      });
+
+      // Listen for possible container size changes
+      scope.$on('changedContainers', function() {
+        scope.calculate();
+      });
+    }
+  };
+});
+
+directives.directive('scrollMe', function() {
+  return {
+    restrict: 'A',
+    scope: {
+      trigger: '&scrollMe'
+    },
+    link: function(scope, element, attrs) {
+      // If space is bigger, load more items
+      element.on('scroll', function() {
+        if($(this).scrollTop() + $(this).innerHeight() >= this.scrollHeight) {
+          scope.$apply(function() {
+            // Trigger scroll
+            scope.trigger();
+          });
+        }
+      });
+    }
+  }
+});
+
+directives.directive('myRefresh', ['$location', function($location) {
+  return {
+    restrict: 'A',
+    scope: {
+      trigger: '&myRefresh'
+    },
+    link: function(scope, element, attrs) {
+      element.bind('click', function() {
+        if(element[0] && element[0].href && element[0].href === $location.absUrl()){
+          //console.log("Recarga!");
+          scope.trigger();
+        }
+      });
+    }
+  };
+}]);
+
+directives.directive('markedsg', function () {
+  return {
+    restrict: 'AE',
+    replace: true,
+    scope: {
+      markedsg: '='
+    },
+    link: function (scope, element, attrs) {
+      set(scope.markedsg || element.text() || '');
+
+      if (attrs.markedsg) {
+        scope.$watch('markedsg', set);
+      }
+
+      function unindent(text) {
+        if (!text) return text;
+
+        var lines = text
+          .replace(/\t/g, '  ')
+          .split(/\r?\n/);
+
+        var i, l, min = null, line, len = lines.length;
+        for (i = 0; i < len; i++) {
+          line = lines[i];
+          l = line.match(/^(\s*)/)[0].length;
+          if (l === line.length) { continue; }
+          min = (l < min || min === null) ? l : min;
+        }
+
+        if (min !== null && min > 0) {
+          for (i = 0; i < len; i++) {
+            lines[i] = lines[i].substr(min);
+          }
+        }
+        return lines.join('\n');
+      }
+
+      function set(text) {
+        text = unindent(text || '');
+        // Parse mentions links
+        var links = $('<div>' + text + '</div>');
+        links.find('a.user-mention').each(function( index ) {
+          $(this).attr("href", "/u/"+ $(this).data('username') +"/"+ $(this).data('id'));
+          if($(this).data('comment') != undefined) {
+            $(this).before('<i class="fa fa-reply comment-response"></i>')
+          }
+        });
+        text = links.html();
+        element.html(marked(text, scope.opts || null));
+      }
+
+    }
+  };
+});
+
+
+
+var filters = angular.module('filtersModule', []);
+
+filters.filter('date_at', function() {
+	return function(input) {
+		var date = new Date(input);
+    var months = new Array("enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre");
+
+    return date.getDate() + ' de ' + months[date.getMonth()] + ' de ' + date.getFullYear();
+	};
+});
+
+filters.filter('range', function() {
+  return function(input, total) {
+    total = parseInt(total);
+    for (var i=0; i<total; i++)
+      input.push(i);
+    return input;
+  };
+});
+
+var activeReader = angular.module('activeReader', []);
+
+activeReader.factory('Bridge', function($rootScope) {
+	var bridge = {};
+	bridge.changePost = function(post) {
+		// If reader view module is active then it'll catch the request
+		$rootScope.$broadcast('resolvePost', post);
+	};
+	return bridge;
+});
+
+'use strict';
+
+var services = angular.module('sg.services', []);
+
+services.factory('AdvancedAcl', ['$rootScope', function($rootScope) {
+  return {
+    can: function(action, object, user_info, author_id, category_id) {
+      var can = false;
+
+      // If own object
+      can = can || ( $rootScope.can(action + '-own-' + object) && user_info.id === author_id );
+
+      // Or some category moderator
+      var category_owner = false;
+      if(user_info != null) {
+        if('categories' in user_info.roles[0]) {
+          category_owner = (user_info.roles[0].categories).indexOf(category_id) > -1;
+        }
+      }
+      can = can || ( $rootScope.can(action + '-category-' + object) && category_owner);
+
+      // Or supreme power
+      can = can || $rootScope.can(action + '-board-' + object);
+
+      return can;
+    }
+  };
+}]);
+
+services.service('modalService', ['$uibModal', function ($modal) {
+  var modalDefaults = {
+    backdrop: true,
+    keyboard: true,
+    modalFade: true,
+    windowClass: 'modal-confirm',
+    size: 'sm',
+    templateUrl: '/js/partials/modal.html'
+  };
+
+  var modalOptions = {
+    closeButtonText: 'Cerrar',
+    actionButtonText: 'Aceptar',
+    headerText: '¿Estás seguro?',
+    bodyText: '¿Quieres realizar esta acción?'
+  };
+
+  this.showModal = function (customModalDefaults, customModalOptions) {
+    if (!customModalDefaults) customModalDefaults = {};
+    customModalDefaults.backdrop = 'static';
+    return this.show(customModalDefaults, customModalOptions);
+  };
+
+  this.show = function (customModalDefaults, customModalOptions) {
+    //Create temp objects to work with since we're in a singleton service
+    var tempModalDefaults = {};
+    var tempModalOptions = {};
+
+    //Map angular-ui modal custom defaults to modal defaults defined in service
+    angular.extend(tempModalDefaults, modalDefaults, customModalDefaults);
+
+    //Map modal.html $scope custom properties to defaults defined in service
+    angular.extend(tempModalOptions, modalOptions, customModalOptions);
+
+    if (!tempModalDefaults.controller) {
+      tempModalDefaults.controller = function ($scope, $modalInstance) {
+        $scope.modalOptions = tempModalOptions;
+        $scope.modalOptions.ok = function (result) {
+          $modalInstance.close(result);
+        };
+        $scope.modalOptions.close = function (result) {
+          $modalInstance.dismiss('cancel');
+        };
+      }
+    }
+
+    return $uibModal.open(tempModalDefaults).result;
+  };
+}]);
+
 var FeedService = ['$resource', function($resource) {
   return $resource(layer_path + 'feed');
 }];
@@ -3376,12 +3389,12 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
             var cn = loc.split('/');
             if(cn.length == 5) {
               cn = cn[4]; // comment number
-              console.log("Watching comment:", cn);
+              //console.log("Watching comment:", cn);
               $scope.view_comment.position = cn;
             }
             else {
               $scope.view_comment.position = -1;
-              console.log("Not watching comment");
+              //console.log("Not watching comment");
             }
             $scope.viewPostID(params.id, params.slug);
           }
@@ -3433,7 +3446,7 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
           var cn = path.split('/');
           if(cn.length == 5) {
             cn = cn[4]; // comment number
-            console.log("Watching comment:", cn);
+            //console.log("Watching comment:", cn);
             $scope.view_comment.position = cn;
           }
           else {
@@ -3475,16 +3488,43 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
     { label: 'fernandez14', username: 'fernandez14'}
   ];
 
+  $scope.best_answer_object = false;
+
 	$scope.forceFirstComment = function() {
 		// TO-DO analytics about this trigger
 		// Force to show the comment box
 		$scope.force_comment = true;
 	};
 
+  $scope.best_answer = function(comment) {
+    $http.post(layer_path + "posts/" + $scope.post.id + "/answer/" + comment.position).then(function success(response){
+      console.log(response);
+      comment.chosen = true;
+      $scope.post.solved = true;
+
+      $scope.select_best_answer();
+    }, function(error){
+      console.log(error, "No se puedo elegir como mejor respuesta.");
+    })
+  };
+
+  $scope.select_best_answer = function() {
+    //console.log($scope.post);
+    for(var i = 0; i < $scope.post.comments.count; i++) {
+      //console.log($scope.post.comments.set[i]);
+      if($scope.post.comments.set[i].chosen) {
+        $scope.best_answer_object = $scope.post.comments.set[i];
+        return
+      }
+    }
+    $scope.best_answer_object = false;
+    //console.log($scope.best_answer_object);
+  };
+
   $scope.show_composer = function() {
     $('.current-article').animate({ scrollTop: $('.current-article')[0].scrollHeight}, 100);
     $('#comment-content').focus();
-  }
+  };
 
   $scope.reply_to = function(username, comment) {
     if($scope.comment.content == '') {
@@ -3708,8 +3748,12 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
 		$scope.force_comment = false;
 
 		Post.get({id: post.id}, function(data) {
+      //console.log(data);
 			$scope.post = data;
       addMediaEmbed($scope.post);
+
+      //console.log($scope.post);
+      $scope.select_best_answer();
 
       for (var c in $scope.categories) {
         for(var s in $scope.categories[c].subcategories) {
@@ -4441,7 +4485,7 @@ UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed
   }
 
   User.get({user_id: $routeParams.id}, function(data) {
-    console.log(data)
+    //console.log(data)
     $scope.profile = data;
     $scope.startFeed();
     $scope.new_data.username = $scope.profile.username;
@@ -4586,6 +4630,9 @@ var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
   $scope.scrolledUp = false;
 
   $scope.members = [];
+  $scope.searchText = {
+    content: ''
+  };
 
   $scope.goToBottom = function() {
     var mh_window = $('.message-history');
@@ -4646,8 +4693,6 @@ var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
       });
     }
   };
-
-  $scope.searchText = ""
 
   $scope.addMessage = function() {
     if($scope.message.content === $scope.message.previous || ($scope.message.previous.indexOf($scope.message.content) > -1) || ($scope.message.content.indexOf($scope.message.previous) > -1)) {
@@ -4783,18 +4828,27 @@ angular.module('searchBar', [
 })
 .controller('SearchController', ['$scope', '$timeout', '$http', 'algolia', function ($scope, $timeout, $http, algolia) {
   $scope.open = false;
-  $scope.hits = [];
+  $scope.hits = {
+    'posts': [],
+    'components': []
+  };
   $scope.query = '';
   $scope.loading = false;
   $scope.fetching = true;
 
   $scope.statistics = {
-    total: 0,
-    time: 0
+    'posts': {
+      total: 0,
+      time: 0
+    },
+    'components': {
+      total: 0,
+      time: 0
+    }
   }
 
   var client = algolia.Client('5AO6WVBTY2', '46253cb75bbb7b4e031d41cda14c2426');
-  var index = client.initIndex('prod_spartan');
+  //var index = client.initIndex('prod_spartan');
 
   $scope.toggle = function() {
     $scope.open = !$scope.open;
@@ -4822,12 +4876,24 @@ angular.module('searchBar', [
 
       $scope.fetching = true;
       $scope.loading = $timeout(function() {
-        index.search($scope.query)
+        var queries = [{
+          indexName: 'prod_store',
+          query: $scope.query,
+          params: {hitsPerPage: 12}
+        }, {
+          indexName: 'prod_spartan',
+          query: $scope.query,
+          params: {hitsPerPage: 10}
+        }];
+        client.search(queries)
           .then(function searchSuccess(content) {
             //console.log(content);
-            $scope.hits = content.hits;
-            $scope.statistics.total = content.nbHits;
-            $scope.statistics.time = content.processingTimeMS;
+            $scope.hits.components = content.results[0].hits;
+            $scope.statistics.components.total = content.results[0].nbHits;
+            $scope.statistics.components.time = content.results[0].processingTimeMS;
+            $scope.hits.posts = content.results[1].hits;
+            $scope.statistics.posts.total = content.results[1].nbHits;
+            $scope.statistics.posts.time = content.results[1].processingTimeMS;
           }, function searchFailure(err) {
             console.log(err);
           });
@@ -4836,7 +4902,7 @@ angular.module('searchBar', [
     }
     else
     {
-      $scope.hits = [];
+      $scope.hits.posts = [];
     }
   };
 
@@ -4844,6 +4910,166 @@ angular.module('searchBar', [
 
 
 var ComponentsModule = angular.module("sg.module.components", ["algoliasearch", "ui.bootstrap"]);
+
+ComponentsModule.factory('$localstorage', ['$window', function($window) {
+  return {
+    set: function(key, value) {
+      $window.localStorage[key] = value;
+    },
+    get: function(key, defaultValue) {
+      return $window.localStorage[key] || defaultValue;
+    },
+    setObject: function(key, value) {
+      $window.localStorage[key] = JSON.stringify(value);
+    },
+    getObject: function(key) {
+      return JSON.parse($window.localStorage[key] || '[]');
+    }
+  }
+}]);
+
+ComponentsModule.factory('cart', ['$localstorage', '$http', function($localstorage, $http) {
+
+  //var cart_keys = {}
+  var cart = {};
+
+  cart.items = $localstorage.getObject('cart');
+  cart.isopen = false;
+
+  cart.addItem = function(item) {
+    //console.log(item);
+    $http.post(layer_path + 'store/cart', {
+      "id": item._id,
+      "vendor": "spartangeek"
+    }, {
+      withCredentials: true
+    }).then(function success(response) {
+      //console.log(response);
+      cart.isopen = true;
+      var added = false;
+      for(var i = 0; i < cart.items.length; i++) {
+        if(item._id == cart.items[i]._id) {
+          added = true;
+          cart.items[i].quantity++;
+          cart.persist();
+          break;
+        }
+      }
+      if(!added) {
+        var new_item = {
+          _id: item._id,
+          name: item.name,
+          full_name: item.full_name,
+          slug: item.slug,
+          price: item.store.vendors.spartangeek.price,
+          quantity: 1,
+          image: item.image,
+          type: item.type
+        }
+        cart.items.push(new_item);
+        cart.persist();
+      }
+      //console.log(cart);
+    }, function(error) {
+      console.log(error);
+    })
+  };
+
+  cart.removeItem = function(item) {
+    $http.delete(layer_path + 'store/cart/' + item._id, {
+      withCredentials: true
+    }).then(function success(response) {
+      for(var i = 0; i < cart.items.length; i++) {
+        if(item._id == cart.items[i]._id) {
+          if(cart.items[i].quantity > 1) {
+            cart.items[i].quantity--;
+          } else {
+            cart.items.splice(i, 1);
+          }
+          cart.persist();
+          break;
+        }
+      }
+    }, function(error) {
+      console.log(error);
+    });
+  };
+
+  cart.empty = function() {
+    cart.items = [];
+    cart.persist();
+  }
+
+  cart.getIndividualShippingFee = function(item) {
+    if(item.type == 'case') {
+      return 320;
+    } else {
+      for(var i = 0; i < cart.items.length; i++) {
+        if(cart.items[i].type != 'case') {
+          return 60;
+        }
+      }
+      return 120;
+    }
+  }
+
+  cart.replaceItems = function(new_items) {
+    cart.items = new_items;
+    cart.persist();
+  }
+
+  cart.getShippingFee = function() {
+    if(cart.items.length > 0) {
+      var non_case_count = 0;
+      var case_count = 0;
+      for(var i = 0; i < cart.items.length; i++) {
+        if(cart.items[i].type == 'case') {
+          case_count += cart.items[i].quantity;
+        } else {
+          non_case_count += cart.items[i].quantity;
+        }
+      }
+      if(non_case_count > 0) {
+        return 120 + (non_case_count - 1) * 60 + 320 * case_count;
+      } else {
+        return 320 * case_count;
+      }
+    } else {
+      return 0;
+    }
+  }
+
+  cart.getCount = function() {
+    if(cart.items.length > 0) {
+      var total = 0;
+      for(var i = 0; i < cart.items.length; i++) {
+        total += cart.items[i].quantity;
+      }
+      return total;
+    } else {
+      return 0;
+    }
+  }
+
+  cart.getTotal = function() {
+    if(cart.items.length > 0) {
+      var total = 0;
+      for(var i = 0; i < cart.items.length; i++) {
+        total += cart.items[i].quantity * cart.items[i].price;
+      }
+      return total;
+    } else {
+      return 0;
+    }
+  }
+
+  cart.persist = function() {
+    // Use local storage to persist data
+    $localstorage.setObject('cart', cart.items);
+  };
+
+  return cart;
+}]);
 
 ComponentsModule.factory("ComponentsService", function(algolia) {
 
@@ -4856,7 +5082,12 @@ ComponentsModule.factory("ComponentsService", function(algolia) {
   };
 });
 
-ComponentsModule.controller('ComponentsController', ['$scope', '$timeout', 'ComponentsService', function($scope, $timeout, ComponentsService) {
+ComponentsModule.controller('ComponentsController', ['$scope', '$timeout', 'ComponentsService', '$route', function($scope, $timeout, ComponentsService, $route) {
+
+  $scope.onlyStore = false;
+  if($scope.location.path().indexOf('tienda') > -1) {
+    $scope.onlyStore = true;
+  }
 
   $scope.results = [];
   $scope.query = '';
@@ -4864,25 +5095,81 @@ ComponentsModule.controller('ComponentsController', ['$scope', '$timeout', 'Comp
   $scope.fetching = true;
 
   $scope.totalItems = 10;
-  $scope.currentPage = 0;
+  $scope.currentPage = 1;
   $scope.itemsPerPage = 36;
 
+  $scope.facets = {};
+
+  $scope.type_labels = {
+    'cpu': 'Procesadores',
+    'motherboard': 'Tarjetas Madre',
+    'case': 'Gabinetes',
+    'video-card': 'Tarjetas de Video',
+    'storage': 'Almacenamiento',
+    'memory': 'Memorias RAM',
+    'cpu-cooler': 'Enfriamiento para CPU',
+    'monitor': 'Monitores',
+    'power-supply': 'Fuentes de Poder'
+  }
+
+  $scope.current_facet = '';
+
+  $scope.change_facet = function(new_facet) {
+    $scope.current_facet = new_facet;
+    $scope.currentPage = 1;
+    $scope.changePage();
+  }
+
+  $scope.getFacetFilters = function() {
+    if($scope.onlyStore) {
+      return [
+        'type:' + $scope.current_facet,
+        'activated: true'
+      ];
+    } else {
+      return [ 'type:' + $scope.current_facet ];
+    }
+  }
+
   $scope.reset = function() {
-    ComponentsService.index.search('', {page: 0, hitsPerPage: $scope.itemsPerPage, facets: '*'})
+    ComponentsService.index.search('', {
+      page: 0,
+      hitsPerPage:
+      $scope.itemsPerPage,
+      facets: '*',
+      facetFilters: $scope.getFacetFilters()
+    })
     .then(function(response) {
+      //console.log(response);
       $scope.results = response;
       $scope.totalItems = response.nbHits;
+      $scope.facets = response.facets;
     });
   }
   $scope.reset();
 
   $scope.changePage = function() {
-    ComponentsService.index.search($scope.query, {page: $scope.currentPage - 1, hitsPerPage: $scope.itemsPerPage, facets: '*'})
+    ComponentsService.index.search($scope.query, {
+      page: $scope.currentPage - 1,
+      hitsPerPage: $scope.itemsPerPage,
+      facets: '*',
+      facetFilters: $scope.getFacetFilters()
+    })
     .then(function(response) {
       $scope.results = response;
       $scope.totalItems = response.nbHits;
+      $scope.facets = response.facets;
     });
-  }
+  };
+
+  $scope.$watch("onlyStore", function(newVal, oldVal) {
+    if($scope.onlyStore) {
+      $scope.location.path('/componentes/tienda');
+    } else {
+      $scope.location.path('/componentes');
+    }
+    $scope.changePage();
+  });
 
   $scope.do = function(event) {
     if(event.keyCode == 27) {
@@ -4895,11 +5182,17 @@ ComponentsModule.controller('ComponentsController', ['$scope', '$timeout', 'Comp
 
       $scope.fetching = true;
       $scope.loading = $timeout(function() {
-        ComponentsService.index.search($scope.query, {page: 0, hitsPerPage: $scope.itemsPerPage, facets: '*'})
+        ComponentsService.index.search($scope.query, {
+          page: 0,
+          hitsPerPage: $scope.itemsPerPage,
+          facets: '*',
+          facetFilters: $scope.getFacetFilters()
+        })
         .then(function searchSuccess(response) {
             //console.log(response);
             $scope.results = response;
             $scope.totalItems = response.nbHits;
+            $scope.facets = response.facets;
 
           }, function searchFailure(err) {
             console.log(err);
@@ -4912,11 +5205,32 @@ ComponentsModule.controller('ComponentsController', ['$scope', '$timeout', 'Comp
       $scope.reset();
     }
   };
+
+  // Hack, so we don't have to reload the controller if the route uses the same controller
+  var lastRoute = $route.current;
+  $scope.$on('$locationChangeSuccess', function(event) {
+    if(lastRoute.$$route.controller === $route.current.$$route.controller) {
+      // Will not load only if my view use the same controller
+      // We recover new params
+      new_params = $route.current.params;
+      $route.current = lastRoute;
+      $route.current.params = new_params;
+      if($scope.location.path().indexOf('tienda') > -1) {
+        $scope.onlyStore = true;
+      } else {
+        $scope.onlyStore = false;
+      }
+    }
+  });
 }]);
 
-ComponentsModule.controller('ComponentController', ['$scope', '$routeParams', '$http', function($scope, $routeParams, $http){
+ComponentsModule.controller('ComponentController', ['$scope', '$routeParams', '$http', 'cart', function($scope, $routeParams, $http, cart){
+
+  //window.localStorage.removeItem('cart');
+  //console.log(window.localStorage.getItem('cart'));
 
   $scope.component = {};
+  //$scope.cart = cart;
 
   $scope.type_labels = {
     'cpu': 'Procesador',
@@ -4928,24 +5242,388 @@ ComponentsModule.controller('ComponentController', ['$scope', '$routeParams', '$
     'cpu-cooler': 'Enfriamiento para CPU',
     'monitor': 'Monitor',
     'power-supply': 'Fuente de Poder'
+  };
+
+  $scope.categories_map = {
+    'cpu': '55d3e4f868a631006400000b',
+    'motherboard': '55d3e56e68a631006000000b',
+    'case': '55dc13e03f6ba10067000000',
+    'video-card': '55d3e55768a631006400000c',
+    'storage': '55dc13ab3f6ba1005d000003',
+    'memory': '55d3e58168a631005c000017',
+    'cpu-cooler': '55dc13ca3f6ba1005d000004',
+    'monitor': '55dc13f93f6ba1005d000005',
+    'power-supply': '55dca5893f6ba10067000013'
+  };
+
+  $scope.questions = [];
+
+  $scope.question = {
+    content: '',
+    publishing: false,
+    content_error: false,
+    show_editor: false
   }
 
-  $http.get(layer_path + "component/" + $routeParams.slug).then(function(response){
-    console.log(response.data);
-    $scope.component = response.data;
-  }, function(){});
-}])
+  $scope.post = {
+    title: '',
+    content: '',
+    category: ''
+  };
 
-// @codekit-prepend "common/directives"
-// @codekit-prepend "common/filters"
-// @codekit-prepend "common/active_reader"
-// @codekit-prepend "common/services"
+  $scope.add_question = function() {
+    $scope.question.publishing = true;
+
+    // Check that the user wrote a question
+    $scope.question.content_error = false;
+    if($scope.question.content == "") {
+      $scope.question.content_error = true;
+      $scope.question.publishing = false;
+      return;
+    }
+
+    // if the user wrote his/her question... just publish it
+    $scope.post.title = "Duda sobre " + ($scope.component.full_name || $scope.component.name);
+    $scope.post.content = $scope.question.content;
+    $scope.post.category = $scope.categories_map[$scope.component.type];
+
+    var post = {
+      content: $scope.post.content,
+      name: $scope.post.title,
+      category: $scope.post.category,
+      kind: 'category-post',
+      isquestion: true,
+      pinned: false
+    };
+
+    $http.post(layer_path + 'post', post).then(function(response) {
+      //console.log(response);
+      $scope.new_post = response.data.post;
+      // relate post to component
+      //POST  /v1/posts/:id/relate/:related_id
+      $http.post(layer_path + 'posts/' + response.data.post.id + '/relate/' + $scope.component._id).then(function success() {
+        var new_question = {
+          slug: $scope.new_post.slug,
+          content: $scope.post.content,
+          id: $scope.new_post.id
+        };
+        $scope.questions.push(new_question);
+
+        $scope.question.publishing = false;
+        $scope.question.content = '';
+        $scope.question.show_editor = false;
+      }, function(error){
+
+      });
+    }, function(err) {
+      console.log(err);
+    });
+  }
+
+  $http.get(layer_path + "component/" + $routeParams.slug).then(function success(response){
+    //console.log(response.data);
+    $scope.component = response.data;
+    $http.get(layer_path + "component/" + $scope.component._id + "/posts").then(function success(response){
+      //console.log(response.data);
+      if(response.data) {
+        $scope.questions = response.data;
+      }
+    }, function(error){});
+
+  }, function error(response){
+    if(response.status == 404) {
+      window.location.href = "/";
+    }
+  });
+}]);
+
+ComponentsModule.controller('PcBuilderController', ['$scope', function($scope) {
+
+}]);
+
+ComponentsModule.controller('CheckoutController', ['$scope', 'cart', '$http', '$timeout', function($scope, cart, $http, $timeout) {
+  $scope.currentStep = "cart";
+
+  // Flags
+  $scope.f = {
+    verify_cart: false,
+    error_messages: {
+      totals: false
+    },
+    trying_to_pay: false
+  };
+
+  $scope.payer = {
+    name: '',
+    surname: ''
+  };
+
+  $scope.shipping_form = {
+    alias: '',
+    name: '',
+    phone_number: '',
+    address: '',
+    zip_code: '',
+    state: "Distrito Federal",
+    city: '',
+    neighborhood: '',
+    extra: {
+      between_street_1: '',
+      between_street_2: '',
+      reference: ''
+    }
+  };
+
+  $scope.current_addresses = {
+    count: 0,
+    addresses: []
+  };
+
+  $scope.selected_address = null;
+
+  $scope.status = ''
+
+  $scope.addresses_loaded = false;
+
+  $scope.pay_method = {
+    value: 'withdrawal'
+  }
+
+  $scope.current_token_error = '';
+  $scope.token_errors = {
+    "invalid_expiry_month": "El mes de expiración de tu tarjeta es inválido",
+    "invalid_expiry_year": "El año de expiración de tu tarjeta es inválido",
+    "invalid_cvc": "El código de seguridad (CVC) de tu tarjeta es inválido",
+    "incorrect_number": "El número de tarjeta es inválido"
+  };
+  $scope.current_charge_error = '';
+  $scope.charge_errors = {
+    "gateway-incorrect-num": "El número de tarjeta es incorrecto",
+    "gateway-invalid-num": "El número de tarjeta es inválido",
+    "gateway-invalid-exp-m": "El mes de expiración de tu tarjeta es inválido",
+    "gateway-invalid-exp-y": "El año de expiración de tu tarjeta es inválido",
+    "gateway-invalid-cvc": "El código de seguridad (CVC) de tu tarjeta es inválido",
+    "gateway-expired-card": "La tarjeta que estás usando está expirada.",
+    "gateway-incorrect-cvc": "El código de seguridad (CVC) es incorrecto",
+    "gateway-incorrect-zip": "No se pudo realizar el cobro a tu tarjeta",
+    "gateway-card-declined": "La tarjeta fue declinada por el banco",
+    "gateway-stripe-missing": "No se puedo realizar el cobro a tu tarjeta",
+    "gateway-processing-err": "Error al procesar tu tarjeta"
+  }
+
+  $scope.validateCart = function() {
+    $scope.f.verify_cart = true;
+    $http.get(layer_path + 'store/cart', {
+      withCredentials: true
+    }).then(function success(response){
+      //console.log(response);
+      for(var i = 0; i < response.data.length; i++) {
+        response.data[i]._id = response.data[i].id;
+      }
+      cart.replaceItems(response.data);
+      //console.log(cart);
+      $scope.f.verify_cart = false;
+    }, function(error){
+      console.log(error);
+    });
+  };
+  $scope.validateCart();
+
+  // After getting Stripe token, we make our API call
+  // to try to make the charge
+  $scope.createToken = function(status, response) {
+    $scope.current_token_error = '';
+    $scope.current_charge_error = '';
+    if(status == 402) {
+      console.log(status, response);
+      $scope.current_token_error = response.error.code;
+    } else {
+      //console.log(response.id);
+      $scope.makeOrder(response.id);
+    }
+  };
+
+  // General purpose order processor
+  $scope.makeOrder = function(token) {
+    token = (typeof token === 'undefined') ? false : token;
+
+    var meta = {};
+    if(token) {
+      meta = { token: token }
+    }
+
+    var gateways = {
+      'withdrawal': 'offline',
+      'credit_card': 'stripe'
+    }
+
+    $scope.f.error_messages.totals = false;
+    $scope.f.trying_to_pay = true;
+
+    $http.post(layer_path + 'store/checkout', {
+      "gateway": gateways[$scope.pay_method.value],
+      "meta": meta,
+      "ship_to": $scope.selected_address.id,
+      "total": cart.getTotal() + cart.getShippingFee() + $scope.getPaymentFee()
+    }, {
+      withCredentials: true
+    }).then(function success(response) {
+      cart.empty();
+      $scope.currentStep = "completed";
+    }, function(error){
+      console.log(error);
+      if(error.data.key == "bad-total") {
+        $scope.f.error_messages.totals = true;
+        $scope.currentStep = "cart";
+        $scope.validateCart();
+      } else {
+        $scope.current_charge_error = error.data.key;
+      }
+      $scope.f.trying_to_pay = false;
+    });
+  }
+
+  $scope.getPaymentFee = function() {
+    if($scope.pay_method.value == 'withdrawal') {
+      return 0;
+    } else {
+      if($scope.pay_method.value == 'credit_card') {
+        return Math.ceil( (cart.getTotal() + cart.getShippingFee()) * 0.042 + 4 );
+      } else {
+        return Math.ceil( (cart.getTotal() + cart.getShippingFee()) * 0.04 + 4 );
+      }
+    }
+  }
+
+  $scope.createAddress = function() {
+    $scope.status = ''
+
+    if($scope.shipping_form.name == '' || $scope.shipping_form.phone_number == '' || $scope.shipping_form.address == '' || $scope.shipping_form.zip_code == ''
+    || $scope.shipping_form.state == '' || $scope.shipping_form.city == '' || $scope.shipping_form.neighborhood == '' || $scope.shipping_form.alias == '') {
+      $scope.status = 'incomplete';
+      return;
+    }
+
+    var extra = ''
+    if($scope.shipping_form.extra.between_street_1 != '' && $scope.shipping_form.extra.between_street_2 != '') {
+      extra += 'Entre calle ' + $scope.shipping_form.extra.between_street_1 + ' y calle ' + $scope.shipping_form.extra.between_street_2 + '. ';
+    }
+    extra += $scope.shipping_form.extra.reference;
+
+    var new_address = {
+      name: $scope.shipping_form.alias,
+      state: $scope.shipping_form.state,
+      city: $scope.shipping_form.city,
+      postal_code: $scope.shipping_form.zip_code,
+      line1: $scope.shipping_form.address,
+      line2: '',
+      extra: extra,
+      phone: $scope.shipping_form.phone_number,
+      neighborhood: $scope.shipping_form.neighborhood,
+      recipient: $scope.shipping_form.name
+    };
+
+    $http.post(layer_path + 'store/customer/address', new_address).then(function success(response){
+      console.log(response);
+
+      $scope.selected_address = $scope.shipping_form;
+      $scope.selected_address.id = response.data.address_id;
+
+      $scope.shipping_form = {
+        alias: '',
+        name: '',
+        phone_number: '',
+        address: '',
+        zip_code: '',
+        state: "Distrito Federal",
+        city: '',
+        neighborhood: '',
+        extra: {
+          between_street_1: '',
+          between_street_2: '',
+          reference: ''
+        }
+      };
+
+      $scope.current_addresses.addresses.push($scope.selected_address);
+      $scope.current_addresses.count++;
+
+      $scope.status = 'paying';
+      $scope.currentStep = "payment";
+
+
+    }, function(error) {
+      console.log(error);
+    });
+  };
+
+  $scope.deleteAddress = function(address) {
+    var index = $scope.current_addresses.addresses.indexOf(address);
+
+    if(index > -1) {
+      $http.delete(layer_path + 'store/customer/address/' + address.id).then(function success(response){
+        $scope.current_addresses.addresses.splice(index, 1);
+        $scope.current_addresses.count--;
+      }, function(error) {
+        console.log(error);
+      });
+    }
+  }
+
+  $scope.goToCart = function() {
+    $scope.currentStep = "cart";
+  }
+
+  $scope.goToShipping = function() {
+    if(!$scope.addresses_loaded) {
+      $http.get(layer_path + 'store/customer').then(function success(response){
+        //console.log(response);
+        var addresses = response.data.addresses;
+        $scope.current_addresses.addresses = [];
+
+        if(addresses) {
+          $scope.current_addresses.count = addresses.length;
+
+          for(var i = 0; i < addresses.length; i++) {
+            var a = {
+              alias: addresses[i].alias,
+              name: addresses[i].recipient,
+              id: addresses[i].id,
+              phone_number: addresses[i].phone,
+              address: addresses[i].address.line1,
+              zip_code: addresses[i].address.postal_code,
+              state: addresses[i].address.state,
+              city: addresses[i].address.city,
+              neighborhood: addresses[i].address.line3,
+              extra: {
+                between_street_1: '',
+                between_street_2: '',
+                reference: addresses[i].address.extra
+              }
+            };
+            $scope.current_addresses.addresses.push(a);
+          }
+        }
+      }, function(error){
+        console.log(error);
+      });
+      $scope.addresses_loaded = true;
+    }
+    $scope.currentStep = "address";
+  }
+
+  $scope.goToPay = function(address) {
+    $scope.selected_address = address;
+    $scope.currentStep = "payment";
+  }
+}]);
+
 // @codekit-prepend "vendor/angular-marked"
 // @codekit-prepend "vendor/wizzy"
 // @codekit-prepend "vendor/infinite-scroll"
-// @codekit-prepend "vendor/ui-bootstrap-tpls-0.13.0.min"
 // @codekit-prepend "vendor/ui-bootstrap-tpls-0.14.3.min"
 // @codekit-prepend "vendor/angular-facebook"
+// @codekit-prepend "vendor/angular-jwt.min"
 // @codekit-prepend "vendor/ng-file-upload-all.min.js"
 // @codekit-prepend "vendor/elastic.js"
 // @codekit-prepend "vendor/mentio.min.js"
@@ -4953,6 +5631,13 @@ ComponentsModule.controller('ComponentController', ['$scope', '$routeParams', '$
 // @codekit-prepend "vendor/angular-acl.min.js"
 // @codekit-prepend "vendor/angular-timeago.js"
 // @codekit-prepend "vendor/algoliasearch.angular.min.js"
+// @codekit-prepend "vendor/stripe-angular.js"
+
+// @codekit-prepend "common/directives"
+// @codekit-prepend "common/filters"
+// @codekit-prepend "common/active_reader"
+// @codekit-prepend "common/services"
+
 // @codekit-prepend "modules/feed/init"
 // @codekit-prepend "modules/categories/init"
 // @codekit-prepend "modules/reader/init"
@@ -4996,16 +5681,26 @@ var boardApplication = angular.module('board', [
   'uiSwitch',
   'mm.acl',
   'yaru22.angular-timeago',
-  'searchBar'
+  'searchBar',
+  'stripe'
 ]);
 
-var version = '154';
+var version = '0.2.0';
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider', 'AclServiceProvider',
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider, AclServiceProvider) {
 
   $routeProvider.when('/home', {
     templateUrl: '/js/partials/home.html?v=' + version
+  });
+  $routeProvider.when('/terminos-y-condiciones', {
+    templateUrl: '/js/partials/terms.html?v=' + version
+  });
+  $routeProvider.when('/aviso-de-privacidad', {
+    templateUrl: '/js/partials/privacy.html?v=' + version
+  });
+  $routeProvider.when('/reglamento', {
+    templateUrl: '/js/partials/rules.html?v=' + version
   });
   $routeProvider.when('/about', {
     templateUrl: '/js/partials/about.html?v=' + version
@@ -5030,9 +5725,21 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
     templateUrl: '/js/partials/components.html?v=' + version,
     controller: 'ComponentsController'
   });
+  $routeProvider.when('/componentes/tienda', {
+    templateUrl: '/js/partials/components.html?v=' + version,
+    controller: 'ComponentsController'
+  });
   $routeProvider.when('/componente/:slug', {
     templateUrl: '/js/partials/component.html?v=' + version,
     controller: 'ComponentController'
+  });
+  $routeProvider.when('/componentes/armar-pc', {
+    templateUrl: '/js/partials/pc_builder.html?v=' + version,
+    controller: 'PcBuilderController'
+  });
+  $routeProvider.when('/componentes/checkout', {
+    templateUrl: '/js/partials/checkout.html?v=' + version,
+    controller: 'CheckoutController'
   });
   $routeProvider.when('/c/:slug', {
     templateUrl: '/js/partials/main.html?v=' + version,
@@ -5071,6 +5778,9 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
 
   // use the HTML5 History API
   $locationProvider.html5Mode(true);
+
+  // Stripe
+  Stripe.setPublishableKey(stripe_public_key);
 
   // Marked
   markedProvider.setRenderer({
@@ -5298,8 +6008,8 @@ boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http'
     }
 }]);
 
-boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', '$modal', '$timeout', '$firebaseObject', '$firebaseArray', 'Facebook', 'AclService', '$location',
-  function($scope, $rootScope, $http, $modal, $timeout, $firebaseObject, $firebaseArray, Facebook, AclService, $location) {
+boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', '$uibModal', '$timeout', '$firebaseObject', '$firebaseArray', 'Facebook', 'AclService', '$location',
+  function($scope, $rootScope, $http, $uibModal, $timeout, $firebaseObject, $firebaseArray, Facebook, AclService, $location) {
     $scope.user = {
       isLogged: false,
       info: null,
@@ -5471,7 +6181,7 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
     }
 
     $scope.signIn = function() {
-      var modalInstance = $modal.open({
+      var modalInstance = $uibModal.open({
         templateUrl: '/js/partials/sign-in.html',
         controller: 'SignInController',
         size: 'sm'
@@ -5483,7 +6193,7 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
     };
 
     $scope.signUp = function() {
-      var modalInstance = $modal.open({
+      var modalInstance = $uibModal.open({
         templateUrl: '/js/partials/sign-up.html',
         controller: 'SignUpController',
         size: 'sm'
@@ -5583,7 +6293,7 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
   }
 ]);
 
-boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', '$location', function($rootScope, $http, AclService, AdvancedAcl, $location) {
+boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', 'cart', '$location', function($rootScope, $http, AclService, AdvancedAcl, cart, $location) {
   // TEST PURPOSES
   if(false) {
     localStorage.removeItem('signed_in');
@@ -5591,6 +6301,8 @@ boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', '$loca
     localStorage.removeItem('firebase_token');
     localStorage.removeItem('redirect_to_home');
   }
+
+  $rootScope.location = $location;
 
   // Initialize the local storage
   if(!localStorage.signed_in)
@@ -5603,6 +6315,8 @@ boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', '$loca
     localStorage.setItem('redirect_to_home', 'true');
     window.location.href = "/home";
   }
+
+  $rootScope.cart = cart;
 
   $rootScope.page = {
     title: "SpartanGeek.com | Comunidad de tecnología, geeks y más",

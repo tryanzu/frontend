@@ -1,0 +1,135 @@
+<div class="global-content">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+
+        <h1>Lista de componentes actual</h1>
+
+        <div class="components">
+          <div ng-if="post.components.cpu.content || true" class="component">
+            <div class="row">
+              <div class="col-md-1 col-sm-3">
+                <img src="/images/components/cpu.png" alt="CPU" />
+              </div>
+
+              <div class="col-md-10 col-sm-9">
+                <h6>Procesador <span class="status" ng-if="post.components.cpu.status == 'needed'">Lo necesito</span> <span class="status owned" ng-if="post.components.cpu.status == 'owned'">Ya lo tengo</span></h6>
+                {{ post.components.cpu.content }}
+              </div>
+            </div>
+          </div>
+
+          <div ng-if="post.components.motherboard.content || true" class="component">
+            <div class="row">
+              <div class="col-md-1 col-sm-3">
+                <img src="/images/components/motherboard.png" alt="CPU" />
+              </div>
+
+              <div class="col-md-10 col-sm-9">
+                <h6>Motherboard <span class="status" ng-if="post.components.motherboard.status == 'needed'">Lo necesito</span> <span class="status owned" ng-if="post.components.motherboard.status == 'owned'">Ya lo tengo</span></h6>
+                {{ post.components.motherboard.content }}
+              </div>
+            </div>
+          </div>
+
+          <div ng-if="post.components.cabinet.content || true" class="component">
+            <div class="row">
+              <div class="col-md-1 col-sm-3">
+                <img src="/images/components/cabinet.png" alt="CPU" />
+              </div>
+
+              <div class="col-md-10 col-sm-9">
+                <h6>Gabinete <span class="status" ng-if="post.components.cabinet.status == 'needed'">Lo necesito</span> <span class="status owned" ng-if="post.components.cabinet.status == 'owned'">Ya lo tengo</span></h6>
+                {{ post.components.cabinet.content }}
+              </div>
+            </div>
+          </div>
+
+          <div ng-if="post.components.ram.content || true" class="component">
+            <div class="row">
+              <div class="col-md-1 col-sm-3">
+                <img src="/images/components/ram.png" alt="CPU" />
+              </div>
+
+              <div class="col-md-10 col-sm-9">
+                <h6>Memoria RAM <span class="status" ng-if="post.components.ram.status == 'needed'">Lo necesito</span> <span class="status owned" ng-if="post.components.ram.status == 'owned'">Ya lo tengo</span></h6>
+                {{ post.components.ram.content }}
+              </div>
+            </div>
+          </div>
+
+          <div ng-if="post.components.screen.content || true" class="component">
+            <div class="row">
+              <div class="col-md-1 col-sm-3">
+                <img src="/images/components/screen.png" alt="CPU" />
+              </div>
+
+              <div class="col-md-10 col-sm-9">
+                <h6>Monitor <span class="status" ng-if="post.components.screen.status == 'needed'">Lo necesito</span> <span class="status owned" ng-if="post.components.screen.status == 'owned'">Ya lo tengo</span></h6>
+                {{ post.components.screen.content }}
+              </div>
+            </div>
+          </div>
+
+          <div ng-if="post.components.videocard.content || true" class="component">
+            <div class="row">
+              <div class="col-md-1 col-sm-3">
+                <img src="/images/components/videocard.png" alt="CPU" />
+              </div>
+
+              <div class="col-md-10 col-sm-9">
+                <h6>Tarjeta gráfica <span class="status" ng-if="post.components.videocard.status == 'needed'">Lo necesito</span> <span class="status owned" ng-if="post.components.videocard.status == 'owned'">Ya lo tengo</span></h6>
+                {{ post.components.videocard.content }}
+              </div>
+            </div>
+          </div>
+
+          <div ng-if="post.components.power.content || true" class="component">
+            <div class="row">
+              <div class="col-md-1 col-sm-3">
+                <img src="/images/components/power.png" alt="CPU" />
+              </div>
+
+              <div class="col-md-10 col-sm-9">
+                <h6>Fuente de Poder <span class="status" ng-if="post.components.power.status == 'needed'">Lo necesito</span> <span class="status owned" ng-if="post.components.power.status == 'owned'">Ya lo tengo</span></h6>
+                {{ post.components.power.content }}
+              </div>
+            </div>
+          </div>
+
+          <div ng-if="post.components.storage.content || true" class="component">
+            <div class="row">
+              <div class="col-md-1 col-sm-3">
+                <img src="/images/components/storage.png" alt="CPU" />
+              </div>
+
+              <div class="col-md-10 col-sm-9">
+                <h6>Almacenamiento <span class="status" ng-if="post.components.storage.status == 'needed'">Lo necesito</span> <span class="status owned" ng-if="post.components.storage.status == 'owned'">Ya lo tengo</span></h6>
+                {{ post.components.storage.content }}
+              </div>
+            </div>
+          </div>
+
+          <div ng-if="post.components.cooler.content || true" class="component">
+            <div class="row">
+              <div class="col-md-1 col-sm-3">
+                <img src="/images/components/cooler.png" alt="CPU" />
+              </div>
+
+              <div class="col-md-10 col-sm-9">
+                <h6>Enfriamento <span class="status" ng-if="post.components.cooler.status == 'needed'">Lo necesito</span> <span class="status owned" ng-if="post.components.cooler.status == 'owned'">Ya lo tengo</span></h6>
+                {{ post.components.cooler.content }}
+              </div>
+            </div>
+          </div>
+
+          <div class="component" ng-if="post.components.software">
+            <h6>Programas que utilizaré</h6>
+            {{ post.components.software }}
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

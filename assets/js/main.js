@@ -1,13 +1,9 @@
-// @codekit-prepend "common/directives"
-// @codekit-prepend "common/filters"
-// @codekit-prepend "common/active_reader"
-// @codekit-prepend "common/services"
 // @codekit-prepend "vendor/angular-marked"
 // @codekit-prepend "vendor/wizzy"
 // @codekit-prepend "vendor/infinite-scroll"
-// @codekit-prepend "vendor/ui-bootstrap-tpls-0.13.0.min"
 // @codekit-prepend "vendor/ui-bootstrap-tpls-0.14.3.min"
 // @codekit-prepend "vendor/angular-facebook"
+// @codekit-prepend "vendor/angular-jwt.min"
 // @codekit-prepend "vendor/ng-file-upload-all.min.js"
 // @codekit-prepend "vendor/elastic.js"
 // @codekit-prepend "vendor/mentio.min.js"
@@ -15,6 +11,13 @@
 // @codekit-prepend "vendor/angular-acl.min.js"
 // @codekit-prepend "vendor/angular-timeago.js"
 // @codekit-prepend "vendor/algoliasearch.angular.min.js"
+// @codekit-prepend "vendor/stripe-angular.js"
+
+// @codekit-prepend "common/directives"
+// @codekit-prepend "common/filters"
+// @codekit-prepend "common/active_reader"
+// @codekit-prepend "common/services"
+
 // @codekit-prepend "modules/feed/init"
 // @codekit-prepend "modules/categories/init"
 // @codekit-prepend "modules/reader/init"
@@ -58,16 +61,26 @@ var boardApplication = angular.module('board', [
   'uiSwitch',
   'mm.acl',
   'yaru22.angular-timeago',
-  'searchBar'
+  'searchBar',
+  'stripe'
 ]);
 
-var version = '154';
+var version = '0.2.0';
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider', 'AclServiceProvider',
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider, AclServiceProvider) {
 
   $routeProvider.when('/home', {
     templateUrl: '/js/partials/home.html?v=' + version
+  });
+  $routeProvider.when('/terminos-y-condiciones', {
+    templateUrl: '/js/partials/terms.html?v=' + version
+  });
+  $routeProvider.when('/aviso-de-privacidad', {
+    templateUrl: '/js/partials/privacy.html?v=' + version
+  });
+  $routeProvider.when('/reglamento', {
+    templateUrl: '/js/partials/rules.html?v=' + version
   });
   $routeProvider.when('/about', {
     templateUrl: '/js/partials/about.html?v=' + version
@@ -92,9 +105,21 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
     templateUrl: '/js/partials/components.html?v=' + version,
     controller: 'ComponentsController'
   });
+  $routeProvider.when('/componentes/tienda', {
+    templateUrl: '/js/partials/components.html?v=' + version,
+    controller: 'ComponentsController'
+  });
   $routeProvider.when('/componente/:slug', {
     templateUrl: '/js/partials/component.html?v=' + version,
     controller: 'ComponentController'
+  });
+  $routeProvider.when('/componentes/armar-pc', {
+    templateUrl: '/js/partials/pc_builder.html?v=' + version,
+    controller: 'PcBuilderController'
+  });
+  $routeProvider.when('/componentes/checkout', {
+    templateUrl: '/js/partials/checkout.html?v=' + version,
+    controller: 'CheckoutController'
   });
   $routeProvider.when('/c/:slug', {
     templateUrl: '/js/partials/main.html?v=' + version,
@@ -133,6 +158,9 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
 
   // use the HTML5 History API
   $locationProvider.html5Mode(true);
+
+  // Stripe
+  Stripe.setPublishableKey(stripe_public_key);
 
   // Marked
   markedProvider.setRenderer({
@@ -360,8 +388,8 @@ boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http'
     }
 }]);
 
-boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', '$modal', '$timeout', '$firebaseObject', '$firebaseArray', 'Facebook', 'AclService', '$location',
-  function($scope, $rootScope, $http, $modal, $timeout, $firebaseObject, $firebaseArray, Facebook, AclService, $location) {
+boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', '$uibModal', '$timeout', '$firebaseObject', '$firebaseArray', 'Facebook', 'AclService', '$location',
+  function($scope, $rootScope, $http, $uibModal, $timeout, $firebaseObject, $firebaseArray, Facebook, AclService, $location) {
     $scope.user = {
       isLogged: false,
       info: null,
@@ -533,7 +561,7 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
     }
 
     $scope.signIn = function() {
-      var modalInstance = $modal.open({
+      var modalInstance = $uibModal.open({
         templateUrl: '/js/partials/sign-in.html',
         controller: 'SignInController',
         size: 'sm'
@@ -545,7 +573,7 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
     };
 
     $scope.signUp = function() {
-      var modalInstance = $modal.open({
+      var modalInstance = $uibModal.open({
         templateUrl: '/js/partials/sign-up.html',
         controller: 'SignUpController',
         size: 'sm'
@@ -645,7 +673,7 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
   }
 ]);
 
-boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', '$location', function($rootScope, $http, AclService, AdvancedAcl, $location) {
+boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', 'cart', '$location', function($rootScope, $http, AclService, AdvancedAcl, cart, $location) {
   // TEST PURPOSES
   if(false) {
     localStorage.removeItem('signed_in');
@@ -653,6 +681,8 @@ boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', '$loca
     localStorage.removeItem('firebase_token');
     localStorage.removeItem('redirect_to_home');
   }
+
+  $rootScope.location = $location;
 
   // Initialize the local storage
   if(!localStorage.signed_in)
@@ -665,6 +695,8 @@ boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', '$loca
     localStorage.setItem('redirect_to_home', 'true');
     window.location.href = "/home";
   }
+
+  $rootScope.cart = cart;
 
   $rootScope.page = {
     title: "SpartanGeek.com | Comunidad de tecnología, geeks y más",

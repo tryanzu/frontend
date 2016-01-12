@@ -16,13 +16,13 @@
         <h3>Datos</h3>
 
         <p>Lanzamiento oficial de SpartanGeek.com en <strong>julio de 2015</strong>.</p>
-        <p><strong>Funcionalidades desarrolladas:</strong> Servicio de notificaciones, chat, sistema de rangos y recompensas por buenas contribuciones.</p>
-        <p><strong>En desarrollo actualmente:</strong> tienda en línea, catálogo de componentes, catálogo de videojuegos con reviews, blog para cubrir noticias y lanzamientos, etc.</p>
+        <p><strong>Funcionalidades desarrolladas:</strong> Servicio de notificaciones, chat, sistema de rangos y recompensas por buenas contribuciones, tienda en línea, catálogo de componentes.</p>
+        <p><strong>En desarrollo actualmente:</strong> Catálogo de videojuegos con reviews, blog para cubrir noticias y lanzamientos, etc.</p>
 
-        <ul class="nav navbar-nav navbar-stats" style="margin-left: 0" ng-if="user.isLogged">
-          <li><a><i class="fa fa-users"></i> Usuarios: {{status.stats.users}}</a></li>
-          <li><a><i class="fa fa-file"></i> Publicaciones: {{status.stats.posts}}</a></li>
-          <li><a><i class="fa fa-comments"></i> Comentarios: {{status.stats.comments}}</a></li>
+        <ul class="nav navbar-nav navbar-stats" style="margin-left: 0">
+          <li><a><i class="fa fa-users"></i> Usuarios: {{status.stats.users | number:0}}</a></li>
+          <li><a><i class="fa fa-file"></i> Publicaciones: {{status.stats.posts | number:0}}</a></li>
+          <li><a><i class="fa fa-comments"></i> Comentarios: {{status.stats.comments | number:0}}</a></li>
         </ul>
       </div>
       <div class="col-md-12">
@@ -36,7 +36,7 @@
               <div class="description">
                 <a href="/u/Drak/54c158b22397380b1700000f" title="Perfil de Drak">Drak</a>
                 <span class="job-title">Legendary Gamer</span>
-                <p>Su pezón izquierdo tiene la forma de un control de Nintendo 64. Ha acuñado términos como "Fepeeses" y "Yiti equis", ahora aceptados en la RAE. Lo han expulsado en innumerables ocasiones, pero las dos más memorables fueron de Cuba y de la UNAM. En su cartera guarda una foto de su PC Gamer. Escucha música de 8-Bit. <br>Su juego favorito es Bioshock (la saga completa).</p>
+                <p>Su pezón izquierdo tiene la forma de un control de Nintendo 64. Ha acuñado términos como "Fepeeses" y "Yiti equis", ahora aceptados en la RAE. Lo han expulsado en innumerables ocasiones, pero las dos más memorables fueron de Cuba y de la UNAM. En su cartera guarda una foto de su PC Gamer. Escucha música de 8-Bits. <br>Su juego favorito es Bioshock (la saga completa).</p>
               </div>
             </div>
           </div>
@@ -83,9 +83,9 @@
     </div>
 
     <div class="row">
-      <div class="col-md-12">
+      <div class="col-md-12 mb-40">
         <h4>Versión actual</h4>
-        <p>Front end: <span class="software-version">Bakkhos 0.1.5.4</span>
+        <p>Front end: <span class="software-version">Bakkhos 0.2.0</span>
         <br>Back end: <span class="software-version">Blacker - la que funcionaba ayer</span></p>
       </div>
     </div>
