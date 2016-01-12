@@ -27,7 +27,7 @@ services.factory('AdvancedAcl', ['$rootScope', function($rootScope) {
   };
 }]);
 
-services.service('modalService', ['$modal', function ($modal) {
+services.service('modalService', ['$uibModal', function ($modal) {
   var modalDefaults = {
     backdrop: true,
     keyboard: true,
@@ -73,6 +73,6 @@ services.service('modalService', ['$modal', function ($modal) {
       }
     }
 
-    return $modal.open(tempModalDefaults).result;
+    return $uibModal.open(tempModalDefaults).result;
   };
 }]);

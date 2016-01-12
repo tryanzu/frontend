@@ -16,6 +16,9 @@ var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
   $scope.scrolledUp = false;
 
   $scope.members = [];
+  $scope.searchText = {
+    content: ''
+  };
 
   $scope.goToBottom = function() {
     var mh_window = $('.message-history');
@@ -76,8 +79,6 @@ var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
       });
     }
   };
-
-  $scope.searchText = ""
 
   $scope.addMessage = function() {
     if($scope.message.content === $scope.message.previous || ($scope.message.previous.indexOf($scope.message.content) > -1) || ($scope.message.content.indexOf($scope.message.previous) > -1)) {

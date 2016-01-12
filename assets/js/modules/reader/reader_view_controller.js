@@ -14,16 +14,43 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
     { label: 'fernandez14', username: 'fernandez14'}
   ];
 
+  $scope.best_answer_object = false;
+
 	$scope.forceFirstComment = function() {
 		// TO-DO analytics about this trigger
 		// Force to show the comment box
 		$scope.force_comment = true;
 	};
 
+  $scope.best_answer = function(comment) {
+    $http.post(layer_path + "posts/" + $scope.post.id + "/answer/" + comment.position).then(function success(response){
+      console.log(response);
+      comment.chosen = true;
+      $scope.post.solved = true;
+
+      $scope.select_best_answer();
+    }, function(error){
+      console.log(error, "No se puedo elegir como mejor respuesta.");
+    })
+  };
+
+  $scope.select_best_answer = function() {
+    //console.log($scope.post);
+    for(var i = 0; i < $scope.post.comments.count; i++) {
+      //console.log($scope.post.comments.set[i]);
+      if($scope.post.comments.set[i].chosen) {
+        $scope.best_answer_object = $scope.post.comments.set[i];
+        return
+      }
+    }
+    $scope.best_answer_object = false;
+    //console.log($scope.best_answer_object);
+  };
+
   $scope.show_composer = function() {
     $('.current-article').animate({ scrollTop: $('.current-article')[0].scrollHeight}, 100);
     $('#comment-content').focus();
-  }
+  };
 
   $scope.reply_to = function(username, comment) {
     if($scope.comment.content == '') {
@@ -247,8 +274,12 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
 		$scope.force_comment = false;
 
 		Post.get({id: post.id}, function(data) {
+      //console.log(data);
 			$scope.post = data;
       addMediaEmbed($scope.post);
+
+      //console.log($scope.post);
+      $scope.select_best_answer();
 
       for (var c in $scope.categories) {
         for(var s in $scope.categories[c].subcategories) {

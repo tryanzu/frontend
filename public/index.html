@@ -30,7 +30,7 @@
   <meta name="theme-color" content="#ffffff">
   <!-- /Favicon -->
 
-  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
   <link type="text/css" rel="stylesheet" href="/css/app.css?v=154">
 
   <script>
@@ -41,13 +41,16 @@
     ga('create', 'UA-59037219-2', 'auto');
     ga('send', 'pageview');
   </script>
+  <script type="text/javascript" src="js/offline.js"></script>
+  <!--
   <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
   <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.js"></script>
   <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular-resource.min.js"></script>
   <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.16/angular-route.js"></script>
   <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.16/angular-sanitize.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
   <script type="text/javascript" src="//cdn.rawgit.com/auth0/angular-jwt/master/dist/angular-jwt.js"></script>
+  -->
+  <script type="text/javascript" src="https://js.stripe.com/v2/"></script>
   <script src='https://cdn.firebase.com/js/client/2.2.1/firebase.js'></script>
   <script src="https://cdn.firebase.com/libs/angularfire/1.1.1/angularfire.min.js"></script>
   <script type="text/javascript" src="js/config.js"></script>
@@ -77,35 +80,43 @@
             <div search-bar></div>
           </div>
         </li>
-        <li ng-if="user.isLogged">
-          <a href="chat">
-            <span class="icon"><i class="fa fa-comment"></i></span>
-            <span class="label visible-lg-inline">Chat</span>
-          </a>
-        </li>
-        <li>
-          <a href="/tienda" target="_blank">
-            <span class="icon"><i class="fa fa-shopping-cart"></i></span>
-            <span class="label visible-lg-inline">Spartanas</span>
-          </a>
-        </li>
       </ul>
 
-      <ul class="nav navbar-nav navbar-stats hidden-xs" ng-if="!user.isLogged">
-        <li><a><i class="fa fa-users"></i> Usuarios: {{ status.stats.users | number:0 }}</a></li>
-        <li><a><i class="fa fa-file"></i> Publicaciones: {{ status.stats.posts | number:0 }}</a></li>
-        <li><a><i class="fa fa-comments"></i> Comentarios: {{ status.stats.comments | number:0 }}</a></li>
+      <ul class="nav navbar-nav navbar-stats hidden-xs" ng-if="!user.isLogged && location.path() == '/'">
+        <li><a><i class="fa fa-users"></i> <span class="hidden-md">Usuarios</span>: {{ status.stats.users | number:0 }}</a></li>
+        <li><a><i class="fa fa-file"></i> <span class="hidden-md">Publicaciones</span>: {{ status.stats.posts | number:0 }}</a></li>
+        <li><a><i class="fa fa-comments"></i> <span class="hidden-md">Comentarios</span>: {{ status.stats.comments | number:0 }}</a></li>
       </ul>
 
       <!-- Collect the nav links, forms, and other content for toggling -->
-      <div class="collapse navbar-collapse" collapse="status.menuCollapsed">
+      <div class="collapse navbar-collapse" uib-collapse="status.menuCollapsed">
         <ul class="nav navbar-nav navbar-right" ng-if="!user.isLogged">
           <li><a href="" ng-click="signIn()">Iniciar sesión</a></li>
           <li><a href="" ng-click="signUp()">Únete</a></li>
         </ul>
+        <ul class="nav navbar-nav" ng-class="{'hidden-md': !user.isLogged}" ng-cloack>
+          <li class="dropdown" uib-dropdown>
+            <a uib-dropdown-toggle href="">
+              Secciones <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu" role="menu">
+              <li><a href="/"><i class="fa fa-users"></i> Comunidad</a></li>
+              <li ng-if="user.isLogged"><a href="/chat"><i class="fa fa-comment"></i> Chat</a></li>
+              <li><a href="/componentes"><i class="fa fa-th-large"></i> Catálogo de componentes</a></li>
+              <li><a href="https://www.youtube.com/channel/UCk5P7-ZHAS8ddSEkUA2yXHA" alt="Canal de Youtube" target="_blank"><i class="fa fa-youtube-play"></i> Canal de Youtube</a></li>
+              <li role="separator" class="divider"></li>
+              <li><a href="/componentes/tienda"><i class="fa fa-shopping-cart"></i> Tienda de componentes</a></li>
+              <li><a href="/tienda" target="_blank"><i class="fa fa-desktop"></i> Pedir una Spartana</a></li>
+              <li class="divider"></li>
+              <li><a href="/reglamento"><i class="fa fa-hand-peace-o"></i> Reglamento</a></li>
+              <li><a href="/terminos-y-condiciones"><i class="fa fa-file-text"></i> Términos y Condiciones</a></li>
+              <li><a href="/about"><i class="fa fa-fw fa-question icon"></i> Acerca de...</a></li>
+            </ul>
+          </li>
+        </ul>
         <ul class="nav navbar-nav navbar-right" ng-if="user.isLogged" ng-cloak>
-          <li class="dropdown notifications" dropdown>
-            <a dropdown-toggle href="" class="dropdown-toggle btn-user" data-toggle="dropdown" role="button" aria-expanded="false">
+          <li class="dropdown notifications" uib-dropdown>
+            <a uib-dropdown-toggle href="" class="dropdown-toggle btn-user" data-toggle="dropdown" role="button" aria-expanded="false">
               <span class="notifications-icon"><i class="fa fa-fw fa-bell icon-glyph"></i></span>
               <span class="label visible-lg-inline">Notificaciones</span>
               <span class="notification-badge" ng-if="total_notifications() + (user.info.validated?0:1) > 0">{{ total_notifications() + (user.info.validated?0:1) }}</span>
@@ -154,8 +165,8 @@
               </li>
             </ul>
           </li>
-          <li class="dropdown item-count-0" dropdown>
-            <a dropdown-toggle href="" class="dropdown-toggle btn-user" data-toggle="dropdown" role="button" aria-expanded="false">
+          <li class="dropdown item-count-0" uib-dropdown>
+            <a uib-dropdown-toggle href="" class="dropdown-toggle btn-user" data-toggle="dropdown" role="button" aria-expanded="false">
               <img class="avatar" title="{{ user.info.username }}" ng-src="{{user.info.image}}" ng-if="user.info.image">
               <span class="avatar" ng-if="!user.info.image">{{ user.info.username[0].toUpperCase() }}</span>
               <span class="label">
@@ -179,35 +190,58 @@
                   <i class="fa fa-fw fa-line-chart icon"></i> Ranking de usuarios
                 </a>
               </li>
+              <li class="divider"></li>
+              <li uib-tooltip="Monedas para comprar medallas" tooltip-placement="left">
+                <a>
+                  <i class="fa fa-usd"></i> Monedas: <span class="badge badge-important pull-right">{{ (user.gaming.coins || 0) | number:0 }}</span>
+                </a>
+              </li>
+              <li uib-tooltip="Cantidad de 'Me gusta' que puedes dar" tooltip-placement="left">
+                <a>
+                  <i class="sgi gray big"></i> Tributo: <span class="badge badge-important pull-right">{{ (user.gaming.tribute || 0) | number:0 }}</span>
+                </a>
+              </li>
+              <li uib-tooltip="Cantidad de 'Esto apesta' que puedes dar" tooltip-placement="left">
+                <a>
+                  <i class="sgi gray shit"></i> Mierda: <span class="badge badge-important pull-right">{{ (user.gaming.shit || 0) | number:0 }}</span>
+                </a>
+              </li>
               <li class="hidden"><a href="/config"><i class="fa fa-fw fa-cog icon"></i> Configuración</a></li>
               <li class="divider"></li>
               <li><a href="" ng-click="signOut()"><i class="fa fa-fw fa-sign-out icon"></i> Salir</a></li>
-              <li class="divider"></li>
-              <li><a href="/about"><i class="fa fa-fw fa-question icon"></i> Acerca de...</a></li>
             </ul>
           </li>
         </ul>
 
-        <ul class="nav navbar-nav navbar-right hidden-xs" ng-if="user.isLogged" ng-cloak>
-          <li tooltip="Monedas para comprar medallas" tooltip-placement="bottom">
-            <a>
-              <span class="icon"><i class="fa fa-usd"></i></span>
-              <span class="label"><span class="visible-lg-inline">Monedas: </span>{{ user.gaming.coins || 0 }}</span>
+        <ul class="nav navbar-nav navbar-right" ng-if="location.path().indexOf('componente') > -1 && location.path().indexOf('checkout') < 0">
+          <li uib-dropdown is-open="cart.isopen">
+            <a href="" uib-dropdown-toggle>
+              <span class="icon"><i class="fa fa-shopping-cart"></i></span>
+              <span class="label visible-lg-inline">Carrito ({{ cart.getCount() }})</span></span>
             </a>
-          </li>
-          <li tooltip="Cantidad de 'Me gusta' que puedes dar" tooltip-placement="bottom">
-            <a>
-              <span class="icon"><i class="sgi big"></i></span>
-              <span class="label"><span class="visible-lg-inline">Tributo: </span>{{ user.gaming.tribute || 0 }}</span>
-            </a>
-          </li>
-          <li tooltip="Cantidad de 'Esto apesta' que puedes dar" tooltip-placement="bottom">
-            <a>
-              <span class="icon"><i class="sgi shit big"></i></span>
-              <span class="label"><span class="visible-lg-inline">Mierda: </span>{{ user.gaming.shit || 0 }}</span>
-            </a>
+            <ul class="dropdown-menu cart-list" role="menu">
+              <li class="no-elements" ng-if="cart.items.length == 0">
+                <a>No has agregado componentes</a>
+              </li>
+              <li ng-repeat="item in cart.items track by $index">
+                <div class="cart-element">
+                  <div class="component-thumbnail">
+                    <img ng-src="https://spartangeek.com/images/products/{{ item.image }}" alt="{{ item.full_name || item.name }}" ng-if="item.image">
+                    <img src="/images/noimage.jpg" alt="{{ item.full_name || item.name }}" ng-if="!item.image">
+                  </div>
+                  <div class="info">{{ item.fullname || item.name}} <span class="multiplier">x {{ item.quantity | number:0 }}</span><p class="price">{{ item.price * item.quantity | currency:'$':0 }}</p></div>
+                </div>
+              </li>
+              <li ng-if="cart.items.length > 0">
+                <div class="text-center">
+                  <a href="/componentes/tienda" class="btn btn-default"><span class="label">Catálogo de componentes</span></a>
+                  <a href="/componentes/checkout" class="btn btn-primary"><span class="label">Finalizar pedido</span></a>
+                </div>
+              </li>
+            </ul>
           </li>
         </ul>
+
       </div><!-- /.navbar-collapse -->
 
     </div><!-- /.container -->
