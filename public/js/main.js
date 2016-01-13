@@ -3013,18 +3013,18 @@ services.service('modalService', ['$uibModal', function ($modal) {
     angular.extend(tempModalOptions, modalOptions, customModalOptions);
 
     if (!tempModalDefaults.controller) {
-      tempModalDefaults.controller = function ($scope, $modalInstance) {
+      tempModalDefaults.controller = function ($scope, $uibModalInstance) {
         $scope.modalOptions = tempModalOptions;
         $scope.modalOptions.ok = function (result) {
-          $modalInstance.close(result);
+          $uibModalInstance.close(result);
         };
         $scope.modalOptions.close = function (result) {
-          $modalInstance.dismiss('cancel');
+          $uibModalInstance.dismiss('cancel');
         };
       }
     }
 
-    return $uibModal.open(tempModalDefaults).result;
+    return $modal.open(tempModalDefaults).result;
   };
 }]);
 
@@ -5653,6 +5653,7 @@ ComponentsModule.controller('CheckoutController', ['$scope', 'cart', '$http', '$
 
 var boardApplication = angular.module('board', [
   'ngRoute',
+  'ui.bootstrap',
 	'directivesModule',
 	'filtersModule',
   'sg.services',
@@ -5660,7 +5661,6 @@ var boardApplication = angular.module('board', [
   'hc.marked',
   'idiotWizzy',
   'infinite-scroll',
-  'ui.bootstrap',
   'facebook',
 	'feedModule',
   'categoryModule',
@@ -5685,7 +5685,7 @@ var boardApplication = angular.module('board', [
   'stripe'
 ]);
 
-var version = '0.2.0';
+var version = '0.2.1';
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider', 'AclServiceProvider',
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider, AclServiceProvider) {

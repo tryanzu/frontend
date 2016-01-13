@@ -76,6 +76,8 @@
         <p class="subtotal-fee">{{ cart.getTotal() + cart.getShippingFee() | currency:'$ ':0 }} MXN</p>
         <a href="" class="btn btn-lg btn-primary btn-block" ng-click="goToShipping()" ng-if="user.isLogged"><span class="label">Finalizar pedido</span></a>
         <a href="" class="btn btn-lg btn-primary btn-block" ng-click="signIn()" ng-if="!user.isLogged"><span class="label">Iniciar sesión para finalizar pedido</span></a>
+        <p ng-if="!user.isLogged" class="text-center" style="font-size:13px; margin-top:1em;">ó si no tienes cuenta aún puedes</p>
+        <a href="" class="btn btn-md btn-default btn-block" ng-click="signUp()" ng-if="!user.isLogged"><span class="label">Crear nueva cuenta</span></a>
       </div>
     </div>
 
