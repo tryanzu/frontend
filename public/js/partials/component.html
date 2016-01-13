@@ -584,14 +584,14 @@
               <tr>
                 <th>Pregunta</th>
                 <td>
-                  <a href="http://ilumineph.local:5757/p/{{ q.slug }}/{{ q.id }}" target="_blank">
+                  <a href="/p/{{ q.slug }}/{{ q.id }}" target="_blank">
                     <span class="question">{{ q.content }}</span>
                   </a>
                 </td>
               </tr>
               <tr ng-if="!q.solved">
                 <th>Respuesta</th>
-                <td>Aún no hay una respuesta. <a href="http://ilumineph.local:5757/p/{{ q.slug }}/{{ q.id }}" target="_blank">Yo sé la respuesta</a></td>
+                <td>Aún no hay una respuesta. <a href="/p/{{ q.slug }}/{{ q.id }}" target="_blank">Yo sé la respuesta</a></td>
               </tr>
               <tr ng-if="q.solved">
                 <th>Respuesta</th>
@@ -608,10 +608,15 @@
 
             <p class="alert alert-warning" ng-if="question.content_error">Tienes que escribir tu duda o pregunta.</p>
 
-            <p class="alert alert-info">La pregunta tiene que ser relacionada con el producto. Si tienes dudas sobre stock o envíos, puedes revisar el FAQ.</p>
+            <div class="alert alert-info">La pregunta tiene que ser relacionada con el producto. Por ejemplo: <ul><li>"¿Puedo hacer overclock con esta tarjeta madre?"</li><li>"Alguien sabe si es compatible con esta fuente de poder? {nombre de la fuente}".</li></ul><br>Si tienes dudas sobre stock o envíos, puedes revisar el FAQ o enviar correo a pedidos@spartangeek.com.
+              <div ng-if="!question.instructions">
+                <br>
+                <a href="" class="btn btn-sm btn-primary" ng-click="question.instructions = true">Entiendo, mi pregunta NO es sobre envíos, costos, o stock.</a>
+              </div>
+            </div>
 
             <div class="btn-toolbar text-right mb-40" role="toolbar">
-              <a href="" ng-click="add_question()" class="btn btn-default" ng-class="{'disabled': question.publishing}"><span class="label"><i class="fa fa-plus"></i> Agregar mi pregunta</span></a>
+              <a href="" ng-if="question.instructions" ng-click="add_question()" class="btn btn-default" ng-class="{'disabled': question.publishing}"><span class="label"><i class="fa fa-plus"></i> Agregar mi pregunta</span></a>
             </div>
           </div>
           <div class="text-right" ng-if="!question.show_editor">
