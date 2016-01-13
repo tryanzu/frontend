@@ -33,6 +33,7 @@
 
 var boardApplication = angular.module('board', [
   'ngRoute',
+  'ui.bootstrap',
 	'directivesModule',
 	'filtersModule',
   'sg.services',
@@ -40,7 +41,6 @@ var boardApplication = angular.module('board', [
   'hc.marked',
   'idiotWizzy',
   'infinite-scroll',
-  'ui.bootstrap',
   'facebook',
 	'feedModule',
   'categoryModule',
@@ -65,7 +65,7 @@ var boardApplication = angular.module('board', [
   'stripe'
 ]);
 
-var version = '0.2.0';
+var version = '0.2.1';
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider', 'AclServiceProvider',
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider, AclServiceProvider) {
