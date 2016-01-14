@@ -242,7 +242,10 @@ boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http'
       } else {
         Facebook.login(function(response) {
           $scope.fb_try(response);
-        }, {scope: 'public_profile,email'});
+        }, {
+          scope: 'public_profile,email',
+          auth_type: 'rerequest'
+        });
       }
     };
 
@@ -351,7 +354,10 @@ boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http'
       } else {
         Facebook.login(function(response) {
           $scope.fb_try(response);
-        }, {scope: 'public_profile,email'});
+        }, {
+          scope: 'public_profile,email',
+          auth_type: 'rerequest'
+        });
       }
     };
 
