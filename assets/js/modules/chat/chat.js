@@ -222,11 +222,31 @@ chatModule.directive('youtube', function($sce) {
     replace: true,
     template: '<div style="height:400px;"><iframe style="overflow:hidden;height:100%;width:100%" width="100%" height="100%" src="{{url}}" frameborder="0" allowfullscreen></iframe></div>',
     link: function (scope) {
-        scope.$watch('code', function (newVal) {
-           if (newVal) {
-               scope.url = $sce.trustAsResourceUrl("https://www.youtube.com/embed/" + newVal);
-           }
-        });
+      scope.$watch('code', function (newVal) {
+        if (newVal) {
+          scope.url = $sce.trustAsResourceUrl("https://www.youtube.com/embed/" + newVal);
+        }
+      });
+    }
+  };
+});
+
+chatModule.directive('showImages', function() {
+  var urlPattern = /(http|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-]*[\w@?^=%&amp;\/~+#-])?/gi;
+  var regex = new RegExp("(https?:\/\/.*\\.(?:png|jpg|jpeg|gif)((\\?|\\&)[a-zA-Z0-9]+\\=[a-zA-Z0-9]+)*)", "gi");
+  var to_replace = "<div class=\"img-preview\"><a href=\"$1\" target=\"_blank\"><img src=\"$1\"></a></div>";
+
+  return {
+    restrict: 'A',
+    scope: {
+      'content' : '@'
+    },
+    replace: true,
+    link: function (scope, element, attrs, controller) {
+      var text = scope.content;
+      var images = text.replace(regex, to_replace);
+      var new_text = text.replace(urlPattern, '<a target="_blank" href="$&">$&</a>');
+      element.html(images);
     }
   };
 });
