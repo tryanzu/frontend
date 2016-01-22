@@ -9,7 +9,7 @@
             </a>
             <ul class="dropdown-menu">
               <li class="dropdown-header">Canales públicos</li>
-              <li ng-repeat="c in channels" ng-class="{active: c.name == channel.selected.name}">
+              <li ng-repeat="c in channels" ng-class="::{active: c.name == channel.selected.name}">
                 <a href="" ng-click="changeChannel(c)" title="{{ c.description }}">
                   <span class="icon category-icon" ng-class="{'uncategorized': !c.color}" ng-style="{background: c.color}"></span> {{ c.name }}
                 </a>
@@ -38,7 +38,7 @@
       </div>
       <div adjust-height-chat>
         <div class="message-history">
-          <div class="message" ng-repeat="m in old_messages" ng-class="::{'compact':old_messages[$index-1].author.username == m.author.username}">
+          <div class="message" ng-repeat="m in old_messages" ng-class="::{'compact':old_messages[$index-1].author.username == old_messages[$index].author.username}">
             <a href="/u/{{ m.author.username }}/{{ m.author.id }}" class="author" target="_blank" ng-if=":: old_messages[$index-1].author.username != m.author.username">
               <span class="avatar" title="{{ m.author.username }}" ng-if="!m.author.image">{{ m.author.username[0] }}</span>
               <img class="avatar" ng-src="{{ m.author.image }}" alt="{{ m.author.username }}" ng-if="m.author.image">
@@ -51,7 +51,7 @@
             <span class="timestamp" ng-if=":: old_messages[$index-1].author.username == m.author.username" uib-tooltip="{{ m.created_at | date_at }}" tooltip-popup-delay="500" tooltip-placement="right">{{ m.created_at | date:'H:mm' }}</span>
             <div class="content">{{ m.content }}</div>
           </div>
-          <div class="message" ng-repeat="m in messages" ng-class="::{'compact':messages[$index-1].author.username == m.author.username}">
+          <div class="message" ng-repeat="m in messages" ng-class="::{'compact':messages[$index-1].author.username == messages[$index].author.username}">
             <a href="/u/{{ m.author.username }}/{{ m.author.id }}" class="author" target="_blank" ng-if=":: messages[$index-1].author.username != m.author.username">
               <span class="avatar" title="{{ m.author.username }}" ng-if="!m.author.image">{{ m.author.username[0] }}</span>
               <img class="avatar" ng-src="{{ m.author.image }}" alt="{{ m.author.username }}" ng-if="m.author.image">
@@ -61,7 +61,7 @@
               <span class="timestamp" uib-tooltip="{{ m.created_at | date_at }}" tooltip-popup-delay="500" tooltip-placement="right">{{ m.created_at | date:'H:mm' }}</span>
               <span class="star"></span>
             </div>
-            <span class="timestamp" ng-if=":: messages[$index-1].author.username == m.author.username" uib-tooltip="{{ m.created_at | date_at }}" tooltip-popup-delay="500" tooltip-placement="right">{{ m.created_at | date:'H:mm' }}</span>
+            <span class="timestamp" ng-if=":: messages[$index-1].author.username == messages[$index].author.username" uib-tooltip="{{ m.created_at | date_at }}" tooltip-popup-delay="500" tooltip-placement="right">{{ m.created_at | date:'H:mm' }}</span>
             <div class="content">{{ m.content }}</div>
           </div>
 
@@ -116,7 +116,7 @@
             <span ng-if="m.id != user.info.id && can('edit-category-comments')" ng-click="m.hide_info = !m.hide_info"><i class="fa fa-ban"></i></span>
             <span class="status"></span>
 
-            <div collapse="!m.hide_info" ng-if="m.id != user.info.id && can('edit-category-comments')" style="padding: 10px 0; border-bottom: 1px solid #ddd;">
+            <div uib-collapse="!m.hide_info" ng-if="m.id != user.info.id && can('edit-category-comments')" style="padding: 10px 0; border-bottom: 1px solid #ddd;">
               <div class="btn-toolbar">
                 <a href="" ng-click="suspendUser(m.id, 60*5); m.already_blocked = true" class="btn btn-default btn-sm" ng-class="{'disabled': m.already_blocked}">Bloquear</a>
               </div>
