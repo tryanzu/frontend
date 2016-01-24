@@ -5009,7 +5009,7 @@ ComponentsModule.factory('cart', ['$localstorage', '$http', function($localstora
           return 60;
         }
       }
-      return 120;
+      return 139;
     }
   }
 
@@ -5030,7 +5030,7 @@ ComponentsModule.factory('cart', ['$localstorage', '$http', function($localstora
         }
       }
       if(non_case_count > 0) {
-        return 120 + (non_case_count - 1) * 60 + 320 * case_count;
+        return 139 + (non_case_count - 1) * 60 + 320 * case_count;
       } else {
         return 320 * case_count;
       }
