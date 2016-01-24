@@ -1,6 +1,8 @@
 var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
   function($scope, $firebaseArray, $firebaseObject, $timeout) {
 
+    $scope.emojiMessage = {};
+
     var firebaseRef = new Firebase(firebase_url);
 
     // Instantiate a new connection to Firebase.
@@ -114,6 +116,7 @@ var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
     };
 
     $scope.addMessage = function() {
+      $scope.message.content = $scope.emojiMessage.messagetext;
       if($scope.message.content === $scope.message.previous || ($scope.message.previous.indexOf($scope.message.content) > -1) || ($scope.message.content.indexOf($scope.message.previous) > -1)) {
         $scope.message.content = '';
       } else {
@@ -133,6 +136,7 @@ var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
         //console.log(new_message);
         $scope.messages.$add(new_message).then(function(ref) {
           $scope.message.content = '';
+          $scope.emojiMessage = {};
         });
       }
     }
@@ -193,7 +197,7 @@ var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
   }
 ];
 
-var chatModule = angular.module('chatModule', ["firebase"]);
+var chatModule = angular.module('chatModule', ['firebase', 'ngSanitize', 'emojiApp']);
 
 chatModule.controller('ChatController', ChatController);
 
@@ -231,10 +235,10 @@ chatModule.directive('youtube', function($sce) {
   };
 });
 
-chatModule.directive('showImages', function() {
+chatModule.directive('showImages', [function() {
   var urlPattern = /(http|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-]*[\w@?^=%&amp;\/~+#-])?/gi;
-  var regex = new RegExp("(https?:\/\/.*\\.(?:png|jpg|jpeg|gif)((\\?|\\&)[a-zA-Z0-9]+\\=[a-zA-Z0-9]+)*)", "gi");
-  var to_replace = "<div class=\"img-preview\"><a href=\"$1\" target=\"_blank\"><img src=\"$1\"></a></div>";
+  /*var regex = new RegExp("(https?:\/\/.*\\.(?:png|jpg|jpeg|gif)((\\?|\\&)[a-zA-Z0-9]+\\=[a-zA-Z0-9]+)*)", "gi");
+  var to_replace = "<div class=\"img-preview\"><div class=\"url-text\">$1 <i class=\"fa fa-chevron-down\"></i><i class=\"fa fa-chevron-up\"></i></div><a href=\"$1\" target=\"_blank\" ng-show=\"show_image\"><img src=\"$1\"></a></div>";*/
 
   return {
     restrict: 'A',
@@ -243,10 +247,13 @@ chatModule.directive('showImages', function() {
     },
     replace: true,
     link: function (scope, element, attrs, controller) {
-      var text = scope.content;
-      var images = text.replace(regex, to_replace);
-      var new_text = text.replace(urlPattern, '<a target="_blank" href="$&">$&</a>');
-      element.html(images);
+      scope.$watch('content', function (value) {
+        var text = scope.content;
+        /*scope.show_image = false;
+        var images = text.replace(regex, to_replace);*/
+        var new_text = text.replace(urlPattern, '<a target="_blank" href="$&">$&</a>');
+        element.html(new_text);
+      });
     }
   };
-});
+}]);

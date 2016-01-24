@@ -12,6 +12,8 @@
 // @codekit-prepend "vendor/angular-timeago.js"
 // @codekit-prepend "vendor/algoliasearch.angular.min.js"
 // @codekit-prepend "vendor/stripe-angular.js"
+// @codekit-prepend "vendor/emoji.config.js"
+// @codekit-prepend "vendor/emoji.min.js"
 
 // @codekit-prepend "common/directives"
 // @codekit-prepend "common/filters"

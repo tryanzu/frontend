@@ -62,7 +62,7 @@
               <span class="star"></span>
             </div>
             <span class="timestamp" ng-if=":: messages[$index-1].author.username == messages[$index].author.username" uib-tooltip="{{ m.created_at | date_at }}" tooltip-popup-delay="500" tooltip-placement="right">{{ m.created_at | date:'H:mm' }}</span>
-            <div show-images content="{{ m.content }}" class="content"></div>
+            <div show-images content="{{ m.content | colonToCode }}" class="content"></div>
           </div>
 
           <div class="new_chat_alert" ng-if="scrolledUp && old_messages.length > 0"><a href="" ng-click="goToBottom()"><i class="fa fa-arrow-down"></i> Nuevos mensajes ({{ old_messages.length }})</a></div>
@@ -70,16 +70,27 @@
 
         <div class="footer" ng-if="user.isLogged">
           <div class="input-box">
-            <div class="input-group">
-              <input type="text" ng-model="message.content" class="input-box_text" sg-enter="addMessage()" sg-send="message.send_on_enter" placeholder="Escribe...">
-              <span class="input-group-btn" ng-if="!message.send_on_enter">
-                <button class="btn btn-primary btn-send" type="button" ng-click="addMessage()">Enviar</button>
-              </span>
+
+            <div emoji-form emoji-message="emojiMessage" sg-enter="addMessage()">
+              <textarea id="messageInput" class="input-box_text" ng-model="emojiMessage.messagetext"></textarea>
+
+              <button id="emojibtn" class="emoji-pop-btn">
+                <i class="icon icon-emoji"></i>
+              </button>
             </div>
-            <div class="checkbox">
-              <label>
-                <input type="checkbox" ng-model="message.send_on_enter"> Presionar 'Enter' para mandar el mensaje
-              </label>
+            <div class="row">
+              <div class="col-md-8">
+                <div class="checkbox">
+                  <label>
+                    <input type="checkbox" ng-model="message.send_on_enter"> Presionar 'Enter' para mandar el mensaje
+                  </label>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <span class="input-group-btn" ng-if="!message.send_on_enter" style="text-align: right;">
+                  <button class="btn btn-primary btn-send" type="button" ng-click="addMessage()"><span class="label">Enviar</span></button>
+                </span>
+              </div>
             </div>
           </div>
         </div>
