@@ -5729,10 +5729,6 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
     templateUrl: '/js/partials/components.html?v=' + version,
     controller: 'ComponentsController'
   });
-  $routeProvider.when('/componente/:slug', {
-    templateUrl: '/js/partials/component.html?v=' + version,
-    controller: 'ComponentController'
-  });
   $routeProvider.when('/componentes/armar-pc', {
     templateUrl: '/js/partials/pc_builder.html?v=' + version,
     controller: 'PcBuilderController'
@@ -5740,6 +5736,10 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   $routeProvider.when('/componentes/checkout', {
     templateUrl: '/js/partials/checkout.html?v=' + version,
     controller: 'CheckoutController'
+  });
+  $routeProvider.when('/componentes/:type/:slug', {
+    templateUrl: '/js/partials/component.html?v=' + version,
+    controller: 'ComponentController'
   });
   $routeProvider.when('/c/:slug', {
     templateUrl: '/js/partials/main.html?v=' + version,
