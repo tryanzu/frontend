@@ -49,7 +49,7 @@
                   </div>
                 </div>
                 <div class="hit-content col-md-9">
-                  <p class="hit-name"><a href="/componente/{{ hit.slug }}" ng-click="toggle()">{{ hit.full_name || hit.name }}</a></p>
+                  <p class="hit-name"><a href="/componentes/{{ hit.type}}/{{ hit.slug }}" ng-click="toggle()">{{ hit.full_name || hit.name }}</a></p>
                   <p class="hit-part-number">{{ hit.part_number }}</p>
                   <div class="row" ng-if="hit.price > 0">
                     <div class="col-sm-12">
