@@ -12,6 +12,8 @@
 // @codekit-prepend "vendor/angular-timeago.js"
 // @codekit-prepend "vendor/algoliasearch.angular.min.js"
 // @codekit-prepend "vendor/stripe-angular.js"
+// @codekit-prepend "vendor/emoji.config.js"
+// @codekit-prepend "vendor/emoji.min.js"
 
 // @codekit-prepend "common/directives"
 // @codekit-prepend "common/filters"
@@ -198,8 +200,8 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   AclServiceProvider.config({storage: false});
 }]);
 
-boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http', '$modalInstance', 'Facebook',
-  function($scope, $rootScope, $http, $modalInstance, Facebook) {
+boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http', '$uibModalInstance', 'Facebook',
+  function($scope, $rootScope, $http, $uibModalInstance, Facebook) {
   	$scope.form = {
   		email: '',
   		password: '',
@@ -221,7 +223,7 @@ boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http'
         localStorage.setItem('firebase_token', data.firebase);
         localStorage.setItem('signed_in', true);
 
-        $modalInstance.dismiss('logged');
+        $uibModalInstance.dismiss('logged');
         $rootScope.$broadcast('login');
       })
       .error(function(data, status, headers, config) {
@@ -230,7 +232,7 @@ boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http'
   	};
 
   	$scope.cancel = function() {
-  		$modalInstance.dismiss('cancel');
+  		$uibModalInstance.dismiss('cancel');
   	};
 
     $scope.loginFb = function() {
@@ -270,7 +272,7 @@ boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http'
               localStorage.setItem('firebase_token', data.firebase);
               localStorage.setItem('signed_in', true);
               //console.log(data.token, data.firebase);
-              $modalInstance.dismiss('logged');
+              $uibModalInstance.dismiss('logged');
               $rootScope.$broadcast('login');
               //$rootScope.$broadcast('status_change');
             });
@@ -283,8 +285,8 @@ boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http'
   }
 ]);
 
-boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http', '$modalInstance', 'Facebook',
-  function($scope, $rootScope, $http, $modalInstance, Facebook) {
+boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http', '$uibModalInstance', 'Facebook',
+  function($scope, $rootScope, $http, $uibModalInstance, Facebook) {
   	$scope.form = {
   		email: '',
   		password: '',
@@ -331,18 +333,18 @@ boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http'
         localStorage.setItem('id_token', data.token);
         localStorage.setItem('firebase_token', data.firebase);
         localStorage.setItem('signed_in', true);
-        $modalInstance.dismiss('signed');
+        $uibModalInstance.dismiss('signed');
         $rootScope.$broadcast('login');
         //$rootScope.$broadcast('status_change');
   		});
   	};
 
   	$scope.ok = function (){
-  		$modalInstance.close($scope.selected.item);
+  		$uibModalInstance.close($scope.selected.item);
   	};
 
   	$scope.cancel = function () {
-  		$modalInstance.dismiss('cancel');
+  		$uibModalInstance.dismiss('cancel');
   	};
 
     $scope.loginFb = function() {
@@ -382,7 +384,7 @@ boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http'
               localStorage.setItem('firebase_token', data.firebase);
               localStorage.setItem('signed_in', true);
               //console.log(data.token, data.firebase);
-              $modalInstance.dismiss('logged');
+              $uibModalInstance.dismiss('logged');
               $rootScope.$broadcast('login');
               //$rootScope.$broadcast('status_change');
             });
