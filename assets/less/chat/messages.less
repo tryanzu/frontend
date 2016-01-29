@@ -72,6 +72,25 @@
       color: #666666;
       display: block;
       min-height: 1em;
+
+      .mention {
+        background-color: @brand-primary-lighter;
+        color: @brand-primary;
+        font-weight: 600;
+        padding: 2px 4px;
+      }
+
+      .img-preview {
+        .url-text {
+          word-wrap: break-word;
+          font-size: 14px;
+          color: #888;
+        }
+
+        img {
+          max-height: 250px;
+        }
+      }
     }
   }
 }
@@ -85,14 +104,34 @@
 .input-box {
   margin-bottom: 0.3em;
   padding-left: 2.5em;
+  position: relative;
 
-  .input-group {
+  .emoji-wysiwyg-editor {
     width: 100%;
+    line-height: 1.2em;
+    min-height: 42px;
+    border: 2px solid #e0e0e0;
+    border-radius: 5px;
+    background-clip: padding-box;
+    box-shadow: none;
+    outline: 0;
+    bottom: 0;
+    padding: 10px 8px;
+    font-size: inherit;
+  }
 
-    .btn.btn-send {
-      height: 43px;
-      margin-left: -3px;
-    }
+  .emoji-pop-btn {
+    background: none;
+    border: none;
+    position: absolute;
+    top: 0;
+    right: 0;
+    line-height: 30px;
+    padding-right: 10px;
+  }
+
+  .btn.btn-send {
+
   }
 
   label {
@@ -101,17 +140,6 @@
   }
 }
 
-.input-box_text {
-  width: 100%;
-  line-height: 1.2em;
-  border: 2px solid #e0e0e0;
-  border-radius: 5px;
-  background-clip: padding-box;
-  box-shadow: none;
-  outline: 0;
-  bottom: 0;
-  padding: 10px 8px;
-}
 
 @media @phone, @tablet {
   .offset-content.details-open.stream-chat {}
