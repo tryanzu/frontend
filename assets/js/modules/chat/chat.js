@@ -1,6 +1,8 @@
 var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
   function($scope, $firebaseArray, $firebaseObject, $timeout) {
 
+    $scope.people = [];
+
     $scope.emojiMessage = {};
 
     var firebaseRef = new Firebase(firebase_url);
@@ -55,6 +57,17 @@ var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
       content: ''
     };
 
+    $scope.getMentionable = function() {
+      var new_people = [];
+
+      angular.forEach($scope.members, function(member) {
+        new_people.push({'label': member.username});
+        console.log(member.username);
+      })
+      console.log(new_people);
+      $scope.people = new_people;
+    }
+
     $scope.goToBottom = function() {
       var mh_window = $('.message-history');
       mh_window.scrollTop(mh_window[0].scrollHeight);
@@ -95,6 +108,17 @@ var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
 
       var membersRef = new Firebase(firebase_url + 'members/' + channel.$id);
       $scope.members = $firebaseArray(membersRef);
+
+      membersRef.on('value', function(snapshot) {
+        //console.log($scope.members);
+        //$scope.getMentionable();
+        var new_people = [];
+        snapshot.forEach(function(childSnapshot) {
+          new_people.push({'label': childSnapshot.val().username});
+          //console.log(childSnapshot.val().username)
+        });
+        $scope.people = new_people;
+      });
 
       if($scope.user.isLogged) {
         var amOnline = new Firebase(firebase_url + '.info/connected');
@@ -243,15 +267,20 @@ chatModule.directive('showImages', [function() {
   return {
     restrict: 'A',
     scope: {
-      'content' : '@'
+      'content' : '@',
+      'username' : '@'
     },
     replace: true,
     link: function (scope, element, attrs, controller) {
+      var usernamePattern = new RegExp("(\@?" + scope.username + ")", "gi");
+      var unReplace = "<span class=\"mention\">$1</span>"
+
       scope.$watch('content', function (value) {
         var text = scope.content;
         /*scope.show_image = false;
         var images = text.replace(regex, to_replace);*/
         var new_text = text.replace(urlPattern, '<a target="_blank" href="$&">$&</a>');
+        var new_text = new_text.replace(usernamePattern, unReplace);
         element.html(new_text);
       });
     }
