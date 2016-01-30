@@ -217,19 +217,17 @@ var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
       if($scope.scroll_help.from_top > $scope.scroll_help.max_height) {
         $scope.scroll_help.from_top = $scope.scroll_help.max_height;
       }
-      //console.log($scope.scroll_help.from_top, $scope.scroll_help.lastScrollTop, $scope.scroll_help.max_height);
+
       if ($scope.scroll_help.from_top >= $scope.scroll_help.lastScrollTop) {
         // downscroll code
         if($scope.scroll_help.from_top == $scope.scroll_help.max_height) {
           $scope.scrolledUp = false;
           $scope.old_messages = [];
-          //console.log("Estoy hasta abajo");
         }
       } else {
         if($scope.scroll_help.last_height <= $scope.scroll_help.max_height) {
           // upscroll code
           $scope.scrolledUp = true;
-          //console.log("cambie a subido");
         }
       }
       $scope.scroll_help.lastScrollTop = $scope.scroll_help.from_top;
