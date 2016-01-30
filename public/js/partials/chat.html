@@ -9,7 +9,7 @@
             </a>
             <ul class="dropdown-menu">
               <li class="dropdown-header">Canales públicos</li>
-              <li ng-repeat="c in channels" ng-class="::{active: c.name == channel.selected.name}">
+              <li ng-repeat="c in channels" ng-class="{active: c.name == channel.selected.name}">
                 <a href="" ng-click="changeChannel(c)" title="{{ c.description }}">
                   <span class="icon category-icon" ng-class="{'uncategorized': !c.color}" ng-style="{background: c.color}"></span> {{ c.name }}
                 </a>
@@ -62,7 +62,7 @@
               <span class="star"></span>
             </div>
             <span class="timestamp" ng-if=":: messages[$index-1].author.username == messages[$index].author.username" uib-tooltip="{{ m.created_at | date_at }}" tooltip-popup-delay="500" tooltip-placement="right">{{ m.created_at | date:'H:mm' }}</span>
-            <div show-images content="{{ m.content | colonToCode }}" username="{{ user.info.username }}" class="content"></div>
+            <div show-images content="{{ m.content }}" username="{{ user.info.username }}" class="content"></div>
           </div>
 
           <div class="new_chat_alert" ng-if="scrolledUp && old_messages.length > 0"><a href="" ng-click="goToBottom()"><i class="fa fa-arrow-down"></i> Nuevos mensajes ({{ old_messages.length }})</a></div>
@@ -106,6 +106,17 @@
 
       <div class="detail-section" ng-if="channel.selected.fullscreen.video">
         <youtube code="channel.selected.fullscreen.video"></youtube>
+      </div>
+
+      <div class="detail-section" ng-if="can('board-config')">
+        <h4>Configuración</h4>
+        <form class="form-inline">
+          <div class="form-group">
+            <label for="yt-code">Código de Youtube</label>
+            <input type="text" class="form-control" id="yt-code" placeholder="abcde123" ng-model="channel.selected.new_yt_code">
+          </div>
+          <button type="submit" class="btn btn-default" ng-click="updateChannelMeta()">Actualizar video</button>
+        </form>
       </div>
 
       <div class="detail-section">
