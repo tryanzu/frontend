@@ -187,10 +187,7 @@
                   <hr>
                   <h4>Únete a la conversación</h4>
                   <p>Puedes ver a la <strong>izquierda</strong> las publicaciones de otros espartanos, nuestros foros y nuestras recomendaciones, empieza viendo y únete a la conversación.</p>
-
                 </div>
-
-
                 <div class="col-md-6">
                   <figure align="right">
                   <img src="/images/home-browser.png" alt="SpartanGeek Window">
@@ -224,7 +221,20 @@
             <div class="back-to-list visible-xs-block">
               <a href="/" ng-click="activePostId = null"><i class="fa fa-chevron-left"></i> Regresar al listado de publicaciones</a>
             </div>
-            <div class="author" ng-hide="resolving || error_loading">
+
+            <div class="resolving" ng-hide="!resolving">
+              <img src="/images/head.png" />
+              <h4>Cargando</h4>
+              <i class="fa fa-spinner fa-pulse"></i>
+            </div>
+
+            <div class="resolving" ng-show="error_loading">
+              <img src="/images/head.png" />
+              <h4>Error 404</h4>
+              <p>No encontramos la publicación que estabas buscando.</p>
+            </div>
+
+            <div class="author hidden" ng-hide="resolving || error_loading">
               <div class="row">
                 <div class="col-md-7 col-xs-12">
                   <a href="/u/{{ post.author.username }}/{{ post.author.id }}" title="Perfil de {{ post.author.username }}">
@@ -247,28 +257,31 @@
 
                   </div>
                 </div>
-
-                <div class="col-md-5 hidden-xs">
-                  <div class="category-preview" ng-style="{'background-image': 'url(/images/boards/' + post.category.parent_slug + '.png)'};">
-                    <p class="category-label">{{ post.category.name }}</p>
-                  </div>
-                </div>
               </div>
             </div>
 
-            <div class="resolving" ng-hide="!resolving">
-              <img src="/images/head.png" />
-              <h4>Cargando</h4>
-              <i class="fa fa-spinner fa-pulse"></i>
-            </div>
-
-            <div class="resolving" ng-show="error_loading">
-              <img src="/images/head.png" />
-              <h4>Error 404</h4>
-              <p>No encontramos la publicación que estabas buscando.</p>
-            </div>
-
             <div ng-hide="resolving || error_loading">
+              <div class="header" ng-style="{'border-bottom-color': post.category.color}">
+                <ul class="DiscussionHero-items">
+                  <li class="item-badges">
+                    <ul class="DiscussionHero-badges badges">
+                      <li class="item-sticky" ng-if="post.pinned">
+                        <span class="Badge Badge--sticky " title="Sticky" data-original-title="Sticky"><i class="icon fa fa-fw fa-thumb-tack Badge-icon"></i></span>
+                      </li>
+                      <li class="item-solved" ng-if="post.solved">
+                        <span class="Badge Badge--solved " title="Sticky" data-original-title="Sticky"><i class="icon fa fa-fw fa-check Badge-icon"></i></span>
+                      </li>
+                      <li class="item-subscription" ng-if="false">
+                        <span class="Badge Badge--following " title="Following" data-original-title="Following"><i class="icon fa fa-fw fa-star Badge-icon"></i></span>
+                      </li>
+                    </ul>
+                  </li>
+                  <li class="item-tags">
+                    <h2>{{ post.category.name }}</h2>
+                  </li>
+                  <li class="item-title"><h1 class="DiscussionHero-title">{{ post.title }}</h1></li>
+                </ul>
+              </div>
 
               <nav class="discussion-nav">
                 <ul>
@@ -327,8 +340,78 @@
                   </div>
                 </div>
 
-                <h1 class="discussion-title">{{ post.title }}</h1>
-                <span class="label label-default label-date">Escrito {{ post.created_at | timeAgo }}</span>
+                <div class="comment-author">
+                  <a href="/u/{{ post.author.username }}/{{ post.author.id }}" title="Perfil de {{ post.author.username }}" ng-mouseover="toggleUserCard(post)">
+                    <img class="avatar" ng-src="{{ post.author.image }}" alt="{{ post.author.username }}" ng-if="post.author.image">
+                    <span class="avatar" title="{{ post.author.username }}" ng-if="!post.author.image">{{ post.author.username[0] }}</span>
+                  </a>
+                  <ul class="PostUser-badges badges">
+                    <li class="item-group1" ng-repeat="role in ::post.author.roles">
+                      <span ng-if="role.name == 'developer'" class="Badge Badge--group--Admin" style="background-color: rgb(103, 156, 77);" uib-tooltip="Developer"><i class="icon fa fa-fw fa-wrench Badge-icon"></i></span>
+                      <span ng-if="role.name == 'category-moderator'" class="Badge Badge--group--Staff" style="background-color: rgb(231, 103, 46);" uib-tooltip="Mod"><i class="icon fa fa-fw fa-certificate Badge-icon"></i></span>
+                      <span ng-if="role.name == 'administrator'" class="Badge Badge--group--Mod" style="background-color: rgb(128, 52, 158);" uib-tooltip="Staff"><i class="icon fa fa-fw fa-bolt Badge-icon"></i></span>
+                      <span ng-if="role.name == 'spartan-girl'" class="Badge Badge--group--SpartanGirl" style="background-color: rgb(128, 52, 158);" uib-tooltip="SpartanGirl"><i class="icon fa fa-fw fa-heart Badge-icon"></i></span>
+                    </li>
+                  </ul>
+                  <div class="UserCard" ng-class="{'UserCard--popover in': post.showAuthorAnimation }" style="background-color: #888;" ng-show="post.showAuthor " ng-mouseleave="toggleUserCard(post)">
+                    <div class="darkenBackground">
+                      <div class="container">
+                        <div class="UserCard-profile">
+                          <h2 class="UserCard-identity">
+                            <a href="/u/luceos">
+                              <div class="UserCard-avatar">
+                                <img class="avatar" ng-src="{{ post.author.image }}" ng-if="post.author.image">
+                                <span class="avatar" title="{{ post.author.username }}" ng-if="!post.author.image">{{ post.author.username[0] }}</span>
+                              </div>
+                              <span>{{ post.author.username }}</span>
+                            </a>
+                          </h2>
+                          <ul class="UserCard-badges badges">
+                            <li class="item-group1" ng-repeat="role in ::post.author.roles">
+                              <span ng-if="role.name == 'developer'" class="Badge Badge--group--Admin" style="background-color: rgb(103, 156, 77);" uib-tooltip="Developer"><i class="icon fa fa-fw fa-wrench Badge-icon"></i></span>
+                              <span ng-if="role.name == 'category-moderator'" class="Badge Badge--group--Staff" style="background-color: rgb(231, 103, 46);" uib-tooltip="Mod"><i class="icon fa fa-fw fa-certificate Badge-icon"></i></span>
+                              <span ng-if="role.name == 'administrator'" class="Badge Badge--group--Mod" style="background-color: rgb(128, 52, 158);" uib-tooltip="Staff"><i class="icon fa fa-fw fa-bolt Badge-icon"></i></span>
+                              <span ng-if="role.name == 'spartan-girl'" class="Badge Badge--group--SpartanGirl" style="background-color: rgb(128, 52, 158);" uib-tooltip="SpartanGirl"><i class="icon fa fa-fw fa-heart Badge-icon"></i></span>
+                            </li>
+                          </ul>
+                          <ul class="UserCard-info">
+                            <li class="item-bio">
+                              <div class="UserBio ">
+                                <div class="UserBio-content">
+                                  <p>{{ post.author.description }}</p>
+                                </div>
+                              </div>
+                            </li>
+                            <li class="item-lastSeen hidden">
+                              <span class="UserCard-lastSeen"><i class="icon fa fa-fw fa-clock-o "></i> hace 10 horas</span>
+                            </li>
+                            <li class="item-joined hidden">Se unió hace 8 meses</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="username">
+                    <a href="/u/{{ post.author.username }}/{{ post.author.id }}" title="Perfil de {{ post.author.username }}">{{ post.author.username }}</a>
+                    <span class="date dropdown" uib-dropdown auto-close="outsideClick" ng-if="!post.editing">
+                      <a href="" class="dropdown-toggle" uib-dropdown-toggle>
+                        <time>{{ post.created_at | timeAgo }}</time>
+                      </a>
+                      <div class="dropdown-menu post-meta">
+                        <span class="time">
+                          <time datetime="{{ post.created_at }}">
+                            Publicado el {{ post.created_at | date_at}}
+                          </time>
+                        </span>
+                        <input class="form-control permalink" value="http://spartangeek.com/p/{{ post.slug }}/{{ post.id }}">
+                      </div>
+                    </span>
+
+                    <div>
+                      <span class="level">{{ misc.gaming.rules[post.author.gaming.level].name }}</span>
+                    </div>
+                  </div>
+                </div>
 
                 <div class="content" ng-if="post.type !== 'recommendations'" marked="post.content_final"></div>
 
@@ -477,7 +560,7 @@
 
                 <div class="best_answer" ng-if="best_answer_object">
                   <div class="comment best">
-                    <div class="header">
+                    <div class="best-header">
                       <i class="fa fa-check-circle-o"></i> Mejor respuesta
                     </div>
                     <div class="comment-author">
@@ -519,14 +602,60 @@
                         </ul>
                       </div>
                     </div>
-                    <div class="header" ng-if="comment.chosen">
+                    <div class="best-header" ng-if="comment.chosen">
                       <i class="fa fa-check-circle-o"></i> Mejor respuesta
                     </div>
                     <div class="comment-author">
-                      <a href="/u/{{ comment.author.username }}/{{ comment.author.id }}" title="Perfil de {{ comment.author.username }}">
+                      <a href="/u/{{ comment.author.username }}/{{ comment.author.id }}" title="Perfil de {{ comment.author.username }}" ng-mouseover="toggleUserCard(comment)">
                         <img class="avatar" ng-src="{{ comment.author.image }}" alt="{{ comment.author.username }}" ng-if="comment.author.image">
                         <span class="avatar" title="{{ comment.author.username }}" ng-if="!comment.author.image">{{ comment.author.username[0] }}</span>
                       </a>
+                      <ul class="PostUser-badges badges">
+                        <li class="item-group1" ng-repeat="role in ::comment.author.roles">
+                          <span ng-if="role.name == 'developer'" class="Badge Badge--group--Admin" style="background-color: rgb(103, 156, 77);" uib-tooltip="Developer"><i class="icon fa fa-fw fa-wrench Badge-icon"></i></span>
+                          <span ng-if="role.name == 'category-moderator'" class="Badge Badge--group--Staff" style="background-color: rgb(231, 103, 46);" uib-tooltip="Mod"><i class="icon fa fa-fw fa-certificate Badge-icon"></i></span>
+                          <span ng-if="role.name == 'administrator'" class="Badge Badge--group--Mod" style="background-color: rgb(128, 52, 158);" uib-tooltip="Staff"><i class="icon fa fa-fw fa-bolt Badge-icon"></i></span>
+                          <span ng-if="role.name == 'spartan-girl'" class="Badge Badge--group--SpartanGirl" style="background-color: rgb(128, 52, 158);" uib-tooltip="SpartanGirl"><i class="icon fa fa-fw fa-heart Badge-icon"></i></span>
+                        </li>
+                      </ul>
+                      <div class="UserCard" ng-class="{'UserCard--popover in': comment.showAuthorAnimation }" style="background-color: #888;" ng-show="comment.showAuthor " ng-mouseleave="toggleUserCard(comment)">
+                        <div class="darkenBackground">
+                          <div class="container">
+                            <div class="UserCard-profile">
+                              <h2 class="UserCard-identity">
+                                <a href="/u/luceos">
+                                  <div class="UserCard-avatar">
+                                    <img class="avatar" ng-src="{{ comment.author.image }}" ng-if="comment.author.image">
+                                    <span class="avatar" title="{{ comment.author.username }}" ng-if="!comment.author.image">{{ comment.author.username[0] }}</span>
+                                  </div>
+                                  <span>{{ comment.author.username }}</span>
+                                </a>
+                              </h2>
+                              <ul class="UserCard-badges badges">
+                                <li class="item-group1" ng-repeat="role in ::comment.author.roles">
+                                  <span ng-if="role.name == 'developer'" class="Badge Badge--group--Admin" style="background-color: rgb(103, 156, 77);" uib-tooltip="Developer"><i class="icon fa fa-fw fa-wrench Badge-icon"></i></span>
+                                  <span ng-if="role.name == 'category-moderator'" class="Badge Badge--group--Staff" style="background-color: rgb(231, 103, 46);" uib-tooltip="Mod"><i class="icon fa fa-fw fa-certificate Badge-icon"></i></span>
+                                  <span ng-if="role.name == 'administrator'" class="Badge Badge--group--Mod" style="background-color: rgb(128, 52, 158);" uib-tooltip="Staff"><i class="icon fa fa-fw fa-bolt Badge-icon"></i></span>
+                                  <span ng-if="role.name == 'spartan-girl'" class="Badge Badge--group--SpartanGirl" style="background-color: rgb(128, 52, 158);" uib-tooltip="SpartanGirl"><i class="icon fa fa-fw fa-heart Badge-icon"></i></span>
+                                </li>
+                              </ul>
+                              <ul class="UserCard-info">
+                                <li class="item-bio">
+                                  <div class="UserBio ">
+                                    <div class="UserBio-content">
+                                      <p>{{ comment.author.description }}</p>
+                                    </div>
+                                  </div>
+                                </li>
+                                <li class="item-lastSeen hidden">
+                                  <span class="UserCard-lastSeen"><i class="icon fa fa-fw fa-clock-o "></i> hace 10 horas</span>
+                                </li>
+                                <li class="item-joined hidden">Se unió hace 8 meses</li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                       <div class="username">
                         <a href="/u/{{ comment.author.username }}/{{ comment.author.id }}" title="Perfil de {{ comment.author.username }}">
                           <strong>{{ comment.author.username }}</strong>
@@ -547,12 +676,7 @@
                         </span>
 
                         <div>
-                          <span class="level">{{ misc.gaming.rules[comment.author.level].name }} &#8226;</span> {{ comment.author.description }}
-                          <ul class="role-labels" ng-if="comment.author.roles.length > 0">
-                            <li ng-repeat="role in comment.author.roles" ng-if="role.name !== 'user'">
-                              <span class="label label-default" ng-class="role.name">{{ misc.role_labels[role.name] }}</span>
-                            </li>
-                          </ul>
+                          <span class="level">{{ misc.gaming.rules[comment.author.level].name }}
                         </div>
                       </div>
                     </div>

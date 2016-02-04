@@ -7281,6 +7281,15 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
     });
   }
 
+
+  $scope.toggleUserCard = function (comment){
+    var time = comment.showAuthor ? 0:500;
+    comment.showAuthor = !comment.showAuthor;
+    $timeout(function(){
+      comment.showAuthorAnimation = !comment.showAuthorAnimation;
+    }, time);
+  }
+
 	$scope.$on('pushLoggedComment', function(event, comment) {
 		// Push the comment to the main set of comments
     addMediaEmbed(comment);
@@ -7309,7 +7318,8 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
               id: $scope.categories[c].subcategories[s].id,
               name: $scope.categories[c].subcategories[s].name,
               slug: $scope.categories[c].subcategories[s].slug,
-              parent_slug: $scope.categories[c].slug
+              parent_slug: $scope.categories[c].slug,
+              color: $scope.categories[c].color
             }
             break;
           }
