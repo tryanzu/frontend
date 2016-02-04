@@ -1,26 +1,26 @@
 // ---------------------------------
 // COLORS
 
+@brand-primary:         #386db8;
+@brand-success:         #21b384;
+@brand-info:            #3498DB;
+@brand-warning:         #F39C12;
+@brand-danger:          #E74C3C;
+
 @primary-hue:                      hue(@brand-primary);
 @primary-sat:                      saturation(@brand-primary);
 
 @secondary-hue:                    hue(@brand-primary-light);
 @secondary-sat:                    saturation(@brand-primary-light);
 
-@brand-primary:         #386db8; //#325BA2;//#305fa9;
-@brand-success:         #21b384;//#438C52;
-@brand-info:            #3498DB;
-@brand-warning:         #F39C12;
-@brand-danger:          #E74C3C;
-
 @brand-primary-light:       lighten(@brand-primary, 42%);
-@brand-primary-lighter:     lighten(@brand-primary, 49%);
+@brand-primary-lighter:     hsl(@secondary-hue, max(70%, @secondary-sat), 95%);//lighten(@brand-primary, 49%);
 @brand-primary-light-text:  desaturate(lighten(@brand-primary, 25%), 30%);
 @brand-primary-normal:      desaturate(darken(@brand-primary, 5%), 10%);
 @brand-primary-dark:        desaturate(darken(@brand-primary, 10%), 20%);
 @brand-primary-opaque:      desaturate(@brand-primary, 50%);
 
-@control-bg:                     @brand-primary-lighter;
+@control-bg:                     hsl(@secondary-hue, max(70%, @secondary-sat), 94%); //@brand-primary-lighter;
 @control-color:                  @brand-primary-light-text;
 @control-danger-bg:              #411;
 @control-danger-color:           #a88;
@@ -30,7 +30,20 @@
 // LAYOUT
 
 @drawer-width:      400px;
+@pane-width:        430px;
 @border-radius:     4px;
+
+@header-height:                    52px;
+@header-height-phone:              46px;
+
+@zindex-dropdown:                  1000;
+@zindex-header:                    1010;
+@zindex-composer:                  1020;
+@zindex-pane:                      1030;
+@zindex-modal-background:          1040;
+@zindex-modal:                     1050;
+@zindex-alerts:                    1060;
+@zindex-tooltip:                   1070;
 
 //== Scaffolding
 //
@@ -39,7 +52,7 @@
 //** Background color for `<body>`.
 @body-bg:               #fff;
 //** Global text color on `<body>`.
-@text-color:            @brand-primary-dark;
+@text-color:            #111;
 
 //** Global textual link color.
 @link-color:            @brand-primary;
@@ -53,14 +66,9 @@
 //
 //## Font, line-height, and color for body text, headings, and more.
 
-@font-family-sans-serif:  "Proxima", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
-
-@font-size-base:          15px;
-
-//** Unit-less `line-height` for use in components like buttons.
-
-//** By default, this inherits from the `<body>`.
-
+@font-family-sans-serif:  "Helvetica Neue", "Open Sans", Helvetica, Arial, sans-serif;
+@font-size-base:          14px;
+@headings-font-family:    "Proxima";
 
 //== Components
 //
@@ -833,3 +841,6 @@
 @tablet: ~"(min-width: @{screen-sm-min}) and (max-width: @{screen-sm-max})";
 @desktop: ~"(min-width: @{screen-md-min}) and (max-width: @{screen-md-max})";
 @desktop-hd: ~"(min-width: @{screen-lg-min})";
+
+@tablet-up:                        ~"(min-width: @{screen-tablet})";
+@desktop-up:                       ~"(min-width: @{screen-desktop})";
