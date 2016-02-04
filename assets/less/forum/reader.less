@@ -33,8 +33,6 @@
 }
 
 .current-article h1 {
-  color: @brand-primary-dark;
-  font: inherit;
   font-size: 24px;
   line-height: 32px;
   font-weight: 300;
@@ -70,14 +68,12 @@
     word-wrap: break-word;
 
     p {
-      color: @brand-primary-dark;
-      //font-size: 14px;
       line-height: 24px;
     }
 
     img {
       max-width: 100%;
-      max-height: 240px;
+      max-height: 350px;
     }
   }
 
@@ -418,23 +414,6 @@
   }
 }
 
-@media @phone {
-  .current-article {
-    padding-bottom: 60px;
-
-    .float-actions {
-      position: relative;
-      right: -20px;
-    }
-    .comments .comment .actions {
-      opacity: 1;
-    }
-  }
-  .username {
-    margin-right: 40px;
-  }
-}
-
 .current-article {
   .need-signin {
     background: @brand-primary-lighter;
@@ -458,29 +437,20 @@
     margin-bottom: 0.3em;
 
     a {
-      padding: 0.2em;
-      border: 2px solid #fff;
-      border-radius: 1px;
       display: inline-block;
 
       &:hover {
-        border-color: @brand-primary-light;
         cursor: pointer;
       }
     }
 
-    p {
-      font-size: 11px;
-      color: #99acc2;
-      margin-bottom: 6px;
-    }
-
     img {
-      max-height: 260px;
+      max-height: 500px;
       width: auto;
       max-width: 100%;
       border: 1px solid white;
     }
+
     video {
       max-height: 240px;
       width: auto;
@@ -507,6 +477,7 @@
     margin-left: 1.2em;
   }
 }
+
 .votes-count {
   font-size: 13px;
   margin-top: 2.5em;
@@ -531,5 +502,22 @@
     .menu-highlighted {
       font-weight: 800;
     }
+  }
+}
+
+@media @phone {
+  .current-article {
+    padding-bottom: 60px;
+
+    .float-actions {
+      position: relative;
+      right: -20px;
+    }
+    .comments .comment .actions {
+      opacity: 1;
+    }
+  }
+  .username {
+    margin-right: 40px;
   }
 }

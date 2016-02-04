@@ -362,7 +362,7 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
         current_c: 0
       };
       // Scrolling responses
-      $('.current-article').scroll( function() {
+      /*$('.current-article').scroll( function() {
         from_top = $(this).scrollTop();
 
         if (from_top > lastScrollTop){
@@ -396,7 +396,7 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
         $('.scrubber-before').css('height', (100 - $scope.ratio - $scope.surplus) + '%');
         $('.scrubber-slider').css('height', $scope.ratio + '%');
         $('.scrubber-after').css('height', $scope.surplus + '%');
-      });
+      });*/
       /* End TODO */
 		}, function(response) {
       $scope.resolving = false;

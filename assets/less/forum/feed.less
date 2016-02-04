@@ -32,12 +32,7 @@
 .discussion-summary {
   position: relative;
 
-  &:not(.unread) {
-    transition: background-color 1s ease-in-out;
-  }
-
   &, & .main {
-    color: lighten(@brand-primary-dark, 20%);
     text-decoration: none;
   }
   & .contextual-controls {
@@ -59,24 +54,25 @@
   & .main {
     display: inline-block;
     width: 100%;
-    padding: 15px 0;
+    padding: 10px 0;
   }
   &:hover .title {
     text-decoration: underline;
+    color: #111;
   }
   & .title {
     margin: 0 0 3px;
     line-height: 1.2;
     color: @brand-primary-opaque;
   }
-  &.unread {
+  &.unread .title {
+    color: #111;
+    font-weight: 600;
+  }
+  &.new {
     background-color: #FFF7E5;
   }
-  &.unread .title {
-    color: @brand-primary;
-    /*font-weight: bold;*/
-  }
-  & .info {
+  & .info, & .extra-info {
     list-style-type: none;
     padding: 0;
     margin: 0;
@@ -87,19 +83,10 @@
 
     & > li {
       display: inline;
-
     }
   }
   & .extra-info {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-
     & > li {
-      display: inline;
       margin-right: 5px;
       font-size: 12px;
 
@@ -176,7 +163,7 @@
   }
 }
 
-@media @tablet, @desktop, @desktop-hd {
+@media @tablet-up {
   .discussion-summary {
     padding-left: 57px;
     padding-right: 65px;
@@ -224,7 +211,6 @@
   margin: 0;
   padding-left: 72px;
   padding-right: 90px;
-  border-bottom: 1px solid @brand-primary-lighter;
 
   &.active {
     background: @brand-primary-lighter;
