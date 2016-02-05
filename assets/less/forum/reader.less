@@ -21,11 +21,11 @@
   }
 
   .header {
-    background-color: darken(@brand-primary, 10%);
-    color: white;
-    padding: 1.8em 2em 1em 2em;
+    background-color: @control-bg; //#E0E6EF;//darken(@brand-primary, 10%);
+    color: @brand-primary-dark;//@brand-primary-opaque;
+    padding: 1.2em 2em 0.8em 2em;
     margin: -32px -40px 2em -40px;
-    border-bottom: 2px solid @control-bg;
+    //border-bottom: 1px solid @control-bg;
     text-align: center;
 
     h1 {
@@ -38,7 +38,7 @@
       margin-top: 0;
       font-size: 16px;
       text-transform: uppercase;
-      color: @brand-primary-light-text;
+      color: @brand-primary-opaque;
     }
 
     .item-title {
@@ -354,7 +354,9 @@
     & > a {
       font-weight: 600;
       color: #111;
-      margin-right: 0.6em;
+      margin-right: 0.4em;
+      font-family: "Proxima";
+      font-size: 15px;
     }
   }
 }

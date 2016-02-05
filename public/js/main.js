@@ -6701,10 +6701,7 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
       $scope.resolving.loaded = false;
 
       var vp_h = $(window).height();
-      var limit = 10;
-      if(vp_h > 1080) {
-        limit = 20;
-      }
+      var limit = 10 * Math.ceil(vp_h / 700);
 
   		Feed.get({limit: limit, offset: 0, category: category.id}, function(data) {
 
@@ -9527,7 +9524,7 @@ var boardApplication = angular.module('board', [
   'stripe'
 ]);
 
-var version = '030';
+var version = '030a';
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider', 'AclServiceProvider',
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider, AclServiceProvider) {
