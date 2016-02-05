@@ -112,7 +112,7 @@
                       </ul>
                       <ul class="extra-info">
                         <li class="category">
-                          <span class="label label-category" ng-style="{'background-color': post.category.color}">{{ post.category.name }}</span>
+                          <i class="fa fa-asterisk" ng-style="{'color': post.category.color}"></i> <span class="label-category">{{ post.category.name }}</span>
                         </li>
                         <li class="solved" ng-if="post.solved">
                           <i class="fa fa-check-circle"></i> <span>Resuelto</span>
@@ -131,7 +131,7 @@
               </ul>
 
               <ul class="discussions-list" ng-if="!resolving.categories && viewing.top_posts" adjust-height>
-                <li data-id="{{ post.id }}" class="discussion-summary" ng-class="{'active': post.id === $parent.activePostId, 'unread': post.unread == true}" ng-repeat="post in top_posts" ng-cloak>
+                <li data-id="{{ post.id }}" class="discussion-summary" ng-class="{'active': post.id === $parent.activePostId, 'unread new': post.unread == true}" ng-repeat="post in top_posts" ng-cloak>
                   <div>
                     <a href="/u/{{ post.author.username }}/{{ post.author.id }}" class="author" title="Escrito por {{ post.author.username }}">
                       <span class="avatar" title="{{ post.author.username }}" ng-if="!post.author.image">{{ post.author.username[0] }}</span>
@@ -261,7 +261,7 @@
             </div>
 
             <div ng-hide="resolving || error_loading">
-              <div class="header" ng-style="{'border-bottom-color': post.category.color}">
+              <div class="header">
                 <ul class="DiscussionHero-items">
                   <li class="item-badges">
                     <ul class="DiscussionHero-badges badges">
@@ -277,7 +277,7 @@
                     </ul>
                   </li>
                   <li class="item-tags">
-                    <h2>{{ post.category.name }}</h2>
+                    <h2><i class="fa fa-asterisk" ng-style="{'color': post.category.color}"></i> {{ post.category.name }}</h2>
                   </li>
                   <li class="item-title"><h1 class="DiscussionHero-title">{{ post.title }}</h1></li>
                 </ul>
@@ -348,7 +348,7 @@
                   <ul class="PostUser-badges badges">
                     <li class="item-group1" ng-repeat="role in ::post.author.roles">
                       <span ng-if="role.name == 'developer'" class="Badge Badge--group--Admin" style="background-color: rgb(103, 156, 77);" uib-tooltip="Developer"><i class="icon fa fa-fw fa-wrench Badge-icon"></i></span>
-                      <span ng-if="role.name == 'category-moderator'" class="Badge Badge--group--Staff" style="background-color: rgb(231, 103, 46);" uib-tooltip="Mod"><i class="icon fa fa-fw fa-certificate Badge-icon"></i></span>
+                      <span ng-if="role.name == 'category-moderator'" class="Badge Badge--group--Staff" style="background-color: rgb(231, 103, 46);" uib-tooltip="Mod"><i class="icon fa fa-fw fa-gavel Badge-icon"></i></span>
                       <span ng-if="role.name == 'administrator'" class="Badge Badge--group--Mod" style="background-color: rgb(128, 52, 158);" uib-tooltip="Staff"><i class="icon fa fa-fw fa-bolt Badge-icon"></i></span>
                       <span ng-if="role.name == 'spartan-girl'" class="Badge Badge--group--SpartanGirl" style="background-color: rgb(128, 52, 158);" uib-tooltip="SpartanGirl"><i class="icon fa fa-fw fa-heart Badge-icon"></i></span>
                     </li>
@@ -369,7 +369,7 @@
                           <ul class="UserCard-badges badges">
                             <li class="item-group1" ng-repeat="role in post.author.roles">
                               <span ng-if="role.name == 'developer'" class="Badge Badge--group--Admin" style="background-color: rgb(103, 156, 77);" uib-tooltip="Developer"><i class="icon fa fa-fw fa-wrench Badge-icon"></i></span>
-                              <span ng-if="role.name == 'category-moderator'" class="Badge Badge--group--Staff" style="background-color: rgb(231, 103, 46);" uib-tooltip="Mod"><i class="icon fa fa-fw fa-certificate Badge-icon"></i></span>
+                              <span ng-if="role.name == 'category-moderator'" class="Badge Badge--group--Staff" style="background-color: rgb(231, 103, 46);" uib-tooltip="Mod"><i class="icon fa fa-fw fa-gavel Badge-icon"></i></span>
                               <span ng-if="role.name == 'administrator'" class="Badge Badge--group--Mod" style="background-color: rgb(128, 52, 158);" uib-tooltip="Staff"><i class="icon fa fa-fw fa-bolt Badge-icon"></i></span>
                               <span ng-if="role.name == 'spartan-girl'" class="Badge Badge--group--SpartanGirl" style="background-color: rgb(128, 52, 158);" uib-tooltip="SpartanGirl"><i class="icon fa fa-fw fa-heart Badge-icon"></i></span>
                             </li>
@@ -613,7 +613,7 @@
                       <ul class="PostUser-badges badges">
                         <li class="item-group1" ng-repeat="role in ::comment.author.roles">
                           <span ng-if="role.name == 'developer'" class="Badge Badge--group--Admin" style="background-color: rgb(103, 156, 77);" uib-tooltip="Developer"><i class="icon fa fa-fw fa-wrench Badge-icon"></i></span>
-                          <span ng-if="role.name == 'category-moderator'" class="Badge Badge--group--Staff" style="background-color: rgb(231, 103, 46);" uib-tooltip="Mod"><i class="icon fa fa-fw fa-certificate Badge-icon"></i></span>
+                          <span ng-if="role.name == 'category-moderator'" class="Badge Badge--group--Staff" style="background-color: rgb(231, 103, 46);" uib-tooltip="Mod"><i class="icon fa fa-fw fa-gavel Badge-icon"></i></span>
                           <span ng-if="role.name == 'administrator'" class="Badge Badge--group--Mod" style="background-color: rgb(128, 52, 158);" uib-tooltip="Staff"><i class="icon fa fa-fw fa-bolt Badge-icon"></i></span>
                           <span ng-if="role.name == 'spartan-girl'" class="Badge Badge--group--SpartanGirl" style="background-color: rgb(128, 52, 158);" uib-tooltip="SpartanGirl"><i class="icon fa fa-fw fa-heart Badge-icon"></i></span>
                         </li>
@@ -634,7 +634,7 @@
                               <ul class="UserCard-badges badges">
                                 <li class="item-group1" ng-repeat="role in ::comment.author.roles">
                                   <span ng-if="role.name == 'developer'" class="Badge Badge--group--Admin" style="background-color: rgb(103, 156, 77);" uib-tooltip="Developer"><i class="icon fa fa-fw fa-wrench Badge-icon"></i></span>
-                                  <span ng-if="role.name == 'category-moderator'" class="Badge Badge--group--Staff" style="background-color: rgb(231, 103, 46);" uib-tooltip="Mod"><i class="icon fa fa-fw fa-certificate Badge-icon"></i></span>
+                                  <span ng-if="role.name == 'category-moderator'" class="Badge Badge--group--Staff" style="background-color: rgb(231, 103, 46);" uib-tooltip="Mod"><i class="icon fa fa-fw fa-gavel Badge-icon"></i></span>
                                   <span ng-if="role.name == 'administrator'" class="Badge Badge--group--Mod" style="background-color: rgb(128, 52, 158);" uib-tooltip="Staff"><i class="icon fa fa-fw fa-bolt Badge-icon"></i></span>
                                   <span ng-if="role.name == 'spartan-girl'" class="Badge Badge--group--SpartanGirl" style="background-color: rgb(128, 52, 158);" uib-tooltip="SpartanGirl"><i class="icon fa fa-fw fa-heart Badge-icon"></i></span>
                                 </li>
