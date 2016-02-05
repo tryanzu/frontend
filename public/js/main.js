@@ -9527,7 +9527,7 @@ var boardApplication = angular.module('board', [
   'stripe'
 ]);
 
-var version = '022b';
+var version = '030';
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider', 'AclServiceProvider',
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider, AclServiceProvider) {
