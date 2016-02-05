@@ -358,7 +358,7 @@
                       <div class="container">
                         <div class="UserCard-profile">
                           <h2 class="UserCard-identity">
-                            <a href="/u/luceos">
+                            <a href="/u/{{ post.author.username }}/{{ post.author.id }}">
                               <div class="UserCard-avatar">
                                 <img class="avatar" ng-src="{{ post.author.image }}" ng-if="post.author.image">
                                 <span class="avatar" title="{{ post.author.username }}" ng-if="!post.author.image">{{ post.author.username[0] }}</span>
@@ -367,7 +367,7 @@
                             </a>
                           </h2>
                           <ul class="UserCard-badges badges">
-                            <li class="item-group1" ng-repeat="role in ::post.author.roles">
+                            <li class="item-group1" ng-repeat="role in post.author.roles">
                               <span ng-if="role.name == 'developer'" class="Badge Badge--group--Admin" style="background-color: rgb(103, 156, 77);" uib-tooltip="Developer"><i class="icon fa fa-fw fa-wrench Badge-icon"></i></span>
                               <span ng-if="role.name == 'category-moderator'" class="Badge Badge--group--Staff" style="background-color: rgb(231, 103, 46);" uib-tooltip="Mod"><i class="icon fa fa-fw fa-certificate Badge-icon"></i></span>
                               <span ng-if="role.name == 'administrator'" class="Badge Badge--group--Mod" style="background-color: rgb(128, 52, 158);" uib-tooltip="Staff"><i class="icon fa fa-fw fa-bolt Badge-icon"></i></span>
@@ -623,7 +623,7 @@
                           <div class="container">
                             <div class="UserCard-profile">
                               <h2 class="UserCard-identity">
-                                <a href="/u/luceos">
+                                <a href="/u/{{ comment.author.username }}/{{ comment.author.id }}">
                                   <div class="UserCard-avatar">
                                     <img class="avatar" ng-src="{{ comment.author.image }}" ng-if="comment.author.image">
                                     <span class="avatar" title="{{ comment.author.username }}" ng-if="!comment.author.image">{{ comment.author.username[0] }}</span>
