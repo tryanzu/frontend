@@ -1,0 +1,59 @@
+.Badge {
+  .Badge--size(22px);
+  border: 1px solid @body-bg;
+  background: @brand-primary-light;
+  color: #fff;
+  display: inline-block;
+  vertical-align: middle;
+  text-align: center;
+  .box-shadow(0 0 0 1px #888);
+
+  .Badge-label {
+    display: none;
+  }
+}
+
+.Badge--size(@size) {
+  width: @size;
+  height: @size;
+  border-radius: @size / 2;
+  line-height: @size - 2px;
+
+  &, .Badge-icon {
+    font-size: 0.54 * @size;
+  }
+}
+
+.badges {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  &, > li {
+    display: inline-block;
+  }
+}
+
+.Badge--hidden {
+  background: #888;
+}
+
+
+/* Following */
+.Badge--following {
+  background: #ffea7b;
+  color: #de8e00;
+}
+.Badge--ignoring {
+  background: #aaa;
+}
+
+/* Sticky */
+.Badge--sticky {
+  background: #d13e32;
+}
+
+/* Solved */
+.Badge--solved {
+  background: @brand-success;
+}

@@ -260,6 +260,15 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
     });
   }
 
+
+  $scope.toggleUserCard = function (comment){
+    var time = comment.showAuthor ? 0:500;
+    comment.showAuthor = !comment.showAuthor;
+    $timeout(function(){
+      comment.showAuthorAnimation = !comment.showAuthorAnimation;
+    }, time);
+  }
+
 	$scope.$on('pushLoggedComment', function(event, comment) {
 		// Push the comment to the main set of comments
     addMediaEmbed(comment);
@@ -288,7 +297,8 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
               id: $scope.categories[c].subcategories[s].id,
               name: $scope.categories[c].subcategories[s].name,
               slug: $scope.categories[c].subcategories[s].slug,
-              parent_slug: $scope.categories[c].slug
+              parent_slug: $scope.categories[c].slug,
+              color: $scope.categories[c].color
             }
             break;
           }
@@ -362,7 +372,7 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
         current_c: 0
       };
       // Scrolling responses
-      $('.current-article').scroll( function() {
+      /*$('.current-article').scroll( function() {
         from_top = $(this).scrollTop();
 
         if (from_top > lastScrollTop){
@@ -396,7 +406,7 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
         $('.scrubber-before').css('height', (100 - $scope.ratio - $scope.surplus) + '%');
         $('.scrubber-slider').css('height', $scope.ratio + '%');
         $('.scrubber-after').css('height', $scope.surplus + '%');
-      });
+      });*/
       /* End TODO */
 		}, function(response) {
       $scope.resolving = false;

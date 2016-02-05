@@ -39,7 +39,7 @@ angular.module('yaru22.angular-timeago', []).directive('timeAgo', [
           nowTime = Date.now();
           updateTime();
         });
-      }, 1000);
+      }, 60 * 1000);
     };
     updateTime();
     return function () {
