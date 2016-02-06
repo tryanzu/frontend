@@ -346,7 +346,7 @@
                     <span class="avatar" title="{{ post.author.username }}" ng-if="!post.author.image">{{ post.author.username[0] }}</span>
                   </a>
                   <ul class="PostUser-badges badges">
-                    <li class="item-group1" ng-repeat="role in ::post.author.roles">
+                    <li class="item-group1" ng-repeat="role in post.author.roles">
                       <span ng-if="role.name == 'developer'" class="Badge Badge--group--Admin" style="background-color: rgb(103, 156, 77);" uib-tooltip="Developer"><i class="icon fa fa-fw fa-wrench Badge-icon"></i></span>
                       <span ng-if="role.name == 'category-moderator'" class="Badge Badge--group--Staff" style="background-color: rgb(231, 103, 46);" uib-tooltip="Mod"><i class="icon fa fa-fw fa-gavel Badge-icon"></i></span>
                       <span ng-if="role.name == 'administrator'" class="Badge Badge--group--Mod" style="background-color: rgb(128, 52, 158);" uib-tooltip="Staff"><i class="icon fa fa-fw fa-bolt Badge-icon"></i></span>
@@ -413,6 +413,7 @@
                   </div>
                 </div>
 
+                <!-- Main post content -->
                 <div class="content" ng-if="post.type !== 'recommendations'" marked="post.content_final"></div>
 
                 <div class="recommendations" ng-if="post.type === 'recommendations'">
@@ -585,23 +586,9 @@
                   <h5 ng-if="!post.comments_blocked || post.comments.count > 0">{{ post.comments.count }} respuesta{{post.comments.count == 1?'':'s'}}</h5>
                 </div>
 
+                <!-- Comments loop section -->
                 <div class="comments">
                   <div class="comment" data-number="{{ comment.position }}" ng-repeat="comment in (post.comments.set | orderBy:'position')" ng-class="{editing: comment.editing, best: comment.chosen}">
-                    <div class="float-actions text-right">
-                      <div class="btn-group" ng-if="aacl.can('edit', 'comments', user.info, comment.author.id, post.category.id)" uib-dropdown>
-                        <button type="button" class="button button-icon button-flat" ng-hide="comment.editing" uib-dropdown-toggle>
-                          <i class="fa fa-pencil"></i>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-right">
-                          <li>
-                            <a href="" ng-class="{disabled: comment.editing}" ng-if="aacl.can('edit', 'comments', user.info, comment.author.id, post.category.id)" ng-click="editCommentShow(comment)"><i class="fa fa-pencil"></i> Editar comentario</a>
-                          </li>
-                          <li>
-                            <a href="" ng-class="{disabled: comment.editing}" ng-if="aacl.can('delete', 'comments', user.info, comment.author.id, post.category.id)" ng-click="deleteComment(comment)"><i class="fa fa-trash-o"></i> Eliminar comentario</a>
-                          </li>
-                        </ul>
-                      </div>
-                    </div>
                     <div class="best-header" ng-if="comment.chosen">
                       <i class="fa fa-check-circle-o"></i> Mejor respuesta
                     </div>
@@ -682,27 +669,56 @@
                     </div>
                     <div class="content" markedsg="comment.content_final" ng-if="!comment.editing"></div>
 
-                    <div class="actions-count text-right" ng-if="!comment.editing">
-                      <span ng-if="comment.votes.up > 0">A {{ comment.votes.up }} {{comment.votes.up == 1 ? 'persona le gusta':'personas les gusta'}} este comentario</span>
-                      <span ng-if="comment.votes.up > 0 && comment.votes.down > 0"> y </span>
-                      <span ng-if="comment.votes.down > 0">{{ comment.votes.down }} {{comment.votes.down == 1 ? 'persona piensa':'personas piensan'}} que esto apesta</span>
-                    </div>
-                    <div class="actions text-right" ng-if="user.isLogged && !comment.editing">
+                    <aside class="Post-actions" ng-if="user.isLogged && !comment.editing">
                       <ul>
-                        <li ng-if="post.is_question && (!post.solved && aacl.can('solve', 'posts', user.info, post.author.id, post.category.id))">
-                          <a href="" ng-click="best_answer(comment)"><i class="fa fa-check-circle"></i> Marcar como mejor respuesta</a>
+                        <li class="item-like" ng-if="comment.liked != -1 && comment.author.id != user.info.id && user.gaming.tribute > 0">
+                          <a href="" class="btn btn-link" ng-click="comment_vote(post.id, comment, 'up')" ng-class="{'liked': comment.liked == 1}">Me gusta</a>
                         </li>
-                        <li ng-if="comment.liked != -1 && comment.author.id != user.info.id && user.gaming.tribute > 0">
-                          <a href="" ng-click="comment_vote(post.id, comment, 'up')" ng-class="{'liked': comment.liked == 1}"><i class="sgi gray"></i> Me gusta</a>
+                        <li class="item-reply" ng-if="comment.author.id != user.info.id && !post.comments_blocked">
+                          <a href="" class="btn btn-link" ng-click="reply_to(comment.author.username, comment.position)"><i class="fa fa-reply"></i> Responder</a>
                         </li>
-                        <li ng-if="comment.liked != 1 && comment.author.id != user.info.id && user.gaming.shit > 0">
-                          <a href="" ng-click="comment_vote(post.id, comment, 'down')" ng-class="{'hated': comment.liked == -1}"><i class="sgi gray shit"></i> Esto apesta</a>
-                        </li>
-                        <li ng-if="comment.author.id != user.info.id && !post.comments_blocked">
-                          <a href="" ng-click="reply_to(comment.author.username, comment.position)"><i class="fa fa-reply"></i> Responder</a>
+                        <li>
+                          <div class="btn-group" uib-dropdown>
+                            <button class="button button-icon button-flat" ng-hide="comment.editing" uib-dropdown-toggle><i class="icon fa fa-fw fa-ellipsis-h Button-icon"></i></button>
+                            <ul class="dropdown-menu dropdown-menu-right">
+                              <li ng-if="post.is_question && (!post.solved && aacl.can('solve', 'posts', user.info, post.author.id, post.category.id))">
+                                <a href="" ng-click="best_answer(comment)"><i class="fa fa-check-circle"></i> Marcar como mejor respuesta</a>
+                              </li>
+                              <li ng-if="comment.liked != 1 && comment.author.id != user.info.id && user.gaming.shit > 0">
+                                <a href="" ng-click="comment_vote(post.id, comment, 'down')" ng-class="{'hated': comment.liked == -1}"><i class="sgi gray shit"></i> Esto apesta</a>
+                              </li>
+                              <li>
+                                <a href="" ng-class="{disabled: comment.editing}" ng-if="aacl.can('edit', 'comments', user.info, comment.author.id, post.category.id)" ng-click="editCommentShow(comment)"><i class="fa fa-pencil"></i> Editar comentario</a>
+                              </li>
+                              <li>
+                                <a href="" ng-class="{disabled: comment.editing}" ng-if="aacl.can('delete', 'comments', user.info, comment.author.id, post.category.id)" ng-click="deleteComment(comment)"><i class="fa fa-trash-o"></i> Eliminar comentario</a>
+                              </li>
+                            </ul>
+                          </div>
                         </li>
                       </ul>
-                    </div>
+                    </aside>
+                    <footer class="Post-footer" ng-if="!comment.editing">
+                      <ul>
+                        <li class="item-liked" ng-if="comment.votes.up > 0">
+                          <div class="Post-likedBy">
+                            <i class="icon fa fa-fw fa-thumbs-o-up "></i>A <a href="#">{{ comment.votes.up }} {{comment.votes.up > 1 ? 'personas':'persona'}}</a> {{comment.votes.up > 1 ? 'les gusta':'le gusta'}}.
+                          </div>
+                        </li>
+                        <li class="item-liked" ng-if="comment.votes.down > 0">
+                          <div class="Post-likedBy">
+                            <i class="icon fa fa-fw fa-thumbs-o-down "></i><a href="#">{{ comment.votes.down }} {{comment.votes.down > 1 ? 'personas':'persona'}}</a> {{comment.votes.down > 1 ? 'piensan que apesta':'piensa que apesta'}}.
+                          </div>
+                        </li>
+                        <li class="item-replies hidden">
+                          <div class="Post-mentionedBy">
+                            <span class="Post-mentionedBy-summary">
+                              <i class="icon fa fa-fw fa-reply "></i><a href="" data-number="0"><span class="username">username</span></a> respondió a esto.
+                            </span>
+                          </div>
+                        </li>
+                      </ul>
+                    </footer>
 
                     <div class="idiot-wizzy edit" ng-if="comment.editing">
                       <textarea id="comment-content" placeholder="Escribe tu comentario..." class="form-control flexible-height content" ng-model="comment.content_edit" ng-disabled="waiting_comment" msd-elastic></textarea>
@@ -729,7 +745,7 @@
                   <p>¿Quieres dejar un comentario? <a href="" ng-click="signIn()">Inicia sesión</a> o <a href="" ng-click="signUp()">Crea una cuenta</a></p>
                 </div>
               </div>
-
+              <!-- New Comment editor-->
               <div class="row">
                 <div class="col-md-9">
                   <div ng-if="!post.comments_blocked && user.isLogged">
