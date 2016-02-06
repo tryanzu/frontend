@@ -81,13 +81,14 @@
   bottom: 0;
   z-index: 10;
   background-color: @brand-primary-lighter;
+  color: #333;
+  font-weight: bold;
   width: 100%;
   left: 0;
   right: 0;
-  height: 40px;
-  line-height: 40px;
+  height: 50px;
+  line-height: 50px;
   padding-left: 2.5em;
-  border-top: 1px solid @brand-primary;
 }
 
 .current-article h1 {
@@ -105,7 +106,7 @@
   }
 
   h4 {
-    color: @brand-primary-light-text;
+    color: @brand-primary-opaque;
     font-size: 24px;
     font-weight: 300;
     text-transform: uppercase;
@@ -113,7 +114,7 @@
   }
 
   p {
-    color: @brand-primary-light-text;
+    color: @brand-primary-opaque;
     font: inherit;
     font-size: 14px;
     line-height: 22px;
@@ -128,61 +129,6 @@
     p {
       line-height: 24px;
     }
-
-    img {
-      max-width: 100%;
-      max-height: 350px;
-    }
-  }
-
-  .author {
-    background: @brand-primary-lighter;
-
-    padding: 10px 40px;
-    margin-bottom: 1em;
-    height: 80px;
-
-    .avatar {
-      margin-top: 5px;
-    }
-
-    .user-info {
-      margin-left: 5em;
-      position: absolute;
-      top: 0;
-
-      .username {
-        color: @brand-primary-normal;
-        display: inline-block;
-        font: inherit;
-        font-size: 14px;
-        line-height: 22px;
-        font-weight: 600;
-        vertical-align: middle;
-        margin-right: 5px;
-      }
-
-      .description {
-        color: @brand-primary-normal;
-        font-size: 12px;
-      }
-
-      .level {
-        display: inline-block;
-        font-size: 12px;
-        font-weight: 600;
-        color: @brand-primary;
-      }
-    }
-
-    .category-label {
-      line-height: 52px;
-      margin-bottom: 0;
-      font-size: 20px;
-      font-weight: 400;
-      text-align: right;
-      color: white;
-    }
   }
 }
 
@@ -196,56 +142,6 @@
   padding: 3px 5px;
   border-radius: 4px;
   vertical-align: text-bottom;
-}
-
-.role-labels {
-  padding-left: 0;
-  list-style-type: none;
-  display: inline-block;
-  margin-bottom: 0;
-  margin-left: 5px;
-
-  li {
-    margin-right: 5px;
-    display: inline-block;
-
-    .label {
-      padding: .1em .6em .2em;
-    }
-
-    .label.label-default {
-      background: transparent;
-      border: 1px solid @brand-primary;
-      color: @brand-primary;
-      font-weight: 600;
-
-      &.developer {
-        border: transparent;
-        background-color: lighten(@brand-success, 52%);
-        color: @brand-success;
-      }
-      &.spartan-girl {
-        border: transparent;
-        background-color: #E3DAF5;
-        color: #793CE7;
-      }
-      &.editor {
-        border: transparent;
-        background-color: lighten(@brand-info, 42%);
-        color: @brand-info;
-      }
-      &.child-moderator, &.category-moderator, &.super-moderator {
-        border: transparent;
-        background-color: lighten(@brand-warning, 40%);
-        color: @brand-warning;
-      }
-      &.administrator {
-        border: transparent;
-        background-color: lighten(@brand-warning, 40%);
-        color: @brand-warning;
-      }
-    }
-  }
 }
 
 .current-article .author #resume {
@@ -268,67 +164,19 @@
   }
 }
 
-.current-article .share-buttons {
-  padding: 0.5em 0;
-}
-
-.current-article .share-buttons .twitter-share-button {
-  position:relative;
-  top:4px;
-  margin-left:1em;
-}
-
 .current-article .answers {
   margin-top: 1em;
   margin-bottom: 2em;
   padding: 0.6em 0 0.6em;
   border-bottom: 2px solid @brand-primary-lighter;
-}
 
-.current-article .answers h5 {
-  color: @brand-primary;
-  font-size: 14px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.current-article .first-comment {
-  h4 {
-    color: #606C7E;
-    font: inherit;
-    font-size: 16px;
+  h5 {
+    color: #666;
+    font-size: 14px;
     font-weight: 600;
-    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
   }
-
-  p {
-    color: #606C7E;
-    font: inherit;
-    font-size: 12px;
-    line-height: 20px;
-    text-align: center;
-  }
-
-  .fake-form {
-    background: #F8F9FB;
-    border: 1px solid #BABFCB;
-    border-radius: 3px;
-    padding: 1em;
-  }
-
-  .fake-form .fake-textarea {
-    height: 120px;
-    background: #fff;
-    border-radius: 3px;
-    border: 1px solid #E7EBEF;
-    padding: 1em;
-  }
-}
-
-.current-article .first-comment .fake-form .fake-textarea p {
-  text-align: left;
-  font-size: 14px;
 }
 
 .float-actions {
@@ -382,6 +230,12 @@
     padding: 1em;
     position: relative;
 
+    &:after {
+      clear:both;
+      content:" ";
+      display:block;
+    }
+
     &.editing {
       background-color: @brand-primary-lighter;
     }
@@ -421,51 +275,6 @@
       &.ack {
         background-color: white;
         border: 1px solid @brand-primary-light;
-      }
-    }
-
-    &:hover {
-      .actions {
-        opacity: 1;
-        ul li a {
-          color: @brand-primary-opaque;
-        }
-      }
-      .float-actions .only-on-hover {
-        visibility: visible;
-      }
-    }
-
-    .actions {
-      position: relative;
-      font-size: 13px;
-      margin-top: 0.5em;
-      opacity: 0;
-      transition: opacity .2s;
-
-      ul {
-        list-style-type: none;
-        padding-left: 0;
-
-        li {
-          display: inline-block;
-          margin-left: 1em;
-
-          a {
-            color: @brand-primary-light-text;
-            &.liked {
-              color: @brand-success;
-            }
-            &.hated {
-              color: @brand-danger;
-            }
-
-            &:hover, &:active {
-              color: @brand-primary;
-              text-decoration: none;
-            }
-          }
-        }
       }
     }
   }
@@ -508,10 +317,8 @@
     }
 
     img {
-      max-height: 500px;
-      width: auto;
-      max-width: 100%;
-      border: 1px solid white;
+      width:100%;
+      max-width:600px;
     }
 
     video {
@@ -582,5 +389,74 @@
   }
   .username {
     margin-right: 40px;
+  }
+}
+
+.Post-footer, .Post-actions {
+  > ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+  &, a {
+    color: lighten(@brand-primary-dark, 15%);
+    font-size: 13px;
+  }
+  a {
+    display: inline-block;
+
+    .icon {
+      display: none;
+    }
+  }
+}
+.Post-footer {
+  margin-top: 5px;
+
+  > ul {
+    > li {
+      margin-bottom: 5px;
+    }
+  }
+  .icon {
+    font-size: 14px;
+    margin-right: 5px;
+  }
+}
+.Post-actions {
+  margin-top: -5px;
+  float: right;
+  position: relative;
+  z-index: 1;
+  .transition(opacity 0.2s);
+
+  a.liked {
+    color: @brand-success;
+  }
+
+  .EventPost &, .Post--hidden:not(.revealContent) & {
+    margin-top: -27px;
+    margin-bottom: -15px;
+  }
+
+  @media @tablet-up {
+    .no-touch & {
+      opacity: 0;
+    }
+  }
+
+  > ul {
+    > li {
+      margin-right: 0;
+      margin-left: -5px;
+      display: inline-block;
+      vertical-align: top;
+    }
+  }
+  .Post:hover &, &.open {
+    opacity: 1;
+  }
+  &.open {
+    z-index: 2;
   }
 }
