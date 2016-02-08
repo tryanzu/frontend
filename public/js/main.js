@@ -6750,7 +6750,11 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
           $scope.resolving.older = false;
     		});
 
-    		ga('send', 'pageview', '/feed/' + $scope.category.slug);
+    		//ga('send', 'pageview', '/feed/' + $scope.category.slug);
+        dataLayer.push({
+          'event': 'VirtualPageview',
+          'virtualPageURL': '/feed/' + $scope.category.slug,
+        });
       } else {
         console.log("FeedGet already running...");
       }
@@ -6801,7 +6805,11 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
           $('.discussions-list').animate({ scrollTop: 0}, 100);
         });
 
-        ga('send', 'pageview', '/feed/' + $scope.category.slug);
+        //ga('send', 'pageview', '/feed/' + $scope.category.slug);
+        dataLayer.push({
+          'event': 'VirtualPageview',
+          'virtualPageURL': '/feed/' + $scope.category.slug,
+        });
       } else {
         console.log("FeedGet already running...");
       }
@@ -6811,7 +6819,11 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
   		$scope.category = category;
   		$scope.startupFeed(category);
 
-  		ga('send', 'pageview', '/category/' + $scope.category.slug);
+  		//ga('send', 'pageview', '/category/' + $scope.category.slug);
+      dataLayer.push({
+        'event': 'VirtualPageview',
+        'virtualPageURL': '/category/' + $scope.category.slug,
+      });
   	};
 
     /*
@@ -6860,7 +6872,11 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
       $scope.status.post_selected = true;
   		Bridge.changePost(post);
 
-  		ga('send', 'pageview', '/post/' + $scope.category.slug + '/' + post.id);
+  		//ga('send', 'pageview', '/post/' + $scope.category.slug + '/' + post.id);
+      dataLayer.push({
+        'event': 'VirtualPageview',
+        'virtualPageURL': '/post/' + $scope.category.slug + '/' + post.id,
+      });
   	};
 
     $scope.viewPostID = function( postId, slug ) {
@@ -9524,7 +9540,7 @@ var boardApplication = angular.module('board', [
   'stripe'
 ]);
 
-var version = '030b';
+var version = '030c';
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider', 'AclServiceProvider',
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider, AclServiceProvider) {
