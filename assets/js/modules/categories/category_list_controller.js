@@ -278,7 +278,11 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
       $scope.status.post_selected = true;
       Bridge.changePost({id: postId, slug: slug, name: ""});
 
-      ga('send', 'pageview', '/post/' + slug + '/' + postId);
+      //ga('send', 'pageview', '/post/' + slug + '/' + postId);
+      dataLayer.push({
+        'event': 'VirtualPageview',
+        'virtualPageURL': '/post/' + $scope.category.slug + '/' + post.id,
+      });
     };
 
     $scope.reloadPost = function() {
