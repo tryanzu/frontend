@@ -6884,7 +6884,11 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
       $scope.status.post_selected = true;
       Bridge.changePost({id: postId, slug: slug, name: ""});
 
-      ga('send', 'pageview', '/post/' + slug + '/' + postId);
+      //ga('send', 'pageview', '/post/' + slug + '/' + postId);
+      dataLayer.push({
+        'event': 'VirtualPageview',
+        'virtualPageURL': '/post/' + $scope.category.slug + '/' + post.id,
+      });
     };
 
     $scope.reloadPost = function() {
@@ -8935,7 +8939,7 @@ ComponentsModule.factory("ComponentsService", function(algolia) {
   };
 });
 
-ComponentsModule.controller('ComponentsController', ['$scope', '$timeout', 'ComponentsService', '$route', function($scope, $timeout, ComponentsService, $route) {
+ComponentsModule.controller('ComponentsController', ['$scope', '$timeout', 'ComponentsService', '$route', '$location', '$routeParams', function($scope, $timeout, ComponentsService, $route, $location, $routeParams) {
 
   $scope.onlyStore = false;
   if($scope.location.path().indexOf('tienda') > -1) {
@@ -8966,11 +8970,31 @@ ComponentsModule.controller('ComponentsController', ['$scope', '$timeout', 'Comp
   }
 
   $scope.current_facet = '';
+  if($routeParams.type) {
+    $scope.current_facet = $routeParams.type;
+  }
+
+  var searchObject = $location.search();
+  if(searchObject.search) {
+    $scope.query = searchObject.search;
+  }
 
   $scope.change_facet = function(new_facet) {
     $scope.current_facet = new_facet;
     $scope.currentPage = 1;
     $scope.changePage();
+    // Change path
+    var new_path = '/componentes/';
+    if($scope.onlyStore) {
+      new_path += 'tienda/'
+    }
+    new_path += new_facet;
+    $location.path(new_path);
+    dataLayer.push({
+      'event': 'VirtualPageview',
+      'virtualPageURL': new_path,
+    });
+    //console.log('Track', new_path);
   }
 
   $scope.getFacetFilters = function() {
@@ -9017,10 +9041,15 @@ ComponentsModule.controller('ComponentsController', ['$scope', '$timeout', 'Comp
 
   $scope.$watch("onlyStore", function(newVal, oldVal) {
     if($scope.onlyStore) {
-      $scope.location.path('/componentes/tienda');
+      $scope.location.path('/componentes/tienda/' + $scope.current_facet);
     } else {
-      $scope.location.path('/componentes');
+      $scope.location.path('/componentes/' + $scope.current_facet);
     }
+    dataLayer.push({
+      'event': 'VirtualPageview',
+      'virtualPageURL': $location.path()
+    });
+    //console.log('Track', $location.path());
     $scope.changePage();
   });
 
@@ -9028,7 +9057,7 @@ ComponentsModule.controller('ComponentsController', ['$scope', '$timeout', 'Comp
     if(event.keyCode == 27) {
       $scope.query = '';
     }
-
+    $location.search('search', $scope.query);
     if($scope.query != '')
     {
       if($scope.loading) $timeout.cancel($scope.loading);
@@ -9576,11 +9605,7 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
     templateUrl: '/js/partials/validate.html?v=' + version,
     controller: 'UserValidationController'
   });
-  $routeProvider.when('/componentes', {
-    templateUrl: '/js/partials/components.html?v=' + version,
-    controller: 'ComponentsController'
-  });
-  $routeProvider.when('/componentes/tienda', {
+  $routeProvider.when('/componentes/tienda/:type?', {
     templateUrl: '/js/partials/components.html?v=' + version,
     controller: 'ComponentsController'
   });
@@ -9591,6 +9616,10 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   $routeProvider.when('/componentes/checkout', {
     templateUrl: '/js/partials/checkout.html?v=' + version,
     controller: 'CheckoutController'
+  });
+  $routeProvider.when('/componentes/:type?', {
+    templateUrl: '/js/partials/components.html?v=' + version,
+    controller: 'ComponentsController'
   });
   $routeProvider.when('/componentes/:type/:slug', {
     templateUrl: '/js/partials/component.html?v=' + version,
@@ -10170,7 +10199,7 @@ boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', 'cart'
     localStorage.signed_in = false;
 
   var location = $location.path();
-  console.log(location);
+  //console.log(location);
 
   if(localStorage.signed_in === 'false' && localStorage.redirect_to_home !== 'true' && location == '/') {
     localStorage.setItem('redirect_to_home', 'true');

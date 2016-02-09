@@ -227,9 +227,14 @@
                 </div>
               </li>
               <li ng-if="cart.items.length > 0">
+                <div style="padding: 0.4em 2.5em 0.9em;">
+                  Costo de envío: {{ cart.getShippingFee() | currency:'$ ':0 }} MXN
+                </div>
+              </li>
+              <li ng-if="cart.items.length > 0">
                 <div class="text-center">
                   <a href="/componentes/tienda" class="btn btn-default"><span class="label">Catálogo de componentes</span></a>
-                  <a href="/componentes/checkout" class="btn btn-primary"><span class="label">Finalizar pedido</span></a>
+                  <a href="/componentes/checkout" class="btn btn-primary"><span class="label">Ver carrito / Finalizar pedido</span></a>
                 </div>
               </li>
             </ul>

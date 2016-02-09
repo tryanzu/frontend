@@ -103,11 +103,7 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
     templateUrl: '/js/partials/validate.html?v=' + version,
     controller: 'UserValidationController'
   });
-  $routeProvider.when('/componentes', {
-    templateUrl: '/js/partials/components.html?v=' + version,
-    controller: 'ComponentsController'
-  });
-  $routeProvider.when('/componentes/tienda', {
+  $routeProvider.when('/componentes/tienda/:type?', {
     templateUrl: '/js/partials/components.html?v=' + version,
     controller: 'ComponentsController'
   });
@@ -118,6 +114,10 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   $routeProvider.when('/componentes/checkout', {
     templateUrl: '/js/partials/checkout.html?v=' + version,
     controller: 'CheckoutController'
+  });
+  $routeProvider.when('/componentes/:type?', {
+    templateUrl: '/js/partials/components.html?v=' + version,
+    controller: 'ComponentsController'
   });
   $routeProvider.when('/componentes/:type/:slug', {
     templateUrl: '/js/partials/component.html?v=' + version,
@@ -697,7 +697,7 @@ boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', 'cart'
     localStorage.signed_in = false;
 
   var location = $location.path();
-  console.log(location);
+  //console.log(location);
 
   if(localStorage.signed_in === 'false' && localStorage.redirect_to_home !== 'true' && location == '/') {
     localStorage.setItem('redirect_to_home', 'true');
