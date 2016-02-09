@@ -551,9 +551,7 @@
               <th>Vendedor</th>
               <th>Precio</th>
               <th ng-if="false">Descuento</th>
-              <th>Envío</th>
               <th>Disponible</th>
-              <th>Total</th>
               <th></th>
             </tr>
 
@@ -561,9 +559,7 @@
               <td>SpartanGeek</td>
               <td>{{ vendor.price | currency:'$ ':0 }}</td>
               <td ng-if="false">-</td>
-              <td>{{ cart.getIndividualShippingFee(component) | currency:'$ ':0 }}</td>
               <td>{{ vendor.stock != 0 && vendor.stock != null ? 'Si':'No' }}</td>
-              <td>{{ vendor.price + cart.getIndividualShippingFee(component) | currency:'$ ':0 }}</td>
               <td uib-tooltip="El precio publicado ya no es válido, debes esperar a que lo actualicemos para poder comprar" tooltip-placement="left" ng-if="false"><i class="fa fa-shopping-cart"></i></td>
               <td>
                 <a href="" class="btn btn-success" ng-click="cart.addItem(component)" ng-if="vendor.stock != 0 && vendor.stock != null"><span class="label">Comprar</span></a>
