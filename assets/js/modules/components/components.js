@@ -434,6 +434,29 @@ ComponentsModule.controller('ComponentController', ['$scope', '$routeParams', '$
     });
   }
 
+  $scope.people_would_buy = {
+    no: 0,
+    maybe: 2,
+    yes: 8,
+    wow: 20,
+    total: 30
+  };
+  $scope.popu_data = 90;
+  $scope.would_buy = 3;
+
+  $scope.popularLabel = function() {
+    if($scope.popu_data == 0 && $scope.totalCritics() == 0)
+      return "Sé el primero en opinar";
+    else if($scope.popu_data < 40)
+      return "No es atractivo";
+    else if($scope.popu_data < 70)
+      return "Poco atractivo";
+    else if($scope.popu_data < 90)
+      return "Atractivo";
+    else
+      return "Muy atractivo"
+  }
+
   $http.get(layer_path + "component/" + $routeParams.slug).then(function success(response){
     //console.log(response.data);
     $scope.component = response.data;

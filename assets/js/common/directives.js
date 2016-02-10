@@ -149,3 +149,37 @@ directives.directive('markedsg', function () {
   };
 });
 
+directives.directive('populometro', function() {
+  return {
+    restrict: 'EACM',
+    template: function(elem, attrs) {
+      return '<div style="display:block;width:100px;height:80px;margin: 0 auto"><svg style="position:absolute" width="100" height="100"><g><polygon points="50 20 54 50 46 50" fill="#E6E9EE" transform="rotate({{ (knob*2.4) - 120 }} 50 50)"></polygon><circle class="ring" cx="50" cy="50" r="10" fill="#E6E9EE"></circle><circle class="ring" cx="51" cy="51" r="8" fill="#d0d7dd"></circle><circle class="ring" cx="50" cy="50" r="7" fill="#F1F1F1"></circle></g></svg><div style="display: none; position:absolute;top:50%;width:100px;text-align:center;font-weight:bold;font-size: 1.1em;">{{ knob | number : 0 }}</div><input value="{{ knob }}"></div>';
+    },
+    replace: true,
+    scope: true,
+    link: function(scope, elem, attrs) {
+      scope.opts = {
+        'width':100,
+        'height':80,
+        'bgColor':'#E6E9EE',
+        'fgColor':'#386db8',
+        'readOnly':true,
+        'displayInput':false,
+        'max': 100,
+        'angleArc':240,
+        'angleOffset':-120,
+        'thickness':'.25'
+      };
+      var renderKnob = function(){
+        scope.knob = scope.$eval(attrs.knobData);
+        $elem = $(elem).find('input');
+        $elem.val(scope.knob);
+        $elem.change();
+        $elem.knob(scope.opts);
+      };
+      scope.$watch(attrs.knobData, function () {
+        renderKnob();
+      });
+    },
+  }
+});
