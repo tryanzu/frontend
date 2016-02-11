@@ -9257,7 +9257,6 @@ ComponentsModule.controller('ComponentController', ['$scope', '$routeParams', '$
   };
   $scope.popu_data = 90;
   $scope.would_buy = 3;
-
   $scope.popularLabel = function() {
     if($scope.popu_data == 0 && $scope.totalCritics() == 0)
       return "Sé el primero en opinar";
@@ -9271,6 +9270,19 @@ ComponentsModule.controller('ComponentController', ['$scope', '$routeParams', '$
       return "Muy atractivo"
   }
 
+  /* Owning methods */
+  $scope.userOwning = null;
+  $scope.setOwning = function() {
+    $http.post(layer_path + 'user/own/' + $scope.component.type + '/' + $scope.component.id, {
+      "status": $scope.userOwning
+    }).then(function success(response){
+
+    }, function(error) {
+      $scope.userOwning = null;
+      console.log("Error", error);
+    });
+  }
+
   $http.get(layer_path + "component/" + $routeParams.slug).then(function success(response){
     //console.log(response.data);
     $scope.component = response.data;
@@ -9280,7 +9292,6 @@ ComponentsModule.controller('ComponentController', ['$scope', '$routeParams', '$
         $scope.questions = response.data;
       }
     }, function(error){});
-
   }, function error(response){
     if(response.status == 404) {
       window.location.href = "/";

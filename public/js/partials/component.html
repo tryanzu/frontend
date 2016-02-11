@@ -8,13 +8,13 @@
     </div>
   </div>
   <div class="container">
-    <div class="row mb-40">
+    <div class="row mb-20">
       <div class="col-md-12">
         <section id="owning-buttons">
           <div class="btn-group">
-            <label class="btn" ng-class="{'btn-success': radioModel == 'own', 'btn-default': radioModel != 'own'}" ng-model="radioModel" uib-btn-radio="'own'" uncheckable><i class="fa fa-check-circle"></i> Lo tengo</label>
-            <label class="btn" ng-class="{'btn-primary': radioModel == 'owned', 'btn-default': radioModel != 'owned'}" ng-model="radioModel" uib-btn-radio="'owned'" uncheckable><i class="fa fa-history"></i> Lo tuve</label>
-            <label class="btn" ng-class="{'btn-warning': radioModel == 'wanted', 'btn-default': radioModel != 'wanted'}" ng-model="radioModel" uib-btn-radio="'wanted'" uncheckable><i class="fa fa-star"></i> Lo quiero</label>
+            <label class="btn" ng-class="{'btn-success': userOwning == 'have-it', 'btn-default': userOwning != 'have-it'}" ng-model="userOwning" uib-btn-radio="'have-it'" uncheckable><i class="fa fa-check-circle"></i> Lo tengo</label>
+            <label class="btn" ng-class="{'btn-primary': userOwning == 'had-it', 'btn-default': userOwning != 'had-it'}" ng-model="userOwning" uib-btn-radio="'had-it'" uncheckable><i class="fa fa-history"></i> Lo tuve</label>
+            <label class="btn" ng-class="{'btn-warning': userOwning == 'want-it', 'btn-default': userOwning != 'want-it'}" ng-model="userOwning" uib-btn-radio="'want-it'" uncheckable><i class="fa fa-star"></i> Lo quiero</label>
           </div>
         </section>
       </div>
@@ -597,7 +597,7 @@
                 </div>
               </div>
               <div class="col-md-5 col-md-offset-1 col-xs-12">
-                <div class="row">
+                <div class="row" style="margin-top: 22px; margin-bottom: -2px;">
                   <div class="col-xs-4">
                     <populometro knob-data="popu_data"></populometro>
                   </div>
