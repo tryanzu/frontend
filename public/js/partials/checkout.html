@@ -354,6 +354,10 @@
           <form stripe:form="createToken" ng-hide="f.trying_to_pay">
             <fieldset>
               <div class="form-group col-sm-8">
+                <label>Nombre impreso en la tarjeta</label>
+                <input type="text" size="40" maxlength="40" data-stripe="name" class="form-control" required />
+              </div>
+              <div class="form-group col-sm-8">
                 <label>Número de tarjeta</label>
                 <input type="text" size="16" maxlength="16" data-stripe="number" class="form-control" />
               </div>
