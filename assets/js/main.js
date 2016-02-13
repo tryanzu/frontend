@@ -14,6 +14,7 @@
 // @codekit-prepend "vendor/stripe-angular.js"
 // @codekit-prepend "vendor/emoji.config.js"
 // @codekit-prepend "vendor/emoji.min.js"
+// @codekit-prepend "vendor/jquery.knob.min.js"
 
 // @codekit-prepend "common/directives"
 // @codekit-prepend "common/filters"
@@ -67,7 +68,7 @@ var boardApplication = angular.module('board', [
   'stripe'
 ]);
 
-var version = '030e';
+var version = '031';
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider', 'AclServiceProvider',
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider, AclServiceProvider) {
