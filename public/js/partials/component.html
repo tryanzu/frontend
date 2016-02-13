@@ -12,9 +12,9 @@
       <div class="col-md-12">
         <section id="owning-buttons">
           <div class="btn-group">
-            <label class="btn" ng-class="{'btn-success': userOwning == 'have-it', 'btn-default': userOwning != 'have-it'}" ng-model="userOwning" uib-btn-radio="'have-it'" uncheckable><i class="fa fa-check-circle"></i> Lo tengo</label>
-            <label class="btn" ng-class="{'btn-primary': userOwning == 'had-it', 'btn-default': userOwning != 'had-it'}" ng-model="userOwning" uib-btn-radio="'had-it'" uncheckable><i class="fa fa-history"></i> Lo tuve</label>
-            <label class="btn" ng-class="{'btn-warning': userOwning == 'want-it', 'btn-default': userOwning != 'want-it'}" ng-model="userOwning" uib-btn-radio="'want-it'" uncheckable><i class="fa fa-star"></i> Lo quiero</label>
+            <label ng-click="setOwning()" class="btn" ng-class="{'btn-success': component.votes.component == 'have-it', 'btn-default': component.votes.component != 'have-it'}" ng-model="component.votes.component" uib-btn-radio="'have-it'" uncheckable><i class="fa fa-check-circle"></i> Lo tengo</label>
+            <label ng-click="setOwning()" class="btn" ng-class="{'btn-primary': component.votes.component == 'had-it', 'btn-default': component.votes.component != 'had-it'}" ng-model="component.votes.component" uib-btn-radio="'had-it'" uncheckable><i class="fa fa-history"></i> Lo tuve</label>
+            <label ng-click="setOwning()" class="btn" ng-class="{'btn-warning': component.votes.component == 'want-it', 'btn-default': component.votes.component != 'want-it'}" ng-model="component.votes.component" uib-btn-radio="'want-it'" uncheckable><i class="fa fa-star"></i> Lo quiero</label>
           </div>
         </section>
       </div>
@@ -567,31 +567,31 @@
                 <h4>¿Lo comprarías?</h4>
                 <div class="row margin-btm10">
                   <div class="col-xs-3">
-                    <div class="face-square" ng-class="{'active': would_buy == 0}" ng-click="setWouldBuy(0)">
+                    <div class="face-square" ng-class="{'active': component.votes['component-buy'] == 'no'}" ng-click="setWouldBuy('no')">
                       <div class="face face-no"></div>
                       <div class="dialog">No</div>
-                      <div class="percentage">{{ people_would_buy.no/people_would_buy.total | percentage }}</div>
+                      <div class="percentage">{{ component.stats['component-buy'].no/component.stats['component-buy'].total | percentage }}</div>
                     </div>
                   </div>
                   <div class="col-xs-3">
-                    <div class="face-square" ng-class="{'active': would_buy == 1}" ng-click="setWouldBuy(1)">
+                    <div class="face-square" ng-class="{'active': component.votes['component-buy'] == 'maybe'}" ng-click="setWouldBuy('maybe')">
                       <div class="face face-maybe"></div>
                       <div class="dialog">No sé</div>
-                      <div class="percentage">{{ people_would_buy.maybe/people_would_buy.total | percentage }}</div>
+                      <div class="percentage">{{ component.stats['component-buy'].maybe/component.stats['component-buy'].total | percentage }}</div>
                     </div>
                   </div>
                   <div class="col-xs-3">
-                    <div class="face-square" ng-class="{'active': would_buy == 2}" ng-click="setWouldBuy(2)">
+                    <div class="face-square" ng-class="{'active': component.votes['component-buy'] == 'yes'}" ng-click="setWouldBuy('yes')">
                       <div class="face face-yes"></div>
                       <div class="dialog">Si</div>
-                      <div class="percentage">{{ people_would_buy.yes/people_would_buy.total | percentage }}</div>
+                      <div class="percentage">{{ component.stats['component-buy'].yes/component.stats['component-buy'].total | percentage }}</div>
                     </div>
                   </div>
                   <div class="col-xs-3">
-                    <div class="face-square" ng-class="{'active': would_buy == 3}" ng-click="setWouldBuy(3)">
+                    <div class="face-square" ng-class="{'active': component.votes['component-buy'] == 'wow'}" ng-click="setWouldBuy('wow')">
                       <div class="face face-wow"></div>
                       <div class="dialog">¡Wow!</div>
-                      <div class="percentage">{{ people_would_buy.wow/people_would_buy.total | percentage }}</div>
+                      <div class="percentage">{{ component.stats['component-buy'].wow/component.stats['component-buy'].total | percentage }}</div>
                     </div>
                   </div>
                 </div>
@@ -599,7 +599,7 @@
               <div class="col-md-5 col-md-offset-1 col-xs-12">
                 <div class="row" style="margin-top: 22px; margin-bottom: -2px;">
                   <div class="col-xs-4">
-                    <populometro knob-data="popu_data"></populometro>
+                    <populometro knob-data="populometro"></populometro>
                   </div>
                   <div class="col-xs-7">
                     <div style="height: 80px; display:table">
@@ -687,7 +687,7 @@
           </div>
         </section>
 
-        <section id="comparametrics">
+        <section id="comparametrics" class="hidden">
           <!-- Widget de votación por 4 opciones -->
           <div class="row">
             <div class="col-md-12">

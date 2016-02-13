@@ -9152,13 +9152,9 @@ ComponentsModule.controller('ComponentsController', ['$scope', '$timeout', 'Comp
   });
 }]);
 
-ComponentsModule.controller('ComponentController', ['$scope', '$routeParams', '$http', 'cart', function($scope, $routeParams, $http, cart){
-
-  //window.localStorage.removeItem('cart');
-  //console.log(window.localStorage.getItem('cart'));
+ComponentsModule.controller('ComponentController', ['$scope', '$routeParams', '$http', 'cart', '$timeout', function($scope, $routeParams, $http, cart, $timeout) {
 
   $scope.component = {};
-  //$scope.cart = cart;
 
   $scope.type_labels = {
     'cpu': 'Procesador',
@@ -9172,6 +9168,7 @@ ComponentsModule.controller('ComponentController', ['$scope', '$routeParams', '$
     'power-supply': 'Fuente de Poder'
   };
 
+  // We use this to post to board when question is asked
   $scope.categories_map = {
     'cpu': '55d3e4f868a631006400000b',
     'motherboard': '55d3e56e68a631006000000b',
@@ -9248,44 +9245,108 @@ ComponentsModule.controller('ComponentController', ['$scope', '$routeParams', '$
     });
   }
 
-  $scope.people_would_buy = {
-    no: 0,
-    maybe: 2,
-    yes: 8,
-    wow: 20,
-    total: 30
+  $scope.buy_to_val = {
+    'no':0,
+    'maybe':1,
+    'yes':2,
+    'wow':3
   };
-  $scope.popu_data = 90;
-  $scope.would_buy = 3;
+
   $scope.popularLabel = function() {
-    if($scope.popu_data == 0 && $scope.totalCritics() == 0)
+    if($scope.populometro == 0 && $scope.component.stats['component-buy'].total == 0)
       return "Sé el primero en opinar";
-    else if($scope.popu_data < 40)
+    else if($scope.populometro < 40)
       return "No es atractivo";
-    else if($scope.popu_data < 70)
+    else if($scope.populometro < 70)
       return "Poco atractivo";
-    else if($scope.popu_data < 90)
+    else if($scope.populometro < 90)
       return "Atractivo";
     else
-      return "Muy atractivo"
+      return "Muy atractivo";
+  }
+  var getCurrentRating = function(){
+    if($scope.component.stats['component-buy'].total) {
+      var t = $scope.component.stats['component-buy'].maybe * 1 + $scope.component.stats['component-buy'].yes * 2 + $scope.component.stats['component-buy'].wow * 3;
+      var tt = $scope.component.stats['component-buy'].total * 2;
+      if(t > tt) return 100;
+      return t*100/tt;
+    } else {
+      return 0;
+    }
+  }
+
+  $scope.setWouldBuy = function(value) {
+    if(!$scope.user.isLogged) {
+      $scope.signIn();
+    } else {
+      //console.log($scope.component.stats['component-buy']);
+      switch($scope.component.votes['component-buy']) {
+        case 'no':
+            $scope.component.stats['component-buy'].no -= 1;
+            break;
+        case 'maybe':
+            $scope.component.stats['component-buy'].maybe -= 1;
+            break;
+        case 'yes':
+            $scope.component.stats['component-buy'].yes -= 1;
+            break;
+        case 'wow':
+            $scope.component.stats['component-buy'].wow -= 1;
+            break;
+        default:
+          $scope.component.stats['component-buy'].total++;
+            break;
+      }
+      $scope.component.votes['component-buy'] = value;
+      $http.post(layer_path + 'user/own/component-buy/' + $scope.component._id, {
+        "status": $scope.component.votes['component-buy']
+      }).then(function success(response){
+        console.log(response.data);
+      });
+      switch(value) {
+        case 'no':
+            $scope.component.stats['component-buy'].no += 1;
+            break;
+        case 'maybe':
+            $scope.component.stats['component-buy'].maybe += 1;
+            break;
+        case 'yes':
+            $scope.component.stats['component-buy'].yes += 1;
+            break;
+        case 'wow':
+            $scope.component.stats['component-buy'].wow += 1;
+            break;
+        default:
+            break;
+      }
+      $scope.populometro = getCurrentRating();
+      //console.log($scope.component.stats['component-buy']);
+    }
   }
 
   /* Owning methods */
-  $scope.userOwning = null;
   $scope.setOwning = function() {
-    $http.post(layer_path + 'user/own/' + $scope.component.type + '/' + $scope.component.id, {
-      "status": $scope.userOwning
-    }).then(function success(response){
-
-    }, function(error) {
-      $scope.userOwning = null;
-      console.log("Error", error);
-    });
+    if(!$scope.user.isLogged) {
+      $scope.signIn();
+    } else {
+      $http.post(layer_path + 'user/own/component/' + $scope.component._id, {
+        "status": $scope.component.votes.component
+      }).then(function success(response){
+        if($scope.component.votes['component-buy'] == null){
+          $scope.setWouldBuy('yes');
+        }
+      }, function(error) {
+        $scope.component.votes.component = null;
+        console.log("Error", error);
+      });
+    }
   }
 
+  // Initialize component viewing
   $http.get(layer_path + "component/" + $routeParams.slug).then(function success(response){
-    //console.log(response.data);
+    console.log(response.data);
     $scope.component = response.data;
+    $scope.populometro = getCurrentRating();
     $http.get(layer_path + "component/" + $scope.component._id + "/posts").then(function success(response){
       //console.log(response.data);
       if(response.data) {
