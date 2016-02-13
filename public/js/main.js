@@ -8408,6 +8408,9 @@ var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
           content: $scope.message.content,
           created_at: Firebase.ServerValue.TIMESTAMP
         };
+        if($scope.message.highlight) {
+          new_message.highlight = true;
+        }
         //console.log(new_message);
         $scope.messages.$add(new_message).then(function(ref) {
           $scope.message.content = '';
