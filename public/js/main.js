@@ -8408,6 +8408,9 @@ var ChatController = ['$scope', '$firebaseArray', '$firebaseObject', '$timeout',
           content: $scope.message.content,
           created_at: Firebase.ServerValue.TIMESTAMP
         };
+        if($scope.message.highlight) {
+          new_message.highlight = true;
+        }
         //console.log(new_message);
         $scope.messages.$add(new_message).then(function(ref) {
           $scope.message.content = '';
@@ -9711,7 +9714,7 @@ var boardApplication = angular.module('board', [
   'stripe'
 ]);
 
-var version = '031';
+var version = '031a';
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider', 'AclServiceProvider',
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider, AclServiceProvider) {
