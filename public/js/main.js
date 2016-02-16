@@ -6796,7 +6796,6 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
   			$scope.resolving_posts = false;
   			$scope.offset = data.feed.length;
         $scope.resolving.loaded = true;
-        console.log($scope.posts);
   		});
   	};
 
@@ -9805,7 +9804,7 @@ var boardApplication = angular.module('board', [
   'btford.socket-io'
 ]);
 
-var version = '031a';
+var version = '031b';
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider', 'AclServiceProvider',
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider, AclServiceProvider) {
