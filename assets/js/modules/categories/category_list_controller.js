@@ -1,5 +1,5 @@
-var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', 'Category', 'Feed', 'Bridge', '$route', '$routeParams', '$http',
-  function($scope, $rootScope, $timeout, $location, Category, Feed, Bridge, $route, $routeParams, $http) {
+var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', 'Category', 'Feed', 'Bridge', '$route', '$routeParams', '$http', 'socket',
+  function($scope, $rootScope, $timeout, $location, Category, Feed, Bridge, $route, $routeParams, $http, socket) {
 
   	$scope.categories = [];
   	//$scope.resolving  = true;
@@ -64,6 +64,7 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
         }
         if(mark_as_unread) {
           data[p].unread = true;
+          data[p].new = true;
         }
       }
     };
@@ -104,9 +105,9 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
           $scope.status.pending.$value = 0;
           // For sync purposes
           if(category.slug == null) {
-            $scope.status.viewing.$value = 'all';
+            $scope.status.viewing = 'all';
           } else {
-            $scope.status.viewing.$value = category.id;
+            $scope.status.viewing = category.id;
           }
         }
 
@@ -128,6 +129,7 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
   			$scope.resolving_posts = false;
   			$scope.offset = data.feed.length;
         $scope.resolving.loaded = true;
+        console.log($scope.posts);
   		});
   	};
 
@@ -167,10 +169,10 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
       return posts[newer_i].created_at;
     }
 
-    $scope.get_newer = function() {
+    $scope.getNewer = function() {
       if(!$scope.resolving.newer) {
         $scope.resolving.newer = true;
-        var pending = $scope.status.pending.$value;
+        var pending = $scope.status.pending;
 
         Feed.get({limit: pending, before: $scope.status.newer_post_date, category: $scope.category.id}, function(data) {
           if(data.feed.length > 0) {
@@ -182,24 +184,24 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
             // Visual helper in posts
             $timeout(function() {
               for(p in data.feed) {
-                data.feed[p].unread = false;
+                data.feed[p].new = false;
               }
-            }, 1000);
+            }, 1500);
 
             $scope.status.newer_post_date = get_newer_date(data.feed);
 
             $scope.posts = data.feed.concat($scope.posts);
             $scope.offset = $scope.offset + pending;
           }
-          if($scope.user.isLogged) {
-            $scope.status.pending.$value = 0;
-          }
           $scope.resolving.newer = false;
           // return to the top of the feed
           $('.discussions-list').animate({ scrollTop: 0}, 100);
-        });
 
-        //ga('send', 'pageview', '/feed/' + $scope.category.slug);
+          if($scope.user.isLogged) {
+            $scope.status.pending -= pending;
+          }
+        });
+        // Push event to Google Analytics
         dataLayer.push({
           'event': 'VirtualPageview',
           'virtualPageURL': '/feed/' + $scope.category.slug,
@@ -304,6 +306,7 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
       }
     }
 
+    /* Watchers */
     $scope.$on('userLogged', function(e) {
       $scope.matchCategories();
     });
@@ -314,6 +317,77 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
 
     $scope.$on('postDeleted', function(e) {
       // Doing...
+    });
+
+    socket.on('feed action', function (data) {
+      if(data.fire) {
+        //console.log(data);
+        switch(data.fire) {
+          case "new-post":
+            if($scope.status.viewing == 'all' || $scope.status.viewing == data.category) {
+              $scope.status.pending++;
+            }
+            break;
+          case "new-comment":
+            //console.log("New event: new-comment", data);
+            for(var i = 0; i < $scope.posts.length; i++) {
+              if($scope.posts[i].id == data.id) {
+                $scope.posts[i].comments.count++;
+                $scope.posts[i].unread = true;
+                break;
+              }
+            }
+            break;
+          case "delete-post":
+            //console.log("New event: delete-post");
+            for(var i = 0; i < $scope.posts.length; i++) {
+              if($scope.posts[i].id == data.id) {
+                $scope.posts.splice(i,1);
+                $scope.offset--;
+                break;
+              }
+            }
+            break;
+          case "delete-comment":
+            //console.log("New event: delete-comment");
+            for(var i = 0; i < $scope.posts.length; i++) {
+              if($scope.posts[i].id == data.id) {
+                $scope.posts[i].comments.count--;
+                break;
+              }
+            }
+            break;
+          case "pinned":
+            //console.log("New event: pinned");
+            for(var i = 0; i < $scope.posts.length; i++) {
+              if($scope.posts[i].id == data.id) {
+                $scope.posts[i].pinned = true;
+                break;
+              }
+            }
+            break;
+          case "unpinned":
+            //console.log("New event: unpinned");
+            for(var i = 0; i < $scope.posts.length; i++) {
+              if($scope.posts[i].id == data.id) {
+                $scope.posts[i].pinned = false;
+                break;
+              }
+            }
+            break;
+          case "best-answer":
+            //console.log("New event: best-answer");
+            for(var i = 0; i < $scope.posts.length; i++) {
+              if($scope.posts[i].id == data.id) {
+                $scope.posts[i].solved = true;
+                break;
+              }
+            }
+            break;
+          default:
+            console.log("I don't know what the hell did Blacker say!")
+        }
+      }
     });
 
     // Hack, so we don't have to reload the controller if the route uses the same controller

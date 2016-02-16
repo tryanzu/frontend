@@ -15,6 +15,7 @@
 // @codekit-prepend "vendor/emoji.config.js"
 // @codekit-prepend "vendor/emoji.min.js"
 // @codekit-prepend "vendor/jquery.knob.min.js"
+// @codekit-prepend "vendor/socket.min.js"
 
 // @codekit-prepend "common/directives"
 // @codekit-prepend "common/filters"
@@ -65,7 +66,8 @@ var boardApplication = angular.module('board', [
   'mm.acl',
   'yaru22.angular-timeago',
   'searchBar',
-  'stripe'
+  'stripe',
+  'btford.socket-io'
 ]);
 
 var version = '031a';
@@ -500,15 +502,11 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
               var amOnline = new Firebase(firebase_url + '.info/connected');
               //var userRef = new Firebase('https://spartangeek.firebaseio.com/presence/' + data.id);
               var presenceRef = new Firebase(userUrl + '/online');
-              var categoryRef = new Firebase(userUrl + '/viewing');
-              var pendingRef = new Firebase(userUrl + '/pending');
               amOnline.on('value', function(snapshot) {
                 if(snapshot.val()) {
                   //userRef.onDisconnect().remove();
                   presenceRef.onDisconnect().set(0);
-                  categoryRef.onDisconnect().remove();
                   presenceRef.set(1);
-                  categoryRef.set("all");
                 }
               });
 
@@ -516,15 +514,6 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
               var gamingRef = new Firebase(userUrl + '/gaming');
               $scope.user.gaming = $firebaseObject(gamingRef);
               $scope.user.gaming.$loaded(function() {});
-
-              // For sync options in newsfeed
-              var pending = $firebaseObject(pendingRef);
-              pending.$bindTo($scope, "status.pending");
-              pending.$loaded(function(){ $scope.status.pending.$value = 0; });
-
-              var viewing = $firebaseObject(categoryRef);
-              viewing.$bindTo($scope, "status.viewing");
-              //viewing.$loaded(function(){ $scope.status.viewing.$value = 0; });
 
               // download the data into a local object
               var count = $firebaseObject(notificationsCountRef)

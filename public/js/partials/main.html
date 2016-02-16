@@ -81,8 +81,8 @@
                 </div>
               </div>
 
-              <div class="new-posts-carlos" ng-cloak ng-if="status.pending.$value > 0 && !status.show_categories" ng-click="get_newer()" ng-class="{'loading': resolving.newer}">
-                <span ng-if="!resolving.newer">Ver {{ status.pending.$value }} {{ status.pending.$value == 1?'publicación nueva':'publicaciones nuevas' }}</span>
+              <div class="new-posts-carlos" ng-cloak ng-if="status.pending > 0 && !status.show_categories" ng-click="getNewer()" ng-class="{'loading': resolving.newer}">
+                <span ng-if="!resolving.newer">Ver {{ status.pending }} {{ status.pending == 1?'publicación nueva':'publicaciones nuevas' }}</span>
                 <span ng-if="resolving.newer">Cargando...</span>
               </div>
 
@@ -95,7 +95,7 @@
               </div>
 
               <ul class="discussions-list" scroll-me="walkFeed()" ng-hide="resolving.categories || viewing.top_posts" adjust-height>
-                <li data-id="{{ post.id }}" class="discussion-summary" ng-class="{'active': post.id === $parent.activePostId, 'unread': post.unread == true}" ng-repeat="post in posts | orderBy:['pinned','-created_at']" ng-cloak>
+                <li data-id="{{ post.id }}" class="discussion-summary" ng-class="{'active': post.id === $parent.activePostId, 'unread': post.unread == true, 'new': post.new == true}" ng-repeat="post in posts | orderBy:['pinned','-created_at']" ng-click="post.unread = false" ng-cloak>
                   <div>
                     <a href="/u/{{ post.author.username }}/{{ post.author.id }}" class="author" title="Escrito por {{ post.author.username }}">
                       <span class="avatar" title="{{ post.author.username }}" ng-if="!post.author.image">{{ post.author.username[0] }}</span>
