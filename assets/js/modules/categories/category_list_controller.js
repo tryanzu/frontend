@@ -129,7 +129,6 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
   			$scope.resolving_posts = false;
   			$scope.offset = data.feed.length;
         $scope.resolving.loaded = true;
-        console.log($scope.posts);
   		});
   	};
 
