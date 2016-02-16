@@ -76,3 +76,10 @@ services.service('modalService', ['$uibModal', function ($modal) {
     return $modal.open(tempModalDefaults).result;
   };
 }]);
+
+services.factory('socket', function (socketFactory) {
+  return socketFactory({
+    //prefix: 'foo~',
+    ioSocket: io.connect(socketio_url)
+  });
+})
