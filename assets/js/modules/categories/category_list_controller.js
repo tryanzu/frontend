@@ -144,8 +144,6 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
     			$scope.offset = $scope.offset + data.feed.length;
           $scope.resolving.older = false;
     		});
-
-    		//ga('send', 'pageview', '/feed/' + $scope.category.slug);
         dataLayer.push({
           'event': 'VirtualPageview',
           'virtualPageURL': '/feed/' + $scope.category.slug,
