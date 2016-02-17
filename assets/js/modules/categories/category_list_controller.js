@@ -349,18 +349,20 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
             break;
           case "new-comment":
             if(debug) console.log("New event: new-comment", data);
-            for(var i = 0; i < $scope.posts.length; i++) {
-              if($scope.posts[i].id == data.id) {
-                //$scope.posts[i].comments.count++;
-                if(!$scope.posts[i].comments.new) {
-                  $scope.posts[i].comments.new = 0;
+            if(data.user_id != $scope.user.id) {
+              for(var i = 0; i < $scope.posts.length; i++) {
+                if($scope.posts[i].id == data.id) {
+                  //$scope.posts[i].comments.count++;
+                  if(!$scope.posts[i].comments.new) {
+                    $scope.posts[i].comments.new = 0;
+                  }
+                  $scope.posts[i].comments.new++;
+                  $scope.posts[i].unread = true;
+                  break;
                 }
-                $scope.posts[i].comments.new++;
-                $scope.posts[i].unread = true;
-                break;
               }
+              $scope.$broadcast('new-comment', data);
             }
-            $scope.$broadcast('new-comment', data);
             break;
           case "delete-post":
             if(debug) console.log("New event: delete-post");

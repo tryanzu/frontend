@@ -301,7 +301,7 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
       }
       new_comments = $scope.post.comments.set.concat(new_comments);
       $scope.post.comments.set = new_comments;
-      $scope.comments.new = 0;
+      $scope.post.comments.new = 0;
       $scope.post.comments.total++;
       $scope.post.comments.count++;
       $scope.comments_status.loading_new = false;
