@@ -7016,7 +7016,7 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
             break;
           case "new-comment":
             if(debug) console.log("New event: new-comment", data);
-            if(data.user_id != $scope.user.id) {
+            if(data.user_id != $scope.user.info.id) {
               for(var i = 0; i < $scope.posts.length; i++) {
                 if($scope.posts[i].id == data.id) {
                   //$scope.posts[i].comments.count++;
@@ -9893,7 +9893,7 @@ var boardApplication = angular.module('board', [
   'btford.socket-io'
 ]);
 
-var version = '031c';
+var version = '031d';
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider', 'AclServiceProvider',
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider, AclServiceProvider) {
