@@ -6972,6 +6972,15 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
       }
     }
 
+    $scope.consolidateComments = function(post) {
+      post.unread = false;
+      if(!post.comments.new) {
+        post.comments.new = 0;
+      }
+      post.comments.count += post.comments.new;
+      post.comments.new = 0;
+    }
+
     /* Watchers */
     $scope.$on('userLogged', function(e) {
       $scope.matchCategories();
@@ -6985,27 +6994,43 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
       // Doing...
     });
 
+    $scope.$on('comments-loaded', function(event, data) {
+      for(var i = 0; i < $scope.posts.length; i++) {
+        if($scope.posts[i].id == data.id) {
+          $scope.consolidateComments($scope.posts[i]);
+          break;
+        }
+      }
+    });
+
     socket.on('feed action', function (data) {
+      debug = $scope.can("debug");
       if(data.fire) {
-        //console.log(data);
+        //if(debug) console.log(data);
         switch(data.fire) {
           case "new-post":
+            if(debug) console.log("New event: new-post", data);
             if($scope.status.viewing == 'all' || $scope.status.viewing == data.category) {
               $scope.status.pending++;
             }
             break;
           case "new-comment":
-            //console.log("New event: new-comment", data);
+            if(debug) console.log("New event: new-comment", data);
             for(var i = 0; i < $scope.posts.length; i++) {
               if($scope.posts[i].id == data.id) {
-                $scope.posts[i].comments.count++;
+                //$scope.posts[i].comments.count++;
+                if(!$scope.posts[i].comments.new) {
+                  $scope.posts[i].comments.new = 0;
+                }
+                $scope.posts[i].comments.new++;
                 $scope.posts[i].unread = true;
                 break;
               }
             }
+            $scope.$broadcast('new-comment', data);
             break;
           case "delete-post":
-            //console.log("New event: delete-post");
+            if(debug) console.log("New event: delete-post");
             for(var i = 0; i < $scope.posts.length; i++) {
               if($scope.posts[i].id == data.id) {
                 $scope.posts.splice(i,1);
@@ -7015,7 +7040,7 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
             }
             break;
           case "delete-comment":
-            //console.log("New event: delete-comment");
+            if(debug) console.log("New event: delete-comment");
             for(var i = 0; i < $scope.posts.length; i++) {
               if($scope.posts[i].id == data.id) {
                 $scope.posts[i].comments.count--;
@@ -7024,7 +7049,7 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
             }
             break;
           case "pinned":
-            //console.log("New event: pinned");
+            if(debug) console.log("New event: pinned");
             for(var i = 0; i < $scope.posts.length; i++) {
               if($scope.posts[i].id == data.id) {
                 $scope.posts[i].pinned = true;
@@ -7033,16 +7058,17 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
             }
             break;
           case "unpinned":
-            //console.log("New event: unpinned");
+            if(debug) console.log("New event: unpinned");
             for(var i = 0; i < $scope.posts.length; i++) {
               if($scope.posts[i].id == data.id) {
-                $scope.posts[i].pinned = false;
+                //$scope.posts[i].pinned = false;
+                delete $scope.posts[i].pinned;
                 break;
               }
             }
             break;
           case "best-answer":
-            //console.log("New event: best-answer");
+            if(debug) if(debug) console.log("New event: best-answer");
             for(var i = 0; i < $scope.posts.length; i++) {
               if($scope.posts[i].id == data.id) {
                 $scope.posts[i].solved = true;
@@ -7051,7 +7077,7 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
             }
             break;
           default:
-            console.log("I don't know what the hell did Blacker say!")
+            if(debug) console.log("I don't know what the hell did Blacker say!")
         }
       }
     });
@@ -7092,7 +7118,6 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
             }
             else {
               $scope.view_comment.position = -1;
-              //console.log("Not watching comment");
             }
             $scope.viewPostID(params.id, params.slug);
           }
@@ -7144,7 +7169,6 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
           var cn = path.split('/');
           if(cn.length == 5) {
             cn = cn[4]; // comment number
-            //console.log("Watching comment:", cn);
             $scope.view_comment.position = cn;
           }
           else {
@@ -7178,15 +7202,14 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
 	$scope.waiting = true;
   $scope.waiting_comment = false;
   $scope.adding_file = false;
-
-  $scope.people = [
-    { label: 'AcidKid', username: 'AcidKid'},
-    { label: 'Alberto', username: 'Alberto'},
-    { label: 'Drak', username: 'Drak'},
-    { label: 'fernandez14', username: 'fernandez14'}
-  ];
-
   $scope.best_answer_object = false;
+  $scope.comments_status = {
+    'loaded': 10,
+    'offset': -20,
+    'limit': 10,
+    'loading': false,
+    'loading_new': false
+  };
 
 	$scope.forceFirstComment = function() {
 		// TO-DO analytics about this trigger
@@ -7194,29 +7217,26 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
 		$scope.force_comment = true;
 	};
 
-  $scope.best_answer = function(comment) {
+  $scope.setBestAnswer = function(comment) {
     $http.post(layer_path + "posts/" + $scope.post.id + "/answer/" + comment.position).then(function success(response){
       console.log(response);
       comment.chosen = true;
       $scope.post.solved = true;
 
-      $scope.select_best_answer();
+      $scope.selectBestAnswer();
     }, function(error){
       console.log(error, "No se puedo elegir como mejor respuesta.");
     })
   };
 
-  $scope.select_best_answer = function() {
-    //console.log($scope.post);
-    for(var i = 0; i < $scope.post.comments.count; i++) {
-      //console.log($scope.post.comments.set[i]);
+  $scope.selectBestAnswer = function() {
+    for(var i = 0; i < $scope.post.comments.set.length; i++) {
       if($scope.post.comments.set[i].chosen) {
         $scope.best_answer_object = $scope.post.comments.set[i];
         return
       }
     }
     $scope.best_answer_object = false;
-    //console.log($scope.best_answer_object);
   };
 
   $scope.show_composer = function() {
@@ -7234,6 +7254,7 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
     $('.current-article').animate({ scrollTop: $('.current-article')[0].scrollHeight}, 100);
   }
 
+  // Comment and Post vote
   $scope.comment_vote = function(post_id, comment, direction) {
     $http.post(layer_path + 'vote/comment/' + post_id, {comment: '' + comment.position, 'direction': direction}).
       success(function(data, status, headers, config) {
@@ -7286,6 +7307,7 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
       });
   }
 
+  // Comment publishing
   $scope.publish = function() {
     if(!$scope.waiting_comment) {
       $scope.waiting_comment = true;
@@ -7432,6 +7454,60 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
     });
   }
 
+  // Load previous comments
+  $scope.loadPreviousComments = function() {
+    $scope.comments_status.loading = true;
+    //console.log("Loading", $scope.comments_status.loaded, $scope.comments_status.offset, $scope.post.comments.total);
+    if($scope.post.comments.total - $scope.comments_status.loaded < 10) {
+      $scope.comments_status.limit = $scope.post.comments.total - $scope.comments_status.loaded;
+    }
+    $http.get(layer_path + 'posts/' + $scope.post.id + '/comments', { params: {
+      'offset': $scope.comments_status.offset,
+      'limit': $scope.comments_status.limit
+    } } ).then(function success(response){
+      console.log(response.data.comments.set);
+      new_comments = response.data.comments.set;
+      for(var c in new_comments) {
+        addMediaEmbed(new_comments[c]);
+      }
+      new_comments = new_comments.concat($scope.post.comments.set);
+      $scope.post.comments.set = new_comments;
+      $scope.comments_status.loaded += $scope.comments_status.limit;
+      $scope.comments_status.offset -= $scope.comments_status.limit;
+      $scope.comments_status.loading = false;
+
+      console.log("Loaded", $scope.comments_status.loaded, $scope.comments_status.offset, $scope.post.comments.total);
+    }, function(error){
+      console.log("Error while loading...");
+      $scope.comments_status.loading = false;
+    });
+  }
+
+  // Load new comments
+  $scope.loadNewComments = function() {
+    $scope.comments_status.loading_new = true;
+    $http.get(layer_path + 'posts/' + $scope.post.id + '/comments', { params: {
+      'offset': $scope.post.comments.total,
+      'limit': $scope.post.comments.new
+    } } ).then(function success(response){
+      if($scope.can("debug")) console.log(response.data.comments.set);
+      new_comments = response.data.comments.set;
+      for(var c in new_comments) {
+        addMediaEmbed(new_comments[c]);
+      }
+      new_comments = $scope.post.comments.set.concat(new_comments);
+      $scope.post.comments.set = new_comments;
+      $scope.comments.new = 0;
+      $scope.post.comments.total++;
+      $scope.post.comments.count++;
+      $scope.comments_status.loading_new = false;
+
+      $scope.$emit('comments-loaded', {id: $scope.post.id});
+    }, function(error){
+      console.log("Error while loading...");
+      $scope.comments_status.loading_new = false;
+    });
+  }
 
   $scope.toggleUserCard = function (comment){
     var time = comment.showAuthor ? 0:500;
@@ -7440,6 +7516,15 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
       comment.showAuthorAnimation = !comment.showAuthorAnimation;
     }, time);
   }
+
+  $scope.$on('new-comment', function(event, data) {
+    if(!$scope.post.comments.new) {
+      $scope.post.comments.new = 0;
+    }
+    if(data.id == $scope.post.id) {
+      $scope.post.comments.new++;
+    }
+  });
 
 	$scope.$on('pushLoggedComment', function(event, comment) {
 		// Push the comment to the main set of comments
@@ -7455,12 +7540,14 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
 		$scope.force_comment = false;
 
 		Post.get({id: post.id}, function(data) {
-      //console.log(data);
+      console.log(data);
 			$scope.post = data;
       addMediaEmbed($scope.post);
 
-      //console.log($scope.post);
-      $scope.select_best_answer();
+      if($scope.post.comments.answer) {
+        addMediaEmbed($scope.post.comments.answer);
+        $scope.selectBestAnswer();
+      }
 
       for (var c in $scope.categories) {
         for(var s in $scope.categories[c].subcategories) {

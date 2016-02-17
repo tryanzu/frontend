@@ -95,7 +95,7 @@
               </div>
 
               <ul class="discussions-list" scroll-me="walkFeed()" ng-hide="resolving.categories || viewing.top_posts" adjust-height>
-                <li data-id="{{ post.id }}" class="discussion-summary" ng-class="{'active': post.id === $parent.activePostId, 'unread': post.unread == true, 'new': post.new == true}" ng-repeat="post in posts | orderBy:['pinned','-created_at']" ng-click="post.unread = false" ng-cloak>
+                <li data-id="{{ post.id }}" class="discussion-summary" ng-class="{'active': post.id === $parent.activePostId, 'unread': post.unread == true, 'new': post.new == true}" ng-repeat="post in posts | orderBy:['pinned','-created_at']" ng-click="consolidateComments(post)" ng-cloak>
                   <div>
                     <a href="/u/{{ post.author.username }}/{{ post.author.id }}" class="author" title="Escrito por {{ post.author.username }}">
                       <span class="avatar" title="{{ post.author.username }}" ng-if="!post.author.image">{{ post.author.username[0] }}</span>
@@ -122,7 +122,7 @@
                         </li>
                       </ul>
                     </a>
-                    <span class="count">{{ post.comments.count }}<span class="label">{{ post.comments.count==1?'Respuesta':'Respuestas'}}</span></span>
+                    <span class="count">{{ post.comments.count }}<span class="label">{{ post.comments.count==1?'Respuesta':'Respuestas'}}</span><span class="new" ng-if="post.comments.new > 0">+{{ post.comments.new }}</span></span>
                   </div>
                 </li>
                 <div class="resolving" ng-if="resolving.older">
@@ -559,31 +559,37 @@
                   </li>
                 </ul>
 
-                <div class="best_answer" ng-if="best_answer_object">
+                <!-- Best Answer preview -->
+                <div class="best_answer" ng-if="post.comments.answer">
                   <div class="comment best">
                     <div class="best-header">
                       <i class="fa fa-check-circle-o"></i> Mejor respuesta
                     </div>
                     <div class="comment-author">
-                      <a href="/u/{{ best_answer_object.author.username }}/{{ best_answer_object.author.id }}" title="Perfil de {{ best_answer_object.author.username }}">
-                        <img class="avatar" ng-src="{{ best_answer_object.author.image }}" alt="{{ best_answer_object.author.username }}" ng-if="best_answer_object.author.image">
-                        <span class="avatar" title="{{ best_answer_object.author.username }}" ng-if="!best_answer_object.author.image">{{ best_answer_object.author.username[0] }}</span>
+                      <a href="/u/{{ post.comments.answer.author.username }}/{{ post.comments.answer.author.id }}" title="Perfil de {{ post.comments.answer.author.username }}">
+                        <img class="avatar" ng-src="{{ post.comments.answer.author.image }}" alt="{{ post.comments.answer.author.username }}" ng-if="post.comments.answer.author.image">
+                        <span class="avatar" title="{{ post.comments.answer.author.username }}" ng-if="!post.comments.answer.author.image">{{ post.comments.answer.author.username[0] }}</span>
                       </a>
                       <div class="username">
-                        <a href="/u/{{ best_answer_object.author.username }}/{{ best_answer_object.author.id }}" title="Perfil de {{ best_answer_object.author.username }}">
-                          <strong>{{ best_answer_object.author.username }}</strong>
+                        <a href="/u/{{ post.comments.answer.author.username }}/{{ post.comments.answer.author.id }}" title="Perfil de {{ post.comments.answer.author.username }}">
+                          <strong>{{ post.comments.answer.author.username }}</strong>
                         </a>
                         <div>
-                          <span class="level">{{ misc.gaming.rules[best_answer_object.author.level].name }}</span>
+                          <span class="level">{{ misc.gaming.rules[post.comments.answer.author.level].name }}</span>
                         </div>
                       </div>
                     </div>
-                    <div class="content" markedsg="best_answer_object.content_final"></div>
+                    <div class="content" markedsg="post.comments.answer.content_final"></div>
                   </div>
                 </div>
 
                 <div class="answers">
                   <h5 ng-if="!post.comments_blocked || post.comments.count > 0">{{ post.comments.count }} respuesta{{post.comments.count == 1?'':'s'}}</h5>
+                </div>
+
+                <div class="text-center" style="margin-bottom: 3em;" ng-if="comments_status.loaded < post.comments.total">
+                  <a class="btn btn-default" href="" ng-click="loadPreviousComments()" ng-if="!comments_status.loading">Cargar comentarios anteriores</a>
+                  <a href="" class="btn btn-default disabled" role="button" ng-if="comments_status.loading">Cargando...</a>
                 </div>
 
                 <!-- Comments loop section -->
@@ -682,7 +688,7 @@
                             <button class="button button-icon button-flat" ng-hide="comment.editing" uib-dropdown-toggle><i class="icon fa fa-fw fa-ellipsis-h Button-icon"></i></button>
                             <ul class="dropdown-menu dropdown-menu-right">
                               <li ng-if="post.is_question && (!post.solved && aacl.can('solve', 'posts', user.info, post.author.id, post.category.id))">
-                                <a href="" ng-click="best_answer(comment)"><i class="fa fa-check-circle"></i> Marcar como mejor respuesta</a>
+                                <a href="" ng-click="setBestAnswer(comment)"><i class="fa fa-check-circle"></i> Marcar como mejor respuesta</a>
                               </li>
                               <li ng-if="comment.liked != 1 && comment.author.id != user.info.id && user.gaming.shit > 0">
                                 <a href="" ng-click="comment_vote(post.id, comment, 'down')" ng-class="{'hated': comment.liked == -1}"><i class="sgi gray shit"></i> Esto apesta</a>
@@ -740,6 +746,8 @@
 
                   </div>
                 </div>
+
+                <div class="alert alert-warning text-center" ng-if="post.comments.new > 0"><span ng-if="!comments_status.loading_new">Hay <strong>{{ post.comments.new }}</strong> comentarios nuevos. <a href="" ng-click="loadNewComments()">Cargar comentarios nuevos.</a></span><span ng-if="comments_status.loading_new">Cargando...</span></div>
 
                 <div class="need-signin" ng-if="!user.isLogged && !post.comments_blocked">
                   <p>¿Quieres dejar un comentario? <a href="" ng-click="signIn()">Inicia sesión</a> o <a href="" ng-click="signUp()">Crea una cuenta</a></p>

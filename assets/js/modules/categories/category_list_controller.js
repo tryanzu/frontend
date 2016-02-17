@@ -305,6 +305,15 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
       }
     }
 
+    $scope.consolidateComments = function(post) {
+      post.unread = false;
+      if(!post.comments.new) {
+        post.comments.new = 0;
+      }
+      post.comments.count += post.comments.new;
+      post.comments.new = 0;
+    }
+
     /* Watchers */
     $scope.$on('userLogged', function(e) {
       $scope.matchCategories();
@@ -318,27 +327,43 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
       // Doing...
     });
 
+    $scope.$on('comments-loaded', function(event, data) {
+      for(var i = 0; i < $scope.posts.length; i++) {
+        if($scope.posts[i].id == data.id) {
+          $scope.consolidateComments($scope.posts[i]);
+          break;
+        }
+      }
+    });
+
     socket.on('feed action', function (data) {
+      debug = $scope.can("debug");
       if(data.fire) {
-        //console.log(data);
+        //if(debug) console.log(data);
         switch(data.fire) {
           case "new-post":
+            if(debug) console.log("New event: new-post", data);
             if($scope.status.viewing == 'all' || $scope.status.viewing == data.category) {
               $scope.status.pending++;
             }
             break;
           case "new-comment":
-            //console.log("New event: new-comment", data);
+            if(debug) console.log("New event: new-comment", data);
             for(var i = 0; i < $scope.posts.length; i++) {
               if($scope.posts[i].id == data.id) {
-                $scope.posts[i].comments.count++;
+                //$scope.posts[i].comments.count++;
+                if(!$scope.posts[i].comments.new) {
+                  $scope.posts[i].comments.new = 0;
+                }
+                $scope.posts[i].comments.new++;
                 $scope.posts[i].unread = true;
                 break;
               }
             }
+            $scope.$broadcast('new-comment', data);
             break;
           case "delete-post":
-            //console.log("New event: delete-post");
+            if(debug) console.log("New event: delete-post");
             for(var i = 0; i < $scope.posts.length; i++) {
               if($scope.posts[i].id == data.id) {
                 $scope.posts.splice(i,1);
@@ -348,7 +373,7 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
             }
             break;
           case "delete-comment":
-            //console.log("New event: delete-comment");
+            if(debug) console.log("New event: delete-comment");
             for(var i = 0; i < $scope.posts.length; i++) {
               if($scope.posts[i].id == data.id) {
                 $scope.posts[i].comments.count--;
@@ -357,7 +382,7 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
             }
             break;
           case "pinned":
-            //console.log("New event: pinned");
+            if(debug) console.log("New event: pinned");
             for(var i = 0; i < $scope.posts.length; i++) {
               if($scope.posts[i].id == data.id) {
                 $scope.posts[i].pinned = true;
@@ -366,16 +391,17 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
             }
             break;
           case "unpinned":
-            //console.log("New event: unpinned");
+            if(debug) console.log("New event: unpinned");
             for(var i = 0; i < $scope.posts.length; i++) {
               if($scope.posts[i].id == data.id) {
-                $scope.posts[i].pinned = false;
+                //$scope.posts[i].pinned = false;
+                delete $scope.posts[i].pinned;
                 break;
               }
             }
             break;
           case "best-answer":
-            //console.log("New event: best-answer");
+            if(debug) if(debug) console.log("New event: best-answer");
             for(var i = 0; i < $scope.posts.length; i++) {
               if($scope.posts[i].id == data.id) {
                 $scope.posts[i].solved = true;
@@ -384,7 +410,7 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
             }
             break;
           default:
-            console.log("I don't know what the hell did Blacker say!")
+            if(debug) console.log("I don't know what the hell did Blacker say!")
         }
       }
     });
@@ -425,7 +451,6 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
             }
             else {
               $scope.view_comment.position = -1;
-              //console.log("Not watching comment");
             }
             $scope.viewPostID(params.id, params.slug);
           }
@@ -477,7 +502,6 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
           var cn = path.split('/');
           if(cn.length == 5) {
             cn = cn[4]; // comment number
-            //console.log("Watching comment:", cn);
             $scope.view_comment.position = cn;
           }
           else {
