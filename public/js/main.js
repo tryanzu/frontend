@@ -6811,8 +6811,6 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
     			$scope.offset = $scope.offset + data.feed.length;
           $scope.resolving.older = false;
     		});
-
-    		//ga('send', 'pageview', '/feed/' + $scope.category.slug);
         dataLayer.push({
           'event': 'VirtualPageview',
           'virtualPageURL': '/feed/' + $scope.category.slug,
@@ -7333,7 +7331,7 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
           votes: {down: 0, up: 0}
         });
 
-        var comment = $scope.post.comments.set[$scope.post.comments.count - 1];
+        var comment = $scope.post.comments.set[$scope.post.comments.set.length - 1];
         addMediaEmbed(comment);
         // Allow to comment once again
         $scope.waiting_comment = false;
@@ -9893,7 +9891,7 @@ var boardApplication = angular.module('board', [
   'btford.socket-io'
 ]);
 
-var version = '031d';
+var version = '031e';
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider', 'AclServiceProvider',
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider, AclServiceProvider) {
