@@ -135,7 +135,7 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
           votes: {down: 0, up: 0}
         });
 
-        var comment = $scope.post.comments.set[$scope.post.comments.count - 1];
+        var comment = $scope.post.comments.set[$scope.post.comments.set.length - 1];
         addMediaEmbed(comment);
         // Allow to comment once again
         $scope.waiting_comment = false;
