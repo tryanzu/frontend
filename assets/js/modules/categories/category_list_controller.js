@@ -337,7 +337,6 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
     socket.on('feed action', function (data) {
       debug = $scope.can("debug");
       if(data.fire) {
-        //if(debug) console.log(data);
         switch(data.fire) {
           case "new-post":
             if(debug) console.log("New event: new-post", data);
@@ -347,18 +346,21 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
             break;
           case "new-comment":
             if(debug) console.log("New event: new-comment", data);
-            if(data.user_id != $scope.user.info.id) {
-              for(var i = 0; i < $scope.posts.length; i++) {
-                if($scope.posts[i].id == data.id) {
-                  //$scope.posts[i].comments.count++;
-                  if(!$scope.posts[i].comments.new) {
-                    $scope.posts[i].comments.new = 0;
-                  }
+            for(var i = 0; i < $scope.posts.length; i++) {
+              if($scope.posts[i].id == data.id) {
+                if(!$scope.posts[i].comments.new) {
+                  $scope.posts[i].comments.new = 0;
+                }
+                if(data.user_id != $scope.user.info.id) {
                   $scope.posts[i].comments.new++;
                   $scope.posts[i].unread = true;
-                  break;
+                } else {
+                  $scope.posts[i].comments.count++;
                 }
+                break;
               }
+            }
+            if(data.user_id != $scope.user.info.id) {
               $scope.$broadcast('new-comment', data);
             }
             break;

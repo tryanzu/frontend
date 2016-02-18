@@ -198,11 +198,11 @@
             <section>
               <div class="row">
                 <div class="col-md-6 text-center">
-                  <a href="/tienda" class="section-resume">
+                  <a href="/tienda" target="_blank" class="section-resume">
                     <img src="/images/home-shop.png">
                     <h2>Compra una PC</h2>
                   </a>
-                  <a href="/tienda" class="btn btn-sm btn-success mb-20">Ir a la tienda</a>
+                  <a href="/tienda" target="_blank" class="btn btn-sm btn-success mb-20">Ir a la tienda</a>
                   <p>Usa nuestro asistente para que conozcamos tus necesidades y podamos ofrecerte una PC de acuerdo a tus necesidades y presupuesto.</p>
                 </div>
                 <div class="col-md-6 text-center">
@@ -748,6 +748,8 @@
                 </div>
 
                 <div class="alert alert-warning text-center" ng-if="post.comments.new > 0"><span ng-if="!comments_status.loading_new">Hay <strong>{{ post.comments.new }}</strong> comentarios nuevos. <a href="" ng-click="loadNewComments()">Cargar comentarios nuevos.</a></span><span ng-if="comments_status.loading_new">Cargando...</span></div>
+
+                <div ng-if="can('debug')">comments.count: {{post.comments.count}}, comments.new: {{post.comments.new}}, comments.total: {{post.comments.total}}</div>
 
                 <div class="need-signin" ng-if="!user.isLogged && !post.comments_blocked">
                   <p>¿Quieres dejar un comentario? <a href="" ng-click="signIn()">Inicia sesión</a> o <a href="" ng-click="signUp()">Crea una cuenta</a></p>
