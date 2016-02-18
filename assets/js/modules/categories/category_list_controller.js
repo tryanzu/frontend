@@ -171,7 +171,11 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
         $scope.resolving.newer = true;
         var pending = $scope.status.pending;
 
-        Feed.get({limit: pending, before: $scope.status.newer_post_date, category: $scope.category.id}, function(data) {
+        Feed.get({
+          limit: pending,
+          before: $scope.status.newer_post_date,
+          category: $scope.category.id
+        }, function success(data) {
           if(data.feed.length > 0) {
             // append and mark as unread
             $scope.appendCategories(data.feed, true);
@@ -188,15 +192,16 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
             $scope.status.newer_post_date = get_newer_date(data.feed);
 
             $scope.posts = data.feed.concat($scope.posts);
-            $scope.offset = $scope.offset + pending;
+            $scope.offset = $scope.offset + data.feed.length;
+            $scope.status.pending -= data.feed.length;
           }
           $scope.resolving.newer = false;
           // return to the top of the feed
           $('.discussions-list').animate({ scrollTop: 0}, 100);
 
-          if($scope.user.isLogged) {
-            $scope.status.pending -= pending;
-          }
+        }, function (error){
+          console.log("Error getting new posts");
+          $scope.status.pending = 0;
         });
         // Push event to Google Analytics
         dataLayer.push({
@@ -337,7 +342,6 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
     socket.on('feed action', function (data) {
       debug = $scope.can("debug");
       if(data.fire) {
-        //if(debug) console.log(data);
         switch(data.fire) {
           case "new-post":
             if(debug) console.log("New event: new-post", data);
@@ -347,18 +351,21 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
             break;
           case "new-comment":
             if(debug) console.log("New event: new-comment", data);
-            if(data.user_id != $scope.user.info.id) {
-              for(var i = 0; i < $scope.posts.length; i++) {
-                if($scope.posts[i].id == data.id) {
-                  //$scope.posts[i].comments.count++;
-                  if(!$scope.posts[i].comments.new) {
-                    $scope.posts[i].comments.new = 0;
-                  }
+            for(var i = 0; i < $scope.posts.length; i++) {
+              if($scope.posts[i].id == data.id) {
+                if(!$scope.posts[i].comments.new) {
+                  $scope.posts[i].comments.new = 0;
+                }
+                if($scope.user.isLogged && data.user_id != $scope.user.info.id) {
                   $scope.posts[i].comments.new++;
                   $scope.posts[i].unread = true;
-                  break;
+                } else {
+                  $scope.posts[i].comments.count++;
                 }
+                break;
               }
+            }
+            if($scope.user.isLogged && data.user_id != $scope.user.info.id) {
               $scope.$broadcast('new-comment', data);
             }
             break;
