@@ -187,7 +187,7 @@ button.fs-continue,
 }
 
 .fs-form-full .fs-fields > li label[data-info]::after {
-	position: relative;
+	position: absolute;
 	display: inline-block;
 	margin-left: 10px;
 	width: 24px;
@@ -916,10 +916,10 @@ input[type=text]::-ms-clear {
 	}
 
 	.fs-form {
-		top: 6em;
-		right: 2em;
+		top: 5em;
+		right: 1.8em;
 		left: 0;
-		padding: 0 3.75em 0 1em;
+		padding: 0 2.5em 0 1em;
 		width: auto;
 		font-size: 2em;
 	}
@@ -933,6 +933,10 @@ input[type=text]::-ms-clear {
 
 	.fs-title {
 		padding: 20px;
+
+    img {
+      max-height: 40px;
+    }
 	}
 
 	.fs-numbers {
@@ -989,4 +993,13 @@ input[type=text]::-ms-clear {
 		-webkit-transform: translate3d(0,0,0);
 		transform: translate3d(0,0,0);
 	}
+
+  .fs-fields>li .fs-checkbox-custom-small span, .fs-fields>li .fs-radio-custom-small span {
+    font-size: 72%;
+    width: 48%;
+  }
+  .fs-fields>li .fs-checkbox-custom span, .fs-fields>li .fs-radio-custom span {
+    width: 45%;
+    font-size: 70%;
+  }
 }

@@ -194,6 +194,8 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
             $scope.posts = data.feed.concat($scope.posts);
             $scope.offset = $scope.offset + data.feed.length;
             $scope.status.pending -= data.feed.length;
+          } else {
+            $scope.status.pending = 0;
           }
           $scope.resolving.newer = false;
           // return to the top of the feed
