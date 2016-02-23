@@ -588,7 +588,8 @@
                 </div>
 
                 <div class="text-center" style="margin-bottom: 3em;" ng-if="comments_status.loaded < post.comments.total">
-                  <a class="btn btn-default" href="" ng-click="loadPreviousComments()" ng-if="!comments_status.loading">Cargar comentarios anteriores</a>
+                  <a class="btn btn-default" href="" ng-click="loadPreviousComments()" ng-if="!comments_status.loading">Mostrar <strong>10</strong> anteriores</a>
+                  <a class="btn btn-default" href="" ng-click="loadAllPreviousComments()" ng-if="!comments_status.loading">Mostrar todos los comentarios</a>
                   <a href="" class="btn btn-default disabled" role="button" ng-if="comments_status.loading">Cargando...</a>
                 </div>
 
@@ -650,30 +651,30 @@
                         </div>
                       </div>
                       <div class="username">
-                        <a href="/u/{{ comment.author.username }}/{{ comment.author.id }}" title="Perfil de {{ comment.author.username }}">
-                          <strong>{{ comment.author.username }}</strong>
+                        <a href="/u/{{ ::comment.author.username }}/{{ ::comment.author.id }}" title="Perfil de {{ ::comment.author.username }}">
+                          <strong>{{ ::comment.author.username }}</strong>
                         </a>
                         <span class="date dropdown" uib-dropdown auto-close="outsideClick" ng-if="!comment.editing">
                           <a href="" class="dropdown-toggle" uib-dropdown-toggle>
-                            <time time-ago from-time='{{ comment.created_at}}'></time>
+                            <time time-ago from-time='{{ ::comment.created_at}}'></time>
                           </a>
                           <div class="dropdown-menu post-meta">
-                            <span class="number">Comentario #{{ 1 + comment.position }}</span>
+                            <span class="number">Comentario #{{ ::1 + comment.position }}</span>
                             <span class="time">
                               <time datetime="{{ comment.created_at }}">
-                                publicado el {{ comment.created_at | date_at}}
+                                publicado el {{ ::comment.created_at | date_at}}
                               </time>
                             </span>
-                            <input class="form-control permalink" value="http://spartangeek.com/p/{{ post.slug }}/{{ post.id }}/{{ comment.position }}">
+                            <input class="form-control permalink" value="http://spartangeek.com/p/{{ ::post.slug }}/{{ ::post.id }}/{{ ::comment.position }}">
                           </div>
                         </span>
 
                         <div>
-                          <span class="level">{{ misc.gaming.rules[comment.author.level].name }}
+                          <span class="level">{{ ::misc.gaming.rules[comment.author.level].name }}
                         </div>
                       </div>
                     </div>
-                    <div class="content" markedsg="comment.content_final" ng-if="!comment.editing"></div>
+                    <div class="content" markedsg="::comment.content_final" ng-if="!comment.editing"></div>
 
                     <aside class="Post-actions" ng-if="user.isLogged && !comment.editing">
                       <ul>
@@ -749,7 +750,7 @@
 
                 <div class="alert alert-warning text-center" ng-if="post.comments.new > 0"><span ng-if="!comments_status.loading_new">Hay <strong>{{ post.comments.new }}</strong> comentarios nuevos. <a href="" ng-click="loadNewComments()">Cargar comentarios nuevos.</a></span><span ng-if="comments_status.loading_new">Cargando...</span></div>
 
-                <div ng-if="can('debug')">comments.count: {{post.comments.count}}, comments.new: {{post.comments.new}}, comments.total: {{post.comments.total}}</div>
+                <div ng-if="false && can('debug')">comments.count: {{post.comments.count}}, comments.new: {{post.comments.new}}, comments.total: {{post.comments.total}}, comments_status.loaded: {{comments_status.loaded}}</div>
 
                 <div class="need-signin" ng-if="!user.isLogged && !post.comments_blocked">
                   <p>¿Quieres dejar un comentario? <a href="" ng-click="signIn()">Inicia sesión</a> o <a href="" ng-click="signUp()">Crea una cuenta</a></p>
@@ -779,7 +780,7 @@
                         </ul>
                       </div>
                     </div>
-                    <p style="margin-top: 5px; font-size: 14px;">No olvides seguir el <a href="/reglamento" alt="Reglamento de SpartanGeek" target="_blank">reglamento</a> al publicar un comentario.</p>
+                    <p style="margin-top: 5px; font-size: 14px; color: #9C9C9C;">No olvides seguir el <a href="/reglamento" alt="Reglamento de SpartanGeek" target="_blank">reglamento</a> al publicar un comentario.</p>
                   </div>
                   <div ng-if="post.comments_blocked && post.comments.count > 0">
                     <p class="alert alert-warning">Esta publicación no permite más comentarios.</p>

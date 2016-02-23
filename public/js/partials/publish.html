@@ -317,7 +317,17 @@
               <label for="is_question"></label>
             </div>
           </div>
-          <p>De esta forma decidimos a quien mostrar tu publicación, a espartanos que responden ó que buscan respuestas.</p>
+          <p>De esta forma decidimos a quien mostrar tu publicación, a usuarios que responden ó que buscan respuestas.</p>
+        </div>
+
+        <div class="config" ng-if="can('block-own-post-comments')">
+          <h4>¿Bloquear comentarios?</h4>
+          <div class="question">
+            <div class="check">
+              <input type="checkbox" id="lock" name="check" ng-model="post.lock" />
+              <label for="lock"></label>
+            </div>
+          </div>
         </div>
 
         <div class="config" ng-if="can('pin-board-posts')">

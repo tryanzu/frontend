@@ -266,12 +266,14 @@ var PublishController = ['$scope', '$routeParams', '$http', 'Category', 'Part', 
   			category: $scope.post.category,
   			kind: 'category-post',
         isquestion: $scope.post.isQuestion,
-        pinned: $scope.post.pinned
+        pinned: $scope.post.pinned,
+        lock: $scope.post.lock
   		};
 
-  		$http.post(layer_path + 'post', post).then(function(data) {
+  		$http.post(layer_path + 'post', post).then(function success(response) {
   			// Return to home
-        window.location.href = "/";
+        //console.log(response);
+        window.location.href = "/p/"+response.data.post.slug+"/"+response.data.post.id;
   		}, function(err) {
         console.log(err);
       });

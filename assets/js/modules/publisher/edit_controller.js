@@ -50,7 +50,8 @@ var EditPostController = ['$scope', '$routeParams', '$http', 'Category', 'Part',
 
   		$http.put(layer_path + 'posts/' + $scope.post.id, $scope.post_edit).then(function(data) {
   			// Return to home
-        window.location.href = "/";
+        //console.log(data);
+        window.location.href = "/p/-/" + $scope.post.id;
   		}, function(err) {
         console.log(err);
       });
@@ -74,7 +75,8 @@ var EditPostController = ['$scope', '$routeParams', '$http', 'Category', 'Part',
         category: data.category,
         kind: 'category-post',
         isQuestion: data.is_question,
-        pinned: data.pinned
+        pinned: data.pinned,
+        lock: data.lock
       };
       $scope.publishing = false;
     });
