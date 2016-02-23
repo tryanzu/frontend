@@ -77,14 +77,14 @@ var ChatController = [
 
     $scope.changeChannel = function(channel) {
       $scope.channel.selected = channel;
-      var messagesRef = new Firebase(firebase_url + 'messages/' + channel.$id).orderByChild('created_at').limitToLast(50);
+      var messagesRef = $scope._messageRef.child(channel.$id).orderByChild('created_at').limitToLast(50);
 
       if($scope.channel.selected.fullscreen) {
         $scope.channel.selected.new_yt_code = $scope.channel.selected.fullscreen.video;
       } else {
         $scope.channel.selected.new_yt_code = "";
       }
-      $scope.messages = $firebaseArray( $scope._messageRef.child(channel.$id).orderByChild('created_at').limitToLast(50) );
+      $scope.messages = $firebaseArray( messagesRef );
 
       // When messages are loaded on UI and also when a new message arrives
       $scope.messages.$loaded().then(function(x) {
@@ -108,10 +108,8 @@ var ChatController = [
       messagesRef.on('child_removed', function(dataSnapshot) {
         if($scope.scroll_help.scrolledUp) {
           $scope.old_messages = $scope.old_messages.concat( dataSnapshot.val() );
-          console.log("Old message saved...");
         } else {
           $scope.old_messages = [];
-          console.log("Old messages flushed...");
         }
       });
 
@@ -137,7 +135,6 @@ var ChatController = [
             var image = $scope.user.info.image || "";
             statusRef.onDisconnect().remove();
             statusRef.on('value', function(ss) {
-              console.log("Valor", ss.val())
               if( ss.val() == null ) {
                 // another window went offline, so mark me still online
                 statusRef.set({
@@ -229,7 +226,7 @@ var ChatController = [
     jQuery('.message-history').scroll(function() {
       $scope.scroll_help.from_top = $(this).scrollTop();
       $scope.scroll_help.max_height = $(this)[0].scrollHeight - $(this).height();
-      if($scope.can('debug')) console.log($scope.scroll_help.from_top, $scope.scroll_help.max_height, $scope.scroll_help.lastScrollTop);
+
       // If scrolling further than possible... (happens because of some OS effects)
       if($scope.scroll_help.from_top > $scope.scroll_help.max_height) {
         $scope.scroll_help.from_top = $scope.scroll_help.max_height; // we "saturate" from_top distance
@@ -237,19 +234,18 @@ var ChatController = [
 
       if ($scope.scroll_help.from_top >= $scope.scroll_help.lastScrollTop) {
         // downscroll code
-        if($scope.can('debug')) console.log("Scrolling downward");
+        //if($scope.can('debug')) console.log("Scrolling downward");
         if($scope.scroll_help.from_top == $scope.scroll_help.max_height) {
           $scope.scroll_help.scrolledUp = false;
           $scope.old_messages = [];
         }
       } else {
-        if($scope.can('debug')) console.log("Scrolling upward");
+        //if($scope.can('debug')) console.log("Scrolling upward");
         if($scope.scroll_help.last_height <= $scope.scroll_help.max_height) {
           // upscroll code
           $scope.scroll_help.scrolledUp = true;
         }
       }
-      if($scope.can('debug')) console.log("scrolledUp:", $scope.scroll_help.scrolledUp);
       $scope.scroll_help.lastScrollTop = $scope.scroll_help.from_top;
       $scope.scroll_help.last_height = $scope.scroll_help.max_height;
     });

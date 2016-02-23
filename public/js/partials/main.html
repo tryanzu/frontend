@@ -750,7 +750,7 @@
 
                 <div class="alert alert-warning text-center" ng-if="post.comments.new > 0"><span ng-if="!comments_status.loading_new">Hay <strong>{{ post.comments.new }}</strong> comentarios nuevos. <a href="" ng-click="loadNewComments()">Cargar comentarios nuevos.</a></span><span ng-if="comments_status.loading_new">Cargando...</span></div>
 
-                <div ng-if="can('debug')">comments.count: {{post.comments.count}}, comments.new: {{post.comments.new}}, comments.total: {{post.comments.total}}, comments_status.loaded: {{comments_status.loaded}}</div>
+                <div ng-if="false && can('debug')">comments.count: {{post.comments.count}}, comments.new: {{post.comments.new}}, comments.total: {{post.comments.total}}, comments_status.loaded: {{comments_status.loaded}}</div>
 
                 <div class="need-signin" ng-if="!user.isLogged && !post.comments_blocked">
                   <p>¿Quieres dejar un comentario? <a href="" ng-click="signIn()">Inicia sesión</a> o <a href="" ng-click="signUp()">Crea una cuenta</a></p>
@@ -780,7 +780,7 @@
                         </ul>
                       </div>
                     </div>
-                    <p style="margin-top: 5px; font-size: 14px;">No olvides seguir el <a href="/reglamento" alt="Reglamento de SpartanGeek" target="_blank">reglamento</a> al publicar un comentario.</p>
+                    <p style="margin-top: 5px; font-size: 14px; color: #9C9C9C;">No olvides seguir el <a href="/reglamento" alt="Reglamento de SpartanGeek" target="_blank">reglamento</a> al publicar un comentario.</p>
                   </div>
                   <div ng-if="post.comments_blocked && post.comments.count > 0">
                     <p class="alert alert-warning">Esta publicación no permite más comentarios.</p>

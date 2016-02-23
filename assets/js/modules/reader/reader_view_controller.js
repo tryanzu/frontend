@@ -60,23 +60,12 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
         var d = {'up': 1, 'down': -1};
         if(comment.liked == d[direction]) {
           comment.liked = null;
-          if(direction == 'up') {
-            comment.votes.up = comment.votes.up - 1;
-          } else {
-            comment.votes.down = comment.votes.down - 1;
-          }
         } else {
           comment.liked = d[direction];
-          if(direction == 'up') {
-            comment.votes.up = comment.votes.up + 1;
-          } else {
-            comment.votes.down = comment.votes.down + 1;
-          }
         }
-        //console.log(data);
       }).
       error(function(data) {
-        //console.log(data);
+        if($scope.can('debug')) console.log(data);
       });
   }
   $scope.post_vote = function(post, direction) {

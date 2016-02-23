@@ -172,6 +172,38 @@
     <script type="text/javascript" src="js/config.js"></script>
     <script src="js/shop.js"></script>
     <script>
+      var getUrlParameter = function getUrlParameter(sParam) {
+        var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+        sURLVariables = sPageURL.split('&'),
+        sParameterName,
+        i;
+
+        for (i = 0; i < sURLVariables.length; i++) {
+          sParameterName = sURLVariables[i].split('=');
+
+          if (sParameterName[0] === sParam) {
+            return sParameterName[1] === undefined ? true : sParameterName[1];
+          }
+        }
+      };
+
+      if(getUrlParameter('email') && getUrlParameter('name')) {
+        console.log(getUrlParameter('email'), getUrlParameter('name'))
+        $.ajax({
+          url: layer_path + 'leads',
+          type: "POST",
+          data: {
+            name: getUrlParameter('name'),
+            email: getUrlParameter('email')
+          },
+          contentType: "application/json"
+        }).done(function(data) {
+          console.log(data);
+        }).fail(function(data) {
+          console.log(data);
+        });
+      }
+
       function isArray(obj) {
         return Object.prototype.toString.call(obj) === '[object Array]';
       }

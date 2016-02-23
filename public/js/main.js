@@ -6861,6 +6861,8 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
             $scope.posts = data.feed.concat($scope.posts);
             $scope.offset = $scope.offset + data.feed.length;
             $scope.status.pending -= data.feed.length;
+          } else {
+            $scope.status.pending = 0;
           }
           $scope.resolving.newer = false;
           // return to the top of the feed
@@ -7263,23 +7265,12 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
         var d = {'up': 1, 'down': -1};
         if(comment.liked == d[direction]) {
           comment.liked = null;
-          if(direction == 'up') {
-            comment.votes.up = comment.votes.up - 1;
-          } else {
-            comment.votes.down = comment.votes.down - 1;
-          }
         } else {
           comment.liked = d[direction];
-          if(direction == 'up') {
-            comment.votes.up = comment.votes.up + 1;
-          } else {
-            comment.votes.down = comment.votes.down + 1;
-          }
         }
-        //console.log(data);
       }).
       error(function(data) {
-        //console.log(data);
+        if($scope.can('debug')) console.log(data);
       });
   }
   $scope.post_vote = function(post, direction) {
@@ -8308,12 +8299,14 @@ var PublishController = ['$scope', '$routeParams', '$http', 'Category', 'Part', 
   			category: $scope.post.category,
   			kind: 'category-post',
         isquestion: $scope.post.isQuestion,
-        pinned: $scope.post.pinned
+        pinned: $scope.post.pinned,
+        lock: $scope.post.lock
   		};
 
-  		$http.post(layer_path + 'post', post).then(function(data) {
+  		$http.post(layer_path + 'post', post).then(function success(response) {
   			// Return to home
-        window.location.href = "/";
+        //console.log(response);
+        window.location.href = "/p/"+response.data.post.slug+"/"+response.data.post.id;
   		}, function(err) {
         console.log(err);
       });
@@ -8389,7 +8382,8 @@ var EditPostController = ['$scope', '$routeParams', '$http', 'Category', 'Part',
 
   		$http.put(layer_path + 'posts/' + $scope.post.id, $scope.post_edit).then(function(data) {
   			// Return to home
-        window.location.href = "/";
+        //console.log(data);
+        window.location.href = "/p/-/" + $scope.post.id;
   		}, function(err) {
         console.log(err);
       });
@@ -8413,7 +8407,8 @@ var EditPostController = ['$scope', '$routeParams', '$http', 'Category', 'Part',
         category: data.category,
         kind: 'category-post',
         isQuestion: data.is_question,
-        pinned: data.pinned
+        pinned: data.pinned,
+        lock: data.lock
       };
       $scope.publishing = false;
     });
@@ -8783,14 +8778,14 @@ var ChatController = [
 
     $scope.changeChannel = function(channel) {
       $scope.channel.selected = channel;
-      var messagesRef = new Firebase(firebase_url + 'messages/' + channel.$id).orderByChild('created_at').limitToLast(50);
+      var messagesRef = $scope._messageRef.child(channel.$id).orderByChild('created_at').limitToLast(50);
 
       if($scope.channel.selected.fullscreen) {
         $scope.channel.selected.new_yt_code = $scope.channel.selected.fullscreen.video;
       } else {
         $scope.channel.selected.new_yt_code = "";
       }
-      $scope.messages = $firebaseArray( $scope._messageRef.child(channel.$id).orderByChild('created_at').limitToLast(50) );
+      $scope.messages = $firebaseArray( messagesRef );
 
       // When messages are loaded on UI and also when a new message arrives
       $scope.messages.$loaded().then(function(x) {
@@ -8814,10 +8809,8 @@ var ChatController = [
       messagesRef.on('child_removed', function(dataSnapshot) {
         if($scope.scroll_help.scrolledUp) {
           $scope.old_messages = $scope.old_messages.concat( dataSnapshot.val() );
-          console.log("Old message saved...");
         } else {
           $scope.old_messages = [];
-          console.log("Old messages flushed...");
         }
       });
 
@@ -8843,7 +8836,6 @@ var ChatController = [
             var image = $scope.user.info.image || "";
             statusRef.onDisconnect().remove();
             statusRef.on('value', function(ss) {
-              console.log("Valor", ss.val())
               if( ss.val() == null ) {
                 // another window went offline, so mark me still online
                 statusRef.set({
@@ -8935,7 +8927,7 @@ var ChatController = [
     jQuery('.message-history').scroll(function() {
       $scope.scroll_help.from_top = $(this).scrollTop();
       $scope.scroll_help.max_height = $(this)[0].scrollHeight - $(this).height();
-      if($scope.can('debug')) console.log($scope.scroll_help.from_top, $scope.scroll_help.max_height, $scope.scroll_help.lastScrollTop);
+
       // If scrolling further than possible... (happens because of some OS effects)
       if($scope.scroll_help.from_top > $scope.scroll_help.max_height) {
         $scope.scroll_help.from_top = $scope.scroll_help.max_height; // we "saturate" from_top distance
@@ -8943,19 +8935,18 @@ var ChatController = [
 
       if ($scope.scroll_help.from_top >= $scope.scroll_help.lastScrollTop) {
         // downscroll code
-        if($scope.can('debug')) console.log("Scrolling downward");
+        //if($scope.can('debug')) console.log("Scrolling downward");
         if($scope.scroll_help.from_top == $scope.scroll_help.max_height) {
           $scope.scroll_help.scrolledUp = false;
           $scope.old_messages = [];
         }
       } else {
-        if($scope.can('debug')) console.log("Scrolling upward");
+        //if($scope.can('debug')) console.log("Scrolling upward");
         if($scope.scroll_help.last_height <= $scope.scroll_help.max_height) {
           // upscroll code
           $scope.scroll_help.scrolledUp = true;
         }
       }
-      if($scope.can('debug')) console.log("scrolledUp:", $scope.scroll_help.scrolledUp);
       $scope.scroll_help.lastScrollTop = $scope.scroll_help.from_top;
       $scope.scroll_help.last_height = $scope.scroll_help.max_height;
     });
