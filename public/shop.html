@@ -192,10 +192,10 @@
         $.ajax({
           url: layer_path + 'leads',
           type: "POST",
-          data: {
+          data: JSON.stringify({
             name: getUrlParameter('name'),
             email: getUrlParameter('email')
-          },
+          }),
           contentType: "application/json"
         }).done(function(data) {
           console.log(data);
@@ -243,6 +243,10 @@
 
         $("#myform").on("submit", function( event ) {
           event.preventDefault();
+
+          dataLayer.push({
+            'event': 'requestEstimate'
+          });
 
           $('.alert.alert-warning').removeClass('show');
           $('.fs-submit').html('Enviando...');
