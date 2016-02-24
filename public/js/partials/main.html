@@ -234,45 +234,22 @@
               <p>No encontramos la publicación que estabas buscando.</p>
             </div>
 
-            <div class="author hidden" ng-hide="resolving || error_loading">
-              <div class="row">
-                <div class="col-md-7 col-xs-12">
-                  <a href="/u/{{ post.author.username }}/{{ post.author.id }}" title="Perfil de {{ post.author.username }}">
-                    <span class="avatar" title="{{ post.author.username }}" ng-if="!post.author.image">{{ post.author.username[0] }}</span>
-                    <img class="avatar" ng-src="{{ post.author.image }}" alt="{{ post.author.username }}" ng-if="post.author.image">
-                  </a>
-
-                  <div class="user-info">
-                    <a href="/u/{{ post.author.username }}/{{ post.author.id }}" title="Perfil de {{ post.author.username }}">
-                      <span class="username">{{ post.author.username }}</span>
-                    </a>
-                    <span class="verified-account" ng-if="post.author.id === '559af1c501c25d3790000054' || post.author.validated" uib-tooltip="Cuenta verificada" tooltip-placement="right"><i class="fa fa-check"></i></span>
-                    <ul class="role-labels" ng-if="post.author.roles.length > 0">
-                      <li ng-repeat="role in post.author.roles" ng-if="role.name !== 'user'">
-                        <span class="label label-default" ng-class="role.name">{{ misc.role_labels[role.name] }}</span>
-                      </li>
-                    </ul>
-                    <div class="description">{{ post.author.description || "Just another Spartan Geek" }}</div>
-                    <div class="level">{{ misc.gaming.rules[post.author.gaming.level].name }}</div>
-
-                  </div>
-                </div>
-              </div>
-            </div>
-
             <div ng-hide="resolving || error_loading">
               <div class="header">
                 <ul class="DiscussionHero-items">
                   <li class="item-badges">
                     <ul class="DiscussionHero-badges badges">
                       <li class="item-sticky" ng-if="post.pinned">
-                        <span class="Badge Badge--sticky " title="Sticky" data-original-title="Sticky"><i class="icon fa fa-fw fa-thumb-tack Badge-icon"></i></span>
+                        <span class="Badge Badge--sticky " title="Sticky" uib-tooltip="Importante" tooltip-placement="bottom"><i class="icon fa fa-fw fa-thumb-tack Badge-icon"></i></span>
                       </li>
                       <li class="item-solved" ng-if="post.solved">
                         <span class="Badge Badge--solved " title="Sticky" data-original-title="Sticky"><i class="icon fa fa-fw fa-check Badge-icon"></i></span>
                       </li>
                       <li class="item-subscription" ng-if="false">
                         <span class="Badge Badge--following " title="Following" data-original-title="Following"><i class="icon fa fa-fw fa-star Badge-icon"></i></span>
+                      </li>
+                      <li class="item-locked" ng-if="post.lock">
+                        <span class="Badge Badge--locked " title="Locked" uib-tooltip="Comentarios cerrados" tooltip-placement="bottom"><i class="icon fa fa-fw fa-lock Badge-icon"></i></span>
                       </li>
                     </ul>
                   </li>
