@@ -285,7 +285,7 @@
 
               <nav class="discussion-nav">
                 <ul>
-                  <li class="primary-control" ng-if="!post.comments_blocked">
+                  <li class="primary-control" ng-if="!post.lock">
                     <a class=" btn btn-primary" href="" ng-click="show_composer()" ng-if="user.isLogged">
                       <i class="fa fa-fw fa-reply icon"></i> <span class="label">Responder</span>
                     </a>
@@ -584,7 +584,7 @@
                 </div>
 
                 <div class="answers">
-                  <h5 ng-if="!post.comments_blocked || post.comments.count > 0">{{ post.comments.count }} respuesta{{post.comments.count == 1?'':'s'}}</h5>
+                  <h5 ng-if="!post.lock || post.comments.count > 0">{{ post.comments.count }} respuesta{{post.comments.count == 1?'':'s'}}</h5>
                 </div>
 
                 <div class="text-center" style="margin-bottom: 3em;" ng-if="comments_status.loaded < post.comments.total">
@@ -681,7 +681,7 @@
                         <li class="item-like" ng-if="comment.liked != -1 && comment.author.id != user.info.id && user.gaming.tribute > 0">
                           <a href="" class="btn btn-link" ng-click="comment_vote(post.id, comment, 'up')" ng-class="{'liked': comment.liked == 1}">Me gusta</a>
                         </li>
-                        <li class="item-reply" ng-if="comment.author.id != user.info.id && !post.comments_blocked">
+                        <li class="item-reply" ng-if="comment.author.id != user.info.id && !post.lock">
                           <a href="" class="btn btn-link" ng-click="reply_to(comment.author.username, comment.position)"><i class="fa fa-reply"></i> Responder</a>
                         </li>
                         <li>
@@ -752,14 +752,14 @@
 
                 <div ng-if="false && can('debug')">comments.count: {{post.comments.count}}, comments.new: {{post.comments.new}}, comments.total: {{post.comments.total}}, comments_status.loaded: {{comments_status.loaded}}</div>
 
-                <div class="need-signin" ng-if="!user.isLogged && !post.comments_blocked">
+                <div class="need-signin" ng-if="!user.isLogged && !post.lock">
                   <p>¿Quieres dejar un comentario? <a href="" ng-click="signIn()">Inicia sesión</a> o <a href="" ng-click="signUp()">Crea una cuenta</a></p>
                 </div>
               </div>
               <!-- New Comment editor-->
               <div class="row">
                 <div class="col-md-9">
-                  <div ng-if="!post.comments_blocked && user.isLogged">
+                  <div ng-if="!post.lock && user.isLogged">
                     <div class="idiot-wizzy">
                       <textarea id="comment-content" placeholder="Escribe tu comentario..." class="form-control flexible-height content" ng-model="comment.content" ng-disabled="waiting_comment" msd-elastic></textarea>
                       <div class="actions">
@@ -782,10 +782,10 @@
                     </div>
                     <p style="margin-top: 5px; font-size: 14px; color: #9C9C9C;">No olvides seguir el <a href="/reglamento" alt="Reglamento de SpartanGeek" target="_blank">reglamento</a> al publicar un comentario.</p>
                   </div>
-                  <div ng-if="post.comments_blocked && post.comments.count > 0">
+                  <div ng-if="post.lock && post.comments.count > 0">
                     <p class="alert alert-warning">Esta publicación no permite más comentarios.</p>
                   </div>
-                  <div ng-if="post.comments_blocked && post.comments.count == 0">
+                  <div ng-if="post.lock && post.comments.count == 0">
                     <p class="alert alert-info">Esta publicación no permite comentarios.</p>
                   </div>
                 </div>
