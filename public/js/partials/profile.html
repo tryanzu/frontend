@@ -52,7 +52,10 @@
                     <ul class="user-info">
                       <li class="block-item">
                         <div class="user-bio" ng-class="{'editable': (profile.id === user.info.id)}">
-                          <div class="bio-content" ng-click="editDescription()" ng-if="!update.editing_desc">
+                          <div class="bio-content" ng-click="editDescription()" ng-if="!update.editing_desc && profile.id === user.info.id">
+                            <p>{{ profile.description || 'Escribe una breve descripción' }}</p>
+                          </div>
+                          <div class="bio-content" ng-if="!update.editing_desc && profile.id !== user.info.id">
                             <p>{{ profile.description || 'Escribe una breve descripción' }}</p>
                           </div>
                           <input id="description" name="description" type="text" class="edit-description form-control" placeholder="Escribe una breve descripción" ng-if="update.editing_desc" ng-model="profile.description" maxlength="60" sg-edit-desc="makeDescriptionUpdate()" sg-cancel="cancelDescriptionUpdate()">
