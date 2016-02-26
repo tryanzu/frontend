@@ -70,7 +70,7 @@ var boardApplication = angular.module('board', [
   'btford.socket-io'
 ]);
 
-var version = '032';
+var version = '033';
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider', 'AclServiceProvider',
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider, AclServiceProvider) {
