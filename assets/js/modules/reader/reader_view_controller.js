@@ -423,11 +423,11 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
               break;
             case "locked":
               if(debug) console.log("New event: locked", data);
-              $scope.post.comments_blocked = true;
+              $scope.post.lock = true;
               break;
             case "unlocked":
               if(debug) console.log("New event: unlocked", data);
-              $scope.post.comments_blocked = false;
+              $scope.post.lock = false;
               break;
             default:
               if(debug) console.log("I don't know what the hell did Blacker say!")
