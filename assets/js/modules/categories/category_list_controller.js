@@ -341,6 +341,7 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
       }
     });
 
+    socket.removeAllListeners('feed action');
     socket.on('feed action', function (data) {
       debug = $scope.can("debug");
       if(data.fire) {
