@@ -9,7 +9,7 @@ var EditPostController = ['$scope', '$routeParams', '$http', 'Category', 'Part',
     title: '',
     content: '',
     category: '',
-    isQuestion: false,
+    is_question: false,
     pinned: false
   };
 
@@ -74,7 +74,7 @@ var EditPostController = ['$scope', '$routeParams', '$http', 'Category', 'Part',
         content: data.content,
         category: data.category,
         kind: 'category-post',
-        isQuestion: data.is_question,
+        is_question: data.is_question,
         pinned: data.pinned,
         lock: data.lock
       };
