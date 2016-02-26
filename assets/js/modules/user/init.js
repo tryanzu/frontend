@@ -60,6 +60,29 @@ UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed
     }
   };
 
+  $scope.editDescription = function() {
+    $scope.update.editing_desc = true;
+    $scope.profile.description_old = $scope.profile.description;
+    $timeout(function(){
+      $('#description').focus();
+    }, 100);
+  }
+  $scope.makeDescriptionUpdate = function() {
+    $http.put(layer_path + "user/my", {
+      description: $scope.profile.description
+    }).then(function success(response) {
+      $scope.update.editing_desc = false;
+    }, function(error) {
+      $scope.profile.description = $scope.profile.description_old;
+      $scope.update.editing_desc = false;
+    });
+  }
+  $scope.cancelDescriptionUpdate = function() {
+    //console.log("Canceling edit...", $scope.profile.description, $scope.profile.description_old);
+    $scope.profile.description = $scope.profile.description_old;
+    $scope.update.editing_desc = false;
+  }
+
   $scope.upload = function(files) {
     if(files.length == 1) {
       var file = files[0];
@@ -76,12 +99,10 @@ UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed
       });
     }
   };
-
   $scope.use_fb_pic = function() {
     $scope.user.info.image = 'https://graph.facebook.com/'+$scope.user.info.facebook.id+'/picture?width=128';
     $scope.profile.image = 'https://graph.facebook.com/'+$scope.user.info.facebook.id+'/picture?width=128';
   }
-
   $scope.remove_pic = function() {
     $scope.user.info.image = null;
     $scope.profile.image = null;
@@ -112,8 +133,6 @@ UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed
       $scope.posts.resolving = false;
     });
   }
-
-
   $scope.loadUserComments = function() {
     $http.get(layer_path + "users/" + $routeParams.id +"/comments")
       .then(function(response) {
@@ -131,7 +150,7 @@ UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed
   }
 
   User.get({user_id: $routeParams.id}, function(data) {
-    //console.log(data)
+    console.log(data)
     $scope.profile = data;
     $scope.startFeed();
     $scope.new_data.username = $scope.profile.username;
@@ -152,7 +171,8 @@ UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed
         // We calculate remaining swords for next level and ratio
         var rules = $scope.misc.gaming.rules;
         var remaining = rules[data.gaming.level].swords_end - $scope.profile.gaming.swords;
-        $scope.profile.gaming.remaining = remaining;
+        $scope.profile.gaming.remaining = Math.max(1, remaining);
+        //$scope.profile.gaming.swords = Math.max(0, $scope.profile.gaming.swords);
         var ratio = 100 - 100 * (remaining / (rules[data.gaming.level].swords_end - rules[data.gaming.level].swords_start));
         $scope.profile.gaming.ratio = ratio;
       }, 100);
@@ -164,6 +184,29 @@ UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed
     window.location = '/';
   });
 }]);
+
+UserModule.directive('sgEditDesc', function() {
+  return {
+    restrict: 'EA',
+    scope: false,
+    link: function(scope, element, attrs) {
+      element.bind("keydown keypress", function(event) {
+        if(event.which === 13) {
+          scope.$apply(function(){
+            scope.$eval(attrs.sgEditDesc, {'event': event});
+          });
+          event.preventDefault();
+        } else if(event.which === 27) {
+          // Cancel edit
+          scope.$apply(function(){
+            scope.$eval(attrs.sgCancel, {'event': event});
+          });
+          event.preventDefault();
+        }
+      });
+    }
+  };
+});
 
 UserModule.controller('UserValidationController', ['$scope', '$http', '$routeParams',
   function($scope, $http, $routeParams) {

@@ -121,6 +121,7 @@
       display: block;
     }
   }
+
   & .user-bio {
     margin: -10px -10px 0;
     border: 1px dashed transparent;
@@ -135,7 +136,15 @@
     }
 
     .bio-content {
-      padding: 10px 10px 1px;
+      padding: 10px;
+
+      p {
+        margin-bottom: 0;
+      }
+    }
+
+    .edit-description {
+      background: rgba(255, 255, 255, 0.3);
     }
 
     &, & textarea {
@@ -315,29 +324,51 @@
 
 .badge-container {
   display: inline-block;
-  margin-right: 0.8em;
-  margin-bottom: 1.5em;
-  min-width: 150px;
-  max-width: 150px;
-  text-align: center;
-  border: 1px solid @brand-primary-lighter;
-  padding: 10px;
+  margin-right: 2%;
+  margin-bottom: 1em;
+  min-width: 48%;
+  max-width: 48%;
+  border-bottom: 1px solid @brand-primary-lighter;
+  padding-bottom: 10px;
+  position: relative;
 
   .badge-preview {
     margin-bottom: 0.4em;
+
     img {
-      max-width: 64px;
+      max-width: 48px;
     }
   }
 
   .medal {
     padding: 2px 4px;
     background-color: #fff;
-    color: #333;
-    font-weight: 600;
+    color: #666;
+    font-weight: 400;
+    font-size: 14px;
+    position: absolute;
+    top: 8px;
+    left: 60px;
+    max-width: 150px;
+    white-space: normal
+  }
+}
 
-    i.circle {
-      display: none;
+.owning-content {
+  h2 {
+    font-size: 24px;
+
+    .fa-star {
+      color: @brand-warning;
     }
+    .fa-check-circle {
+      color: @brand-success;
+    }
+    .fa-history {
+      color: @brand-primary;
+    }
+  }
+  .fa {
+    margin-right: 0.5em;
   }
 }
