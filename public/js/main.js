@@ -7517,6 +7517,7 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
     }, time);
   };
 
+  // Socket.io logic
   $scope.$watch('post.id', function(newValue, oldValue){
     if(oldValue !== undefined) {
       if($scope.can("debug")) console.log("Socket stop listening to 'post " + $scope.post.id + "'");
@@ -10229,7 +10230,7 @@ var boardApplication = angular.module('board', [
   'btford.socket-io'
 ]);
 
-var version = '033';
+var version = '033a';
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider', 'AclServiceProvider',
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider, AclServiceProvider) {

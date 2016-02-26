@@ -311,6 +311,7 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
     }, time);
   };
 
+  // Socket.io logic
   $scope.$watch('post.id', function(newValue, oldValue){
     if(oldValue !== undefined) {
       if($scope.can("debug")) console.log("Socket stop listening to 'post " + $scope.post.id + "'");
