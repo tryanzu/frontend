@@ -15,7 +15,7 @@ var PublishController = ['$scope', '$routeParams', '$http', 'Category', 'Part', 
     content: '',
     category: '',
     components: false,
-    isQuestion: false,
+    is_question: false,
     pinned: false
   };
 
@@ -265,7 +265,7 @@ var PublishController = ['$scope', '$routeParams', '$http', 'Category', 'Part', 
   			name: $scope.post.title,
   			category: $scope.post.category,
   			kind: 'category-post',
-        isquestion: $scope.post.isQuestion,
+        is_question: $scope.post.is_question,
         pinned: $scope.post.pinned,
         lock: $scope.post.lock
   		};

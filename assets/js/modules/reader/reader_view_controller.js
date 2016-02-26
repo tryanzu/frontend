@@ -54,44 +54,31 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
 
   // Comment and Post vote
   $scope.comment_vote = function(post_id, comment, direction) {
-    $http.post(layer_path + 'vote/comment/' + post_id, {comment: '' + comment.position, 'direction': direction}).
-      success(function(data, status, headers, config) {
-        //comment.liked = !comment.liked;
-        var d = {'up': 1, 'down': -1};
-        if(comment.liked == d[direction]) {
-          comment.liked = null;
-        } else {
-          comment.liked = d[direction];
-        }
-      }).
-      error(function(data) {
-        if($scope.can('debug')) console.log(data);
-      });
-  }
+    $http.post(layer_path + 'vote/comment/' + post_id, {
+      comment: '' + comment.position,
+      'direction': direction
+    }).then(function success(response) {
+      //comment.liked = !comment.liked;
+      var d = {'up': 1, 'down': -1};
+      if(comment.liked == d[direction]) {
+        comment.liked = null;
+      } else {
+        comment.liked = d[direction];
+      }
+    });
+  };
   $scope.post_vote = function(post, direction) {
-    $http.post(layer_path + 'vote/post/' + post.id, {'direction': direction}).
-      success(function(data) {
-        var d = {'up': 1, 'down': -1};
-        if(post.liked == d[direction]) {
-          post.liked = null;
-          if(direction == 'up') {
-            post.votes.up = post.votes.up - 1;
-          } else {
-            post.votes.down = post.votes.down - 1;
-          }
-        } else {
-          post.liked = d[direction];
-          if(direction == 'up') {
-            post.votes.up = post.votes.up + 1;
-          } else {
-            post.votes.down = post.votes.down + 1;
-          }
-        }
-      }).
-      error(function(data) {
-        //console.log(data);
-      });
-  }
+    $http.post(layer_path + 'vote/post/' + post.id, {
+      'direction': direction
+    }).then(function success(response) {
+      var d = {'up': 1, 'down': -1};
+      if(post.liked == d[direction]) {
+        post.liked = null;
+      } else {
+        post.liked = d[direction];
+      }
+    });
+  };
 
   // Comment publishing
   $scope.publish = function() {
