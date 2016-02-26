@@ -7260,44 +7260,31 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
 
   // Comment and Post vote
   $scope.comment_vote = function(post_id, comment, direction) {
-    $http.post(layer_path + 'vote/comment/' + post_id, {comment: '' + comment.position, 'direction': direction}).
-      success(function(data, status, headers, config) {
-        //comment.liked = !comment.liked;
-        var d = {'up': 1, 'down': -1};
-        if(comment.liked == d[direction]) {
-          comment.liked = null;
-        } else {
-          comment.liked = d[direction];
-        }
-      }).
-      error(function(data) {
-        if($scope.can('debug')) console.log(data);
-      });
-  }
+    $http.post(layer_path + 'vote/comment/' + post_id, {
+      comment: '' + comment.position,
+      'direction': direction
+    }).then(function success(response) {
+      //comment.liked = !comment.liked;
+      var d = {'up': 1, 'down': -1};
+      if(comment.liked == d[direction]) {
+        comment.liked = null;
+      } else {
+        comment.liked = d[direction];
+      }
+    });
+  };
   $scope.post_vote = function(post, direction) {
-    $http.post(layer_path + 'vote/post/' + post.id, {'direction': direction}).
-      success(function(data) {
-        var d = {'up': 1, 'down': -1};
-        if(post.liked == d[direction]) {
-          post.liked = null;
-          if(direction == 'up') {
-            post.votes.up = post.votes.up - 1;
-          } else {
-            post.votes.down = post.votes.down - 1;
-          }
-        } else {
-          post.liked = d[direction];
-          if(direction == 'up') {
-            post.votes.up = post.votes.up + 1;
-          } else {
-            post.votes.down = post.votes.down + 1;
-          }
-        }
-      }).
-      error(function(data) {
-        //console.log(data);
-      });
-  }
+    $http.post(layer_path + 'vote/post/' + post.id, {
+      'direction': direction
+    }).then(function success(response) {
+      var d = {'up': 1, 'down': -1};
+      if(post.liked == d[direction]) {
+        post.liked = null;
+      } else {
+        post.liked = d[direction];
+      }
+    });
+  };
 
   // Comment publishing
   $scope.publish = function() {
@@ -7530,6 +7517,7 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
     }, time);
   };
 
+  // Socket.io logic
   $scope.$watch('post.id', function(newValue, oldValue){
     if(oldValue !== undefined) {
       if($scope.can("debug")) console.log("Socket stop listening to 'post " + $scope.post.id + "'");
@@ -8049,7 +8037,7 @@ var PublishController = ['$scope', '$routeParams', '$http', 'Category', 'Part', 
     content: '',
     category: '',
     components: false,
-    isQuestion: false,
+    is_question: false,
     pinned: false
   };
 
@@ -8299,7 +8287,7 @@ var PublishController = ['$scope', '$routeParams', '$http', 'Category', 'Part', 
   			name: $scope.post.title,
   			category: $scope.post.category,
   			kind: 'category-post',
-        isquestion: $scope.post.isQuestion,
+        is_question: $scope.post.is_question,
         pinned: $scope.post.pinned,
         lock: $scope.post.lock
   		};
@@ -8342,7 +8330,7 @@ var EditPostController = ['$scope', '$routeParams', '$http', 'Category', 'Part',
     title: '',
     content: '',
     category: '',
-    isQuestion: false,
+    is_question: false,
     pinned: false
   };
 
@@ -8407,7 +8395,7 @@ var EditPostController = ['$scope', '$routeParams', '$http', 'Category', 'Part',
         content: data.content,
         category: data.category,
         kind: 'category-post',
-        isQuestion: data.is_question,
+        is_question: data.is_question,
         pinned: data.pinned,
         lock: data.lock
       };
@@ -10242,7 +10230,7 @@ var boardApplication = angular.module('board', [
   'btford.socket-io'
 ]);
 
-var version = '033';
+var version = '033a';
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider', 'AclServiceProvider',
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider, AclServiceProvider) {
