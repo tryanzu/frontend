@@ -9,7 +9,7 @@ angular.module('searchBar', [
     templateUrl: '/js/partials/search.html'
   };
 })
-.controller('SearchController', ['$scope', '$timeout', '$http', 'algolia', function ($scope, $timeout, $http, algolia) {
+.controller('SearchController', ['$scope', '$timeout', '$http', function ($scope, $timeout, $http) {
   $scope.open = false;
   $scope.hits = {
     'posts': [],
@@ -28,10 +28,7 @@ angular.module('searchBar', [
       total: 0,
       time: 0
     }
-  }
-
-  var client = algolia.Client('5AO6WVBTY2', '46253cb75bbb7b4e031d41cda14c2426');
-  //var index = client.initIndex('prod_spartan');
+  };
 
   $scope.toggle = function() {
     $scope.open = !$scope.open;
@@ -45,7 +42,7 @@ angular.module('searchBar', [
   $scope.do = function(event) {
 
     var previous = $scope.query
-    if(event.keyCode == 27){
+    if(event.keyCode == 27) {
       //console.log('el query fue' + previous)
       if(previous === '')
         $scope.open = false;
@@ -59,16 +56,36 @@ angular.module('searchBar', [
 
       $scope.fetching = true;
       $scope.loading = $timeout(function() {
-        var queries = [{
-          indexName: 'prod_store',
-          query: $scope.query,
-          params: {hitsPerPage: 12}
-        }, {
-          indexName: 'prod_spartan',
-          query: $scope.query,
-          params: {hitsPerPage: 10}
-        }];
-        client.search(queries)
+        $http.get(layer_path + 'search/components', {
+          params:{
+            q: $scope.query,
+            offset: 0,
+            limit: 12
+          }
+        }).then(function success(response) {
+          console.log("Components", response.data);
+          $scope.hits.components = response.data.results;
+          $scope.statistics.components.total = response.data.total;
+          $scope.statistics.components.time = response.data.elapsed;
+        }, function(error) {
+          console.log(error);
+        });
+
+        $http.get(layer_path + 'search/posts', {
+          params:{
+            q: $scope.query,
+            offset: 0,
+            limit: 10
+          }
+        }).then(function success(response) {
+          console.log("Posts", response.data);
+          $scope.hits.posts = response.data.results;
+          $scope.statistics.posts.total = response.data.total;
+          $scope.statistics.posts.time = response.data.elapsed;
+        }, function(error) {
+          console.log(error);
+        });
+        /*client.search(queries)
           .then(function searchSuccess(content) {
             //console.log(content);
             $scope.hits.components = content.results[0].hits;
@@ -79,9 +96,9 @@ angular.module('searchBar', [
             $scope.statistics.posts.time = content.results[1].processingTimeMS;
           }, function searchFailure(err) {
             console.log(err);
-          });
+          });*/
         $scope.fetching = false;
-      }, 200); // delay in ms
+      }, 250); // delay in ms
     }
     else
     {

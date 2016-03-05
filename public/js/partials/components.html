@@ -42,7 +42,7 @@
             </div>
           </div>
           <div class="components-list row">
-            <div class="component col-md-6" ng-repeat="hit in results.hits">
+            <div class="component col-md-6" ng-repeat="hit in results">
               <div class="row">
                 <div class="col-md-3">
                   <div class="component-thumbnail">
@@ -55,7 +55,7 @@
                   <p class="hit-part-number">{{ hit.part_number }}</p>
                   <div class="row">
                     <div class="col-sm-4">
-                      <p class="hit-price" ng-if="onlyStore">{{ hit.price | currency:'$ ':0 }}</p>
+                      <p class="hit-price" ng-class="{'not-available': hit.store.vendors.spartangeek.stock == 0}" ng-if="onlyStore">{{ hit.store.vendors.spartangeek.price | currency:'$ ':0 }}</p>
                     </div>
                     <div ng-class="{'col-sm-8': onlyStore, 'col-sm-12': !onlyStore}">
                       <div class="btn-toolbar">
@@ -85,8 +85,8 @@
 
         <h4>Categorías</h4>
         <ul class="collections">
-          <li ng-repeat="(key, value) in facets.type">
-            <a href="" ng-click="change_facet(key)">{{ type_labels[key] }} ({{ value }})</a>
+          <li ng-repeat="facet in facets" ng-class="{'active': facet.type == current_facet}">
+            <a href="" ng-click="change_facet(facet.type)">{{ type_labels[facet.type] }} ({{ facet.count }})</a>
           </li>
 
           <li ng-if="current_facet != ''">
