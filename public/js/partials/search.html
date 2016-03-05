@@ -75,15 +75,15 @@
                 </a>
                 <div class="username">
                   <a href="/u/{{ hit.user.username }}/{{ hit.user.id }}" title="Perfil de {{ hit.user.username }}" ng-click="toggle()">
-                    <span ng-bind-html="hit._highlightResult.user.username.value"></span>
+                    <span ng-bind-html="hit.user.username"></span>
                   </a>
                 </div>
               </div>
               <div class="col-sm-9 col-xs-8">
-                <a class="search-result" href="/p/{{ hit.slug }}/{{ hit.objectID }}" ng-click="toggle()">
-                  <p class="title" ng-bind-html="hit._highlightResult.title.value"></p>
-                  <p class="content" ng-bind-html="hit._highlightResult.content.value"></p>
-                  <p>Escrito en <span ng-bind-html="hit._highlightResult.category.name.value"></span></p>
+                <a class="search-result" href="/p/{{ hit.slug }}/{{ hit.id }}" ng-click="toggle()">
+                  <p class="title" ng-bind-html="hit.title"></p>
+                  <p class="content" ng-bind-html="hit.content"></p>
+                  <p>Escrito en <span ng-bind-html="hit.category.name"></span></p>
                 </a>
               </div>
             </div>
