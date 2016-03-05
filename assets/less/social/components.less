@@ -141,6 +141,10 @@
       font-size: 18px;
       font-weight: 600;
       color: @brand-primary;
+
+      &.not-available {
+        color: #BBB;
+      }
     }
   }
   .component-thumbnail {
@@ -204,6 +208,10 @@
   padding-left: 0;
   li {
     list-style-type: none;
+
+    &.active {
+      font-weight: 600;
+    }
   }
 }
 

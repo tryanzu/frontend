@@ -160,18 +160,7 @@ ComponentsModule.factory('cart', ['$localstorage', '$http', function($localstora
   return cart;
 }]);
 
-ComponentsModule.factory("ComponentsService", function(algolia) {
-
-  var client = algolia.Client('5AO6WVBTY2', '46253cb75bbb7b4e031d41cda14c2426');
-  var index = client.initIndex('prod_store');
-
-  return {
-    algoliaClient: client,
-    index: index
-  };
-});
-
-ComponentsModule.controller('ComponentsController', ['$scope', '$timeout', 'ComponentsService', '$route', '$location', '$routeParams', function($scope, $timeout, ComponentsService, $route, $location, $routeParams) {
+ComponentsModule.controller('ComponentsController', ['$scope', '$timeout', '$http', '$route', '$location', '$routeParams', function($scope, $timeout, $http, $route, $location, $routeParams) {
 
   $scope.onlyStore = false;
   if($scope.location.path().indexOf('tienda') > -1) {
@@ -212,9 +201,11 @@ ComponentsModule.controller('ComponentsController', ['$scope', '$timeout', 'Comp
   }
 
   $scope.change_facet = function(new_facet) {
+    //console.log(new_facet);
     $scope.current_facet = new_facet;
     $scope.currentPage = 1;
     $scope.changePage();
+
     // Change path
     var new_path = '/componentes/';
     if($scope.onlyStore) {
@@ -229,46 +220,50 @@ ComponentsModule.controller('ComponentsController', ['$scope', '$timeout', 'Comp
     //console.log('Track', new_path);
   }
 
-  $scope.getFacetFilters = function() {
-    if($scope.onlyStore) {
-      return [
-        'type:' + $scope.current_facet,
-        'activated: true'
-      ];
-    } else {
-      return [ 'type:' + $scope.current_facet ];
+  $scope.getPayload = function() {
+    var payload = {
+      offset: ($scope.currentPage-1)*$scope.itemsPerPage,
+      limit: $scope.itemsPerPage
+    };
+    // Add query to payload
+    if($scope.query != '') {
+      payload.q = $scope.query;
     }
-  }
+    // Add the is_store if applies
+    if($scope.onlyStore) {
+      payload.in_store = true;
+    }
+    // Add the facet filter
+    if($scope.current_facet != '') {
+      payload.type = $scope.current_facet;
+    }
+    return payload;
+  };
 
   $scope.reset = function() {
-    ComponentsService.index.search('', {
-      page: 0,
-      hitsPerPage:
-      $scope.itemsPerPage,
-      facets: '*',
-      facetFilters: $scope.getFacetFilters()
+    console.log("Reset running...");
+    $http.get(layer_path + 'search/components', {
+      params: $scope.getPayload()
     })
     .then(function(response) {
-      //console.log(response);
-      $scope.results = response;
-      $scope.totalItems = response.nbHits;
-      $scope.facets = response.facets;
-    });
+      console.log(response);
+      $scope.results = response.data.results;
+      $scope.totalItems = response.data.total;
+      $scope.facets = response.data.facets;
+    }, function(error) {console.log(error);});
   }
-  $scope.reset();
+  //$scope.reset();
 
   $scope.changePage = function() {
-    ComponentsService.index.search($scope.query, {
-      page: $scope.currentPage - 1,
-      hitsPerPage: $scope.itemsPerPage,
-      facets: '*',
-      facetFilters: $scope.getFacetFilters()
+    $http.get(layer_path + 'search/components', {
+      params: $scope.getPayload()
     })
     .then(function(response) {
-      $scope.results = response;
-      $scope.totalItems = response.nbHits;
-      $scope.facets = response.facets;
-    });
+      console.log(response);
+      $scope.results = response.data.results;
+      $scope.totalItems = response.data.total;
+      $scope.facets = response.data.facets;
+    }, function(error) {console.log(error);});
   };
 
   $scope.$watch("onlyStore", function(newVal, oldVal) {
@@ -281,7 +276,6 @@ ComponentsModule.controller('ComponentsController', ['$scope', '$timeout', 'Comp
       'event': 'VirtualPageview',
       'virtualPageURL': $location.path()
     });
-    //console.log('Track', $location.path());
     $scope.changePage();
   });
 
@@ -296,21 +290,17 @@ ComponentsModule.controller('ComponentsController', ['$scope', '$timeout', 'Comp
 
       $scope.fetching = true;
       $scope.loading = $timeout(function() {
-        ComponentsService.index.search($scope.query, {
-          page: 0,
-          hitsPerPage: $scope.itemsPerPage,
-          facets: '*',
-          facetFilters: $scope.getFacetFilters()
+        $http.get(layer_path + 'search/components', {
+          params: $scope.getPayload()
         })
         .then(function searchSuccess(response) {
-            //console.log(response);
-            $scope.results = response;
-            $scope.totalItems = response.nbHits;
-            $scope.facets = response.facets;
-
-          }, function searchFailure(err) {
-            console.log(err);
-          });
+          console.log(response);
+          $scope.results = response.data.results;
+          $scope.totalItems = response.data.total;
+          $scope.facets = response.data.facets;
+        }, function (error) {
+          console.log(error);
+        });
         $scope.fetching = false;
       }, 500); // delay in ms
     }

@@ -9246,7 +9246,7 @@ angular.module('searchBar', [
     templateUrl: '/js/partials/search.html'
   };
 })
-.controller('SearchController', ['$scope', '$timeout', '$http', 'algolia', function ($scope, $timeout, $http, algolia) {
+.controller('SearchController', ['$scope', '$timeout', '$http', function ($scope, $timeout, $http) {
   $scope.open = false;
   $scope.hits = {
     'posts': [],
@@ -9265,10 +9265,7 @@ angular.module('searchBar', [
       total: 0,
       time: 0
     }
-  }
-
-  var client = algolia.Client('5AO6WVBTY2', '46253cb75bbb7b4e031d41cda14c2426');
-  //var index = client.initIndex('prod_spartan');
+  };
 
   $scope.toggle = function() {
     $scope.open = !$scope.open;
@@ -9282,7 +9279,7 @@ angular.module('searchBar', [
   $scope.do = function(event) {
 
     var previous = $scope.query
-    if(event.keyCode == 27){
+    if(event.keyCode == 27) {
       //console.log('el query fue' + previous)
       if(previous === '')
         $scope.open = false;
@@ -9296,16 +9293,36 @@ angular.module('searchBar', [
 
       $scope.fetching = true;
       $scope.loading = $timeout(function() {
-        var queries = [{
-          indexName: 'prod_store',
-          query: $scope.query,
-          params: {hitsPerPage: 12}
-        }, {
-          indexName: 'prod_spartan',
-          query: $scope.query,
-          params: {hitsPerPage: 10}
-        }];
-        client.search(queries)
+        $http.get(layer_path + 'search/components', {
+          params:{
+            q: $scope.query,
+            offset: 0,
+            limit: 12
+          }
+        }).then(function success(response) {
+          console.log("Components", response.data);
+          $scope.hits.components = response.data.results;
+          $scope.statistics.components.total = response.data.total;
+          $scope.statistics.components.time = response.data.elapsed;
+        }, function(error) {
+          console.log(error);
+        });
+
+        $http.get(layer_path + 'search/posts', {
+          params:{
+            q: $scope.query,
+            offset: 0,
+            limit: 10
+          }
+        }).then(function success(response) {
+          console.log("Posts", response.data);
+          $scope.hits.posts = response.data.results;
+          $scope.statistics.posts.total = response.data.total;
+          $scope.statistics.posts.time = response.data.elapsed;
+        }, function(error) {
+          console.log(error);
+        });
+        /*client.search(queries)
           .then(function searchSuccess(content) {
             //console.log(content);
             $scope.hits.components = content.results[0].hits;
@@ -9316,9 +9333,9 @@ angular.module('searchBar', [
             $scope.statistics.posts.time = content.results[1].processingTimeMS;
           }, function searchFailure(err) {
             console.log(err);
-          });
+          });*/
         $scope.fetching = false;
-      }, 200); // delay in ms
+      }, 250); // delay in ms
     }
     else
     {
@@ -9491,18 +9508,7 @@ ComponentsModule.factory('cart', ['$localstorage', '$http', function($localstora
   return cart;
 }]);
 
-ComponentsModule.factory("ComponentsService", function(algolia) {
-
-  var client = algolia.Client('5AO6WVBTY2', '46253cb75bbb7b4e031d41cda14c2426');
-  var index = client.initIndex('prod_store');
-
-  return {
-    algoliaClient: client,
-    index: index
-  };
-});
-
-ComponentsModule.controller('ComponentsController', ['$scope', '$timeout', 'ComponentsService', '$route', '$location', '$routeParams', function($scope, $timeout, ComponentsService, $route, $location, $routeParams) {
+ComponentsModule.controller('ComponentsController', ['$scope', '$timeout', '$http', '$route', '$location', '$routeParams', function($scope, $timeout, $http, $route, $location, $routeParams) {
 
   $scope.onlyStore = false;
   if($scope.location.path().indexOf('tienda') > -1) {
@@ -9543,9 +9549,11 @@ ComponentsModule.controller('ComponentsController', ['$scope', '$timeout', 'Comp
   }
 
   $scope.change_facet = function(new_facet) {
+    //console.log(new_facet);
     $scope.current_facet = new_facet;
     $scope.currentPage = 1;
     $scope.changePage();
+
     // Change path
     var new_path = '/componentes/';
     if($scope.onlyStore) {
@@ -9560,46 +9568,50 @@ ComponentsModule.controller('ComponentsController', ['$scope', '$timeout', 'Comp
     //console.log('Track', new_path);
   }
 
-  $scope.getFacetFilters = function() {
-    if($scope.onlyStore) {
-      return [
-        'type:' + $scope.current_facet,
-        'activated: true'
-      ];
-    } else {
-      return [ 'type:' + $scope.current_facet ];
+  $scope.getPayload = function() {
+    var payload = {
+      offset: ($scope.currentPage-1)*$scope.itemsPerPage,
+      limit: $scope.itemsPerPage
+    };
+    // Add query to payload
+    if($scope.query != '') {
+      payload.q = $scope.query;
     }
-  }
+    // Add the is_store if applies
+    if($scope.onlyStore) {
+      payload.in_store = true;
+    }
+    // Add the facet filter
+    if($scope.current_facet != '') {
+      payload.type = $scope.current_facet;
+    }
+    return payload;
+  };
 
   $scope.reset = function() {
-    ComponentsService.index.search('', {
-      page: 0,
-      hitsPerPage:
-      $scope.itemsPerPage,
-      facets: '*',
-      facetFilters: $scope.getFacetFilters()
+    console.log("Reset running...");
+    $http.get(layer_path + 'search/components', {
+      params: $scope.getPayload()
     })
     .then(function(response) {
-      //console.log(response);
-      $scope.results = response;
-      $scope.totalItems = response.nbHits;
-      $scope.facets = response.facets;
-    });
+      console.log(response);
+      $scope.results = response.data.results;
+      $scope.totalItems = response.data.total;
+      $scope.facets = response.data.facets;
+    }, function(error) {console.log(error);});
   }
-  $scope.reset();
+  //$scope.reset();
 
   $scope.changePage = function() {
-    ComponentsService.index.search($scope.query, {
-      page: $scope.currentPage - 1,
-      hitsPerPage: $scope.itemsPerPage,
-      facets: '*',
-      facetFilters: $scope.getFacetFilters()
+    $http.get(layer_path + 'search/components', {
+      params: $scope.getPayload()
     })
     .then(function(response) {
-      $scope.results = response;
-      $scope.totalItems = response.nbHits;
-      $scope.facets = response.facets;
-    });
+      console.log(response);
+      $scope.results = response.data.results;
+      $scope.totalItems = response.data.total;
+      $scope.facets = response.data.facets;
+    }, function(error) {console.log(error);});
   };
 
   $scope.$watch("onlyStore", function(newVal, oldVal) {
@@ -9612,7 +9624,6 @@ ComponentsModule.controller('ComponentsController', ['$scope', '$timeout', 'Comp
       'event': 'VirtualPageview',
       'virtualPageURL': $location.path()
     });
-    //console.log('Track', $location.path());
     $scope.changePage();
   });
 
@@ -9627,21 +9638,17 @@ ComponentsModule.controller('ComponentsController', ['$scope', '$timeout', 'Comp
 
       $scope.fetching = true;
       $scope.loading = $timeout(function() {
-        ComponentsService.index.search($scope.query, {
-          page: 0,
-          hitsPerPage: $scope.itemsPerPage,
-          facets: '*',
-          facetFilters: $scope.getFacetFilters()
+        $http.get(layer_path + 'search/components', {
+          params: $scope.getPayload()
         })
         .then(function searchSuccess(response) {
-            //console.log(response);
-            $scope.results = response;
-            $scope.totalItems = response.nbHits;
-            $scope.facets = response.facets;
-
-          }, function searchFailure(err) {
-            console.log(err);
-          });
+          console.log(response);
+          $scope.results = response.data.results;
+          $scope.totalItems = response.data.total;
+          $scope.facets = response.data.facets;
+        }, function (error) {
+          console.log(error);
+        });
         $scope.fetching = false;
       }, 500); // delay in ms
     }
@@ -10230,7 +10237,7 @@ var boardApplication = angular.module('board', [
   'btford.socket-io'
 ]);
 
-var version = '033a';
+var version = '034';
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider', 'AclServiceProvider',
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider, AclServiceProvider) {
