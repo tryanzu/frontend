@@ -6,8 +6,8 @@ UserModule.factory('User', ['$resource', function($resource) {
 }]);
 
 // User Profile controller
-UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed', 'Upload', '$http', '$timeout',
-  function($scope, User, $routeParams, Feed, Upload, $http, $timeout) {
+UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed', 'Upload', '$http', '$timeout', '$firebaseObject',
+  function($scope, User, $routeParams, Feed, Upload, $http, $timeout, $firebaseObject) {
 
   $scope.profile = null;
   $scope.resolving_posts = false;
@@ -23,7 +23,6 @@ UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed
     username_error: false,
     username_error_message: 'El nombre de usuario sólo puede llevar letras, números y guiones. Debe empezar con letra y terminar con número o letra y tener entre 3 y 32 caracteres.'
   }
-
   $scope.posts = {
     data: [],
     resolving: true,
@@ -31,6 +30,7 @@ UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed
     more_to_load: true,
     first_load: false
   }
+  $scope.status = null;
 
   $scope.editUsername = function() {
     $scope.update.editing_username = true;
@@ -149,11 +149,24 @@ UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed
       }, function(response) {});
   }
 
-  User.get({user_id: $routeParams.id}, function(data) {
-    console.log(data)
+  User.get({user_id: $routeParams.id}, function success(data) {
+    if($scope.can('debug')) console.log(data);
     $scope.profile = data;
     $scope.startFeed();
     $scope.new_data.username = $scope.profile.username;
+
+    var fbRef = new Firebase(firebase_url);
+    var userRef = fbRef.child("users").child(data.id);
+    var presenceRef = userRef.child("online");
+    presenceRef.on('value', function(ss) {
+      if(ss.val() !== null) {
+        $scope.status = true;
+      } else {
+        $scope.status = false;
+      }
+    });
+
+    $scope.profile.status = $firebaseObject(presenceRef);
 
     $scope.promises.gaming.then(function() {
       $timeout(function() {
@@ -180,7 +193,7 @@ UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed
 
     //console.log(rules[data.gaming.level].swords_start, rules[data.gaming.level].swords_end, ratio);
     $scope.loadUserComments();
-  }, function(response) {
+  }, function(error) {
     window.location = '/';
   });
 }]);
