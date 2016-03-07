@@ -7212,7 +7212,6 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
 	$scope.waiting = true;
   $scope.waiting_comment = false;
   $scope.adding_file = false;
-  $scope.best_answer_object = false;
   $scope.comments_status = {
     'loaded': 10,
     'offset': -20,
@@ -7223,24 +7222,11 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
 
   $scope.setBestAnswer = function(comment) {
     $http.post(layer_path + "posts/" + $scope.post.id + "/answer/" + comment.position).then(function success(response){
-      console.log(response);
       comment.chosen = true;
       $scope.post.solved = true;
-
-      $scope.selectBestAnswer();
     }, function(error){
       console.log(error, "No se puedo elegir como mejor respuesta.");
     })
-  };
-
-  $scope.selectBestAnswer = function() {
-    for(var i = 0; i < $scope.post.comments.set.length; i++) {
-      if($scope.post.comments.set[i].chosen) {
-        $scope.best_answer_object = $scope.post.comments.set[i];
-        return
-      }
-    }
-    $scope.best_answer_object = false;
   };
 
   $scope.show_composer = function() {
@@ -7651,7 +7637,6 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
 
       if($scope.post.comments.answer) {
         addMediaEmbed($scope.post.comments.answer);
-        $scope.selectBestAnswer();
       }
 
       $scope.post.comments.new = 0;
@@ -7679,22 +7664,69 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
         $scope.page.description = $scope.post.content.substring(0, 157) + '...';
       }
 
+      // If searching for a comment not loaded, load it:
+      if($scope.view_comment.position >= 0 && $scope.view_comment.position != '') {
+        if($scope.post.comments.total - $scope.comments_status.loaded > $scope.view_comment.position) {
+          $scope.comments_status.loading = true;
+
+          var comments_offset = $scope.view_comment.position;
+          var comments_to_load = $scope.post.comments.total - comments_offset - $scope.comments_status.loaded;
+
+          $http.get(layer_path + 'posts/' + $scope.post.id + '/comments', { params: {
+            'offset': comments_offset,
+            'limit': comments_to_load
+          } } ).then(function success(response){
+            //console.log(response.data.comments.set);
+            new_comments = response.data.comments.set;
+            for(var c in new_comments) {
+              addMediaEmbed(new_comments[c]);
+            }
+            new_comments = new_comments.concat($scope.post.comments.set);
+            $scope.post.comments.set = new_comments;
+            $scope.comments_status.loaded += comments_to_load;
+            $scope.comments_status.offset = comments_offset;
+            $scope.comments_status.loading = false;
+
+            $timeout(function() {
+              var elem = $('.comment[data-number='+$scope.view_comment.position+']');
+              if(elem.val() === "") {
+                elem.addClass('active');
+                $('.current-article').animate({scrollTop: (elem.offset().top - 80)}, 50);
+              }
+            }, 500);
+
+            //console.log("Loaded", $scope.comments_status.loaded, $scope.comments_status.offset, $scope.post.comments.total);
+          }, function(error){
+            console.log("Error while loading...");
+            $scope.comments_status.loading = false;
+          });
+        } else {
+          $timeout(function() {
+            var elem = $('.comment[data-number='+$scope.view_comment.position+']');
+            if(elem.val() === "") {
+              elem.addClass('active');
+              $('.current-article').animate({scrollTop: (elem.offset().top - 80)}, 50);
+            }
+          }, 500);
+        }
+      }
+
       // Postproccess every comment
-      for( var c in $scope.post.comments.set) {
+      for(var c in $scope.post.comments.set) {
         addMediaEmbed($scope.post.comments.set[c]);
       }
       $scope.resolving = false;
 
       // If searching for a comment, move to that comment
-      if($scope.view_comment.position >= 0 && $scope.view_comment.position != '') {
+      /*if($scope.view_comment.position >= 0 && $scope.view_comment.position != '') {
         $timeout(function() {
           var elem = $('.comment[data-number='+$scope.view_comment.position+']');
           if(elem.val() === "") {
             elem.addClass('active');
             $('.current-article').animate({scrollTop: (elem.offset().top - 80)}, 50);
           }
-        }, 400);
-      }
+        }, 1500);
+      }*/
 
       /* TEMPORAL - TODO: MOVE TO A DIRECTIVE */
       $scope.total_h = $scope.viewport_h = 0;
