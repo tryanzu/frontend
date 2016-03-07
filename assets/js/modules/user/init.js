@@ -159,14 +159,16 @@ UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed
     var userRef = fbRef.child("users").child(data.id);
     var presenceRef = userRef.child("online");
     presenceRef.on('value', function(ss) {
-      if(ss.val() !== null) {
-        $scope.status = true;
-      } else {
-        $scope.status = false;
-      }
+      $scope.$apply(function() {
+        if(ss.val() !== null) {
+          $scope.status = true;
+        } else {
+          $scope.status = false;
+        }
+      });
     });
 
-    $scope.profile.status = $firebaseObject(presenceRef);
+    //$scope.profile.status = $firebaseObject(presenceRef);
 
     $scope.promises.gaming.then(function() {
       $timeout(function() {
