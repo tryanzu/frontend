@@ -61,9 +61,12 @@
                           <input id="description" name="description" type="text" class="edit-description form-control" placeholder="Escribe una breve descripción" ng-if="update.editing_desc" ng-model="profile.description" maxlength="60" sg-edit-desc="makeDescriptionUpdate()" sg-cancel="cancelDescriptionUpdate()">
                         </div>
                       </li>
-                      <li class="hidden">
-                        <span class="user-last-seen online">
+                      <li ng-if="status != null">
+                        <span class="user-last-seen online" ng-if="status">
                           <i class="fa fa-fw fa-circle"></i> Online
+                        </span>
+                        <span class="user-last-seen" ng-if="!status">
+                          <i class="fa fa-fw fa-circle-o"></i> Offline
                         </span>
                       </li>
                       <li class="">Es espartano desde {{ profile.created_at | timeAgo }}</li>

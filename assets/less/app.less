@@ -28,6 +28,7 @@
 @import "social/medals.less";
 @import "social/gamification.less";
 @import "social/components.less";
+@import "social/notifications.less";
 
 @import "chat/toolbar.less";
 @import "chat/messages.less";
@@ -107,6 +108,24 @@
 
 body {
   text-rendering: optimizeLegibility;
+}
+
+body.updating {
+  background-color: #277AE0;//@brand-primary;
+  color: white;
+
+  .container {
+    text-align: center;
+    margin-top: 4em;
+
+    img {
+      max-height: 100px;
+    }
+    h1 {
+      text-transform: uppercase;
+      font-weight: 100;
+    }
+  }
 }
 
 .navbar-default .navbar-nav .open ul.dropdown-sections li a {

@@ -7212,7 +7212,6 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
 	$scope.waiting = true;
   $scope.waiting_comment = false;
   $scope.adding_file = false;
-  $scope.best_answer_object = false;
   $scope.comments_status = {
     'loaded': 10,
     'offset': -20,
@@ -7223,24 +7222,11 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
 
   $scope.setBestAnswer = function(comment) {
     $http.post(layer_path + "posts/" + $scope.post.id + "/answer/" + comment.position).then(function success(response){
-      console.log(response);
       comment.chosen = true;
       $scope.post.solved = true;
-
-      $scope.selectBestAnswer();
     }, function(error){
       console.log(error, "No se puedo elegir como mejor respuesta.");
     })
-  };
-
-  $scope.selectBestAnswer = function() {
-    for(var i = 0; i < $scope.post.comments.set.length; i++) {
-      if($scope.post.comments.set[i].chosen) {
-        $scope.best_answer_object = $scope.post.comments.set[i];
-        return
-      }
-    }
-    $scope.best_answer_object = false;
   };
 
   $scope.show_composer = function() {
@@ -7651,7 +7637,6 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
 
       if($scope.post.comments.answer) {
         addMediaEmbed($scope.post.comments.answer);
-        $scope.selectBestAnswer();
       }
 
       $scope.post.comments.new = 0;
@@ -7679,22 +7664,69 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
         $scope.page.description = $scope.post.content.substring(0, 157) + '...';
       }
 
+      // If searching for a comment not loaded, load it:
+      if($scope.view_comment.position >= 0 && $scope.view_comment.position != '') {
+        if($scope.post.comments.total - $scope.comments_status.loaded > $scope.view_comment.position) {
+          $scope.comments_status.loading = true;
+
+          var comments_offset = $scope.view_comment.position;
+          var comments_to_load = $scope.post.comments.total - comments_offset - $scope.comments_status.loaded;
+
+          $http.get(layer_path + 'posts/' + $scope.post.id + '/comments', { params: {
+            'offset': comments_offset,
+            'limit': comments_to_load
+          } } ).then(function success(response){
+            //console.log(response.data.comments.set);
+            new_comments = response.data.comments.set;
+            for(var c in new_comments) {
+              addMediaEmbed(new_comments[c]);
+            }
+            new_comments = new_comments.concat($scope.post.comments.set);
+            $scope.post.comments.set = new_comments;
+            $scope.comments_status.loaded += comments_to_load;
+            $scope.comments_status.offset = comments_offset;
+            $scope.comments_status.loading = false;
+
+            $timeout(function() {
+              var elem = $('.comment[data-number='+$scope.view_comment.position+']');
+              if(elem.val() === "") {
+                elem.addClass('active');
+                $('.current-article').animate({scrollTop: (elem.offset().top - 80)}, 50);
+              }
+            }, 500);
+
+            //console.log("Loaded", $scope.comments_status.loaded, $scope.comments_status.offset, $scope.post.comments.total);
+          }, function(error){
+            console.log("Error while loading...");
+            $scope.comments_status.loading = false;
+          });
+        } else {
+          $timeout(function() {
+            var elem = $('.comment[data-number='+$scope.view_comment.position+']');
+            if(elem.val() === "") {
+              elem.addClass('active');
+              $('.current-article').animate({scrollTop: (elem.offset().top - 80)}, 50);
+            }
+          }, 500);
+        }
+      }
+
       // Postproccess every comment
-      for( var c in $scope.post.comments.set) {
+      for(var c in $scope.post.comments.set) {
         addMediaEmbed($scope.post.comments.set[c]);
       }
       $scope.resolving = false;
 
       // If searching for a comment, move to that comment
-      if($scope.view_comment.position >= 0 && $scope.view_comment.position != '') {
+      /*if($scope.view_comment.position >= 0 && $scope.view_comment.position != '') {
         $timeout(function() {
           var elem = $('.comment[data-number='+$scope.view_comment.position+']');
           if(elem.val() === "") {
             elem.addClass('active');
             $('.current-article').animate({scrollTop: (elem.offset().top - 80)}, 50);
           }
-        }, 400);
-      }
+        }, 1500);
+      }*/
 
       /* TEMPORAL - TODO: MOVE TO A DIRECTIVE */
       $scope.total_h = $scope.viewport_h = 0;
@@ -8436,8 +8468,8 @@ UserModule.factory('User', ['$resource', function($resource) {
 }]);
 
 // User Profile controller
-UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed', 'Upload', '$http', '$timeout',
-  function($scope, User, $routeParams, Feed, Upload, $http, $timeout) {
+UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed', 'Upload', '$http', '$timeout', '$firebaseObject',
+  function($scope, User, $routeParams, Feed, Upload, $http, $timeout, $firebaseObject) {
 
   $scope.profile = null;
   $scope.resolving_posts = false;
@@ -8453,7 +8485,6 @@ UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed
     username_error: false,
     username_error_message: 'El nombre de usuario sólo puede llevar letras, números y guiones. Debe empezar con letra y terminar con número o letra y tener entre 3 y 32 caracteres.'
   }
-
   $scope.posts = {
     data: [],
     resolving: true,
@@ -8461,6 +8492,7 @@ UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed
     more_to_load: true,
     first_load: false
   }
+  $scope.status = null;
 
   $scope.editUsername = function() {
     $scope.update.editing_username = true;
@@ -8579,11 +8611,26 @@ UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed
       }, function(response) {});
   }
 
-  User.get({user_id: $routeParams.id}, function(data) {
-    console.log(data)
+  User.get({user_id: $routeParams.id}, function success(data) {
+    if($scope.can('debug')) console.log(data);
     $scope.profile = data;
     $scope.startFeed();
     $scope.new_data.username = $scope.profile.username;
+
+    var fbRef = new Firebase(firebase_url);
+    var userRef = fbRef.child("users").child(data.id);
+    var presenceRef = userRef.child("online");
+    presenceRef.on('value', function(ss) {
+      $scope.$apply(function() {
+        if(ss.val() !== null) {
+          $scope.status = true;
+        } else {
+          $scope.status = false;
+        }
+      });
+    });
+
+    //$scope.profile.status = $firebaseObject(presenceRef);
 
     $scope.promises.gaming.then(function() {
       $timeout(function() {
@@ -8610,7 +8657,7 @@ UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed
 
     //console.log(rules[data.gaming.level].swords_start, rules[data.gaming.level].swords_end, ratio);
     $scope.loadUserComments();
-  }, function(response) {
+  }, function(error) {
     window.location = '/';
   });
 }]);
@@ -10205,18 +10252,18 @@ ComponentsModule.controller('CheckoutController', ['$scope', 'cart', '$http', '$
 var boardApplication = angular.module('board', [
   'ngRoute',
   'ui.bootstrap',
-	'directivesModule',
-	'filtersModule',
+  'directivesModule',
+  'filtersModule',
   'sg.services',
-	'activeReader',
+  'activeReader',
   'hc.marked',
   'idiotWizzy',
   'infinite-scroll',
   'facebook',
-	'feedModule',
+  'feedModule',
   'categoryModule',
   'readerModule',
-	'publisherModule',
+  'publisherModule',
   'partModule',
   'userModule',
   'rankModule',
@@ -10372,22 +10419,22 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
 
 boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http', '$uibModalInstance', 'Facebook',
   function($scope, $rootScope, $http, $uibModalInstance, Facebook) {
-  	$scope.form = {
-  		email: '',
-  		password: '',
-  		error: false
-  	};
+    $scope.form = {
+      email: '',
+      password: '',
+      error: false
+    };
 
     $scope.fb_loading = false;
 
-  	$scope.signIn = function() {
-  		if ($scope.form.email === '' || $scope.form.password === '') {
-  			$scope.form.error = {message: 'Ambos campos son necesarios'};
-  			return;
-  		}
+    $scope.signIn = function() {
+      if ($scope.form.email === '' || $scope.form.password === '') {
+        $scope.form.error = {message: 'Ambos campos son necesarios'};
+        return;
+      }
 
-  		// Post credentials to the auth rest point
-  		$http.get(layer_path + 'auth/get-token', {params: {email: $scope.form.email, password: $scope.form.password}, skipAuthorization: true})
+      // Post credentials to the auth rest point
+      $http.get(layer_path + 'auth/get-token', {params: {email: $scope.form.email, password: $scope.form.password}, skipAuthorization: true})
       .success(function(data) {
         localStorage.setItem('id_token', data.token);
         localStorage.setItem('firebase_token', data.firebase);
@@ -10399,11 +10446,11 @@ boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http'
       .error(function(data, status, headers, config) {
         $scope.form.error = {message:'Usuario o contraseña incorrecta.'};
       });
-  	};
+    };
 
-  	$scope.cancel = function() {
-  		$uibModalInstance.dismiss('cancel');
-  	};
+    $scope.cancel = function() {
+      $uibModalInstance.dismiss('cancel');
+    };
 
     $scope.loginFb = function() {
       $scope.fb_loading = true;
@@ -10457,13 +10504,13 @@ boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http'
 
 boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http', '$uibModalInstance', 'Facebook',
   function($scope, $rootScope, $http, $uibModalInstance, Facebook) {
-  	$scope.form = {
-  		email: '',
-  		password: '',
-  		username: '',
+    $scope.form = {
+      email: '',
+      password: '',
+      username: '',
       username_error: false,
-  		error: false
-  	};
+      error: false
+    };
     $scope.fb_loading = false;
 
     $scope.check_username = function() {
@@ -10474,14 +10521,14 @@ boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http'
       }
     };
 
-  	$scope.signUp = function() {
+    $scope.signUp = function() {
 
-  		if ($scope.form.email === '' || $scope.form.password === '' || $scope.form.username === '') {
-  			$scope.form.error = {message:'Todos los campos son necesarios.'};
-  			return;
-  		}
+      if ($scope.form.email === '' || $scope.form.password === '' || $scope.form.username === '') {
+        $scope.form.error = {message:'Todos los campos son necesarios.'};
+        return;
+      }
 
-  		// Post credentials to the UserRegisterAction endpoint
+      // Post credentials to the UserRegisterAction endpoint
       var payload = {
         email: $scope.form.email,
         password: $scope.form.password,
@@ -10494,7 +10541,7 @@ boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http'
 
       //console.log(payload);
 
-  		$http.post(layer_path + 'user', payload, { skipAuthorization: true })
+      $http.post(layer_path + 'user', payload, { skipAuthorization: true })
       .error(function(data, status, headers, config) {
         console.log(data.message);
         $scope.form.error = { message:'El usuario o correo elegido ya existe.' };
@@ -10506,16 +10553,16 @@ boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http'
         $uibModalInstance.dismiss('signed');
         $rootScope.$broadcast('login');
         //$rootScope.$broadcast('status_change');
-  		});
-  	};
+      });
+    };
 
-  	$scope.ok = function (){
-  		$uibModalInstance.close($scope.selected.item);
-  	};
+    $scope.ok = function (){
+      $uibModalInstance.close($scope.selected.item);
+    };
 
-  	$scope.cancel = function () {
-  		$uibModalInstance.dismiss('cancel');
-  	};
+    $scope.cancel = function () {
+      $uibModalInstance.dismiss('cancel');
+    };
 
     $scope.loginFb = function() {
       $scope.fb_loading = true;
@@ -10606,14 +10653,17 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
       'gaming': null,
       'board_stats': null
     }
+    $scope.update = {
+      available: false,
+      show: false
+    };
 
     $scope.show_search = function() {
       $rootScope.$broadcast('open_search');
     }
 
     $scope.logUser = function() {
-      $http.get(layer_path + 'user/my').then(
-        function(response) {
+      $http.get(layer_path + 'user/my').then(function success(response) {
           var data = response.data;
           //console.log(data);
           $scope.user.info = data;
@@ -10651,38 +10701,46 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
           });
 
           // FIREBASE PREPARATION
-          var userUrl = firebase_url + "users/" + data.id;
-
-          var notificationsCountRef = new Firebase(userUrl + "/notifications/count");
-          notificationsCountRef.onAuth(function(authData) {
+          var fbRef = new Firebase(firebase_url);
+          fbRef.onAuth(function onComplete(authData) {
             if (authData) {
-              console.log("Authenticated to Firebase");
+              //if($scope.can('debug')) console.log("Authenticated to Firebase", authData);
             } else {
               console.log("Client unauthenticated.");
               //$scope.signOut();
             }
           });
-          notificationsCountRef.authWithCustomToken(localStorage.firebase_token, function(error, authData) {
+          fbRef.authWithCustomToken(localStorage.firebase_token, function(error, authData) {
             if (error) {
               console.log("Login to Firebase failed!", error);
             } else {
-              var amOnline = new Firebase(firebase_url + '.info/connected');
-              //var userRef = new Firebase('https://spartangeek.firebaseio.com/presence/' + data.id);
-              var presenceRef = new Firebase(userUrl + '/online');
+              var amOnline = fbRef.child(".info/connected");
+              var userRef = fbRef.child("users").child(data.id);
+              var presenceRef = userRef.child("online");
+
+              // We generate a random string to use as a client id
+              var client_id = (0|Math.random()*9e6).toString(36);
               amOnline.on('value', function(snapshot) {
                 if(snapshot.val()) {
-                  //userRef.onDisconnect().remove();
-                  presenceRef.onDisconnect().set(0);
-                  presenceRef.set(1);
+                  presenceRef.child(client_id).onDisconnect().remove();
+                  presenceRef.child(client_id).set(true);
                 }
               });
 
+              // Personal info
+              var image = $scope.user.info.image || "";
+              userRef.child("info").set({
+                username: $scope.user.info.username,
+                image: image
+              });
+
               // Gamification attributes
-              var gamingRef = new Firebase(userUrl + '/gaming');
+              var gamingRef = userRef.child("gaming");
               $scope.user.gaming = $firebaseObject(gamingRef);
               $scope.user.gaming.$loaded(function() {});
 
               // download the data into a local object
+              var notificationsCountRef = userRef.child("notifications/count");
               var count = $firebaseObject(notificationsCountRef)
               // synchronize the object with a three-way data binding
               count.$bindTo($scope, "user.notifications.count");
@@ -10691,7 +10749,7 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
                 if(count.$value > 15){
                   to_show = count.$value;
                 }
-                var list_ref = new Firebase(userUrl + "/notifications/list");
+                var list_ref = userRef.child("notifications/list");
                 $scope.user.notifications.list = $firebaseArray(list_ref.limitToLast(to_show));
 
                 // We wait till notifications list is loaded
@@ -10790,6 +10848,10 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
       $scope.$broadcast('reloadPost');
     };
 
+    $scope.reloadPage = function() {
+      window.location.reload(true);
+    };
+
     // If login action sucessfull anywhere, sign in the user
     $scope.$on('login', function(e) {
       $scope.logUser();
@@ -10798,6 +10860,29 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
     // Check for FB Login Status, this is necessary so later calls doesn't make
     // the pop up to be blocked by the browser
     Facebook.getLoginStatus(function(r){$rootScope.fb_response = r;});
+
+    // Board updates
+    //console.log("Checking version...");
+    var fbRef = new Firebase(firebase_url);
+    var updatesRef = fbRef.child('version');
+    updatesRef.on('value', function(ss) {
+      console.log('Local version', parseInt(version));
+      console.log('Remote version', parseInt(ss.val()));
+      $scope.$apply(function(){
+        if( parseInt(ss.val()) > parseInt(version) ) {
+          $scope.update.available = true;
+          $timeout(function(){
+            $scope.update.show = true;
+          }, 100);
+          $timeout(function(){
+            $scope.reloadPage();
+          }, 30*1000);
+        } else {
+          $scope.update.show = false;
+          $scope.update.available = false;
+        }
+      });
+    });
 
     // If already signed in, sign in the user
     if(localStorage.signed_in === 'true') {
@@ -10830,11 +10915,11 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
       }).
       error(function(data) {});
 
+    // Friends invitations
     var ref = $location.search().ref;
     if(ref != undefined) {
       localStorage.setItem('ref', ref);
     }
-    //alert(localStorage.getItem('ref'))
   }
 ]);
 
