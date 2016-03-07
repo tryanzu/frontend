@@ -439,6 +439,10 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
       'gaming': null,
       'board_stats': null
     }
+    $scope.update = {
+      available: false,
+      show: false
+    };
 
     $scope.show_search = function() {
       $rootScope.$broadcast('open_search');
@@ -630,6 +634,10 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
       $scope.$broadcast('reloadPost');
     };
 
+    $scope.reloadPage = function() {
+      window.location.reload(true);
+    };
+
     // If login action sucessfull anywhere, sign in the user
     $scope.$on('login', function(e) {
       $scope.logUser();
@@ -638,6 +646,29 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
     // Check for FB Login Status, this is necessary so later calls doesn't make
     // the pop up to be blocked by the browser
     Facebook.getLoginStatus(function(r){$rootScope.fb_response = r;});
+
+    // Board updates
+    //console.log("Checking version...");
+    var fbRef = new Firebase(firebase_url);
+    var updatesRef = fbRef.child('version');
+    updatesRef.on('value', function(ss) {
+      console.log('Local version', parseInt(version));
+      console.log('Remote version', parseInt(ss.val()));
+      $scope.$apply(function(){
+        if( parseInt(ss.val()) > parseInt(version) ) {
+          $scope.update.available = true;
+          $timeout(function(){
+            $scope.update.show = true;
+          }, 100);
+          $timeout(function(){
+            $scope.reloadPage();
+          }, 30*1000);
+        } else {
+          $scope.update.show = false;
+          $scope.update.available = false;
+        }
+      });
+    });
 
     // If already signed in, sign in the user
     if(localStorage.signed_in === 'true') {
@@ -670,11 +701,11 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
       }).
       error(function(data) {});
 
+    // Friends invitations
     var ref = $location.search().ref;
     if(ref != undefined) {
       localStorage.setItem('ref', ref);
     }
-    //alert(localStorage.getItem('ref'))
   }
 ]);
 
