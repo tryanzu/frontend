@@ -31,7 +31,7 @@
   <!-- /Favicon -->
 
   <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-  <link type="text/css" rel="stylesheet" href="/css/app-034.css">
+  <link type="text/css" rel="stylesheet" href="/css/app-035.css">
 
   <script type="text/javascript" src="js/offline.js"></script>
   <script type="text/javascript" src="https://js.stripe.com/v2/"></script>
@@ -39,7 +39,7 @@
   <script src='https://cdn.firebase.com/js/client/2.2.1/firebase.js'></script>
   <script src="https://cdn.firebase.com/libs/angularfire/1.1.1/angularfire.min.js"></script>
   <script type="text/javascript" src="js/config.js"></script>
-  <script type="text/javascript" src="js/main-034.js"></script>
+  <script type="text/javascript" src="js/main-035.js"></script>
 
 </head>
 <body ng-controller="MainController">
@@ -52,6 +52,14 @@
   '//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
   })(window,document,'script','dataLayer','GTM-MQWXX7');</script>
   <!-- End Google Tag Manager -->
+
+  <div ng-if="update.available" class="ns-box ns-bar ns-effect-slidetop ns-type-notice" ng-class="{'ns-show': update.show}">
+    <div class="ns-box-inner">
+      <i class="fa fa-exclamation-triangle"></i>
+      <p>Actualización disponible. Se recargará la página automáticamente en 30 segundos... <a href="" ng-click="reloadPage()">Recargar ahora.</a></p>
+    </div>
+  </div>
+
   <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container-fluid">
       <!-- Brand and toggle get grouped for better mobile display -->

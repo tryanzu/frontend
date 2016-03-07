@@ -83,7 +83,7 @@
                 <a class="search-result" href="/p/{{ hit.slug }}/{{ hit.id }}" ng-click="toggle()">
                   <p class="title" ng-bind-html="hit.title"></p>
                   <p class="content" ng-bind-html="hit.content"></p>
-                  <p>Escrito en <span ng-bind-html="hit.category.name"></span></p>
+                  <p>Escrito hace <span>{{ hit.created_at | timeAgo }}</span></p>
                 </a>
               </div>
             </div>
