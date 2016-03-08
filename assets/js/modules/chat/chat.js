@@ -28,6 +28,7 @@ var ChatController = [
 
     // Commonly-used Firebase references.
     $scope._userRef        = null;
+    $scope._statusRef      = null;
     $scope._messageRef     = $scope._firebase.child('messages');
     $scope._channelRef     = $scope._firebase.child('channels');
     //$scope._privateRoomRef = $scope._firebase.child('room-private-metadata');
@@ -76,6 +77,7 @@ var ChatController = [
     }
 
     $scope.changeChannel = function(channel) {
+      $scope.exitChannel();
       $scope.channel.selected = channel;
       var messagesRef = $scope._messageRef.child(channel.$id).orderByChild('created_at').limitToLast(50);
 
@@ -126,27 +128,36 @@ var ChatController = [
 
       // Some status validation if user is logged in
       if($scope.user.isLogged) {
-        var randId = Math.random() * (999999 - 100000) + 100000;
         var amOnline = new Firebase(firebase_url + '.info/connected');
-        var statusRef = new Firebase(firebase_url + 'members/' + channel.$id + '/' + $scope.user.info.id);
+        $scope._statusRef = new Firebase(firebase_url + 'members/' + channel.$id + '/' + $scope.user.info.id);
 
         amOnline.on('value', function(snapshot) {
           if(snapshot.val()) {
             var image = $scope.user.info.image || "";
-            statusRef.onDisconnect().remove();
-            statusRef.on('value', function(ss) {
+            $scope._statusRef.onDisconnect().remove();
+            $scope._statusRef.on('value', function(ss) {
               if( ss.val() == null ) {
                 // another window went offline, so mark me still online
-                statusRef.set({
+                $scope._statusRef.set({
                   id: $scope.user.info.id,
                   username: $scope.user.info.username,
-                  image: image,
-                  status: "online"
+                  image: image
                 });
               }
             });
           }
         });
+      }
+    };
+
+    $scope.exitChannel = function() {
+      if($scope.channel.selected) {
+        channel = $scope.channel.selected;
+        if($scope.user.isLogged) {
+          $scope._statusRef.off();
+          //var statusRef = new Firebase(firebase_url + 'members/' + channel.$id + '/' + $scope.user.info.id);
+          $scope._statusRef.set(null);
+        }
       }
     };
 
@@ -212,6 +223,11 @@ var ChatController = [
     $scope.channels = $firebaseArray($scope._channelRef);
     $scope.channels.$loaded().then(function() {
       $scope.changeChannel($scope.channels[0]);
+    });
+
+    $scope.$on("$destroy", function() {
+      console.log("Closing chat");
+      $scope.exitChannel();
     });
 
     // Scrolling responses
