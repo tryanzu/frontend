@@ -7498,6 +7498,20 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
   $scope.toggleUserCard = function (comment){
     var time = comment.showAuthor ? 0:800;
     comment.showAuthor = !comment.showAuthor;
+    if(comment.showAuthor) {
+      var fbRef = new Firebase(firebase_url);
+      var userRef = fbRef.child("users").child(comment.author.id);
+      var presenceRef = userRef.child("presence");
+      presenceRef.once('value', function(ss) {
+        $scope.$apply(function() {
+          if(ss.val() !== null) {
+            comment.author.status = true;
+          } else {
+            comment.author.status = false;
+          }
+        });
+      });
+    }
     $timeout(function(){
       comment.showAuthorAnimation = !comment.showAuthorAnimation;
     }, time);
@@ -8619,7 +8633,7 @@ UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed
 
     var fbRef = new Firebase(firebase_url);
     var userRef = fbRef.child("users").child(data.id);
-    var presenceRef = userRef.child("online");
+    var presenceRef = userRef.child("presence");
     presenceRef.on('value', function(ss) {
       $scope.$apply(function() {
         if(ss.val() !== null) {
@@ -10716,7 +10730,7 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
             } else {
               var amOnline = fbRef.child(".info/connected");
               var userRef = fbRef.child("users").child(data.id);
-              var presenceRef = userRef.child("online");
+              var presenceRef = userRef.child("presence");
 
               // We generate a random string to use as a client id
               var client_id = (0|Math.random()*9e6).toString(36);
@@ -10866,8 +10880,8 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
     var fbRef = new Firebase(firebase_url);
     var updatesRef = fbRef.child('version');
     updatesRef.on('value', function(ss) {
-      console.log('Local version', parseInt(version));
-      console.log('Remote version', parseInt(ss.val()));
+      //console.log('Local version', parseInt(version));
+      //console.log('Remote version', parseInt(ss.val()));
       $scope.$apply(function(){
         if( parseInt(ss.val()) > parseInt(version) ) {
           $scope.update.available = true;

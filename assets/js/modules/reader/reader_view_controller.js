@@ -292,6 +292,20 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
   $scope.toggleUserCard = function (comment){
     var time = comment.showAuthor ? 0:800;
     comment.showAuthor = !comment.showAuthor;
+    if(comment.showAuthor) {
+      var fbRef = new Firebase(firebase_url);
+      var userRef = fbRef.child("users").child(comment.author.id);
+      var presenceRef = userRef.child("presence");
+      presenceRef.once('value', function(ss) {
+        $scope.$apply(function() {
+          if(ss.val() !== null) {
+            comment.author.status = true;
+          } else {
+            comment.author.status = false;
+          }
+        });
+      });
+    }
     $timeout(function(){
       comment.showAuthorAnimation = !comment.showAuthorAnimation;
     }, time);

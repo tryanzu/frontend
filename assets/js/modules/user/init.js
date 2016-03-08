@@ -157,7 +157,7 @@ UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed
 
     var fbRef = new Firebase(firebase_url);
     var userRef = fbRef.child("users").child(data.id);
-    var presenceRef = userRef.child("online");
+    var presenceRef = userRef.child("presence");
     presenceRef.on('value', function(ss) {
       $scope.$apply(function() {
         if(ss.val() !== null) {
