@@ -359,8 +359,13 @@
                                 </div>
                               </div>
                             </li>
-                            <li class="item-lastSeen hidden">
-                              <span class="UserCard-lastSeen"><i class="icon fa fa-fw fa-clock-o "></i> hace 10 horas</span>
+                            <li class="item-lastSeen">
+                              <span class="user-last-seen online" ng-if="post.author.status">
+                                <i class="fa fa-fw fa-circle"></i> Online
+                              </span>
+                              <span class="user-last-seen" ng-if="!post.author.status">
+                                <i class="fa fa-fw fa-circle-o"></i> Offline
+                              </span>
                             </li>
                             <li class="item-joined hidden">Se unió hace 8 meses</li>
                           </ul>
@@ -618,8 +623,13 @@
                                     </div>
                                   </div>
                                 </li>
-                                <li class="item-lastSeen hidden">
-                                  <span class="UserCard-lastSeen"><i class="icon fa fa-fw fa-clock-o "></i> hace 10 horas</span>
+                                <li class="item-lastSeen">
+                                  <span class="user-last-seen online" ng-if="comment.author.status">
+                                    <i class="fa fa-fw fa-circle"></i> Online
+                                  </span>
+                                  <span class="user-last-seen" ng-if="!comment.author.status">
+                                    <i class="fa fa-fw fa-circle-o"></i> Offline
+                                  </span>
                                 </li>
                                 <li class="item-joined hidden">Se unió hace 8 meses</li>
                               </ul>

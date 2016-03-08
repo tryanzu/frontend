@@ -136,7 +136,7 @@
         <input type="text" ng-model="searchText.content" class="form-control mb-20" ng-if="can('edit-category-comments')">
 
         <ul class="user-status">
-          <li ng-repeat="m in members | filter:searchText.content | orderBy:['-status','username']" ng-class="{'online': m.status == 'online'}">
+          <li class="online" ng-repeat="m in members | filter:searchText.content | orderBy:['username']">
             <a href="/u/{{ m.username }}/{{ m.id }}" class="">
               <span class="avatar" title="{{ m.username }}" ng-if="!m.image">{{ m.username[0] }}</span>
               <img class="avatar" ng-src="{{ m.image }}" alt="{{ m.username }}" ng-if="m.image">
