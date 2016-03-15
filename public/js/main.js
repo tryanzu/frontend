@@ -8523,11 +8523,13 @@ UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed
       $scope.password_update.show_message = true;
       $scope.password_update.which_message = 'length';
       $scope.password_update.in_progress = false;
+      return;
     }
     if($scope.password_update.password != $scope.password_update.password_repeat) {
       $scope.password_update.show_message = true;
       $scope.password_update.which_message = 'not_equal';
       $scope.password_update.in_progress = false;
+      return;
     }
     $http.put(layer_path + "user/my", {password: $scope.password_update.password}).then(function success(response){
       console.log(response);
