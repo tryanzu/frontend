@@ -10482,20 +10482,46 @@ boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http'
       $uibModalInstance.dismiss('cancel');
     };
 
+    var checkPermissions = function(response) {
+      if(response.status === 'connected') {
+        return $http.get("https://graph.facebook.com/me/permissions?access_token=" + response.authResponse.accessToken).
+          then(function success(response) {
+            var permissions = response.data.data;
+            var found = false;
+            for(p in permissions) {
+              if(permissions[p].permission == "email") {
+                return permissions[p].status == "granted";
+              }
+            }
+            return false;
+          }, function(error){
+            return false;
+          });
+      } else {
+        return false;
+      }
+    }
+
     $scope.loginFb = function() {
       $scope.fb_loading = true;
-      var response;
-      if($rootScope.fb_response.status === 'connected') {
-        response = $rootScope.fb_response;
-        $scope.fb_try(response);
-      } else {
-        Facebook.login(function(response) {
-          $scope.fb_try(response);
-        }, {
-          scope: 'public_profile,email',
-          auth_type: 'rerequest'
-        });
-      }
+      Facebook.login(function(response) {
+        if(response.authResponse != null) {
+          checkPermissions(response).then(function (result) {
+            if(result) {
+              $scope.fb_try(response);
+            } else {
+              $scope.form.error = {message:'Debes aceptar todos los permisos en FB para poder iniciar sesión.'};
+              $scope.fb_loading = false;
+            }
+          });
+        } else {
+          $scope.form.error = {message:'Debes aceptar los permisos en FB para poder iniciar sesión.'};
+          $scope.fb_loading = false;
+        }
+      }, {
+        scope: 'public_profile,email',
+        auth_type: 'rerequest'
+      });
     };
 
     $scope.fb_try = function(response) {
@@ -10518,10 +10544,9 @@ boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http'
               localStorage.setItem('id_token', data.token);
               localStorage.setItem('firebase_token', data.firebase);
               localStorage.setItem('signed_in', true);
-              //console.log(data.token, data.firebase);
+
               $uibModalInstance.dismiss('logged');
               $rootScope.$broadcast('login');
-              //$rootScope.$broadcast('status_change');
             });
         }).
         error(function(data, status, headers, config) {
@@ -10594,20 +10619,45 @@ boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http'
       $uibModalInstance.dismiss('cancel');
     };
 
+    var checkPermissions = function(response) {
+      if(response.status === 'connected') {
+        return $http.get("https://graph.facebook.com/me/permissions?access_token=" + response.authResponse.accessToken).
+          then(function success(response) {
+            var permissions = response.data.data;
+            var found = false;
+            for(p in permissions) {
+              if(permissions[p].permission == "email") {
+                return permissions[p].status == "granted";
+              }
+            }
+            return false;
+          }, function(error){
+            return false;
+          });
+      } else {
+        return false;
+      }
+    }
     $scope.loginFb = function() {
       $scope.fb_loading = true;
-      var response;
-      if($rootScope.fb_response.status === 'connected') {
-        response = $rootScope.fb_response;
-        $scope.fb_try(response);
-      } else {
-        Facebook.login(function(response) {
-          $scope.fb_try(response);
-        }, {
-          scope: 'public_profile,email',
-          auth_type: 'rerequest'
-        });
-      }
+      Facebook.login(function(response) {
+        if(response.authResponse != null) {
+          checkPermissions(response).then(function (result) {
+            if(result) {
+              $scope.fb_try(response);
+            } else {
+              $scope.form.error = {message:'Debes aceptar todos los permisos en FB para poder iniciar sesión.'};
+              $scope.fb_loading = false;
+            }
+          });
+        } else {
+          $scope.form.error = {message:'Debes aceptar los permisos en FB para poder iniciar sesión.'};
+          $scope.fb_loading = false;
+        }
+      }, {
+        scope: 'public_profile,email',
+        auth_type: 'rerequest'
+      });
     };
 
     $scope.fb_try = function(response) {
@@ -10889,7 +10939,10 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
 
     // Check for FB Login Status, this is necessary so later calls doesn't make
     // the pop up to be blocked by the browser
-    Facebook.getLoginStatus(function(r){$rootScope.fb_response = r;});
+    Facebook.getLoginStatus(function(r) {
+      //console.log(r);
+      $rootScope.fb_response = r;
+    });
 
     // Board updates
     //console.log("Checking version...");
