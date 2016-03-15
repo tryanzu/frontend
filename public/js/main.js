@@ -8508,6 +8508,41 @@ UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed
   }
   $scope.status = null;
 
+  $scope.password_update = {
+    'password': '',
+    'password_repeat': '',
+    'in_progress': false,
+    'show_message': false,
+    'which_message': null
+  };
+
+  $scope.updatePassword = function() {
+    $scope.password_update.in_progress = true;
+    $scope.password_update.show_message = false;
+    if($scope.password_update.password.length < 8 || $scope.password_update.password.length > 20) {
+      $scope.password_update.show_message = true;
+      $scope.password_update.which_message = 'length';
+      $scope.password_update.in_progress = false;
+    }
+    if($scope.password_update.password != $scope.password_update.password_repeat) {
+      $scope.password_update.show_message = true;
+      $scope.password_update.which_message = 'not_equal';
+      $scope.password_update.in_progress = false;
+    }
+    $http.put(layer_path + "user/my", {password: $scope.password_update.password}).then(function success(response){
+      console.log(response);
+      $scope.password_update.show_message = true;
+      $scope.password_update.which_message = 'success';
+      $scope.password_update.in_progress = false;
+      $scope.password_update.password = '';
+      $scope.password_update.password_repeat = '';
+    }, function(error){
+      $scope.password_update.show_message = true;
+      $scope.password_update.which_message = 'error';
+      $scope.password_update.in_progress = false;
+    });
+  };
+
   $scope.editUsername = function() {
     $scope.update.editing_username = true;
   };
