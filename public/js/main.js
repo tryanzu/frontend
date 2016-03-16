@@ -7091,7 +7091,7 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
       }
     });
 
-    $scope.on('$destroy', function() {
+    $scope.$on('$destroy', function(event, data) {
       if($scope.can("debug")) console.log("Socket stop listening to 'feed action'");
       socket.removeAllListeners('feed action');
     });
