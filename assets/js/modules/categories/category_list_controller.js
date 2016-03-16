@@ -341,7 +341,6 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
       }
     });
 
-    socket.removeAllListeners('feed action');
     socket.on('feed action', function (data) {
       debug = $scope.can("debug");
       if(data.fire) {
@@ -423,6 +422,11 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
             if(debug) console.log("I don't know what the hell did Blacker say!")
         }
       }
+    });
+
+    $scope.on('$destroy', function() {
+      if($scope.can("debug")) console.log("Socket stop listening to 'feed action'");
+      socket.removeAllListeners('feed action');
     });
 
     // Hack, so we don't have to reload the controller if the route uses the same controller
