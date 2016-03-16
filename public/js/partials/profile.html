@@ -69,7 +69,7 @@
                           <i class="fa fa-fw fa-circle-o"></i> Offline
                         </span>
                       </li>
-                      <li class="">Es espartano desde {{ profile.created_at | timeAgo }}</li>
+                      <li class="">Miembro desde {{ profile.created_at | timeAgo }}</li>
                     </ul>
                   </div>
                 </div>
@@ -98,13 +98,21 @@
                       <a href="" ng-click="current_page = 'feed'">Publicaciones <span class="count hidden">2</span></a>
                     </li>
                     <li role="presentation" ng-class="{active: current_page == 'comments'}">
-                      <a href="" ng-click="current_page = 'comments'">Comentarios <span class="count">{{ comments.count }}</span></a>
+                      <a href="" ng-click="current_page = 'comments'">Comentarios <span class="count">{{ comments.count | number:0 }}</span></a>
                     </li>
                     <li role="presentation" class="hidden">
                       <a href="">Juegos <span class="count hidden">25</span></a>
                     </li>
                     <li role="presentation" ng-class="{active: current_page == 'ref'}">
                       <a href="" ng-click="current_page = 'ref'">Amigos invitados</a>
+                    </li>
+                    <li class="divider" ng-show="profile.id === user.info.id" ng-cloak>
+                      <span></span>
+                    </li>
+                    <li role="presentation" ng-class="{active: current_page == 'config'}" ng-show="profile.id === user.info.id" ng-cloak>
+                      <a href="" ng-click="current_page = 'config'">
+                        <i class="fa fa-fw fa-cog icon"></i> Configuración
+                      </a>
                     </li>
                   </ul>
                 </div>
@@ -599,6 +607,37 @@
                       <li>A elección del staff de SpartanGeek</li>
                     </ol>
                   </div>
+                </div>
+
+                <div class="offset-content user-content" ng-if="current_page == 'config'">
+                  <h3>Cuenta</h3>
+                  <h4>Cambiar contraseña</h4>
+                  <p>Puedes cambiar tu contraseña, la cual debe tener una longitud mínima de 8 caracteres.</p>
+
+                  <p class="alert alert-warning" ng-if="password_update.show_message && password_update.which_message == 'length'">La contraseña deber tener al menos 8 y máximo 20 caracteres.</p>
+                  <p class="alert alert-warning" ng-if="password_update.show_message && password_update.which_message == 'not_equal'">Las contraseñas no coinciden.</p>
+                  <p class="alert alert-info" ng-if="password_update.show_message && password_update.which_message == 'error'">Hubo un problema al actualizar tu contraseña, intenta de nuevo más tarde.</p>
+                  <p class="alert alert-success" ng-if="password_update.show_message && password_update.which_message == 'success'">Tu contraseña fue actualizada correctamente.</p>
+                  <div class="row">
+                    <div class="col-md-5">
+                      <form>
+                        <div class="form-group">
+                          <label for="password">Nueva contraseña</label>
+                          <input type="password" ng-model="password_update.password" class="form-control" id="password" placeholder="Contraseña">
+                        </div>
+                        <div class="form-group">
+                          <label for="password_repeat">Repetir nueva contraseña</label>
+                          <input type="password" ng-model="password_update.password_repeat" class="form-control" id="password_repeat" placeholder="Repetir contraseña">
+                        </div>
+                        <a href="" class="btn btn-default" ng-class="{'disabled': password_update.in_progress}" role="button" ng-click="updatePassword()">Guardar nueva contraseña</a>
+                      </form>
+                    </div>
+                  </div>
+
+                  <hr>
+
+                  <h3>Notificaciones</h3>
+                  <p>Próximamente</p>
                 </div>
               </div>
             </div>
