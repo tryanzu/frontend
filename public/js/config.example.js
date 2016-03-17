@@ -8,3 +8,4 @@ var socketio_url = "http://localhost:3100/";
 //var firebase_url = 'https://spartangeek.firebaseio.com/'
 //var stripe_public_key = 'pk_live_bVc6ytCOondqEoFFHg6r10y3'
 //var socketio_url = "http://transmit.spartangeek.com/"
+var ss_key = "6a6369fb40";
