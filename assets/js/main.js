@@ -70,7 +70,7 @@ var boardApplication = angular.module('board', [
   'btford.socket-io'
 ]);
 
-var version = '037';
+var version = '038';
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider', 'AclServiceProvider',
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider, AclServiceProvider) {
@@ -494,12 +494,28 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
       show: false
     };
 
+    $rootScope.$on('$routeChangeStart', function () {
+      // This runs on every controller change
+      var _sift = window._sift = window._sift || [];
+      _sift.push(['_setAccount', ss_key]);
+      if($scope.user.isLogged === true && $scope.user.info) {
+        console.log($scope.user.info.id, $scope.user.info.session_id);
+        _sift.push(['_setUserId', $scope.user.info.id]);
+        _sift.push(['_setSessionId', $scope.user.info.session_id]);
+      } else {
+        _sift.push(['_setUserId', ""]);
+      }
+      _sift.push(['_trackPageview']);
+    });
+
     $scope.show_search = function() {
       $rootScope.$broadcast('open_search');
     }
 
     $scope.logUser = function() {
-      $http.get(layer_path + 'user/my').then(function success(response) {
+      $http.get(layer_path + 'user/my', {
+        withCredentials: true
+      }).then(function success(response) {
           var data = response.data;
           //console.log(data);
           $scope.user.info = data;
