@@ -10355,7 +10355,7 @@ var boardApplication = angular.module('board', [
   'btford.socket-io'
 ]);
 
-var version = '037';
+var version = '038';
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider', 'AclServiceProvider',
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider, AclServiceProvider) {
@@ -10781,7 +10781,6 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
 
     $rootScope.$on('$routeChangeStart', function () {
       // This runs on every controller change
-      console.log("Cambié...");
       var _sift = window._sift = window._sift || [];
       _sift.push(['_setAccount', ss_key]);
       if($scope.user.isLogged === true && $scope.user.info) {
