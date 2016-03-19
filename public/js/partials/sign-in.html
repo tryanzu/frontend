@@ -3,35 +3,50 @@
 </button>
 <form>
   <div class="modal-header">
-    <h3 class="title-control">Iniciar Sesión</h3>
+    <h3 class="title-control" ng-show="!pass_recovery.show">Iniciar Sesión</h3>
+    <h3 class="title-control" ng-show="pass_recovery.show">Recuperar contraseña</h3>
   </div>
   <div class="modal-body">
-    <div class="form-centered">
-      <a href="" class="btn btn-fb" ng-if="!fb_loading" ng-click="loginFb()"><i class="fa fa-facebook"></i> Iniciar sesión con Facebook</a>
-      <a href="" class="btn btn-fb disabled" ng-if="fb_loading"><i class="fa fa-facebook"></i> Iniciando sesión con Facebook...</a>
-      <p style="font-size: 13px; margin-top: 12px; background-color: #f1f1f1; padding: 8px 10px; border-radius: 8px;">Al crear una cuenta aceptas los <a href="/terminos-y-condiciones" target="_blank">términos y condiciones</a> de SpartanGeek.</p>
-      <div class="text-left">
-        <div class="or-up">o si prefieres</div>
+    <section ng-show="!pass_recovery.show">
+      <div class="form-centered">
+        <a href="" class="btn btn-fb" ng-if="!fb_loading" ng-click="loginFb()"><i class="fa fa-facebook"></i> Iniciar sesión con Facebook</a>
+        <a href="" class="btn btn-fb disabled" ng-if="fb_loading"><i class="fa fa-facebook"></i> Iniciando sesión con Facebook...</a>
+        <p style="font-size: 13px; margin-top: 12px; background-color: #f1f1f1; padding: 8px 10px; border-radius: 8px;">Al crear una cuenta aceptas los <a href="/terminos-y-condiciones" target="_blank">términos y condiciones</a> de SpartanGeek.</p>
+        <div class="text-left">
+          <div class="or-up">o si prefieres</div>
+        </div>
+        <hr class="or-up-separator">
+        <div class="form-group">
+          <input name="email" placeholder="Correo electrónico" class="form-control" ng-model="form.email">
+        </div>
+        <div class="form-group">
+          <input type="password" name="password" placeholder="Contraseña" ng-model="form.password" class="form-control">
+        </div>
+        <div class="form-group">
+          <button type="submit" ng-click="signIn()" class="btn btn-primary btn-block">Iniciar sesión</button>
+        </div>
       </div>
-      <hr class="or-up-separator">
-      <div class="form-group">
-        <input name="email" placeholder="Correo electrónico" class="form-control" ng-model="form.email">
+      <div class="alert alert-danger text-center" ng-show="form.error">
+        {{ form.error.message }}
       </div>
-      <div class="form-group">
-        <input type="password" name="password" placeholder="Contraseña" ng-model="form.password" class="form-control">
+    </section>
+    <section ng-show="pass_recovery.show">
+      <div class="form-centered">
+        <div class="form-group" ng-hide="pass_recovery.form.message">
+          <input name="email" type="email" placeholder="Correo electrónico" class="form-control" ng-model="pass_recovery.form.email">
+        </div>
+        <div class="form-group" ng-hide="pass_recovery.form.message">
+          <button type="submit" ng-click="sendEmail()" class="btn btn-primary btn-block" ng-disabled="pass_recovery.form.email.length == 0">Recuperar mi contraseña</button>
+        </div>
+        <div class="alert alert-info text-center" ng-show="pass_recovery.form.message">
+          {{ pass_recovery.form.message.content }}
+        </div>
       </div>
-      <div class="form-group">
-        <button type="submit" ng-click="signIn()" class="btn btn-primary btn-block">Iniciar sesión</button>
-      </div>
-    </div>
-    <div class="alert alert-danger text-center" ng-show="form.error">
-      {{ form.error.message }}
-    </div>
+    </section>
   </div>
   <div class="modal-footer">
-    <p class="forgot-password-link hidden">
-      <a href="">¿Olvidaste tu contraseña?</a>
+    <p class="forgot-password-link" ng-show="!pass_recovery.show">
+      <a href="" ng-click="pass_recovery.show = true">¿Olvidaste tu contraseña?</a>
     </p>
-    <p class="sign-up-link hidden">¿No tienes una cuenta? <a href="#">Regístrate</a></p>
   </div>
 </form>

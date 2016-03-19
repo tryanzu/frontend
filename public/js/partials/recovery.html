@@ -1,0 +1,39 @@
+<main class="global-content">
+  <div class="container">
+    <h2 class="text-center" ng-if="validation_in_progress">Validando...</h2>
+
+    <div class="big-icon" ng-if="validation_in_progress">
+      <i class="fa fa-spinner fa-pulse"></i>
+    </div>
+
+    <div class="row" ng-if="!validation_in_progress && validated">
+      <div class="col-md-6 col-md-offset-3">
+        <h2>Cambio de contraseña</h2>
+
+        <p>Puedes cambiar tu contraseña, la cual debe tener una longitud mínima de 8 caracteres.</p>
+
+        <p class="alert alert-warning" ng-if="password_update.show_message && password_update.which_message == 'length'">La contraseña deber tener al menos 8 y máximo 20 caracteres.</p>
+        <p class="alert alert-warning" ng-if="password_update.show_message && password_update.which_message == 'not_equal'">Las contraseñas no coinciden.</p>
+        <p class="alert alert-info" ng-if="password_update.show_message && password_update.which_message == 'error'">Hubo un problema al actualizar tu contraseña, intenta de nuevo más tarde.</p>
+        <p class="alert alert-success" ng-if="password_update.show_message && password_update.which_message == 'success'">Tu contraseña fue actualizada correctamente.</p>
+        <div class="row" ng-hide="password_update.which_message == 'success'">
+          <div class="col-md-5">
+            <form>
+              <div class="form-group">
+                <label for="password">Nueva contraseña</label>
+                <input type="password" ng-model="password_update.password" class="form-control" id="password" placeholder="Contraseña">
+              </div>
+              <div class="form-group">
+                <label for="password_repeat">Repetir nueva contraseña</label>
+                <input type="password" ng-model="password_update.password_repeat" class="form-control" id="password_repeat" placeholder="Repetir contraseña">
+              </div>
+              <a href="" class="btn btn-default" ng-class="{'disabled': password_update.in_progress}" role="button" ng-click="updatePassword()">Guardar nueva contraseña</a>
+            </form>
+          </div>
+        </div>
+
+        <p ng-if="password_update.show_message && password_update.which_message == 'success'">Regresar a la <a href="/">página principal</a>.</p>
+      </div>
+    </div>
+  </div>
+</main>

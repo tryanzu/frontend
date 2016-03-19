@@ -142,6 +142,10 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
     templateUrl: '/js/partials/profile.html?v=' + version,
     controller: 'UserController'
   });
+  $routeProvider.when('/user/lost_password/:token', {
+    templateUrl: '/js/partials/recovery.html?v=' + version,
+    controller: 'UserRecoveryController'
+  });
   $routeProvider.when('/chat', {
     templateUrl: '/js/partials/chat.html?v=' + version,
     controller: 'ChatController'
@@ -212,6 +216,25 @@ boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http'
     };
 
     $scope.fb_loading = false;
+
+    $scope.pass_recovery = {
+      show: false,
+      form: {
+        email: '',
+        message: false
+      }
+    };
+
+    $scope.sendEmail = function() {
+      console.log("enviar correo...")
+      $http.get(layer_path + 'auth/lost-password', {params:{
+        'email': $scope.pass_recovery.form.email
+      }}).then(function success(response) {
+        $scope.pass_recovery.form.message = {
+          content: 'Se te ha envíado un correo con instrucciones.'
+        };
+      });
+    };
 
     $scope.signIn = function() {
       if ($scope.form.email === '' || $scope.form.password === '') {

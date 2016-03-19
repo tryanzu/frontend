@@ -8759,7 +8759,71 @@ UserModule.controller('UserValidationController', ['$scope', '$http', '$routePar
         window.location = '/';
       });
   }
-])
+]);
+
+UserModule.controller('UserRecoveryController', ['$scope', '$http', '$routeParams',
+  function($scope, $http, $routeParams) {
+
+    $scope.validation_in_progress = true;
+    $scope.validated = false;
+
+    $scope.password_update = {
+      'password': '',
+      'password_repeat': '',
+      'in_progress': false,
+      'show_message': false,
+      'which_message': null
+    };
+
+    $scope.updatePassword = function() {
+      $scope.password_update.in_progress = true;
+      $scope.password_update.show_message = false;
+      if($scope.password_update.password.length < 8 || $scope.password_update.password.length > 20) {
+        $scope.password_update.show_message = true;
+        $scope.password_update.which_message = 'length';
+        $scope.password_update.in_progress = false;
+        return;
+      }
+      if($scope.password_update.password != $scope.password_update.password_repeat) {
+        $scope.password_update.show_message = true;
+        $scope.password_update.which_message = 'not_equal';
+        $scope.password_update.in_progress = false;
+        return;
+      }
+      $http.put(layer_path + "auth/recovery-token/" + $routeParams.token, {password: $scope.password_update.password}).then(function success(response){
+        console.log(response);
+        $scope.password_update.show_message = true;
+        $scope.password_update.which_message = 'success';
+        $scope.password_update.in_progress = false;
+        $scope.password_update.password = '';
+        $scope.password_update.password_repeat = '';
+      }, function(error){
+        $scope.password_update.show_message = true;
+        $scope.password_update.which_message = 'error';
+        $scope.password_update.in_progress = false;
+      });
+    };
+
+    $http.get(layer_path + "auth/recovery-token/" + $routeParams.token).
+      then(function(response) {
+        //console.log(response);
+        if(!response.data.valid) {
+          //Redirect to home if error
+          window.location = '/';
+        }
+
+        $scope.validation_in_progress = false;
+        $scope.validated = true;
+        if($scope.user.isLogged) {
+          $scope.user.info.validated = true;
+        }
+      }, function() {
+        $scope.validation_in_progress = false;
+        //Redirect to home if error
+        window.location = '/';
+      });
+  }
+]);
 
 var RankModule = angular.module('rankModule', []);
 
@@ -10427,6 +10491,10 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
     templateUrl: '/js/partials/profile.html?v=' + version,
     controller: 'UserController'
   });
+  $routeProvider.when('/user/lost_password/:token', {
+    templateUrl: '/js/partials/recovery.html?v=' + version,
+    controller: 'UserRecoveryController'
+  });
   $routeProvider.when('/chat', {
     templateUrl: '/js/partials/chat.html?v=' + version,
     controller: 'ChatController'
@@ -10497,6 +10565,25 @@ boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http'
     };
 
     $scope.fb_loading = false;
+
+    $scope.pass_recovery = {
+      show: false,
+      form: {
+        email: '',
+        message: false
+      }
+    };
+
+    $scope.sendEmail = function() {
+      console.log("enviar correo...")
+      $http.get(layer_path + 'auth/lost-password', {params:{
+        'email': $scope.pass_recovery.form.email
+      }}).then(function success(response) {
+        $scope.pass_recovery.form.message = {
+          content: 'Se te ha envíado un correo con instrucciones.'
+        };
+      });
+    };
 
     $scope.signIn = function() {
       if ($scope.form.email === '' || $scope.form.password === '') {
