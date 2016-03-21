@@ -10821,7 +10821,17 @@ boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http'
     }
 }]);
 
-boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', '$uibModal', '$timeout', '$firebaseObject', '$firebaseArray', 'Facebook', 'AclService', '$location',
+boardApplication.controller('MainController', [
+  '$scope',
+  '$rootScope',
+  '$http',
+  '$uibModal',
+  '$timeout',
+  '$firebaseObject',
+  '$firebaseArray',
+  'Facebook',
+  'AclService',
+  '$location',
   function($scope, $rootScope, $http, $uibModal, $timeout, $firebaseObject, $firebaseArray, Facebook, AclService, $location) {
     $scope.user = {
       isLogged: false,
@@ -11036,7 +11046,10 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
       $scope.user.isLogged = false;
       localStorage.removeItem('id_token');
       localStorage.removeItem('firebase_token');
-      window.location = '/';
+
+      $http.get(layer_path + 'auth/logout').then(function success(response) {
+        window.location = '/';
+      });
     };
 
     $scope.toggle_notifications = function() {
@@ -11072,6 +11085,7 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
       $scope.$broadcast('reloadPost');
     };
 
+    // Used for updating platform
     $scope.reloadPage = function() {
       window.location.reload(true);
     };
@@ -11089,7 +11103,6 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
     });
 
     // Board updates
-    //console.log("Checking version...");
     var fbRef = new Firebase(firebase_url);
     var updatesRef = fbRef.child('version');
     updatesRef.on('value', function(ss) {
@@ -11118,16 +11131,14 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
 
     // Load platform stats
     $scope.promises.board_stats = $http.get(layer_path + 'stats/board').
-      success(function(data, status) {
-        $scope.status.stats = data;
-      }).
-      error(function(data) {
+      then(function success(response){
+        $scope.status.stats = response.data;
       });
 
     // Load gamification data
     $scope.promises.gaming = $http.get(layer_path + 'gamification').
-      success(function(data, status) {
-        //console.log(data)
+      then(function success(response){
+        var data = response.data;
         for(var i in data.badges) {
           if(data.badges[i].required_badge !== null) {
             for(var j in data.badges) {
@@ -11139,8 +11150,7 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
           }
         }
         $scope.misc.gaming = data;
-      }).
-      error(function(data) {});
+      });
 
     // Friends invitations
     var ref = $location.search().ref;
