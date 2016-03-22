@@ -6694,7 +6694,7 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
 
     $scope.activePostId = null;
 
-    // Flarum like composer helper vars
+    // Old composer helper vars
     /*$scope.composer = {
       open: false,
       minimized: false
@@ -6769,7 +6769,7 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
 
         // For logged users, sync the feed position for new messages notifications
         if($scope.user.isLogged) {
-          $scope.status.pending.$value = 0;
+          $scope.status.pending = 0;
           // For sync purposes
           if(category.slug == null) {
             $scope.status.viewing = 'all';
@@ -6803,7 +6803,7 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
       //console.log($scope.resolving.older);
       if(!$scope.resolving.older) {
         $scope.resolving.older = true;
-        var pending = $scope.status.pending.$value==undefined?$scope.status.pending:$scope.status.pending.$value;
+        var pending = $scope.status.pending;
         //console.log($scope.offset, pending);
     		Feed.get({limit: 10, offset: $scope.offset + pending, category: $scope.category.id}, function(data) {
           $scope.appendCategories(data.feed);
@@ -6899,23 +6899,21 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
     $scope.toggleSubscription = function(category) {
       if(category.selected) {
         $http.put(layer_path + 'category/subscription/' + category.id)
-          .error(function(data) {
-            category.selected = false;
-          })
-          .success(function(data) {
+          .then(function success(response){
             if($scope.user.info.categories.indexOf(category.id) == -1) {
               $scope.user.info.categories.push(category.id);
             }
+          }, function(error){
+            category.selected = false;
           });
       } else {
         $http.delete(layer_path + 'category/subscription/' + category.id)
-          .error(function(data) {
-            category.selected = true;
-          })
-          .success(function(data) {
+          .then(function success(response){
             if($scope.user.info.categories.indexOf(category.id) > -1) {
               $scope.user.info.categories.splice($scope.user.info.categories.indexOf(category.id),1);
             }
+          }, function(error){
+            category.selected = true;
           });
       }
     };
@@ -6965,17 +6963,19 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
     $scope.matchCategories = function() {
       // For loged users, we match their personal feed current values
       if($scope.user.isLogged) {
-        if ($scope.user.info.categories) {
-          for (var i in $scope.categories) {
-            for(var j in $scope.categories[i].subcategories) {
-              if ($scope.user.info.categories.indexOf($scope.categories[i].subcategories[j].id) > -1) {
-                $scope.categories[i].subcategories[j].selected = true;
+        $scope.promises.self.then(function success(response) {
+          if ($scope.user.info.categories) {
+            for (var i in $scope.categories) {
+              for(var j in $scope.categories[i].subcategories) {
+                if ($scope.user.info.categories.indexOf($scope.categories[i].subcategories[j].id) > -1) {
+                  $scope.categories[i].subcategories[j].selected = true;
+                }
               }
             }
           }
-        }
+        });
       }
-    }
+    };
 
     $scope.consolidateComments = function(post) {
       post.unread = false;
@@ -10895,7 +10895,7 @@ boardApplication.controller('MainController', [
     }
 
     $scope.logUser = function() {
-      $http.get(layer_path + 'user/my', {
+      $scope.promises.self = $http.get(layer_path + 'user/my', {
         withCredentials: true
       }).then(function success(response) {
           var data = response.data;
@@ -10911,6 +10911,7 @@ boardApplication.controller('MainController', [
           // Match badges
           $scope.promises.gaming.then(function() {
             $timeout(function() {
+              // Match owned badges with current badge info
               for(var i in data.gaming.badges) {
                 for(var j in $scope.misc.gaming.badges) {
                   if(data.gaming.badges[i].id === $scope.misc.gaming.badges[j].id) {
@@ -10920,6 +10921,7 @@ boardApplication.controller('MainController', [
                 }
               }
 
+              // We check if a required badge is still needed
               for(var i in $scope.misc.gaming.badges) {
                 if($scope.misc.gaming.badges[i].required_badge) {
                   for(var j in $scope.misc.gaming.badges) {
@@ -10931,7 +10933,7 @@ boardApplication.controller('MainController', [
                   }
                 }
               }
-            }, 100);
+            }, 0);
           });
 
           // FIREBASE PREPARATION
@@ -10971,7 +10973,7 @@ boardApplication.controller('MainController', [
               // Gamification attributes
               var gamingRef = userRef.child("gaming");
               $scope.user.gaming = $firebaseObject(gamingRef);
-              $scope.user.gaming.$loaded(function() {});
+              //$scope.user.gaming.$loaded(function() {});
 
               // download the data into a local object
               var notificationsCountRef = userRef.child("notifications/count");
@@ -11102,7 +11104,7 @@ boardApplication.controller('MainController', [
       $rootScope.fb_response = r;
     });
 
-    // Board updates
+    // Board updates notification
     var fbRef = new Firebase(firebase_url);
     var updatesRef = fbRef.child('version');
     updatesRef.on('value', function(ss) {
@@ -11195,8 +11197,8 @@ boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', 'cart'
   // with arrays listing their permissions as their value.
   var aclData = {}
   $http.get(layer_path + 'permissions')
-    .error(function(data) {}) // How should we proceed if no data?
-    .success(function(data) {
+    .then(function success(response){
+      data = response.data;
       // Proccess de roles and permissions iteratively
       for(var r in data.rules) {
         aclData[r] = data.rules[r].permissions;
@@ -11207,6 +11209,8 @@ boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', 'cart'
         }
       }
       AclService.setAbilities(aclData);
+    }, function (error){
+      // How should we proceed if no data?
     });
   $rootScope.can = AclService.can;
   $rootScope.aacl = AdvancedAcl;

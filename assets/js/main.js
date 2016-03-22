@@ -546,7 +546,7 @@ boardApplication.controller('MainController', [
     }
 
     $scope.logUser = function() {
-      $http.get(layer_path + 'user/my', {
+      $scope.promises.self = $http.get(layer_path + 'user/my', {
         withCredentials: true
       }).then(function success(response) {
           var data = response.data;
@@ -562,6 +562,7 @@ boardApplication.controller('MainController', [
           // Match badges
           $scope.promises.gaming.then(function() {
             $timeout(function() {
+              // Match owned badges with current badge info
               for(var i in data.gaming.badges) {
                 for(var j in $scope.misc.gaming.badges) {
                   if(data.gaming.badges[i].id === $scope.misc.gaming.badges[j].id) {
@@ -571,6 +572,7 @@ boardApplication.controller('MainController', [
                 }
               }
 
+              // We check if a required badge is still needed
               for(var i in $scope.misc.gaming.badges) {
                 if($scope.misc.gaming.badges[i].required_badge) {
                   for(var j in $scope.misc.gaming.badges) {
@@ -582,7 +584,7 @@ boardApplication.controller('MainController', [
                   }
                 }
               }
-            }, 100);
+            }, 0);
           });
 
           // FIREBASE PREPARATION
@@ -622,7 +624,7 @@ boardApplication.controller('MainController', [
               // Gamification attributes
               var gamingRef = userRef.child("gaming");
               $scope.user.gaming = $firebaseObject(gamingRef);
-              $scope.user.gaming.$loaded(function() {});
+              //$scope.user.gaming.$loaded(function() {});
 
               // download the data into a local object
               var notificationsCountRef = userRef.child("notifications/count");
@@ -753,7 +755,7 @@ boardApplication.controller('MainController', [
       $rootScope.fb_response = r;
     });
 
-    // Board updates
+    // Board updates notification
     var fbRef = new Firebase(firebase_url);
     var updatesRef = fbRef.child('version');
     updatesRef.on('value', function(ss) {
@@ -846,8 +848,8 @@ boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', 'cart'
   // with arrays listing their permissions as their value.
   var aclData = {}
   $http.get(layer_path + 'permissions')
-    .error(function(data) {}) // How should we proceed if no data?
-    .success(function(data) {
+    .then(function success(response){
+      data = response.data;
       // Proccess de roles and permissions iteratively
       for(var r in data.rules) {
         aclData[r] = data.rules[r].permissions;
@@ -858,6 +860,8 @@ boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', 'cart'
         }
       }
       AclService.setAbilities(aclData);
+    }, function (error){
+      // How should we proceed if no data?
     });
   $rootScope.can = AclService.can;
   $rootScope.aacl = AdvancedAcl;
