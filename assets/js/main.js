@@ -243,17 +243,23 @@ boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http'
       }
 
       // Post credentials to the auth rest point
-      $http.get(layer_path + 'auth/get-token', {params: {email: $scope.form.email, password: $scope.form.password}, skipAuthorization: true})
-      .success(function(data) {
+      $http.get(layer_path + 'auth/get-token', {
+        params: {
+          email: $scope.form.email,
+          password: $scope.form.password
+        },
+        skipAuthorization: true
+      })
+      .then(function success(response){
+        var data = response.data;
         localStorage.setItem('id_token', data.token);
         localStorage.setItem('firebase_token', data.firebase);
         localStorage.setItem('signed_in', true);
 
         $uibModalInstance.dismiss('logged');
         $rootScope.$broadcast('login');
-      })
-      .error(function(data, status, headers, config) {
-        $scope.form.error = {message:'Usuario o contraseña incorrecta.'};
+      }, function(error){
+        $scope.form.error = { message: 'Usuario o contraseña incorrecta.' };
       });
     };
 
@@ -356,7 +362,6 @@ boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http'
     };
 
     $scope.signUp = function() {
-
       if ($scope.form.email === '' || $scope.form.password === '' || $scope.form.username === '') {
         $scope.form.error = {message:'Todos los campos son necesarios.'};
         return;
@@ -373,24 +378,20 @@ boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http'
         payload.ref = ref;
       }
 
-      //console.log(payload);
-
       $http.post(layer_path + 'user', payload, { skipAuthorization: true })
-      .error(function(data, status, headers, config) {
-        console.log(data.message);
-        $scope.form.error = { message:'El usuario o correo elegido ya existe.' };
-      })
-      .success(function(data) {
-        localStorage.setItem('id_token', data.token);
-        localStorage.setItem('firebase_token', data.firebase);
-        localStorage.setItem('signed_in', true);
-        $uibModalInstance.dismiss('signed');
-        $rootScope.$broadcast('login');
-        //$rootScope.$broadcast('status_change');
-      });
+        .then(function success(response){
+          var data = response.data;
+          localStorage.setItem('id_token', data.token);
+          localStorage.setItem('firebase_token', data.firebase);
+          localStorage.setItem('signed_in', true);
+          $uibModalInstance.dismiss('signed');
+          $rootScope.$broadcast('login');
+        }, function (error){
+          $scope.form.error = { message: 'El usuario o correo elegido ya existe.' };
+        });
     };
 
-    $scope.ok = function (){
+    $scope.ok = function () {
       $uibModalInstance.close($scope.selected.item);
     };
 
@@ -440,32 +441,30 @@ boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http'
     };
 
     $scope.fb_try = function(response) {
-      $http.get("https://graph.facebook.com/me?access_token=" + response.authResponse.accessToken).
-        success(function(data, status, headers, config) {
-          //var info = data;
+      $http.get("https://graph.facebook.com/me?access_token=" + response.authResponse.accessToken)
+        .then(function success(response){
+          var data = response.data;
           var ref = localStorage.getItem('ref');
           if(ref) {
             data.ref = ref;
           }
           $http.post(layer_path + 'user/get-token/facebook', data).
-            error(function(data, status, headers, config) {
+            then(function success(response){
+              var data = response.data;
+              localStorage.setItem('id_token', data.token);
+              localStorage.setItem('firebase_token', data.firebase);
+              localStorage.setItem('signed_in', true);
+              $uibModalInstance.dismiss('logged');
+              $rootScope.$broadcast('login');
+            }, function error(response){
+              var data = response.data;
               if(data.message == "Not trusted.") {
                 $scope.form.error = {message:'Tu cuenta ha sido bloqueada.'};
               } else {
                 $scope.form.error = {message:'No se pudo iniciar sesión.'};
               }
-            })
-            .success(function(data) {
-              localStorage.setItem('id_token', data.token);
-              localStorage.setItem('firebase_token', data.firebase);
-              localStorage.setItem('signed_in', true);
-              //console.log(data.token, data.firebase);
-              $uibModalInstance.dismiss('logged');
-              $rootScope.$broadcast('login');
-              //$rootScope.$broadcast('status_change');
             });
-        }).
-        error(function(data, status, headers, config) {
+        }, function(error){
           $scope.form.error = {message: 'Error conectando con FB'};
           return;
         });

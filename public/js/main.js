@@ -6964,8 +6964,8 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
       // For loged users, we match their personal feed current values
       if($scope.user.isLogged) {
         $scope.promises.self.then(function success(response) {
-          if ($scope.user.info.categories) {
-            for (var i in $scope.categories) {
+          if($scope.user.info.categories) {
+            for(var i in $scope.categories) {
               for(var j in $scope.categories[i].subcategories) {
                 if ($scope.user.info.categories.indexOf($scope.categories[i].subcategories[j].id) > -1) {
                   $scope.categories[i].subcategories[j].selected = true;
@@ -8419,13 +8419,14 @@ var EditPostController = ['$scope', '$routeParams', '$http', 'Category', 'Part',
       $scope.publishing = true;
       $scope.post_edit.name = $scope.post_edit.title;
 
-  		$http.put(layer_path + 'posts/' + $scope.post.id, $scope.post_edit).then(function(data) {
-  			// Return to home
-        //console.log(data);
-        window.location.href = "/p/-/" + $scope.post.id;
-  		}, function(err) {
-        console.log(err);
-      });
+  		$http.put(layer_path + 'posts/' + $scope.post.id, $scope.post_edit)
+        .then(function success(response) {
+    			// Return to home
+          //console.log(response);
+          window.location.href = "/p/" + response.data.slug + "/" + response.data.id;
+    		}, function(error) {
+          console.log(error);
+        });
     }
 	};
 
@@ -8837,14 +8838,9 @@ var BadgeModule = angular.module('sg.module.badges', []);
 // Badge module controllers
 BadgeModule.controller('BadgeController', ['$scope', '$timeout', '$http', function($scope, $timeout, $http) {
 
-  /*$timeout(function(){
-    $scope.badges = $scope.misc.gaming.badges;
-  }, 100);*/
-
   $scope.buy_badge = function(badge) {
     $http.post(layer_path + "badges/buy/" + badge.id)
-      .success(function(data) {
-        //console.log(data);
+      .then(function success(response){
         badge.owned = true;
 
         for(var i in $scope.misc.gaming.badges) {
@@ -8854,10 +8850,8 @@ BadgeModule.controller('BadgeController', ['$scope', '$timeout', '$http', functi
             }
           }
         }
-
-      })
-      .error(function(data) {
-        console.log("Can't buy me loOove! ... talk to AcidKid");
+      }, function(error){
+        console.log("Can't buy me loOove! ... talk to AcidRod");
       });
   }
 
@@ -10592,17 +10586,23 @@ boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http'
       }
 
       // Post credentials to the auth rest point
-      $http.get(layer_path + 'auth/get-token', {params: {email: $scope.form.email, password: $scope.form.password}, skipAuthorization: true})
-      .success(function(data) {
+      $http.get(layer_path + 'auth/get-token', {
+        params: {
+          email: $scope.form.email,
+          password: $scope.form.password
+        },
+        skipAuthorization: true
+      })
+      .then(function success(response){
+        var data = response.data;
         localStorage.setItem('id_token', data.token);
         localStorage.setItem('firebase_token', data.firebase);
         localStorage.setItem('signed_in', true);
 
         $uibModalInstance.dismiss('logged');
         $rootScope.$broadcast('login');
-      })
-      .error(function(data, status, headers, config) {
-        $scope.form.error = {message:'Usuario o contraseña incorrecta.'};
+      }, function(error){
+        $scope.form.error = { message: 'Usuario o contraseña incorrecta.' };
       });
     };
 
@@ -10705,7 +10705,6 @@ boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http'
     };
 
     $scope.signUp = function() {
-
       if ($scope.form.email === '' || $scope.form.password === '' || $scope.form.username === '') {
         $scope.form.error = {message:'Todos los campos son necesarios.'};
         return;
@@ -10722,24 +10721,20 @@ boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http'
         payload.ref = ref;
       }
 
-      //console.log(payload);
-
       $http.post(layer_path + 'user', payload, { skipAuthorization: true })
-      .error(function(data, status, headers, config) {
-        console.log(data.message);
-        $scope.form.error = { message:'El usuario o correo elegido ya existe.' };
-      })
-      .success(function(data) {
-        localStorage.setItem('id_token', data.token);
-        localStorage.setItem('firebase_token', data.firebase);
-        localStorage.setItem('signed_in', true);
-        $uibModalInstance.dismiss('signed');
-        $rootScope.$broadcast('login');
-        //$rootScope.$broadcast('status_change');
-      });
+        .then(function success(response){
+          var data = response.data;
+          localStorage.setItem('id_token', data.token);
+          localStorage.setItem('firebase_token', data.firebase);
+          localStorage.setItem('signed_in', true);
+          $uibModalInstance.dismiss('signed');
+          $rootScope.$broadcast('login');
+        }, function (error){
+          $scope.form.error = { message: 'El usuario o correo elegido ya existe.' };
+        });
     };
 
-    $scope.ok = function (){
+    $scope.ok = function () {
       $uibModalInstance.close($scope.selected.item);
     };
 
@@ -10789,32 +10784,30 @@ boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http'
     };
 
     $scope.fb_try = function(response) {
-      $http.get("https://graph.facebook.com/me?access_token=" + response.authResponse.accessToken).
-        success(function(data, status, headers, config) {
-          //var info = data;
+      $http.get("https://graph.facebook.com/me?access_token=" + response.authResponse.accessToken)
+        .then(function success(response){
+          var data = response.data;
           var ref = localStorage.getItem('ref');
           if(ref) {
             data.ref = ref;
           }
           $http.post(layer_path + 'user/get-token/facebook', data).
-            error(function(data, status, headers, config) {
+            then(function success(response){
+              var data = response.data;
+              localStorage.setItem('id_token', data.token);
+              localStorage.setItem('firebase_token', data.firebase);
+              localStorage.setItem('signed_in', true);
+              $uibModalInstance.dismiss('logged');
+              $rootScope.$broadcast('login');
+            }, function error(response){
+              var data = response.data;
               if(data.message == "Not trusted.") {
                 $scope.form.error = {message:'Tu cuenta ha sido bloqueada.'};
               } else {
                 $scope.form.error = {message:'No se pudo iniciar sesión.'};
               }
-            })
-            .success(function(data) {
-              localStorage.setItem('id_token', data.token);
-              localStorage.setItem('firebase_token', data.firebase);
-              localStorage.setItem('signed_in', true);
-              //console.log(data.token, data.firebase);
-              $uibModalInstance.dismiss('logged');
-              $rootScope.$broadcast('login');
-              //$rootScope.$broadcast('status_change');
             });
-        }).
-        error(function(data, status, headers, config) {
+        }, function(error){
           $scope.form.error = {message: 'Error conectando con FB'};
           return;
         });

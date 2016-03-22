@@ -297,8 +297,8 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
       // For loged users, we match their personal feed current values
       if($scope.user.isLogged) {
         $scope.promises.self.then(function success(response) {
-          if ($scope.user.info.categories) {
-            for (var i in $scope.categories) {
+          if($scope.user.info.categories) {
+            for(var i in $scope.categories) {
               for(var j in $scope.categories[i].subcategories) {
                 if ($scope.user.info.categories.indexOf($scope.categories[i].subcategories[j].id) > -1) {
                   $scope.categories[i].subcategories[j].selected = true;
