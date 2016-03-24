@@ -60,6 +60,15 @@ var ChatController = [
       content: ''
     };
 
+    $scope.helpers = {
+      writing: false,
+      writing_timeout: null,
+      spam_count: 0,
+      validated: false,
+      loaded: false,
+      blocked: false
+    };
+
     $scope.getMentionable = function() {
       var new_people = [];
 
@@ -77,6 +86,7 @@ var ChatController = [
     }
 
     $scope.changeChannel = function(channel) {
+      if($scope.channel.selected == channel) return;
       $scope.exitChannel();
       $scope.channel.selected = channel;
       var messagesRef = $scope._messageRef.child(channel.$id).orderByChild('created_at').limitToLast(50);
@@ -141,7 +151,8 @@ var ChatController = [
                 $scope._statusRef.set({
                   id: $scope.user.info.id,
                   username: $scope.user.info.username,
-                  image: image
+                  image: image,
+                  writing: false
                 });
               }
             });
@@ -177,11 +188,24 @@ var ChatController = [
 
     $scope.addMessage = function() {
       $scope.message.content = $scope.emojiMessage.messagetext;
+
       if($scope.message.content === $scope.message.previous || ($scope.message.previous.indexOf($scope.message.content) > -1) || ($scope.message.content.indexOf($scope.message.previous) > -1)) {
-        $scope.message.content = '';
+
+        $scope.helpers.spam_count++;
       } else {
-        $scope.message.previous = $scope.message.content;
+        if($scope.helpers.spam_count > 0) {
+          $scope.helpers.spam_count--;
+        }
       }
+
+      if($scope.helpers.spam_count > 2) {
+        $('.emoji-wysiwyg-editor').blur();
+        $scope._userRef.child('chat/blocked').set(true);
+        $scope.helpers.spam_count--;
+      }
+
+      $scope.message.previous = $scope.message.content;
+
       if($scope.message.content !== '') {
         var image = $scope.user.info.image || "";
         var new_message = {
@@ -204,6 +228,28 @@ var ChatController = [
       }
     }
 
+    $scope.addMessageNew = function($event) {
+      if($event.which === 13 && $scope.message.send_on_enter) {
+        $timeout(function(){
+          $scope.addMessage();
+          $timeout.cancel($scope.helpers.writing_timeout);
+          $scope._statusRef.child('writing').set(false);
+          $scope.helpers.writing = false;
+          $event.preventDefault();
+        }, 0);
+      } else {
+        if(!$scope.helpers.writing) {
+          $scope._statusRef.child('writing').set(true);
+          $scope.helpers.writing = true;
+        }
+        if($scope.helpers.writing_timeout) $timeout.cancel($scope.helpers.writing_timeout);
+        $scope.helpers.writing_timeout = $timeout(function() {
+          $scope._statusRef.child('writing').set(false);
+          $scope.helpers.writing = false;
+        }, 1000); // delay in ms
+      }
+    }
+
     $scope.toggle_details = function() {
       $scope.show_details = !$scope.show_details;
     }
@@ -223,6 +269,28 @@ var ChatController = [
     $scope.channels = $firebaseArray($scope._channelRef);
     $scope.channels.$loaded().then(function() {
       $scope.changeChannel($scope.channels[0]);
+    });
+
+    $scope.$on("userLogged", function() {
+      //console.log("User is logged and in chat");
+      $scope._userRef = $scope._firebase.child("users").child($scope.user.info.id);
+
+      $scope._userRef.child('validated').once('value', function(ss) {
+        if(ss.val() == true) {
+          $scope.helpers.validated = true;
+        }
+      });
+
+      $scope._userRef.child('chat/blocked').on('value', function(ss) {
+        if(ss.val() == true) {
+          $scope.helpers.blocked = true;
+          $timeout(function(){
+            $scope._userRef.child('chat/blocked').set(null);
+            $scope.helpers.blocked = false;
+          }, 60000);
+        }
+      })
+
     });
 
     $scope.$on("$destroy", function() {
@@ -295,7 +363,7 @@ chatModule.directive('youtube', function($sce) {
       code: '='
     },
     replace: true,
-    template: '<div style="height:400px;"><iframe style="overflow:hidden;height:100%;width:100%" width="100%" height="100%" src="{{url}}" frameborder="0" allowfullscreen></iframe></div>',
+    template: '<div class="yt-video"><iframe style="overflow:hidden;height:100%;width:100%" width="100%" height="100%" src="{{url}}" frameborder="0" allowfullscreen></iframe></div>',
     link: function (scope) {
       scope.$watch('code', function (newVal) {
         if (newVal) {
@@ -498,10 +566,10 @@ chatModule.directive('showImages', [function() {
     },
     replace: true,
     link: function (scope, element, attrs, controller) {
-      var usernamePattern = new RegExp("(\@?" + scope.username + ")", "gi");
+      var usernamePattern = new RegExp("(\@" + scope.username + ")", "gi");
       var unReplace = "<span class=\"mention\">$1</span>"
 
-      scope.$watch('content', function (value) {
+      //scope.$watch('content', function (value) {
         var text = escapeHtml(scope.content);
         /*scope.show_image = false;
         var images = text.replace(regex, to_replace);*/
@@ -513,7 +581,7 @@ chatModule.directive('showImages', [function() {
           new_text = new_text.replace(usernamePattern, unReplace);
         }
         element.html(new_text);
-      });
+      //});
     }
   };
 }]);

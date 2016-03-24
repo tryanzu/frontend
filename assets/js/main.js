@@ -243,17 +243,23 @@ boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http'
       }
 
       // Post credentials to the auth rest point
-      $http.get(layer_path + 'auth/get-token', {params: {email: $scope.form.email, password: $scope.form.password}, skipAuthorization: true})
-      .success(function(data) {
+      $http.get(layer_path + 'auth/get-token', {
+        params: {
+          email: $scope.form.email,
+          password: $scope.form.password
+        },
+        skipAuthorization: true
+      })
+      .then(function success(response){
+        var data = response.data;
         localStorage.setItem('id_token', data.token);
         localStorage.setItem('firebase_token', data.firebase);
         localStorage.setItem('signed_in', true);
 
         $uibModalInstance.dismiss('logged');
         $rootScope.$broadcast('login');
-      })
-      .error(function(data, status, headers, config) {
-        $scope.form.error = {message:'Usuario o contraseña incorrecta.'};
+      }, function(error){
+        $scope.form.error = { message: 'Usuario o contraseña incorrecta.' };
       });
     };
 
@@ -356,7 +362,6 @@ boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http'
     };
 
     $scope.signUp = function() {
-
       if ($scope.form.email === '' || $scope.form.password === '' || $scope.form.username === '') {
         $scope.form.error = {message:'Todos los campos son necesarios.'};
         return;
@@ -373,24 +378,20 @@ boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http'
         payload.ref = ref;
       }
 
-      //console.log(payload);
-
       $http.post(layer_path + 'user', payload, { skipAuthorization: true })
-      .error(function(data, status, headers, config) {
-        console.log(data.message);
-        $scope.form.error = { message:'El usuario o correo elegido ya existe.' };
-      })
-      .success(function(data) {
-        localStorage.setItem('id_token', data.token);
-        localStorage.setItem('firebase_token', data.firebase);
-        localStorage.setItem('signed_in', true);
-        $uibModalInstance.dismiss('signed');
-        $rootScope.$broadcast('login');
-        //$rootScope.$broadcast('status_change');
-      });
+        .then(function success(response){
+          var data = response.data;
+          localStorage.setItem('id_token', data.token);
+          localStorage.setItem('firebase_token', data.firebase);
+          localStorage.setItem('signed_in', true);
+          $uibModalInstance.dismiss('signed');
+          $rootScope.$broadcast('login');
+        }, function (error){
+          $scope.form.error = { message: 'El usuario o correo elegido ya existe.' };
+        });
     };
 
-    $scope.ok = function (){
+    $scope.ok = function () {
       $uibModalInstance.close($scope.selected.item);
     };
 
@@ -440,39 +441,47 @@ boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http'
     };
 
     $scope.fb_try = function(response) {
-      $http.get("https://graph.facebook.com/me?access_token=" + response.authResponse.accessToken).
-        success(function(data, status, headers, config) {
-          //var info = data;
+      $http.get("https://graph.facebook.com/me?access_token=" + response.authResponse.accessToken)
+        .then(function success(response){
+          var data = response.data;
           var ref = localStorage.getItem('ref');
           if(ref) {
             data.ref = ref;
           }
           $http.post(layer_path + 'user/get-token/facebook', data).
-            error(function(data, status, headers, config) {
+            then(function success(response){
+              var data = response.data;
+              localStorage.setItem('id_token', data.token);
+              localStorage.setItem('firebase_token', data.firebase);
+              localStorage.setItem('signed_in', true);
+              $uibModalInstance.dismiss('logged');
+              $rootScope.$broadcast('login');
+            }, function error(response){
+              var data = response.data;
               if(data.message == "Not trusted.") {
                 $scope.form.error = {message:'Tu cuenta ha sido bloqueada.'};
               } else {
                 $scope.form.error = {message:'No se pudo iniciar sesión.'};
               }
-            })
-            .success(function(data) {
-              localStorage.setItem('id_token', data.token);
-              localStorage.setItem('firebase_token', data.firebase);
-              localStorage.setItem('signed_in', true);
-              //console.log(data.token, data.firebase);
-              $uibModalInstance.dismiss('logged');
-              $rootScope.$broadcast('login');
-              //$rootScope.$broadcast('status_change');
             });
-        }).
-        error(function(data, status, headers, config) {
+        }, function(error){
           $scope.form.error = {message: 'Error conectando con FB'};
           return;
         });
     }
 }]);
 
-boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', '$uibModal', '$timeout', '$firebaseObject', '$firebaseArray', 'Facebook', 'AclService', '$location',
+boardApplication.controller('MainController', [
+  '$scope',
+  '$rootScope',
+  '$http',
+  '$uibModal',
+  '$timeout',
+  '$firebaseObject',
+  '$firebaseArray',
+  'Facebook',
+  'AclService',
+  '$location',
   function($scope, $rootScope, $http, $uibModal, $timeout, $firebaseObject, $firebaseArray, Facebook, AclService, $location) {
     $scope.user = {
       isLogged: false,
@@ -536,7 +545,7 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
     }
 
     $scope.logUser = function() {
-      $http.get(layer_path + 'user/my', {
+      $scope.promises.self = $http.get(layer_path + 'user/my', {
         withCredentials: true
       }).then(function success(response) {
           var data = response.data;
@@ -552,6 +561,7 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
           // Match badges
           $scope.promises.gaming.then(function() {
             $timeout(function() {
+              // Match owned badges with current badge info
               for(var i in data.gaming.badges) {
                 for(var j in $scope.misc.gaming.badges) {
                   if(data.gaming.badges[i].id === $scope.misc.gaming.badges[j].id) {
@@ -561,6 +571,7 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
                 }
               }
 
+              // We check if a required badge is still needed
               for(var i in $scope.misc.gaming.badges) {
                 if($scope.misc.gaming.badges[i].required_badge) {
                   for(var j in $scope.misc.gaming.badges) {
@@ -572,7 +583,7 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
                   }
                 }
               }
-            }, 100);
+            }, 0);
           });
 
           // FIREBASE PREPARATION
@@ -612,7 +623,7 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
               // Gamification attributes
               var gamingRef = userRef.child("gaming");
               $scope.user.gaming = $firebaseObject(gamingRef);
-              $scope.user.gaming.$loaded(function() {});
+              //$scope.user.gaming.$loaded(function() {});
 
               // download the data into a local object
               var notificationsCountRef = userRef.child("notifications/count");
@@ -683,11 +694,13 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
     };
 
     $scope.signOut = function() {
-      localStorage.signed_in = false;
-      $scope.user.isLogged = false;
-      localStorage.removeItem('id_token');
-      localStorage.removeItem('firebase_token');
-      window.location = '/';
+      $http.get(layer_path + 'auth/logout').then(function success(response) {
+        localStorage.signed_in = false;
+        $scope.user.isLogged = false;
+        localStorage.removeItem('id_token');
+        localStorage.removeItem('firebase_token');
+        window.location = '/';
+      });
     };
 
     $scope.toggle_notifications = function() {
@@ -723,6 +736,7 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
       $scope.$broadcast('reloadPost');
     };
 
+    // Used for updating platform
     $scope.reloadPage = function() {
       window.location.reload(true);
     };
@@ -739,8 +753,7 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
       $rootScope.fb_response = r;
     });
 
-    // Board updates
-    //console.log("Checking version...");
+    // Board updates notification
     var fbRef = new Firebase(firebase_url);
     var updatesRef = fbRef.child('version');
     updatesRef.on('value', function(ss) {
@@ -769,16 +782,14 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
 
     // Load platform stats
     $scope.promises.board_stats = $http.get(layer_path + 'stats/board').
-      success(function(data, status) {
-        $scope.status.stats = data;
-      }).
-      error(function(data) {
+      then(function success(response){
+        $scope.status.stats = response.data;
       });
 
     // Load gamification data
     $scope.promises.gaming = $http.get(layer_path + 'gamification').
-      success(function(data, status) {
-        //console.log(data)
+      then(function success(response){
+        var data = response.data;
         for(var i in data.badges) {
           if(data.badges[i].required_badge !== null) {
             for(var j in data.badges) {
@@ -790,8 +801,7 @@ boardApplication.controller('MainController', ['$scope', '$rootScope', '$http', 
           }
         }
         $scope.misc.gaming = data;
-      }).
-      error(function(data) {});
+      });
 
     // Friends invitations
     var ref = $location.search().ref;
@@ -836,8 +846,8 @@ boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', 'cart'
   // with arrays listing their permissions as their value.
   var aclData = {}
   $http.get(layer_path + 'permissions')
-    .error(function(data) {}) // How should we proceed if no data?
-    .success(function(data) {
+    .then(function success(response){
+      data = response.data;
       // Proccess de roles and permissions iteratively
       for(var r in data.rules) {
         aclData[r] = data.rules[r].permissions;
@@ -848,6 +858,8 @@ boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', 'cart'
         }
       }
       AclService.setAbilities(aclData);
+    }, function (error){
+      // How should we proceed if no data?
     });
   $rootScope.can = AclService.can;
   $rootScope.aacl = AdvancedAcl;

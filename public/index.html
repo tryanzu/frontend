@@ -243,7 +243,7 @@
               <li ng-repeat="item in cart.items track by $index">
                 <div class="cart-element">
                   <div class="component-thumbnail">
-                    <img ng-src="https://spartangeek.com/images/products/{{ item.image }}" alt="{{ item.full_name || item.name }}" ng-if="item.image">
+                    <img ng-src="https://assets.spartangeek.com/components/{{ item.image }}" alt="{{ item.full_name || item.name }}" ng-if="item.image">
                     <img src="/images/noimage.jpg" alt="{{ item.full_name || item.name }}" ng-if="!item.image">
                   </div>
                   <div class="info">{{ item.fullname || item.name}} <span class="multiplier">x {{ item.quantity | number:0 }}</span><p class="price">{{ item.price * item.quantity | currency:'$':0 }}</p></div>

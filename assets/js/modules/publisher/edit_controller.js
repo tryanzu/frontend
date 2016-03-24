@@ -48,13 +48,14 @@ var EditPostController = ['$scope', '$routeParams', '$http', 'Category', 'Part',
       $scope.publishing = true;
       $scope.post_edit.name = $scope.post_edit.title;
 
-  		$http.put(layer_path + 'posts/' + $scope.post.id, $scope.post_edit).then(function(data) {
-  			// Return to home
-        //console.log(data);
-        window.location.href = "/p/-/" + $scope.post.id;
-  		}, function(err) {
-        console.log(err);
-      });
+  		$http.put(layer_path + 'posts/' + $scope.post.id, $scope.post_edit)
+        .then(function success(response) {
+    			// Return to home
+          //console.log(response);
+          window.location.href = "/p/" + response.data.slug + "/" + response.data.id;
+    		}, function(error) {
+          console.log(error);
+        });
     }
 	};
 
