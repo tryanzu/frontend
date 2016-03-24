@@ -1,4 +1,4 @@
-<div id="wrapper">
+<div id="wrapper" ng-class="{'stream': channel.selected.fullscreen.video}">
   <!-- Sidebar -->
   <div id="sidebar-wrapper">
     <ul class="sidebar-nav">
@@ -64,13 +64,14 @@
               </div>
 
               <div class="new_chat_alert" ng-if="scroll_help.scrolledUp && old_messages.length > 0"><a href="" ng-click="goToBottom()"><i class="fa fa-arrow-down"></i> Nuevos mensajes ({{ old_messages.length }})</a></div>
+
+              <div class="spam_alert" ng-if="helpers.spam_count > 1 && !helpers.blocked">Debes dejar de hacer spam o tu cuenta se bloqueará.</div>
             </div>
 
             <div class="footer">
               <div class="input-box" ng-if="user.isLogged">
-
-                <div emoji-form emoji-message="emojiMessage" sg-enter="addMessage()">
-                  <textarea id="messageInput" class="input-box_text" ng-model="emojiMessage.messagetext" mentio mentio-typed-text="typedTerm" mentio-items="people | filter:label:typedTerm"></textarea>
+                <div emoji-form emoji-message="emojiMessage" ng-keydown="addMessageNew($event)">
+                  <textarea id="messageInput" class="input-box_text" ng-model="emojiMessage.messagetext" mentio mentio-typed-text="typedTerm" mentio-items="people | filter:label:typedTerm" ng-readonly="helpers.spam_count > 1"></textarea>
 
                   <button id="emojibtn" class="emoji-pop-btn">
                     <i class="icon icon-emoji"></i>
@@ -78,11 +79,6 @@
                 </div>
                 <div class="row">
                   <div class="col-md-8">
-                    <div class="checkbox">
-                      <label>
-                        <input type="checkbox" ng-model="message.send_on_enter"> Presionar 'Enter' para mandar el mensaje
-                      </label>
-                    </div>
                     <div class="checkbox" ng-if="can('delete-category-comments')">
                       <label>
                         <input type="checkbox" ng-model="message.highlight"> Resaltar mensajes (para moderación)
@@ -95,6 +91,10 @@
                     </span>
                   </div>
                 </div>
+              </div>
+              <div class="blocked-input-box" ng-if="user.isLogged && (!helpers.validated || helpers.blocked)">
+                <p ng-if="!helpers.validated && !helpers.blocked">Necesitas validar tu cuenta mediante correo para poder escribir en el chat.</p>
+                <p class="warning" ng-if="helpers.blocked">Tu cuenta ha sido bloqueada por 60 segundos.</p>
               </div>
               <div class="input-box" ng-if="!user.isLogged">
                 <p class="alert alert-warning">Necesitas crear una cuenta para participar. <a href="" ng-click="signUp()">Regístrate</a> o <a href="" ng-click="signIn()">inicia sesión</a> si ya tienes una.</p>
@@ -111,9 +111,29 @@
   <!-- Sidebar -->
   <div id="sidebar-wrapper-right">
     <div class="detail-section">
+      <h4>Información del canal</h4>
+      <p ng-bind="channel.selected.description"></p>
+    </div>
+
+    <div class="detail-section" ng-if="channel.selected.fullscreen.video">
+      <youtube code="channel.selected.fullscreen.video"></youtube>
+    </div>
+
+    <div class="detail-section" ng-if="can('board-config') && show_config">
+      <h4>Configuración</h4>
+      <form class="form-inline">
+        <div class="form-group">
+          <label for="yt-code">Código de Youtube</label>
+          <input type="text" class="form-control" id="yt-code" placeholder="abcde123" ng-model="channel.selected.new_yt_code">
+        </div>
+        <button type="submit" class="btn btn-default" ng-click="updateChannelMeta()">Actualizar video</button>
+      </form>
+    </div>
+
+    <div class="detail-section">
       <h4>Spartanos conectados</h4>
 
-      <input type="text" ng-model="searchText.content" class="form-control mb-20" ng-if="can('edit-category-comments')">
+      <input type="text" ng-model="searchText.content" class="form-control mb-20">
 
       <ul class="user-status">
         <li class="online" ng-repeat="m in members | filter:searchText.content | orderBy:['username']">
@@ -122,10 +142,10 @@
             <img class="avatar" ng-src="{{ m.image }}" alt="{{ m.username }}" ng-if="m.image">
           </a>
           <a href="/u/{{ m.username }}/{{ m.id }}" class="username">{{ m.username }}</a>
-          <i class="fa fa-commenting-o" ng-if="m.writing"></i>
 
           <span ng-if="m.id != user.info.id && can('edit-category-comments')" ng-click="m.hide_info = !m.hide_info"><i class="fa fa-ban"></i></span>
-          <span class="status"></span>
+
+          <div class="status" ng-class="{'writing': m.writing}"><i class="fa fa-ellipsis-h" ng-if="m.writing"></i></div>
 
           <div uib-collapse="!m.hide_info" ng-if="m.id != user.info.id && can('edit-category-comments')" style="padding: 10px 0; border-bottom: 1px solid #ddd;">
             <div class="btn-toolbar">
@@ -140,65 +160,3 @@
 
 </div>
 <!-- /#wrapper -->
-
-
-<main class="global-content">
-  <div class="container" style="position: relative;">
-
-    <div class="offset-content" ng-class="{'details-open': show_details, 'stream-chat': channel.selected.fullscreen}">
-
-
-    </div>
-
-    <div class="details-nav" ng-if="show_details" ng-class="{stream: channel.selected.fullscreen}">
-      <div class="detail-section" ng-if="channel.selected.fullscreen && !channel.selected.fullscreen.video">
-        <img ng-src="{{ channel.selected.fullscreen.image }}" width="100%">
-      </div>
-
-      <div class="detail-section" ng-if="channel.selected.fullscreen.video">
-        <youtube code="channel.selected.fullscreen.video"></youtube>
-      </div>
-
-      <div class="detail-section" ng-if="can('board-config')">
-        <h4>Configuración</h4>
-        <form class="form-inline">
-          <div class="form-group">
-            <label for="yt-code">Código de Youtube</label>
-            <input type="text" class="form-control" id="yt-code" placeholder="abcde123" ng-model="channel.selected.new_yt_code">
-          </div>
-          <button type="submit" class="btn btn-default" ng-click="updateChannelMeta()">Actualizar video</button>
-        </form>
-      </div>
-
-      <div class="detail-section">
-        <h4>Información del canal</h4>
-        <p ng-bind="channel.selected.description"></p>
-      </div>
-
-      <div class="detail-section" ng-if="!channel.selected.fullscreen || true">
-        <h4>Spartanos conectados</h4>
-
-        <input type="text" ng-model="searchText.content" class="form-control mb-20" ng-if="can('edit-category-comments')">
-
-        <ul class="user-status">
-          <li class="online" ng-repeat="m in members | filter:searchText.content | orderBy:['username']">
-            <a href="/u/{{ m.username }}/{{ m.id }}" class="">
-              <span class="avatar" title="{{ m.username }}" ng-if="!m.image">{{ m.username[0] }}</span>
-              <img class="avatar" ng-src="{{ m.image }}" alt="{{ m.username }}" ng-if="m.image">
-            </a>
-            <a href="/u/{{ m.username }}/{{ m.id }}" class="username">{{ m.username }}</a>
-
-            <span ng-if="m.id != user.info.id && can('edit-category-comments')" ng-click="m.hide_info = !m.hide_info"><i class="fa fa-ban"></i></span>
-            <span class="status"></span>
-
-            <div uib-collapse="!m.hide_info" ng-if="m.id != user.info.id && can('edit-category-comments')" style="padding: 10px 0; border-bottom: 1px solid #ddd;">
-              <div class="btn-toolbar">
-                <a href="" ng-click="suspendUser(m.id, 60*5); m.already_blocked = true" class="btn btn-default btn-sm" ng-class="{'disabled': m.already_blocked}">Bloquear</a>
-              </div>
-            </div>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</main>

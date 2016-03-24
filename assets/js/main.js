@@ -694,12 +694,11 @@ boardApplication.controller('MainController', [
     };
 
     $scope.signOut = function() {
-      localStorage.signed_in = false;
-      $scope.user.isLogged = false;
-      localStorage.removeItem('id_token');
-      localStorage.removeItem('firebase_token');
-
       $http.get(layer_path + 'auth/logout').then(function success(response) {
+        localStorage.signed_in = false;
+        $scope.user.isLogged = false;
+        localStorage.removeItem('id_token');
+        localStorage.removeItem('firebase_token');
         window.location = '/';
       });
     };
