@@ -271,26 +271,35 @@ var ChatController = [
       $scope.changeChannel($scope.channels[0]);
     });
 
+    $scope.checkValidation = function() {
+      if($scope.user.isLogged) {
+        $scope.promises.self.then(function(){
+
+          $scope._userRef = $scope._firebase.child("users").child($scope.user.info.id);
+
+          $scope._userRef.child('validated').once('value', function(ss) {
+            if(ss.val() == true) {
+              $scope.helpers.validated = true;
+            }
+          });
+
+          $scope._userRef.child('chat/blocked').on('value', function(ss) {
+            if(ss.val() == true) {
+              $scope.helpers.blocked = true;
+              $timeout(function(){
+                $scope._userRef.child('chat/blocked').set(null);
+                $scope.helpers.blocked = false;
+              }, 60000);
+            }
+          });
+
+        });
+      }
+    };
+    $scope.checkValidation();
+
     $scope.$on("userLogged", function() {
-      //console.log("User is logged and in chat");
-      $scope._userRef = $scope._firebase.child("users").child($scope.user.info.id);
-
-      $scope._userRef.child('validated').once('value', function(ss) {
-        if(ss.val() == true) {
-          $scope.helpers.validated = true;
-        }
-      });
-
-      $scope._userRef.child('chat/blocked').on('value', function(ss) {
-        if(ss.val() == true) {
-          $scope.helpers.blocked = true;
-          $timeout(function(){
-            $scope._userRef.child('chat/blocked').set(null);
-            $scope.helpers.blocked = false;
-          }, 60000);
-        }
-      })
-
+      $scope.checkValidation();
     });
 
     $scope.$on("$destroy", function() {
