@@ -45,13 +45,24 @@ ul.user-status {
     }
 
     .status {
-      width: 8px;
-      height: 8px;
-      border-radius: 4px;
+      width: 12px;
+      height: 12px;
+      border-radius: 12px;
       background-color: @brand-primary-light-text;
       display: inline-block;
       float: right;
-      margin-top: 11px;
+      margin-top: 8px;
+
+      &.writing {
+        width: 20px;
+
+        i.fa {
+          line-height: 12px;
+          vertical-align: top;
+          color: #f1f1f1;
+          padding-left: 4px;
+        }
+      }
     }
 
     &.online {

@@ -33,7 +33,7 @@
         <div ng-show="cart.items.length > 0 && !f.verify_cart" class="cart">
           <div class="item" ng-repeat="item in cart.items track by $index">
             <figure>
-              <img ng-src="https://spartangeek.com/images/products/{{ item.image }}" ng-if="item.image"></img>
+              <img ng-src="https://assets.spartangeek.com/components/{{ item.image }}" ng-if="item.image"></img>
               <img src="/images/noimage.jpg" ng-if="!item.image"></img>
             </figure>
 
@@ -262,7 +262,7 @@
           <div ng-show="cart.items.length > 0" class="cart">
             <div class="item" ng-repeat="item in cart.items track by $index">
               <figure>
-                <img ng-src="https://spartangeek.com/images/products/{{ item.image }}" ng-if="item.image"></img>
+                <img ng-src="https://assets.spartangeek.com/components/{{ item.image }}" ng-if="item.image"></img>
                 <img src="/images/noimage.jpg" ng-if="!item.image"></img>
               </figure>
 

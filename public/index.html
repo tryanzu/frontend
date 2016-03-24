@@ -31,7 +31,7 @@
   <!-- /Favicon -->
 
   <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-  <link type="text/css" rel="stylesheet" href="/css/app-039.css">
+  <link type="text/css" rel="stylesheet" href="/css/app-040.css">
 
   <script type="text/javascript" src="js/offline.js"></script>
   <script type="text/javascript" src="https://js.stripe.com/v2/"></script>
@@ -39,7 +39,7 @@
   <script src='https://cdn.firebase.com/js/client/2.2.1/firebase.js'></script>
   <script src="https://cdn.firebase.com/libs/angularfire/1.1.1/angularfire.min.js"></script>
   <script type="text/javascript" src="js/config.js"></script>
-  <script type="text/javascript" src="js/main-039.js"></script>
+  <script type="text/javascript" src="js/main-040.js"></script>
 
 </head>
 <body ng-controller="MainController">
@@ -243,7 +243,7 @@
               <li ng-repeat="item in cart.items track by $index">
                 <div class="cart-element">
                   <div class="component-thumbnail">
-                    <img ng-src="https://spartangeek.com/images/products/{{ item.image }}" alt="{{ item.full_name || item.name }}" ng-if="item.image">
+                    <img ng-src="https://assets.spartangeek.com/components/{{ item.image }}" alt="{{ item.full_name || item.name }}" ng-if="item.image">
                     <img src="/images/noimage.jpg" alt="{{ item.full_name || item.name }}" ng-if="!item.image">
                   </div>
                   <div class="info">{{ item.fullname || item.name}} <span class="multiplier">x {{ item.quantity | number:0 }}</span><p class="price">{{ item.price * item.quantity | currency:'$':0 }}</p></div>
