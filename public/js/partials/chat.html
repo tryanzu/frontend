@@ -23,10 +23,10 @@
                 <div class="col-md-6 col-xs-7">
                   <h3 style="margin-top: 0">{{ channel.selected.name || "#" }}</h3>
                 </div>
-                <div class="col-md-6 col-xs-5 text-right">
-                  <a title="Información de este canal" class="btn btn-default btn-icon btn-round hidden" ng-click="toggle_details()" ng-class="{'active': show_details}">
+                <div class="col-md-6 col-xs-5 text-right" ng-if="can('board-config')">
+                  <a title="Configurar este canal" class="btn btn-default btn-icon btn-round" ng-click="toggle_details()" ng-class="{'active': show_details}">
                     <i class="fa fa-fw fa-info-circle icon"></i>
-                    <span class="label hidden-xs">Información de este canal</span>
+                    <span class="label hidden-xs">Configurar este canal</span>
                   </a>
                 </div>
               </div>
@@ -119,7 +119,7 @@
       <youtube code="channel.selected.fullscreen.video"></youtube>
     </div>
 
-    <div class="detail-section" ng-if="can('board-config') && show_config">
+    <div class="detail-section" ng-if="can('board-config') && show_details">
       <h4>Configuración</h4>
       <form class="form-inline">
         <div class="form-group">
