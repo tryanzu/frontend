@@ -53,7 +53,7 @@ var ChatController = [
       send_on_enter: true,
       previous: '-'
     };
-    $scope.show_details = true;
+    $scope.show_details = false;
 
     $scope.members = [];
     $scope.searchText = {
@@ -189,42 +189,50 @@ var ChatController = [
     $scope.addMessage = function() {
       $scope.message.content = $scope.emojiMessage.messagetext;
 
-      if($scope.message.content === $scope.message.previous || ($scope.message.previous.indexOf($scope.message.content) > -1) || ($scope.message.content.indexOf($scope.message.previous) > -1)) {
+      if($scope.message.content != '') {
+        if($scope.message.content === $scope.message.previous || ($scope.message.previous.indexOf($scope.message.content) > -1) || ($scope.message.content.indexOf($scope.message.previous) > -1)) {
 
-        $scope.helpers.spam_count++;
-      } else {
-        if($scope.helpers.spam_count > 0) {
+          $scope.helpers.spam_count++;
+        } else {
+          if($scope.helpers.spam_count > 0) {
+            $scope.helpers.spam_count--;
+          }
+        }
+
+        if($scope.helpers.spam_count > 2) {
+          $('.emoji-wysiwyg-editor').blur();
+          $scope._userRef.child('chat/blocked').set(true);
           $scope.helpers.spam_count--;
-        }
-      }
 
-      if($scope.helpers.spam_count > 2) {
-        $('.emoji-wysiwyg-editor').blur();
-        $scope._userRef.child('chat/blocked').set(true);
-        $scope.helpers.spam_count--;
-      }
-
-      $scope.message.previous = $scope.message.content;
-
-      if($scope.message.content !== '') {
-        var image = $scope.user.info.image || "";
-        var new_message = {
-          author: {
-            id: $scope.user.info.id,
-            username: $scope.user.info.username,
-            image: image
-          },
-          content: $scope.message.content,
-          created_at: Firebase.ServerValue.TIMESTAMP
-        };
-        if($scope.message.highlight) {
-          new_message.highlight = true;
-        }
-        //console.log(new_message);
-        $scope.messages.$add(new_message).then(function(ref) {
           $scope.message.content = '';
           $scope.emojiMessage = {};
-        });
+        } else {
+          $scope.message.previous = $scope.message.content;
+
+          if($scope.message.content !== '') {
+            var image = $scope.user.info.image || "";
+            var new_message = {
+              author: {
+                id: $scope.user.info.id,
+                username: $scope.user.info.username,
+                image: image
+              },
+              content: $scope.message.content,
+              created_at: Firebase.ServerValue.TIMESTAMP
+            };
+            if($scope.message.highlight) {
+              new_message.highlight = true;
+            }
+            //console.log(new_message);
+            $scope.messages.$add(new_message).then(function(ref) {
+              $scope.message.content = '';
+              $scope.emojiMessage = {};
+            });
+          }
+        }
+      } else {
+        $scope.message.content = '';
+        $scope.emojiMessage = {};
       }
     }
 
