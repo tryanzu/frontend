@@ -9080,7 +9080,7 @@ var ChatController = [
     $scope.addMessage = function() {
       $scope.message.content = $scope.emojiMessage.messagetext;
 
-      if($scope.message.content != '') {
+      if($scope.message.content != '' && $scope.message.content.length < 201) {
         if($scope.message.content === $scope.message.previous || ($scope.message.previous.indexOf($scope.message.content) > -1) || ($scope.message.content.indexOf($scope.message.previous) > -1)) {
 
           $scope.helpers.spam_count++;
@@ -9093,7 +9093,7 @@ var ChatController = [
         if($scope.helpers.spam_count > 2) {
           $('.emoji-wysiwyg-editor').blur();
           $scope._userRef.child('chat/blocked').set(true);
-          $scope.helpers.spam_count--;
+          $scope.helpers.spam_count = 0;
 
           $scope.message.content = '';
           $scope.emojiMessage = {};
@@ -9121,9 +9121,6 @@ var ChatController = [
             });
           }
         }
-      } else {
-        $scope.message.content = '';
-        $scope.emojiMessage = {};
       }
     }
 
@@ -10000,7 +9997,7 @@ ComponentsModule.controller('ComponentController', ['$scope', '$routeParams', '$
       name: $scope.post.title,
       category: $scope.post.category,
       kind: 'category-post',
-      isquestion: true,
+      is_question: true,
       pinned: false
     };
 
@@ -10027,14 +10024,6 @@ ComponentsModule.controller('ComponentController', ['$scope', '$routeParams', '$
       console.log(err);
     });
   }
-
-  $scope.buy_to_val = {
-    'no':0,
-    'maybe':1,
-    'yes':2,
-    'wow':3
-  };
-
   $scope.popularLabel = function() {
     if($scope.populometro == 0 && $scope.component.stats['component-buy'].total == 0)
       return "Sé el primero en opinar";
@@ -10050,14 +10039,13 @@ ComponentsModule.controller('ComponentController', ['$scope', '$routeParams', '$
   var getCurrentRating = function(){
     if($scope.component.stats['component-buy'].total) {
       var t = $scope.component.stats['component-buy'].maybe * 1 + $scope.component.stats['component-buy'].yes * 2 + $scope.component.stats['component-buy'].wow * 3;
-      var tt = $scope.component.stats['component-buy'].total * 2;
+      var tt = $scope.component.stats['component-buy'].total * 2.5;
       if(t > tt) return 100;
       return t*100/tt;
     } else {
       return 0;
     }
   }
-
   $scope.setWouldBuy = function(value) {
     if(!$scope.user.isLogged) {
       $scope.signIn();
@@ -10127,8 +10115,13 @@ ComponentsModule.controller('ComponentController', ['$scope', '$routeParams', '$
 
   // Initialize component viewing
   $http.get(layer_path + "component/" + $routeParams.slug).then(function success(response){
-    console.log(response.data);
+    if($scope.can('debug')) console.log(response.data);
     $scope.component = response.data;
+
+    if($scope.component.store && $scope.component.store.vendors.spartangeek.price_before) {
+      $scope.component.store.vendors.spartangeek.price_save = 100 - ($scope.component.store.vendors.spartangeek.price * 100 / $scope.component.store.vendors.spartangeek.price_before);
+    }
+
     $scope.populometro = getCurrentRating();
     $http.get(layer_path + "component/" + $scope.component._id + "/posts").then(function success(response){
       //console.log(response.data);

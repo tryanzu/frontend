@@ -7,7 +7,7 @@
       </div>
     </div>
   </div>
-  <div class="container">
+  <div class="container" ng-if="!component.store" ng-cloak>
     <div class="row mb-20">
       <div class="col-md-12">
         <section id="owning-buttons">
@@ -20,7 +20,52 @@
       </div>
     </div>
   </div>
-  <div class="component-images" ng-if="component.images">
+
+  <div class="container" ng-if="component.store">
+    <div class="row store-product">
+      <div class="col-md-5 prices">
+        <div class="row">
+          <div class="col-md-12 text-center">
+            <div class="price">
+              <s ng-if="component.store.vendors.spartangeek.price_before">{{ component.store.vendors.spartangeek.price_before | currency:'$ ':0 }}</s>
+              {{ component.store.vendors.spartangeek.price | currency:'$ ':0 }}
+              <span class="description" ng-if="component.store.vendors.spartangeek.price_before && component.store.vendors.spartangeek.price_save > 1">Te ahorras {{ component.store.vendors.spartangeek.price_save | number:2 }} %</span>
+            </div>
+          </div>
+          <div class="col-md-6 text-center hidden">
+            <span class="description">Precio en </span>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+
+            <section id="buy-buttons">
+              <a href="" class="btn btn-success" ng-click="cart.addItem(component)" ng-if="component.store.vendors.spartangeek.stock != 0 && component.store.vendors.spartangeek.stock != null"><i class="fa fa-shopping-cart"></i> Agregar al carrito</a>
+              <span uib-tooltip="El precio publicado ya no es válido, debes esperar a que lo actualicemos para poder comprar" ng-if="component.store.vendors.spartangeek.stock == 0 || component.store.vendors.spartangeek.stock == null"><i class="fa fa-shopping-cart"></i> No disponible por el momento</span>
+            </section>
+
+            <section id="owning-buttons">
+              <div class="btn-group">
+                <label ng-click="setOwning()" class="btn" ng-class="{'btn-success': component.votes.component == 'have-it', 'btn-default': component.votes.component != 'have-it'}" ng-model="component.votes.component" uib-btn-radio="'have-it'" uncheckable><i class="fa fa-check-circle"></i> Lo tengo</label>
+                <label ng-click="setOwning()" class="btn" ng-class="{'btn-primary': component.votes.component == 'had-it', 'btn-default': component.votes.component != 'had-it'}" ng-model="component.votes.component" uib-btn-radio="'had-it'" uncheckable><i class="fa fa-history"></i> Lo tuve</label>
+                <label ng-click="setOwning()" class="btn" ng-class="{'btn-warning': component.votes.component == 'want-it', 'btn-default': component.votes.component != 'want-it'}" ng-model="component.votes.component" uib-btn-radio="'want-it'" uncheckable><i class="fa fa-star"></i> Lo quiero</label>
+              </div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div ng-if="component.image">
+          <img ng-src="https://assets.spartangeek.com/components/{{ component.image }}" class="img-responsive">
+        </div>
+      </div>
+      <div class="col-md-3">
+        <a href="" class="btn btn-default btn-block" ng-click="component.view_more = true" ng-show="component.images.length > 1 && !component.view_more"><i class="fa fa-picture-o"></i> Ver más</a>
+      </div>
+    </div>
+  </div>
+  <div class="component-images" ng-if="component.images && (!component.store || component.view_more)">
     <div class="container">
       <div class="text-center">
         <img ng-src="https://assets.spartangeek.com/components/{{ image }}" ng-repeat="image in component.images">
@@ -554,10 +599,7 @@
             </tr>
           </table>
         </section>
-
-        <a href="" class="btn btn-primary hidden"><span class="label"><i class="fa fa-plus"></i> Agregar a lista de componentes</span></a>
       </div>
-
 
       <div class="col-md-8">
         <section id="comparaEmotions">
@@ -612,7 +654,7 @@
           </div>
         </section>
 
-        <section id="component-prices" ng-if="component.store.vendors">
+        <section id="component-prices" ng-if="false && component.store">
           <h2>Precios en tiendas online</h2>
           <table class="table">
             <tr>
