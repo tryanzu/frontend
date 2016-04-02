@@ -1,35 +1,32 @@
 <div class="global-content">
   <div class="container">
-    <div class="row" ng-if="onlyStore && false">
-      <div class="col-md-12 mb-40">
-        <div class="img-slider">
-          <div class="main-img">
-            <img src="/images/banners/first_big.jpg" height="auto" width="100%">
-          </div>
-          <div class="img-slider-selector">
-            <ul>
-              <li>
-                <img src="/images/banners/first_small.png" height="auto" width="100%">
-              </li>
-              <li>
-                <img src="/images/banners/second_small.png" height="auto" width="100%">
-              </li>
-              <li>
-                <img src="/images/banners/third_small.png" height="auto" width="100%">
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <section ng-if="onlyStore">
+    <section ng-if="onlyStore" class="hidden">
       <div class="banner">
         <img src="/images/shop/banners/nvidia.jpg" height="auto">
       </div>
 
       <div class="banner banner-empty visible-lg-inline-block">
         <p>Promoción disponible</p>
+      </div>
+    </section>
+
+    <section ng-if="onlyStore" class="evga">
+      <div class="row">
+        <div class="col-md-6">
+          <img src="/images/evga-950.png">
+        </div>
+        <div class="col-md-6 copy">
+          <h2>EVGA GTX 950</h2>
+          <h3 class="hidden">Poderosa. Silenciosa. Lo que buscabas.</h3>
+          <h3 class="hidden">Jugar cualquier juego nunca fue tan fácil.</h3>
+          <h3>Juega en silencio. Juega al máximo.</h3>
+          <section class="price">
+            Muy pronto
+            <span></span>
+          </section>
+          <a href="" class="btn btn-link btn-lg hidden">Más información <i class="fa fa-angle-right"></i></a>
+          <a href="" class="btn btn-link btn-buy btn-lg hidden">Comprar ahora <i class="fa fa-angle-right"></i></a>
+        </div>
       </div>
     </section>
 
