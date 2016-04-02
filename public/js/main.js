@@ -9080,7 +9080,7 @@ var ChatController = [
     $scope.addMessage = function() {
       $scope.message.content = $scope.emojiMessage.messagetext;
 
-      if($scope.message.content != '') {
+      if($scope.message.content != '' && $scope.message.content.length < 201) {
         if($scope.message.content === $scope.message.previous || ($scope.message.previous.indexOf($scope.message.content) > -1) || ($scope.message.content.indexOf($scope.message.previous) > -1)) {
 
           $scope.helpers.spam_count++;
@@ -9093,7 +9093,7 @@ var ChatController = [
         if($scope.helpers.spam_count > 2) {
           $('.emoji-wysiwyg-editor').blur();
           $scope._userRef.child('chat/blocked').set(true);
-          $scope.helpers.spam_count--;
+          $scope.helpers.spam_count = 0;
 
           $scope.message.content = '';
           $scope.emojiMessage = {};
@@ -9121,9 +9121,6 @@ var ChatController = [
             });
           }
         }
-      } else {
-        $scope.message.content = '';
-        $scope.emojiMessage = {};
       }
     }
 
