@@ -61,6 +61,10 @@
                 </div>
                 <span class="timestamp" ng-if=":: messages[$index-1].author.username == messages[$index].author.username" uib-tooltip="{{ m.created_at | date_at }}" tooltip-popup-delay="500" tooltip-placement="right">{{ m.created_at | date:'H:mm' }}</span>
                 <div show-images content="{{ m.content }}" username="{{ user.info.username }}" class="content"></div>
+
+                <div class="message-actions" ng-if="can('board-config')">
+                  <a href="" ng-click="removeMessage(m)" class="btn btn-default btn-xs">Eliminar mensaje</a>
+                </div>
               </div>
 
               <div class="new_chat_alert" ng-if="scroll_help.scrolledUp && old_messages.length > 0"><a href="" ng-click="goToBottom()"><i class="fa fa-arrow-down"></i> Nuevos mensajes ({{ old_messages.length }})</a></div>
