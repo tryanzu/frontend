@@ -9146,6 +9146,12 @@ var ChatController = [
       }
     }
 
+    $scope.removeMessage = function(message) {
+      $scope.messages.$remove(message).then(function(ref) {
+        console.log(ref.key() === message.$id); // true
+      });
+    }
+
     $scope.toggle_details = function() {
       $scope.show_details = !$scope.show_details;
     }
