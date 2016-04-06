@@ -10495,7 +10495,7 @@ var boardApplication = angular.module('board', [
   'btford.socket-io'
 ]);
 
-var version = '042';
+var version = '043';
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider', 'AclServiceProvider',
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider, AclServiceProvider) {
@@ -10550,6 +10550,18 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   $routeProvider.when('/componentes/:type/:slug', {
     templateUrl: '/js/partials/component.html?v=' + version,
     controller: 'ComponentController'
+  });
+  $routeProvider.when('/compra-en-legion/faq', {
+    templateUrl: '/js/partials/massdropfaq.html?v=' + version,
+    //controller: 'ComponentController'
+  });
+  $routeProvider.when('/compra-en-legion/evga-gtx-950-acx', {
+    templateUrl: '/js/partials/evga.html?v=' + version,
+    //controller: 'ComponentController'
+  });
+  $routeProvider.when('/compra-en-legion/:slug/unirme', {
+    templateUrl: '/js/partials/evga_pay.html?v=' + version,
+    //controller: 'ComponentController'
   });
   $routeProvider.when('/c/:slug', {
     templateUrl: '/js/partials/main.html?v=' + version,

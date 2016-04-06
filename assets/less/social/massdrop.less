@@ -1,0 +1,164 @@
+.text-content {
+  h1,h2,h3,.h1.h2.h3 {
+    font-family: 'Myriad Set Pro','Helvetica Neue',Helvetica,Arial,sans-serif;
+    font-weight: 400;
+  }
+}
+
+.faq {
+  margin-bottom: 40px;
+
+  section {
+    margin-bottom: 4em;
+
+    h2 {
+      margin-bottom: 1em;
+    }
+    p {
+      line-height: 1.8;
+      margin-bottom: 20px;
+    }
+  }
+}
+
+.massdrop {
+  h1,h2,h3,.h1.h2.h3 {
+    font-family: 'Myriad Set Pro','Helvetica Neue',Helvetica,Arial,sans-serif;
+    font-weight: 400;
+  }
+  .cover {
+    width: auto;
+    height: 220px;
+    background-color: #f1f1f1;
+    overflow: hidden;
+
+    img {
+      width: 100%;
+    }
+  }
+  .price {
+    text-align: center;
+    border-bottom: 1px solid #e3e3e3;
+    padding-bottom: 25px;
+
+    h2 {
+      font-weight: 500;
+      font-size: 42px;
+    }
+    .description {
+      display: block;
+    }
+  }
+  .buttons {
+    .btn {
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+  }
+  .checkpoints-diagram {
+    border-top: 1px dotted #e3e3e3;
+    border-bottom: 1px solid #e3e3e3;
+    padding: 20px 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+
+    .cp-bar {
+      background-color: #e1e1e1;
+      height: 12px;
+      border-radius: 5px;
+      margin-top: 60px;
+      margin-bottom: 60px;
+      position: relative;
+
+      .current-progress, .current-progress-interested {
+        height: 100%;
+        position: absolute;
+        top: 0;
+      }
+      .current-progress {
+        background-color: @brand-success;
+      }
+      .current-progress-interested {
+        background-color: #bbb;
+      }
+
+      .checkpoints {
+          position: relative;
+        .checkpoint {
+          display: inline-block;
+          position: absolute;
+          top: -45px;
+
+          .details {
+            display: inline-block;
+            padding-top: 10px;
+            background-color: #fff;
+            border: 5px solid #e1e1e1;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            text-align: center;
+
+            h3 {
+              margin-bottom: 0;
+              font-size: 18px;
+            }
+            .persons-needed {
+              display: block;
+              font-size: 10px;
+              text-transform: uppercase;
+            }
+
+            &.interested {
+              border-color: #bbb;
+            }
+            &.reached {
+              border-color: @brand-success;
+            }
+          }
+        }
+      }
+    }
+
+    .current-stats {
+      font-size: 18px;
+
+      .reached {
+        color: @brand-success;
+      }
+      .interested {
+        color: #666;
+      }
+    }
+  }
+
+  &.pay {
+    h1 {
+      font-size: 24px;
+    }
+  }
+}
+
+.user-activity {
+  position: relative;
+  height: 70px;
+
+  .avatar-container {
+    float: left;
+  }
+  .username, .description {
+    padding-left: 60px;
+  }
+
+  &.checkpoint {
+    .avatar-container {
+      img.avatar {
+        background-color: white;
+        border-radius: 0;
+      }
+    }
+    strong {
+      color: @brand-success;
+    }
+  }
+}
