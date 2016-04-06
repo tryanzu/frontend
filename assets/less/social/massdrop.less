@@ -36,7 +36,6 @@
       width: 100%;
     }
   }
-
   .price {
     text-align: center;
     border-bottom: 1px solid #e3e3e3;
@@ -56,7 +55,6 @@
       font-weight: 500;
     }
   }
-
   .checkpoints-diagram {
     border-top: 1px dotted #e3e3e3;
     border-bottom: 1px solid #e3e3e3;
@@ -133,6 +131,12 @@
       }
     }
   }
+
+  &.pay {
+    h1 {
+      font-size: 24px;
+    }
+  }
 }
 
 .user-activity {
@@ -144,5 +148,17 @@
   }
   .username, .description {
     padding-left: 60px;
+  }
+
+  &.checkpoint {
+    .avatar-container {
+      img.avatar {
+        background-color: white;
+        border-radius: 0;
+      }
+    }
+    strong {
+      color: @brand-success;
+    }
   }
 }

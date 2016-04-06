@@ -1,0 +1,110 @@
+<main class="global-content massdrop pay">
+  <div class="container">
+    <div class="row mb-20">
+      <div class="col-md-12">
+        <h1>EVGA GeForce GTX 950 GAMING ACX 2.0</h1>
+      </div>
+    </div>
+    <div class="row mb-40">
+      <div class="col-md-8">
+        <div class="cover mb-20 hidden">
+          <img src="/images/massdrop/GTX-950.JPG">
+        </div>
+
+        <section class="row">
+          <div class="col-md-4">
+            <p>Seleccionar Cantidad:</p>
+          </div>
+          <div class="col-md-2">
+            <select class="form-control">
+              <option>1</option>
+              <option>2</option>
+              <option>3</option>
+              <option>4</option>
+              <option>5</option>
+            </select>
+          </div>
+        </section>
+
+        <section>
+          <h2>Opciones de pago</h2>
+          <div class="row">
+            <div class="col-md-8">
+              <div class="radio">
+                <label>
+                  <input type="radio" ng-model="pay_method.value" name="optionsRadios" id="optionsRadios2" value="credit_card">
+                  Pago con tarjeta de débido o crédito &mdash; <strong>Comisión de 4.2% + $4</strong>
+                </label>
+              </div>
+              <section ng-if="pay_method.value == 'credit_card' || true" class="mb-40">
+                <form stripe:form="createToken" ng-hide="f.trying_to_pay">
+                  <fieldset>
+                    <div class="form-group col-sm-8">
+                      <label>Nombre impreso en la tarjeta</label>
+                      <input type="text" size="40" maxlength="40" data-stripe="name" class="form-control" required />
+                    </div>
+                    <div class="form-group col-sm-8">
+                      <label>Número de tarjeta</label>
+                      <input type="text" size="16" maxlength="16" data-stripe="number" class="form-control" />
+                    </div>
+                    <div class="form-group col-sm-4">
+                      <label>CVC</label>
+                      <input type="text" size="4" maxlength="4" data-stripe="cvc" class="form-control" />
+                    </div>
+                    <div class="form-group col-sm-5 col-md-4">
+                      <label>Fecha de expiración</label>
+                      <input type="text" size="2" maxlength="2" data-stripe="exp-month" class="form-control" />
+                      <p class="help-block">Mes (MM)</p>
+                    </div>
+                    <div class="form-group col-sm-5 col-md-4">
+                      <label></label>
+                      <input type="text" size="4" maxlength="4" data-stripe="exp-year" class="form-control" />
+                      <p class="help-block">Año (AAAA)</p>
+                    </div>
+                  </fieldset>
+                </form>
+
+                <div class="text-center mb-40" ng-show="f.trying_to_pay">
+                  <i class="fa fa-spinner fa-pulse fa-4x"></i>
+                </div>
+              </section>
+              <div class="radio">
+                <label>
+                  <input type="radio" ng-model="pay_method.value" name="optionsRadios" id="optionsRadios1" value="withdrawal" checked>
+                  Pago con depósito o transferencia bancaria &mdash; <strong>Tienes 1 día para hacer el pago</strong>
+                </label>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+      <div class="col-md-4">
+        <section class="mb-40">
+          <h3>Detalles de la orden</h3>
+          <table class="table">
+            <tr>
+              <th>Cantidad</th>
+              <td>1</td>
+            </tr>
+            <tr>
+              <th>Subtotal</th>
+              <td>$ 3,499</td>
+            </tr>
+            <tr>
+              <th>Comisión por tipo de pago</th>
+              <td>$ 144</td>
+            </tr>
+            <tr>
+              <th>Total</th>
+              <td>$ 3,643</td>
+            </tr>
+          </table>
+
+          <div class="buttons">
+            <a href="" class="btn btn-block btn-success disabled">Unirme a la legión</a>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+</main>

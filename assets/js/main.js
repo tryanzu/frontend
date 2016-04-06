@@ -134,6 +134,10 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
     templateUrl: '/js/partials/evga.html?v=' + version,
     //controller: 'ComponentController'
   });
+  $routeProvider.when('/compra-en-legion/:slug/unirme', {
+    templateUrl: '/js/partials/evga_pay.html?v=' + version,
+    //controller: 'ComponentController'
+  });
   $routeProvider.when('/c/:slug', {
     templateUrl: '/js/partials/main.html?v=' + version,
     controller: 'CategoryListController'
