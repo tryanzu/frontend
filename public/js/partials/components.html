@@ -49,10 +49,10 @@
                 </div>
                 <div class="hit-content col-md-9">
                   <p class="hit-name"><a href="/componentes/{{ hit.type}}/{{ hit.slug }}">{{ hit.full_name || hit.name }}</a></p>
-                  <p class="hit-part-number">{{ hit.part_number }}</p>
+                  <p class="hit-part-number">{{ hit.attributes.part_number }}</p>
                   <div class="row">
                     <div class="col-sm-4">
-                      <p class="hit-price" ng-class="{'not-available': hit.store.vendors.spartangeek.stock == 0}" ng-if="onlyStore">{{ hit.store.vendors.spartangeek.price | currency:'$ ':0 }}</p>
+                      <p class="hit-price" ng-class="{'not-available': hit.attributes.store.vendors.spartangeek.stock == 0}" ng-if="onlyStore">{{ hit.price | currency:'$ ':0 }}</p>
                     </div>
                     <div ng-class="{'col-sm-8': onlyStore, 'col-sm-12': !onlyStore}">
                       <div class="btn-toolbar">

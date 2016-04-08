@@ -543,7 +543,6 @@ boardApplication.controller('MainController', [
       var _sift = window._sift = window._sift || [];
       _sift.push(['_setAccount', ss_key]);
       if($scope.user.isLogged === true && $scope.user.info) {
-        console.log($scope.user.info.id, $scope.user.info.session_id);
         _sift.push(['_setUserId', $scope.user.info.id]);
         _sift.push(['_setSessionId', $scope.user.info.session_id]);
       } else {

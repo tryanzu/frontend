@@ -229,37 +229,44 @@ ComponentsModule.controller('ComponentsController', ['$scope', '$timeout', '$htt
     if($scope.query != '') {
       payload.q = $scope.query;
     }
-    // Add the is_store if applies
+    // Add the type if applies
     if($scope.onlyStore) {
-      payload.in_store = true;
+      payload.type = 'component';
     }
     // Add the facet filter
     if($scope.current_facet != '') {
-      payload.type = $scope.current_facet;
+      payload.category = $scope.current_facet;
     }
     return payload;
   };
 
+  $scope.getPromise = function() {
+    if($scope.onlyStore) {
+      return $http.get(layer_path + 'search/products', {
+        params: $scope.getPayload()
+      });
+    } else {
+      return $http.get(layer_path + 'search/components', {
+        params: $scope.getPayload()
+      });
+    }
+  }
+
   $scope.reset = function() {
-    console.log("Reset running...");
-    $http.get(layer_path + 'search/components', {
-      params: $scope.getPayload()
-    })
+    if($scope.can('debug')) console.log("Reset running...");
+    $scope.getPromise()
     .then(function(response) {
-      console.log(response);
+      //console.log(response);
       $scope.results = response.data.results;
       $scope.totalItems = response.data.total;
       $scope.facets = response.data.facets;
     }, function(error) {console.log(error);});
   }
-  //$scope.reset();
 
   $scope.changePage = function() {
-    $http.get(layer_path + 'search/components', {
-      params: $scope.getPayload()
-    })
+    $scope.getPromise()
     .then(function(response) {
-      console.log(response);
+      //console.log(response);
       $scope.results = response.data.results;
       $scope.totalItems = response.data.total;
       $scope.facets = response.data.facets;
@@ -290,11 +297,9 @@ ComponentsModule.controller('ComponentsController', ['$scope', '$timeout', '$htt
 
       $scope.fetching = true;
       $scope.loading = $timeout(function() {
-        $http.get(layer_path + 'search/components', {
-          params: $scope.getPayload()
-        })
+        $scope.getPromise()
         .then(function searchSuccess(response) {
-          console.log(response);
+          //console.log(response);
           $scope.results = response.data.results;
           $scope.totalItems = response.data.total;
           $scope.facets = response.data.facets;
@@ -533,7 +538,6 @@ ComponentsModule.controller('ComponentController', ['$scope', '$routeParams', '$
 }]);
 
 ComponentsModule.controller('PcBuilderController', ['$scope', function($scope) {
-
 }]);
 
 ComponentsModule.controller('CheckoutController', ['$scope', 'cart', '$http', '$timeout', function($scope, cart, $http, $timeout) {
