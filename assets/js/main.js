@@ -132,7 +132,7 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   });
   $routeProvider.when('/compra-en-legion/evga-gtx-950-acx', {
     templateUrl: '/js/partials/evga.html?v=' + version,
-    //controller: 'ComponentController'
+    controller: 'MassdropController'
   });
   $routeProvider.when('/compra-en-legion/:slug/unirme', {
     templateUrl: '/js/partials/evga_pay.html?v=' + version,

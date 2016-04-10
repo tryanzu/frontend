@@ -26,6 +26,11 @@
     font-family: 'Myriad Set Pro','Helvetica Neue',Helvetica,Arial,sans-serif;
     font-weight: 400;
   }
+
+  &.top-info {
+    border-bottom: 1px solid #e1e1e1;
+    margin-bottom: 10px;
+  }
   .cover {
     width: auto;
     height: 220px;
@@ -45,8 +50,18 @@
       font-weight: 500;
       font-size: 42px;
     }
+    h3 {
+      color: @brand-primary;
+      text-transform: uppercase;
+      font-size: 18px;
+    }
     .description {
       display: block;
+      &.join {
+        font-size: 24px;
+        font-weight: 600;
+        color: #666;
+      }
     }
   }
   .buttons {
@@ -62,12 +77,22 @@
     margin-top: 10px;
     margin-bottom: 10px;
 
+    h2 {
+      margin-top: 0;
+      margin-bottom: 0.5em;
+      font-size: 24px;
+      text-transform: uppercase;
+    }
+    .join {
+      margin-bottom: 2em;
+    }
+
     .cp-bar {
       background-color: #e1e1e1;
       height: 12px;
       border-radius: 5px;
       margin-top: 60px;
-      margin-bottom: 60px;
+      margin-bottom: 80px;
       position: relative;
 
       .current-progress, .current-progress-interested {
@@ -108,12 +133,23 @@
               font-size: 10px;
               text-transform: uppercase;
             }
+          }
+          .extra-time {
+            text-align: center;
+            font-size: 13px;
+            font-weight: bold;
+            color: @brand-primary-opaque;
+          }
 
-            &.interested {
-              border-color: #bbb;
-            }
-            &.reached {
+          &.interested .details {
+            border-color: #bbb;
+          }
+          &.reached {
+            .details {
               border-color: @brand-success;
+            }
+            .extra-time {
+              color: fade(@brand-success, 70%);
             }
           }
         }

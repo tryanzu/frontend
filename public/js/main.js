@@ -10423,6 +10423,60 @@ ComponentsModule.controller('CheckoutController', ['$scope', 'cart', '$http', '$
   }
 }]);
 
+ComponentsModule.controller('MassdropController', ['$scope', '$http', '$timeout', function($scope, $http, $timeout) {
+  // Initialize component viewing
+  $http.get(layer_path + "store/product/asus-video-card-gt7402gd3csm").then(function success(response){
+    //console.log(response.data);
+    var massdrop = response.data.massdrop;
+    var max = timespan = 0;
+    for(var i in massdrop.checkpoints) {
+      if(massdrop.checkpoints[i].ends > max) {
+        max = massdrop.checkpoints[i].ends;
+      }
+      if(!massdrop.checkpoints[i].done && timespan == 0) {
+        timespan = massdrop.checkpoints[i].timespan;
+      }
+    }
+    massdrop.timespan = timespan;
+    for(var i in massdrop.checkpoints) {
+      massdrop.checkpoints[i].from_right = (max - massdrop.checkpoints[i].starts) / max * 100;
+    }
+    massdrop.reservations_width = massdrop.count_reservations / max * 100;
+    massdrop.interested_width = massdrop.count_interested / max * 100;
+    $scope.massdrop = massdrop;
+    //console.log($scope.massdrop);
+    $scope.product = response.data.attributes;
+
+    var a = Date.now();
+    var b = new Date(massdrop.deadline);
+    var difference = Math.round( Math.round((b - a) / 1000) / 60);
+
+    console.log(difference)
+
+    $scope.counter = {
+      hours: Math.floor(difference / 60),
+      minutes: difference % 60
+    };
+
+    $scope.countdown = function() {
+      stopped = $timeout(function() {
+        console.log($scope.counter);
+        if($scope.counter.minutes == 0) {
+          if($scope.counter.hours > 0){
+            $scope.counter.hours--;
+            $scope.counter.minutes = 59;
+          }
+        } else {
+          $scope.counter.minutes--;
+        }
+        $scope.countdown();
+      }, 60*1000);
+    };
+    $scope.countdown();
+
+  }, function(error){});
+}])
+
 // @codekit-prepend "vendor/angular-marked"
 // @codekit-prepend "vendor/wizzy"
 // @codekit-prepend "vendor/infinite-scroll"
@@ -10557,7 +10611,7 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   });
   $routeProvider.when('/compra-en-legion/evga-gtx-950-acx', {
     templateUrl: '/js/partials/evga.html?v=' + version,
-    //controller: 'ComponentController'
+    controller: 'MassdropController'
   });
   $routeProvider.when('/compra-en-legion/:slug/unirme', {
     templateUrl: '/js/partials/evga_pay.html?v=' + version,
