@@ -10355,8 +10355,6 @@ ComponentsModule.controller('CheckoutController', ['$scope', 'cart', '$http', '$
 
       $scope.status = 'paying';
       $scope.currentStep = "payment";
-
-
     }, function(error) {
       console.log(error);
     });
@@ -10424,9 +10422,25 @@ ComponentsModule.controller('CheckoutController', ['$scope', 'cart', '$http', '$
 }]);
 
 ComponentsModule.controller('MassdropController', ['$scope', '$http', '$timeout', function($scope, $http, $timeout) {
+
+  $scope.interested = function() {
+    $http.put(layer_path + 'store/product/' + $scope.product_id + '/massdrop').then(function success(response){
+      //console.log(response.data);
+      $scope.massdrop.interested = response.data.interested;
+      if(response.data.interested) {
+        $scope.massdrop.count_interested++;
+      } else {
+        $scope.massdrop.count_interested--;
+      }
+    }, function(error){
+      console.log(error);
+    });
+  }
+
   // Initialize component viewing
   $http.get(layer_path + "store/product/asus-video-card-gt7402gd3csm").then(function success(response){
     //console.log(response.data);
+    $scope.product_id = response.data.id;
     var massdrop = response.data.massdrop;
     var max = timespan = 0;
     for(var i in massdrop.checkpoints) {
@@ -10443,6 +10457,7 @@ ComponentsModule.controller('MassdropController', ['$scope', '$http', '$timeout'
     }
     massdrop.reservations_width = massdrop.count_reservations / max * 100;
     massdrop.interested_width = massdrop.count_interested / max * 100;
+    massdrop.interested = massdrop.current == "interested";
     $scope.massdrop = massdrop;
     //console.log($scope.massdrop);
     $scope.product = response.data.attributes;
@@ -10451,12 +10466,14 @@ ComponentsModule.controller('MassdropController', ['$scope', '$http', '$timeout'
     var b = new Date(massdrop.deadline);
     var difference = Math.round( Math.round((b - a) / 1000) / 60);
 
-    console.log(difference)
-
     $scope.counter = {
       hours: Math.floor(difference / 60),
       minutes: difference % 60
     };
+
+    if ($scope.counter.hours < 1 && $scope.counter.minutes < 1) {
+      massdrop.active = false;
+    }
 
     $scope.countdown = function() {
       stopped = $timeout(function() {
@@ -10474,8 +10491,154 @@ ComponentsModule.controller('MassdropController', ['$scope', '$http', '$timeout'
     };
     $scope.countdown();
 
+    $('.btn-twitter').click(function(event) {
+      var width  = 575,
+          height = 280,
+          left   = ($(window).width()  - width)  / 2,
+          top    = ($(window).height() - height) / 2,
+          url    = this.href,
+          opts   = 'status=1' +
+                   ',width='  + width  +
+                   ',height=' + height +
+                   ',top='    + top    +
+                   ',left='   + left;
+      window.open(url, 'twitter', opts);
+      return false;
+    });
+
+    $scope.share_fb = function(url) {
+      window.open('https://www.facebook.com/sharer/sharer.php?u='+url,'facebook-share-dialog',"width=626,height=436")
+    }
+
   }, function(error){});
-}])
+
+}]);
+
+ComponentsModule.controller('MassdropPayController', ['$scope', '$http', function($scope, $http) {
+  // Flags
+  $scope.f = {
+    verify_cart: false,
+    error_messages: {
+      totals: false
+    },
+    trying_to_pay: false
+  };
+
+  $scope.payer = {
+    name: '',
+    surname: ''
+  };
+
+  $scope.pay_method = {
+    value: 'withdrawal'
+  }
+
+  $scope.current_token_error = '';
+  $scope.token_errors = {
+    "invalid_expiry_month": "El mes de expiración de tu tarjeta es inválido",
+    "invalid_expiry_year": "El año de expiración de tu tarjeta es inválido",
+    "invalid_cvc": "El código de seguridad (CVC) de tu tarjeta es inválido",
+    "incorrect_number": "El número de tarjeta es inválido"
+  };
+  $scope.current_charge_error = '';
+  $scope.charge_errors = {
+    "gateway-incorrect-num": "El número de tarjeta es incorrecto",
+    "gateway-invalid-num": "El número de tarjeta es inválido",
+    "gateway-invalid-exp-m": "El mes de expiración de tu tarjeta es inválido",
+    "gateway-invalid-exp-y": "El año de expiración de tu tarjeta es inválido",
+    "gateway-invalid-cvc": "El código de seguridad (CVC) de tu tarjeta es inválido",
+    "gateway-expired-card": "La tarjeta que estás usando está expirada.",
+    "gateway-incorrect-cvc": "El código de seguridad (CVC) es incorrecto",
+    "gateway-incorrect-zip": "No se pudo realizar el cobro a tu tarjeta",
+    "gateway-card-declined": "La tarjeta fue declinada por el banco",
+    "gateway-stripe-missing": "No se puedo realizar el cobro a tu tarjeta",
+    "gateway-processing-err": "Error al procesar tu tarjeta"
+  }
+
+  $scope.currentStep = 'pay';
+  $scope.quantity = 1;
+  $scope.price_per_unit = 2500;
+
+  $scope.getPaymentFee = function() {
+    if($scope.pay_method.value == 'withdrawal') {
+      return 0;
+    } else {
+      if($scope.pay_method.value == 'credit_card') {
+        return Math.ceil( ($scope.quantity * $scope.price_per_unit) * 0.042 + 4 );
+      } else {
+        return Math.ceil( ($scope.quantity * $scope.price_per_unit) * 0.04 + 4 );
+      }
+    }
+  }
+
+  $scope.doPay = function() {
+    document.getElementById("stripe-form").submit();
+  }
+
+  // After getting Stripe token, we make our API call
+  // to try to make the charge
+  $scope.createToken = function(status, response) {
+    $scope.current_token_error = '';
+    $scope.current_charge_error = '';
+    if(status == 402) {
+      console.log(status, response);
+      $scope.current_token_error = response.error.code;
+    } else {
+      //console.log(response.id);
+      $scope.makeOrder(response.id);
+    }
+  };
+
+  // General purpose order processor
+  $scope.makeOrder = function(token) {
+    token = (typeof token === 'undefined') ? false : token;
+
+    var meta = {};
+    if(token) {
+      meta = { token: token }
+    }
+
+    var gateways = {
+      'withdrawal': 'offline',
+      'credit_card': 'stripe'
+    }
+
+    $scope.f.error_messages.totals = false;
+    $scope.f.trying_to_pay = true;
+
+    $http.post(layer_path + 'store/checkout/massdrop', {
+      "gateway": gateways[$scope.pay_method.value],
+      "meta": meta,
+      "quantity": $scope.quantity,
+      "product_id": $scope.product_id
+      //"ship_to": $scope.selected_address.id,
+      //"total": cart.getTotal() + cart.getShippingFee() + $scope.getPaymentFee()
+    }, {
+      withCredentials: true
+    }).then(function success(response) {
+      //cart.empty();
+      $scope.currentStep = "completed";
+    }, function(error){
+      console.log(error);
+      if(error.data.key == "bad-total") {
+        $scope.f.error_messages.totals = true;
+        $scope.currentStep = "pay";
+        //$scope.validateCart();
+      } else {
+        $scope.current_charge_error = error.data.key;
+      }
+      $scope.f.trying_to_pay = false;
+    });
+  }
+
+  $http.get(layer_path + "store/product/asus-video-card-gt7402gd3csm").then(function success(response){
+    //console.log(response.data);
+    $scope.product_id = response.data.id;
+  }, function(error){
+    console.log(error);
+  })
+
+}]);
 
 // @codekit-prepend "vendor/angular-marked"
 // @codekit-prepend "vendor/wizzy"
@@ -10615,7 +10778,7 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   });
   $routeProvider.when('/compra-en-legion/:slug/unirme', {
     templateUrl: '/js/partials/evga_pay.html?v=' + version,
-    //controller: 'ComponentController'
+    controller: 'MassdropPayController'
   });
   $routeProvider.when('/c/:slug', {
     templateUrl: '/js/partials/main.html?v=' + version,
@@ -11022,7 +11185,7 @@ boardApplication.controller('MainController', [
       var _sift = window._sift = window._sift || [];
       _sift.push(['_setAccount', ss_key]);
       if($scope.user.isLogged === true && $scope.user.info) {
-        console.log($scope.user.info.id, $scope.user.info.session_id);
+        //console.log($scope.user.info.id, $scope.user.info.session_id);
         _sift.push(['_setUserId', $scope.user.info.id]);
         _sift.push(['_setSessionId', $scope.user.info.session_id]);
       } else {

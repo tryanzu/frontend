@@ -1,11 +1,11 @@
 <main class="global-content massdrop pay">
   <div class="container">
-    <div class="row mb-20">
+    <div class="row mb-20" ng-if="currentStep == 'pay'">
       <div class="col-md-12">
         <h1>EVGA GeForce GTX 950 GAMING ACX 2.0</h1>
       </div>
     </div>
-    <div class="row mb-40">
+    <div class="row mb-40" ng-if="currentStep == 'pay'">
       <div class="col-md-8">
         <div class="cover mb-20 hidden">
           <img src="/images/massdrop/GTX-950.JPG">
@@ -16,7 +16,7 @@
             <p>Seleccionar Cantidad:</p>
           </div>
           <div class="col-md-2">
-            <select class="form-control">
+            <select class="form-control" ng-model="quantity">
               <option>1</option>
               <option>2</option>
               <option>3</option>
@@ -29,7 +29,16 @@
         <section>
           <h2>Opciones de pago</h2>
           <div class="row">
-            <div class="col-md-8">
+            <div class="col-md-6">
+              <div class="radio">
+                <label>
+                  <input type="radio" ng-model="pay_method.value" name="optionsRadios" id="optionsRadios1" value="withdrawal" checked>
+                  Pago con depósito o transferencia bancaria &mdash; <strong>Tienes 1 día para hacer el pago</strong>
+                </label>
+              </div>
+              <img src="/images/pay-deposit.png" alt="Pago con depósito o transferencia bancaria" height="80px">
+            </div>
+            <div class="col-md-6">
               <div class="radio">
                 <label>
                   <input type="radio" ng-model="pay_method.value" name="optionsRadios" id="optionsRadios2" value="credit_card">
@@ -37,7 +46,9 @@
                 </label>
               </div>
               <section ng-if="pay_method.value == 'credit_card' || true" class="mb-40">
-                <form stripe:form="createToken" ng-hide="f.trying_to_pay">
+                <p class="alert alert-warning" ng-if="current_token_error != ''"><strong>Error en datos de tu tarjeta</strong><br>{{ token_errors[current_token_error] }}</p>
+                <p class="alert alert-warning" ng-if="current_charge_error != ''"><strong>Error al intentar hacer el pago</strong><br>{{ charge_errors[current_charge_error] }}</p>
+                <form id="stripe-form" stripe:form="createToken" ng-hide="f.trying_to_pay">
                   <fieldset>
                     <div class="form-group col-sm-8">
                       <label>Nombre impreso en la tarjeta</label>
@@ -51,29 +62,25 @@
                       <label>CVC</label>
                       <input type="text" size="4" maxlength="4" data-stripe="cvc" class="form-control" />
                     </div>
-                    <div class="form-group col-sm-5 col-md-4">
+                    <div class="form-group col-sm-5 col-md-6">
                       <label>Fecha de expiración</label>
                       <input type="text" size="2" maxlength="2" data-stripe="exp-month" class="form-control" />
                       <p class="help-block">Mes (MM)</p>
                     </div>
-                    <div class="form-group col-sm-5 col-md-4">
+                    <div class="form-group col-sm-5 col-md-6">
                       <label></label>
                       <input type="text" size="4" maxlength="4" data-stripe="exp-year" class="form-control" />
                       <p class="help-block">Año (AAAA)</p>
                     </div>
                   </fieldset>
+                  <div class="checkbox" ng-if="pay_method.value == 'credit_card'">
+                    <label>
+                      <input type="checkbox" ng-model="understand"> Quiero realizar mi Compra en Legión y entiendo que aún falta por pagar <strong>una diferencia y el envío</strong>.
+                    </label>
+                  </div>
+                  <button type="submit" class="btn btn-success btn-block" ng-if="pay_method.value == 'credit_card'">Unirme a la legión</button>
                 </form>
-
-                <div class="text-center mb-40" ng-show="f.trying_to_pay">
-                  <i class="fa fa-spinner fa-pulse fa-4x"></i>
-                </div>
               </section>
-              <div class="radio">
-                <label>
-                  <input type="radio" ng-model="pay_method.value" name="optionsRadios" id="optionsRadios1" value="withdrawal" checked>
-                  Pago con depósito o transferencia bancaria &mdash; <strong>Tienes 1 día para hacer el pago</strong>
-                </label>
-              </div>
             </div>
           </div>
         </section>
@@ -84,26 +91,54 @@
           <table class="table">
             <tr>
               <th>Cantidad</th>
-              <td>1</td>
+              <td class="text-right">{{ quantity }}</td>
             </tr>
             <tr>
               <th>Subtotal</th>
-              <td>$ 3,499</td>
+              <td class="text-right">{{ quantity * price_per_unit | currency:'$ ':0 }} MXN</td>
             </tr>
-            <tr>
+            <tr ng-if="getPaymentFee() > 0" style="background-color: #FFF8F1;">
               <th>Comisión por tipo de pago</th>
-              <td>$ 144</td>
+              <td class="text-right">{{ getPaymentFee() | currency:'$ ':0 }} MXN</td>
             </tr>
             <tr>
               <th>Total</th>
-              <td>$ 3,643</td>
+              <td class="text-right">{{ quantity * price_per_unit + getPaymentFee() | currency:'$ ':0 }} MXN</td>
             </tr>
           </table>
 
+          <div class="checkbox" ng-if="pay_method.value == 'withdrawal'">
+            <label>
+              <input type="checkbox" ng-model="understand"> Quiero realizar mi Compra en Legión y entiendo que aún falta por pagar <strong>una diferencia y el envío</strong>.
+            </label>
+          </div>
+
           <div class="buttons">
-            <a href="" class="btn btn-block btn-success disabled">Unirme a la legión</a>
+            <a href="" class="btn btn-block btn-success" ng-class="{disabled: !understand}" ng-if="pay_method.value == 'withdrawal'" ng-click="makeOrder()">Unirme a la legión</a>
+          </div>
+
+          <div class="text-center mb-40" ng-show="f.trying_to_pay">
+            <i class="fa fa-spinner fa-pulse fa-4x"></i>
           </div>
         </section>
+      </div>
+    </div>
+
+    <div class="row mb-40" ng-if="currentStep == 'completed'">
+      <div class="col-md-12">
+        <h2 class="text-center">¡Tu orden ha sido procesada!</h2>
+
+        <div class="big-icon">
+          <i class="fa fa-check-circle-o"></i>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 col-md-offset-3">
+            <hr>
+            <p><strong>Gracias por comprar en SpartanGeek</strong><p>
+            <p>Recibirás un correo con la confirmación de tu pedido. Si tienes alguna duda puedes <a href="/compra-en-legion/faq" target="_blank">ver las preguntas frecuentes sobre Compra en Legión</a>.</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>

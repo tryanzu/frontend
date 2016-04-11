@@ -6,8 +6,8 @@
 
         <div class="btn-toolbar">
           <a href="" class="btn btn-default disabled">Tarjetas de video</a>
-          <a href="" class="btn btn-fb"><i class="fa fa-facebook-official"></i> <span class="hidden-xs">Compartir en FB</span></a>
-          <a href="" class="btn btn-twitter"><i class="fa fa-twitter"></i> <span class="hidden-xs">Compartir en Twitter</span></a>
+          <a href="" ng-click="share_fb('https://spartangeek.com/compra-en-legion/evga-gtx-950-acx')" rel="nofollow" target="_blank" class="btn btn-fb"><i class="fa fa-facebook-official"></i> <span class="hidden-xs">Compartir en FB</span></a>
+          <a href="https://twitter.com/intent/tweet?text=Quiero%20comprar%20la%20EVGA%20950%20GTX%20ACX%202.0,%20si%20tambi%C3%A9n%20est%C3%A1s%20interesado,%20podremos%20obtener%20un%20precio%20m%C3%A1s%20bajo%20juntos...%20&url=https://spartangeek.com/compra-en-legion/evga-gtx-950-acx&original_referer=https://spartangeek.com/compra-en-legion/evga-gtx-950-acx" class="btn btn-twitter"><i class="fa fa-twitter"></i> <span class="hidden-xs">Compartir en Twitter</span></a>
         </div>
       </div>
     </div>
@@ -23,9 +23,10 @@
         </div>
 
         <section class="checkpoints-diagram">
-          <h2>Quedan {{ counter.hours }} horas, {{ counter.minutes }} minutos</h2>
-          <p class="join">¡Únete ahora y ayuda a la legión a conseguir {{ massdrop.timespan }} horas más!</p>
-          <div class="cp-bar">
+          <h2 ng-if="massdrop.active">Quedan {{ counter.hours }} horas, {{ counter.minutes }} minutos</h2>
+          <h2 ng-if="!massdrop.active">La Compra en legión ha finalizado</h2>
+          <p class="join" ng-if="massdrop.active">¡Únete ahora y ayuda a la legión a conseguir {{ massdrop.timespan }} horas más!</p>
+          <div class="cp-bar" ng-if="massdrop.active">
             <div class="current-progress" style="width: {{ massdrop.reservations_width }}%"></div>
             <div class="current-progress-interested" style="width: {{ massdrop.interested_width }}%; left: {{ massdrop.reservations_width }}%"></div>
 
@@ -89,9 +90,10 @@
         <section class="mb-40">
           <div class="price">
             <h2>{{ massdrop.price | currency:'$ ':0 }}</h2>
-            <span class="description join">Únete con {{ massdrop.reserve_price | currency:'$ ':0 }}</span>
-            <span class="description">Paga <strong>la diferencia y el envío</strong> cuanto termine la compra en legión</span>
-            <h3>Quedan {{ counter.hours }} horas, {{ counter.minutes }} minutos</h3>
+            <span class="description join" ng-if="massdrop.active">Únete con {{ massdrop.reserve_price | currency:'$ ':0 }}</span>
+            <span class="description" ng-if="massdrop.active">Paga <strong>la diferencia y el envío</strong> cuanto termine la compra en legión</span>
+            <h3 ng-if="massdrop.active">Quedan {{ counter.hours }} horas, {{ counter.minutes }} minutos</h3>
+            <h3 ng-if="!massdrop.active">La Compra en legión ha finalizado</h3>
           </div>
 
           <table class="table">
@@ -107,9 +109,9 @@
           <p>El precio en tienda es el total a pagar si <strong>no</strong> quieres <em>compra en legión</em>. Además, será el precio que tendrá cuando termine la compra en legión.</p>
 
           <div class="buttons">
-            <a href="/compra-en-legion/evga-gtx-950-acx/unirme" class="btn btn-block btn-success">Unirme a la legión</a>
-            <a href="" class="btn btn-block btn-default">Estoy interesado</a>
-            <a href="" class="btn btn-block btn-warning hidden">Estoy interesado</a>
+            <a href="/compra-en-legion/evga-gtx-950-acx/unirme" class="btn btn-block btn-success" ng-if="counter.hours > 0 || counter.minutes > 0">Unirme a la legión</a>
+            <a href="" class="btn btn-block btn-default" ng-click="interested()" ng-if="!massdrop.interested && massdrop.current != 'reserved'">Estoy interesado</a>
+            <a href="" class="btn btn-block btn-warning" ng-click="interested()" ng-if="massdrop.interested && massdrop.current != 'reserved'">Estoy interesado</a>
             <a href="" class="btn btn-block btn-primary hidden">Estoy interesado</a>
           </div>
         </section>
