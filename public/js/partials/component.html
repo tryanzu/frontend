@@ -40,7 +40,7 @@
           <div class="col-md-12">
 
             <section id="buy-buttons">
-              <a href="" class="btn btn-success" ng-click="cart.addItem(component)" ng-if="component.store.vendors.spartangeek.stock != 0 && component.store.vendors.spartangeek.stock != null"><i class="fa fa-shopping-cart"></i> Agregar al carrito</a>
+              <a href="" class="btn btn-success" ng-click="cart.addItem(component, true)" ng-if="component.store.vendors.spartangeek.stock != 0 && component.store.vendors.spartangeek.stock != null"><i class="fa fa-shopping-cart"></i> Agregar al carrito</a>
               <span uib-tooltip="El precio publicado ya no es válido, debes esperar a que lo actualicemos para poder comprar" ng-if="component.store.vendors.spartangeek.stock == 0 || component.store.vendors.spartangeek.stock == null"><i class="fa fa-shopping-cart"></i> No disponible por el momento</span>
             </section>
 
@@ -652,31 +652,6 @@
               </div>
             </div>
           </div>
-        </section>
-
-        <section id="component-prices" ng-if="false && component.store">
-          <h2>Precios en tiendas online</h2>
-          <table class="table">
-            <tr>
-              <th>Vendedor</th>
-              <th>Precio</th>
-              <th>Disponible</th>
-              <th></th>
-            </tr>
-
-            <tr ng-repeat="vendor in component.store.vendors" ng-class="{'sg-product': false}">
-              <td>SpartanGeek</td>
-              <td><span ng-if="vendor.stock">{{ vendor.price | currency:'$ ':0 }}</span><span ng-if="vendor.stock == 0 || vendor.stock == null">-</span></td>
-              <td>{{ vendor.stock != 0 && vendor.stock != null ? 'Si':'No disponible actualmente' }}</td>
-              <td uib-tooltip="El precio publicado ya no es válido, debes esperar a que lo actualicemos para poder comprar" tooltip-placement="left" ng-if="false"><i class="fa fa-shopping-cart"></i></td>
-              <td>
-                <a href="" class="btn btn-success" ng-click="cart.addItem(component)" ng-if="vendor.stock != 0 && vendor.stock != null"><span class="label">Comprar</span></a>
-                <span uib-tooltip="El precio publicado ya no es válido, debes esperar a que lo actualicemos para poder comprar" tooltip-placement="left" ng-if="vendor.stock == 0 || vendor.stock == null"><i class="fa fa-shopping-cart"></i></span>
-              </td>
-            </tr>
-          </table>
-
-          <hr>
         </section>
 
         <section id="component-questions">

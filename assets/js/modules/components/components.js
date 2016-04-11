@@ -25,11 +25,15 @@ ComponentsModule.factory('cart', ['$localstorage', '$http', function($localstora
   cart.items = $localstorage.getObject('cart');
   cart.isopen = false;
 
-  cart.addItem = function(item) {
+  cart.addItem = function(item, in_store) {
+    var id = item.id;
+    if(in_store) {
+      id = item.product_id;
+    }
     //console.log(item);
     $http.post(layer_path + 'store/cart', {
-      "id": item._id,
-      "vendor": "spartangeek"
+      "id": id,
+      //"vendor": "spartangeek"
     }, {
       withCredentials: true
     }).then(function success(response) {
@@ -53,8 +57,9 @@ ComponentsModule.factory('cart', ['$localstorage', '$http', function($localstora
           price: item.store.vendors.spartangeek.price,
           quantity: 1,
           image: item.image,
-          type: item.type
-        }
+          type: item.type,
+          product_id: item.product_id
+        };
         cart.items.push(new_item);
         cart.persist();
       }
@@ -65,7 +70,7 @@ ComponentsModule.factory('cart', ['$localstorage', '$http', function($localstora
   };
 
   cart.removeItem = function(item) {
-    $http.delete(layer_path + 'store/cart/' + item._id, {
+    $http.delete(layer_path + 'store/cart/' + item.id, {
       withCredentials: true
     }).then(function success(response) {
       for(var i = 0; i < cart.items.length; i++) {
@@ -229,37 +234,44 @@ ComponentsModule.controller('ComponentsController', ['$scope', '$timeout', '$htt
     if($scope.query != '') {
       payload.q = $scope.query;
     }
-    // Add the is_store if applies
+    // Add the type if applies
     if($scope.onlyStore) {
-      payload.in_store = true;
+      payload.type = 'component';
     }
     // Add the facet filter
     if($scope.current_facet != '') {
-      payload.type = $scope.current_facet;
+      payload.category = $scope.current_facet;
     }
     return payload;
   };
 
+  $scope.getPromise = function() {
+    if($scope.onlyStore) {
+      return $http.get(layer_path + 'search/products', {
+        params: $scope.getPayload()
+      });
+    } else {
+      return $http.get(layer_path + 'search/components', {
+        params: $scope.getPayload()
+      });
+    }
+  }
+
   $scope.reset = function() {
-    console.log("Reset running...");
-    $http.get(layer_path + 'search/components', {
-      params: $scope.getPayload()
-    })
+    if($scope.can('debug')) console.log("Reset running...");
+    $scope.getPromise()
     .then(function(response) {
-      console.log(response);
+      //console.log(response);
       $scope.results = response.data.results;
       $scope.totalItems = response.data.total;
       $scope.facets = response.data.facets;
     }, function(error) {console.log(error);});
   }
-  //$scope.reset();
 
   $scope.changePage = function() {
-    $http.get(layer_path + 'search/components', {
-      params: $scope.getPayload()
-    })
+    $scope.getPromise()
     .then(function(response) {
-      console.log(response);
+      //console.log(response);
       $scope.results = response.data.results;
       $scope.totalItems = response.data.total;
       $scope.facets = response.data.facets;
@@ -290,11 +302,9 @@ ComponentsModule.controller('ComponentsController', ['$scope', '$timeout', '$htt
 
       $scope.fetching = true;
       $scope.loading = $timeout(function() {
-        $http.get(layer_path + 'search/components', {
-          params: $scope.getPayload()
-        })
+        $scope.getPromise()
         .then(function searchSuccess(response) {
-          console.log(response);
+          //console.log(response);
           $scope.results = response.data.results;
           $scope.totalItems = response.data.total;
           $scope.facets = response.data.facets;
@@ -533,7 +543,6 @@ ComponentsModule.controller('ComponentController', ['$scope', '$routeParams', '$
 }]);
 
 ComponentsModule.controller('PcBuilderController', ['$scope', function($scope) {
-
 }]);
 
 ComponentsModule.controller('CheckoutController', ['$scope', 'cart', '$http', '$timeout', function($scope, cart, $http, $timeout) {
@@ -745,8 +754,6 @@ ComponentsModule.controller('CheckoutController', ['$scope', 'cart', '$http', '$
 
       $scope.status = 'paying';
       $scope.currentStep = "payment";
-
-
     }, function(error) {
       console.log(error);
     });
@@ -811,4 +818,231 @@ ComponentsModule.controller('CheckoutController', ['$scope', 'cart', '$http', '$
     $scope.selected_address = address;
     $scope.currentStep = "payment";
   }
+}]);
+
+ComponentsModule.controller('MassdropController', ['$scope', '$http', '$timeout', function($scope, $http, $timeout) {
+
+  $scope.interested = function() {
+    $http.put(layer_path + 'store/product/' + $scope.product_id + '/massdrop').then(function success(response){
+      //console.log(response.data);
+      $scope.massdrop.interested = response.data.interested;
+      if(response.data.interested) {
+        $scope.massdrop.count_interested++;
+      } else {
+        $scope.massdrop.count_interested--;
+      }
+    }, function(error){
+      console.log(error);
+    });
+  }
+
+  // Initialize component viewing
+  $http.get(layer_path + "store/product/evga-geforce-gtx-950-gaming-acx-2-0").then(function success(response){
+    //console.log(response.data);
+    $scope.product_id = response.data.id;
+    var massdrop = response.data.massdrop;
+    var max = timespan = 0;
+    for(var i in massdrop.checkpoints) {
+      if(massdrop.checkpoints[i].ends > max) {
+        max = massdrop.checkpoints[i].ends;
+      }
+      if(!massdrop.checkpoints[i].done && timespan == 0) {
+        timespan = massdrop.checkpoints[i].timespan;
+      }
+    }
+    massdrop.timespan = timespan;
+    for(var i in massdrop.checkpoints) {
+      massdrop.checkpoints[i].from_right = (max - massdrop.checkpoints[i].starts) / max * 100;
+    }
+
+    massdrop.reservations_width = massdrop.count_reservations / max * 100;
+    if(massdrop.reservations_width > 100) {
+      massdrop.reservations_width = 100;
+    }
+    massdrop.interested_width = massdrop.count_interested / max * 100;
+    if(100 - massdrop.reservations_width < massdrop.interested_width) {
+      massdrop.interested_width = 100 - massdrop.reservations_width;
+    }
+    massdrop.interested = (massdrop.current == "interested") || (massdrop.current == "reservation");
+    $scope.massdrop = massdrop;
+    //console.log($scope.massdrop);
+    $scope.product = response.data.attributes;
+
+    var a = Date.now();
+    var b = new Date(massdrop.deadline);
+    var difference = Math.round( Math.round((b - a) / 1000) / 60);
+
+    $scope.counter = {
+      hours: Math.floor(difference / 60),
+      minutes: difference % 60
+    };
+
+    if ($scope.counter.hours < 1 && $scope.counter.minutes < 1) {
+      massdrop.active = false;
+    }
+
+    $scope.countdown = function() {
+      stopped = $timeout(function() {
+        console.log($scope.counter);
+        if($scope.counter.minutes == 0) {
+          if($scope.counter.hours > 0){
+            $scope.counter.hours--;
+            $scope.counter.minutes = 59;
+          }
+        } else {
+          $scope.counter.minutes--;
+        }
+        $scope.countdown();
+      }, 60*1000);
+    };
+    $scope.countdown();
+
+    $('.btn-twitter').click(function(event) {
+      var width  = 575,
+          height = 280,
+          left   = ($(window).width()  - width)  / 2,
+          top    = ($(window).height() - height) / 2,
+          url    = this.href,
+          opts   = 'status=1' +
+                   ',width='  + width  +
+                   ',height=' + height +
+                   ',top='    + top    +
+                   ',left='   + left;
+      window.open(url, 'twitter', opts);
+      return false;
+    });
+
+    $scope.share_fb = function(url) {
+      window.open('https://www.facebook.com/sharer/sharer.php?u='+url,'facebook-share-dialog',"width=626,height=436")
+    }
+
+  }, function(error){});
+
+}]);
+
+ComponentsModule.controller('MassdropPayController', ['$scope', '$http', function($scope, $http) {
+  // Flags
+  $scope.f = {
+    verify_cart: false,
+    error_messages: {
+      totals: false
+    },
+    trying_to_pay: false,
+    understand: false,
+    quantity: 1
+  };
+
+  $scope.payer = {
+    name: '',
+    surname: ''
+  };
+
+  $scope.pay_method = {
+    value: 'withdrawal'
+  }
+
+  $scope.current_token_error = '';
+  $scope.token_errors = {
+    "invalid_expiry_month": "El mes de expiración de tu tarjeta es inválido",
+    "invalid_expiry_year": "El año de expiración de tu tarjeta es inválido",
+    "invalid_cvc": "El código de seguridad (CVC) de tu tarjeta es inválido",
+    "incorrect_number": "El número de tarjeta es inválido"
+  };
+  $scope.current_charge_error = '';
+  $scope.charge_errors = {
+    "gateway-incorrect-num": "El número de tarjeta es incorrecto",
+    "gateway-invalid-num": "El número de tarjeta es inválido",
+    "gateway-invalid-exp-m": "El mes de expiración de tu tarjeta es inválido",
+    "gateway-invalid-exp-y": "El año de expiración de tu tarjeta es inválido",
+    "gateway-invalid-cvc": "El código de seguridad (CVC) de tu tarjeta es inválido",
+    "gateway-expired-card": "La tarjeta que estás usando está expirada.",
+    "gateway-incorrect-cvc": "El código de seguridad (CVC) es incorrecto",
+    "gateway-incorrect-zip": "No se pudo realizar el cobro a tu tarjeta",
+    "gateway-card-declined": "La tarjeta fue declinada por el banco",
+    "gateway-stripe-missing": "No se puedo realizar el cobro a tu tarjeta",
+    "gateway-processing-err": "Error al procesar tu tarjeta"
+  }
+
+  $scope.currentStep = 'pay';
+  $scope.price_per_unit = 2500;
+
+  $scope.getPaymentFee = function() {
+    if($scope.pay_method.value == 'withdrawal') {
+      return 0;
+    } else {
+      if($scope.pay_method.value == 'credit_card') {
+        return Math.ceil( ($scope.f.quantity * $scope.price_per_unit) * 0.042 + 4 );
+      } else {
+        return Math.ceil( ($scope.f.quantity * $scope.price_per_unit) * 0.04 + 4 );
+      }
+    }
+  }
+
+  $scope.doPay = function() {
+    document.getElementById("stripe-form").submit();
+  }
+
+  // After getting Stripe token, we make our API call
+  // to try to make the charge
+  $scope.createToken = function(status, response) {
+    $scope.current_token_error = '';
+    $scope.current_charge_error = '';
+    if(status == 402) {
+      console.log(status, response);
+      $scope.current_token_error = response.error.code;
+    } else {
+      //console.log(response.id);
+      $scope.makeOrder(response.id);
+    }
+  };
+
+  // General purpose order processor
+  $scope.makeOrder = function(token) {
+    token = (typeof token === 'undefined') ? false : token;
+
+    var meta = {};
+    if(token) {
+      meta = { token: token }
+    }
+
+    var gateways = {
+      'withdrawal': 'offline',
+      'credit_card': 'stripe'
+    }
+
+    $scope.f.error_messages.totals = false;
+    $scope.f.trying_to_pay = true;
+
+    $http.post(layer_path + 'store/checkout/massdrop', {
+      "gateway": gateways[$scope.pay_method.value],
+      "meta": meta,
+      "quantity": parseInt($scope.f.quantity),
+      "product_id": $scope.product_id
+      //"ship_to": $scope.selected_address.id,
+      //"total": cart.getTotal() + cart.getShippingFee() + $scope.getPaymentFee()
+    }, {
+      withCredentials: true
+    }).then(function success(response) {
+      //cart.empty();
+      $scope.currentStep = "completed";
+    }, function(error){
+      console.log(error);
+      if(error.data.key == "bad-total") {
+        $scope.f.error_messages.totals = true;
+        $scope.currentStep = "pay";
+        //$scope.validateCart();
+      } else {
+        $scope.current_charge_error = error.data.key;
+      }
+      $scope.f.trying_to_pay = false;
+    });
+  }
+
+  $http.get(layer_path + "store/product/evga-geforce-gtx-950-gaming-acx-2-0").then(function success(response){
+    //console.log(response.data);
+    $scope.product_id = response.data.id;
+  }, function(error){
+    console.log(error);
+  })
+
 }]);
