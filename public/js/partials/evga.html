@@ -129,10 +129,10 @@
           <p>El precio en tienda es el total a pagar si <strong>no</strong> quieres <em>compra en legión</em>. Además, será el precio que tendrá cuando termine la compra en legión.</p>
 
           <div class="buttons">
-            <a href="/compra-en-legion/evga-gtx-950-acx/unirme" class="btn btn-block btn-success" ng-if="counter.hours > 0 || counter.minutes > 0">Unirme a la legión</a>
+            <a href="/compra-en-legion/evga-gtx-950-acx/unirme" class="btn btn-block btn-success" ng-if="(counter.hours > 0 || counter.minutes > 0) && massdrop.active">Unirme a la legión</a>
             <a href="" class="btn btn-block btn-default" ng-click="signIn()" ng-if="!user.isLogged">Estoy interesado</a>
-            <a href="" class="btn btn-block btn-default" ng-click="interested()" ng-if="user.isLogged && !massdrop.interested && massdrop.current != 'reserved'">Estoy interesado</a>
-            <a href="" class="btn btn-block btn-warning" ng-click="interested()" ng-if="user.isLogged && massdrop.interested && massdrop.current != 'reserved'">Estoy interesado</a>
+            <a href="" class="btn btn-block btn-default" ng-click="interested()" ng-if="user.isLogged && !massdrop.interested && massdrop.current != 'reservation'">Estoy interesado</a>
+            <a href="" class="btn btn-block btn-warning" ng-click="interested()" ng-if="user.isLogged && massdrop.interested && massdrop.current != 'reservation'">Estoy interesado</a>
             <a href="" class="btn btn-block btn-primary hidden">Estoy interesado</a>
           </div>
         </section>

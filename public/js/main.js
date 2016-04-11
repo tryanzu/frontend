@@ -10455,9 +10455,16 @@ ComponentsModule.controller('MassdropController', ['$scope', '$http', '$timeout'
     for(var i in massdrop.checkpoints) {
       massdrop.checkpoints[i].from_right = (max - massdrop.checkpoints[i].starts) / max * 100;
     }
+
     massdrop.reservations_width = massdrop.count_reservations / max * 100;
+    if(massdrop.reservations_width > 100) {
+      massdrop.reservations_width = 100;
+    }
     massdrop.interested_width = massdrop.count_interested / max * 100;
-    massdrop.interested = massdrop.current == "interested";
+    if(100 - massdrop.reservations_width < massdrop.interested_width) {
+      massdrop.interested_width = 100 - massdrop.reservations_width;
+    }
+    massdrop.interested = (massdrop.current == "interested") || (massdrop.current == "reservation");
     $scope.massdrop = massdrop;
     //console.log($scope.massdrop);
     $scope.product = response.data.attributes;
