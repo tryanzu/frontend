@@ -912,7 +912,8 @@ ComponentsModule.controller('MassdropPayController', ['$scope', '$http', functio
       totals: false
     },
     trying_to_pay: false,
-    understand: false
+    understand: false,
+    quantity: 1
   };
 
   $scope.payer = {
@@ -947,7 +948,6 @@ ComponentsModule.controller('MassdropPayController', ['$scope', '$http', functio
   }
 
   $scope.currentStep = 'pay';
-  $scope.quantity = 1;
   $scope.price_per_unit = 2500;
 
   $scope.getPaymentFee = function() {
@@ -955,9 +955,9 @@ ComponentsModule.controller('MassdropPayController', ['$scope', '$http', functio
       return 0;
     } else {
       if($scope.pay_method.value == 'credit_card') {
-        return Math.ceil( ($scope.quantity * $scope.price_per_unit) * 0.042 + 4 );
+        return Math.ceil( ($scope.f.quantity * $scope.price_per_unit) * 0.042 + 4 );
       } else {
-        return Math.ceil( ($scope.quantity * $scope.price_per_unit) * 0.04 + 4 );
+        return Math.ceil( ($scope.f.quantity * $scope.price_per_unit) * 0.04 + 4 );
       }
     }
   }
@@ -1000,7 +1000,7 @@ ComponentsModule.controller('MassdropPayController', ['$scope', '$http', functio
     $http.post(layer_path + 'store/checkout/massdrop', {
       "gateway": gateways[$scope.pay_method.value],
       "meta": meta,
-      "quantity": $scope.quantity,
+      "quantity": parseInt($scope.f.quantity),
       "product_id": $scope.product_id
       //"ship_to": $scope.selected_address.id,
       //"total": cart.getTotal() + cart.getShippingFee() + $scope.getPaymentFee()
@@ -1022,7 +1022,7 @@ ComponentsModule.controller('MassdropPayController', ['$scope', '$http', functio
     });
   }
 
-  $http.get(layer_path + "store/product/asus-video-card-gt7402gd3csm").then(function success(response){
+  $http.get(layer_path + "store/product/evga-geforce-gtx-950-gaming-acx-2-0").then(function success(response){
     //console.log(response.data);
     $scope.product_id = response.data.id;
   }, function(error){

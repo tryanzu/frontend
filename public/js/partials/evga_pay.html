@@ -16,7 +16,7 @@
             <p>Seleccionar Cantidad:</p>
           </div>
           <div class="col-md-2">
-            <select class="form-control" ng-model="quantity">
+            <select class="form-control" ng-model="f.quantity">
               <option>1</option>
               <option>2</option>
               <option>3</option>
@@ -91,11 +91,11 @@
           <table class="table">
             <tr>
               <th>Cantidad</th>
-              <td class="text-right">{{ quantity }}</td>
+              <td class="text-right">{{ f.quantity }}</td>
             </tr>
             <tr>
               <th>Subtotal</th>
-              <td class="text-right">{{ quantity * price_per_unit | currency:'$ ':0 }} MXN</td>
+              <td class="text-right">{{ f.quantity * price_per_unit | currency:'$ ':0 }} MXN</td>
             </tr>
             <tr ng-if="getPaymentFee() > 0" style="background-color: #FFF8F1;">
               <th>Comisión por tipo de pago</th>
@@ -103,7 +103,7 @@
             </tr>
             <tr>
               <th>Total</th>
-              <td class="text-right">{{ quantity * price_per_unit + getPaymentFee() | currency:'$ ':0 }} MXN</td>
+              <td class="text-right">{{ f.quantity * price_per_unit + getPaymentFee() | currency:'$ ':0 }} MXN</td>
             </tr>
           </table>
 
