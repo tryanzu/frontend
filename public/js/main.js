@@ -10447,7 +10447,7 @@ ComponentsModule.controller('MassdropController', ['$scope', '$http', '$timeout'
   }
 
   // Initialize component viewing
-  $http.get(layer_path + "store/product/evga-geforce-gtx-950-gaming-acx-2-0").then(function success(response){
+  $http.get(layer_path + "store/product/evga-gtx-950-acx").then(function success(response){
     //console.log(response.data);
     $scope.product_id = response.data.id;
     var massdrop = response.data.massdrop;
@@ -10648,7 +10648,7 @@ ComponentsModule.controller('MassdropPayController', ['$scope', '$http', functio
     });
   }
 
-  $http.get(layer_path + "store/product/evga-geforce-gtx-950-gaming-acx-2-0").then(function success(response){
+  $http.get(layer_path + "store/product/evga-gtx-950-acx").then(function success(response){
     //console.log(response.data);
     $scope.product_id = response.data.id;
   }, function(error){
