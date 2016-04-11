@@ -45,7 +45,7 @@
                   Pago con tarjeta de débido o crédito &mdash; <strong>Comisión de 4.2% + $4</strong>
                 </label>
               </div>
-              <section ng-if="pay_method.value == 'credit_card' || true" class="mb-40">
+              <section ng-if="user.isLogged" class="mb-40">
                 <p class="alert alert-warning" ng-if="current_token_error != ''"><strong>Error en datos de tu tarjeta</strong><br>{{ token_errors[current_token_error] }}</p>
                 <p class="alert alert-warning" ng-if="current_charge_error != ''"><strong>Error al intentar hacer el pago</strong><br>{{ charge_errors[current_charge_error] }}</p>
                 <form id="stripe-form" stripe:form="createToken" ng-hide="f.trying_to_pay">
@@ -75,10 +75,10 @@
                   </fieldset>
                   <div class="checkbox" ng-if="pay_method.value == 'credit_card'">
                     <label>
-                      <input type="checkbox" ng-model="understand"> Quiero realizar mi Compra en Legión y entiendo que aún falta por pagar <strong>una diferencia y el envío</strong>.
+                      <input type="checkbox" ng-model="f.understand"> Quiero realizar mi Compra en Legión y entiendo que aún falta por pagar <strong>una diferencia y el envío</strong>.
                     </label>
                   </div>
-                  <button type="submit" class="btn btn-success btn-block" ng-if="pay_method.value == 'credit_card'">Unirme a la legión</button>
+                  <button type="submit" class="btn btn-success btn-block" ng-disabled="!f.understand" ng-if="pay_method.value == 'credit_card'">Unirme a la legión</button>
                 </form>
               </section>
             </div>
@@ -107,14 +107,20 @@
             </tr>
           </table>
 
-          <div class="checkbox" ng-if="pay_method.value == 'withdrawal'">
+          <div class="checkbox" ng-if="user.isLogged && pay_method.value == 'withdrawal'">
             <label>
-              <input type="checkbox" ng-model="understand"> Quiero realizar mi Compra en Legión y entiendo que aún falta por pagar <strong>una diferencia y el envío</strong>.
+              <input type="checkbox" ng-model="f.understand"> Quiero realizar mi Compra en Legión y entiendo que aún falta por pagar <strong>una diferencia y el envío</strong>.
             </label>
           </div>
 
           <div class="buttons">
-            <a href="" class="btn btn-block btn-success" ng-class="{disabled: !understand}" ng-if="pay_method.value == 'withdrawal'" ng-click="makeOrder()">Unirme a la legión</a>
+            <a href="" class="btn btn-block btn-success" ng-class="{disabled: !f.understand}" ng-if="user.isLogged && pay_method.value == 'withdrawal'" ng-click="makeOrder()">Unirme a la legión</a>
+          </div>
+
+          <div class="buttons text-center" ng-if="!user.isLogged">
+            <a href="" class="btn btn-block btn-success" ng-click="signIn()">Inicia sesión para pagar</a>
+            ó
+            <a href="" class="btn btn-block btn-default" ng-click="signUp()">Crea una cuenta nueva</a>
           </div>
 
           <div class="text-center mb-40" ng-show="f.trying_to_pay">

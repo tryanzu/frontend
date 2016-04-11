@@ -25,7 +25,7 @@
         <section class="checkpoints-diagram">
           <h2 ng-if="massdrop.active">Quedan {{ counter.hours }} horas, {{ counter.minutes }} minutos</h2>
           <h2 ng-if="!massdrop.active">La Compra en legión ha finalizado</h2>
-          <p class="join" ng-if="massdrop.active">¡Únete ahora y ayuda a la legión a conseguir {{ massdrop.timespan }} horas más!</p>
+          <p class="join" ng-if="massdrop.active">¡Únete ahora a la Compra en Legión y ayuda a conseguir {{ massdrop.timespan }} horas más!</p>
           <div class="cp-bar" ng-if="massdrop.active">
             <div class="current-progress" style="width: {{ massdrop.reservations_width }}%"></div>
             <div class="current-progress-interested" style="width: {{ massdrop.interested_width }}%; left: {{ massdrop.reservations_width }}%"></div>
@@ -57,13 +57,19 @@
         <section>
           <h3>Descripción</h3>
 
-          <section>
+          <div class="text-center space-for-text">
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/4juvM6hzOM4?showinfo=0" frameborder="0" allowfullscreen></iframe>
+          </div>
+
+          <p>La GTX 950 es la tarjeta de video que no solamente te asegura mejores gráficos que cualquier consola, sino también disfrutar los juegos de última generación en resolución 1080p con una excelente relación precio-rendimiento.</p>
+
+          <section class="space-for-text">
             <img src="/images/massdrop/GTX-950-1.JPG" style="width: 100%">
           </section>
 
-          <h3>Refrigeración</h3>
+          <p>Con esta versión de la GTX 950 de EVGA, además del desempeño gráfico, tienes un excelente diseño, doble ventilador con tecnología ACX 2.0, y un backplate que le da solidez, protección y que contribuye a la disipación de calor.</p>
 
-          <section>
+          <section class="space-for-text">
             <img src="/images/massdrop/GTX-950-2.JPG" style="width: 100%">
           </section>
         </section>
@@ -73,18 +79,32 @@
           <ul>
             <li>Tarjeta de video {{ product.full_name }}</li>
             <li>Manuales de usuario</li>
-            <li>Medalla de EVGA</li>
+            <li>Garantía directamente con EVGA</li>
+            <li>Sticker de SpartanGeek</li>
+            <li>Primeros 5: Playera EVGA (valor $9.99 dólares)</li>
           </ul>
         </section>
 
         <section>
           <h3>Envío</h3>
 
-          <p>Envíos nacionales hechos por SpartanGeek por diferentes paqueterías.</p>
+          <p>Envíos a todo México por diferentes paqueterías.</p>
           <p>Costo de envío: <strong>$ 139</strong> - No aplica en zona extendida.</p>
           <p>Fecha estimada de envío: <strong>Abril 18, 2016</strong>.</p>
-          <p>Después de que termine la compra en legión, se enviará un correo a los participantes con más información.</p>
+          <p>Tiempo de entrega: 2 días hábiles, excepto zona extendida</p>
+          <p>Al finalizar la Compra en Legión, recibirás un correo con toda la información.</p>
         </section>
+
+        <section>
+          <h3>Entregas en la Ciudad de México</h3>
+          <p>Durante la semana del 18 al 22 de Abril se establecerán horarios para recoger tu tarjeta personalmente <strong>sin costo</strong>.</p>
+          <p>El lugar será en un punto de la delegación Benito Juárez.</p>
+        </section>
+
+        <hr>
+
+        <p>Si tienes más dudas, revisa nuestra sección <strong><a href="/compra-en-legion/faq" target="_blank">"¿Qué es una compra en legión?"</a></strong> para encontrar más detalles.</p>
+
       </div>
       <div class="col-md-4">
         <section class="mb-40">
@@ -110,8 +130,9 @@
 
           <div class="buttons">
             <a href="/compra-en-legion/evga-gtx-950-acx/unirme" class="btn btn-block btn-success" ng-if="counter.hours > 0 || counter.minutes > 0">Unirme a la legión</a>
-            <a href="" class="btn btn-block btn-default" ng-click="interested()" ng-if="!massdrop.interested && massdrop.current != 'reserved'">Estoy interesado</a>
-            <a href="" class="btn btn-block btn-warning" ng-click="interested()" ng-if="massdrop.interested && massdrop.current != 'reserved'">Estoy interesado</a>
+            <a href="" class="btn btn-block btn-default" ng-click="signIn()" ng-if="!user.isLogged">Estoy interesado</a>
+            <a href="" class="btn btn-block btn-default" ng-click="interested()" ng-if="user.isLogged && !massdrop.interested && massdrop.current != 'reserved'">Estoy interesado</a>
+            <a href="" class="btn btn-block btn-warning" ng-click="interested()" ng-if="user.isLogged && massdrop.interested && massdrop.current != 'reserved'">Estoy interesado</a>
             <a href="" class="btn btn-block btn-primary hidden">Estoy interesado</a>
           </div>
         </section>
