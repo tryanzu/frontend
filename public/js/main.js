@@ -9930,6 +9930,12 @@ ComponentsModule.controller('ComponentsController', ['$scope', '$timeout', '$htt
     }
   };
 
+  $http.get(layer_path + "store/product/evga-gtx-950-acx").then(function success(response) {
+    $scope.evga_price = response.data.massdrop.price;
+  }, function(error){
+    console.log(error);
+  });
+
   // Hack, so we don't have to reload the controller if the route uses the same controller
   var lastRoute = $route.current;
   $scope.$on('$locationChangeSuccess', function(event) {

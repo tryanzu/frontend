@@ -21,11 +21,11 @@
           <h3 class="hidden">Jugar cualquier juego nunca fue tan fácil.</h3>
           <h3>Juega en silencio. Juega al máximo.</h3>
           <section class="price">
-            Muy pronto
-            <span></span>
+            {{ evga_price | currency:'$ ':0 }}
+            <span>Compra en Legión</span>
           </section>
-          <a href="" class="btn btn-link btn-lg hidden">Más información <i class="fa fa-angle-right"></i></a>
-          <a href="" class="btn btn-link btn-buy btn-lg hidden">Comprar ahora <i class="fa fa-angle-right"></i></a>
+          <a href="/componentes/video-card/evga-gtx-950-acx" class="btn btn-link btn-lg" target="_blank">Más información <i class="fa fa-angle-right"></i></a>
+          <a href="/compra-en-legion/evga-gtx-950-acx" class="btn btn-link btn-buy btn-lg" target="_blank">Comprar ahora <i class="fa fa-angle-right"></i></a>
         </div>
       </div>
     </section>
@@ -48,7 +48,7 @@
                   </div>
                 </div>
                 <div class="hit-content col-md-9">
-                  <p class="hit-name"><a href="/componentes/{{ hit.type}}/{{ hit.slug }}">{{ hit.full_name || hit.name }}</a></p>
+                  <p class="hit-name"><a href="/componentes/{{ hit.category}}/{{ hit.slug }}">{{ hit.full_name || hit.name }}</a></p>
                   <p class="hit-part-number">{{ hit.attributes.part_number }}</p>
                   <div class="row">
                     <div class="col-sm-4">
@@ -58,7 +58,7 @@
                       <div class="btn-toolbar">
                         <a href="#" class="btn btn-link btn-xs hidden" ng-if="hit.activated"><i class="fa fa-cart-plus"></i> Agregar a carrito</a>
                         <a href="#" class="btn btn-link btn-xs hidden"><i class="fa fa-desktop"></i> Agregar a mi lista</a>
-                        <a href="/componentes/{{ hit.type}}/{{ hit.slug }}" class="btn btn-link btn-sm"><i class="fa fa-clone"></i> Ver detalles</a>
+                        <a href="/componentes/{{ hit.category}}/{{ hit.slug }}" class="btn btn-link btn-sm"><i class="fa fa-clone"></i> Ver detalles</a>
                       </div>
                     </div>
                   </div>
@@ -82,8 +82,8 @@
 
         <h4>Categorías</h4>
         <ul class="collections">
-          <li ng-repeat="facet in facets" ng-class="{'active': facet.type == current_facet}">
-            <a href="" ng-click="change_facet(facet.type)">{{ type_labels[facet.type] }} ({{ facet.count }})</a>
+          <li ng-repeat="facet in facets" ng-class="{'active': facet.category == current_facet}">
+            <a href="" ng-click="change_facet(facet.category)">{{ type_labels[facet.category] }} ({{ facet.count }})</a>
           </li>
 
           <li ng-if="current_facet != ''">
