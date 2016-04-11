@@ -132,11 +132,11 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   });
   $routeProvider.when('/compra-en-legion/evga-gtx-950-acx', {
     templateUrl: '/js/partials/evga.html?v=' + version,
-    //controller: 'ComponentController'
+    controller: 'MassdropController'
   });
   $routeProvider.when('/compra-en-legion/:slug/unirme', {
     templateUrl: '/js/partials/evga_pay.html?v=' + version,
-    //controller: 'ComponentController'
+    controller: 'MassdropPayController'
   });
   $routeProvider.when('/c/:slug', {
     templateUrl: '/js/partials/main.html?v=' + version,
@@ -543,6 +543,7 @@ boardApplication.controller('MainController', [
       var _sift = window._sift = window._sift || [];
       _sift.push(['_setAccount', ss_key]);
       if($scope.user.isLogged === true && $scope.user.info) {
+        //console.log($scope.user.info.id, $scope.user.info.session_id);
         _sift.push(['_setUserId', $scope.user.info.id]);
         _sift.push(['_setSessionId', $scope.user.info.session_id]);
       } else {

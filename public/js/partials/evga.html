@@ -1,16 +1,20 @@
-<main class="global-content massdrop">
+<main class="global-content massdrop top-info">
   <div class="container">
     <div class="row mb-20">
       <div class="col-md-12">
-        <h1>EVGA GeForce GTX 950 GAMING ACX 2.0</h1>
+        <h1 ng-cloak>{{ product.full_name }}</h1>
 
         <div class="btn-toolbar">
           <a href="" class="btn btn-default disabled">Tarjetas de video</a>
-          <a href="" class="btn btn-fb"><i class="fa fa-facebook-official"></i> <span class="hidden-xs">Compartir en FB</span></a>
-          <a href="" class="btn btn-twitter"><i class="fa fa-twitter"></i> <span class="hidden-xs">Compartir en Twitter</span></a>
+          <a href="" ng-click="share_fb('https://spartangeek.com/compra-en-legion/evga-gtx-950-acx')" rel="nofollow" target="_blank" class="btn btn-fb"><i class="fa fa-facebook-official"></i> <span class="hidden-xs">Compartir en FB</span></a>
+          <a href="https://twitter.com/intent/tweet?text=Quiero%20comprar%20la%20EVGA%20950%20GTX%20ACX%202.0,%20si%20tambi%C3%A9n%20est%C3%A1s%20interesado,%20podremos%20obtener%20un%20precio%20m%C3%A1s%20bajo%20juntos...%20&url=https://spartangeek.com/compra-en-legion/evga-gtx-950-acx&original_referer=https://spartangeek.com/compra-en-legion/evga-gtx-950-acx" class="btn btn-twitter"><i class="fa fa-twitter"></i> <span class="hidden-xs">Compartir en Twitter</span></a>
         </div>
       </div>
     </div>
+  </div>
+</main>
+<main class="massdrop">
+  <div class="container">
     <div class="row mb-40">
       <div class="col-md-8">
 
@@ -19,53 +23,53 @@
         </div>
 
         <section class="checkpoints-diagram">
-          <div class="cp-bar">
-            <div class="current-progress" style="width: 30%"></div>
-            <div class="current-progress-interested" style="width: 40%; left: 30%"></div>
+          <h2 ng-if="massdrop.active">Quedan {{ counter.hours }} horas, {{ counter.minutes }} minutos</h2>
+          <h2 ng-if="!massdrop.active">La Compra en legión ha finalizado</h2>
+          <p class="join" ng-if="massdrop.active">¡Únete ahora a la Compra en Legión y ayuda a conseguir {{ massdrop.timespan }} horas más!</p>
+          <div class="cp-bar" ng-if="massdrop.active">
+            <div class="current-progress" style="width: {{ massdrop.reservations_width }}%"></div>
+            <div class="current-progress-interested" style="width: {{ massdrop.interested_width }}%; left: {{ massdrop.reservations_width }}%"></div>
 
             <div class="checkpoints">
-              <div class="checkpoint" style="right: 75%;">
-                <div class="details reached interested">
-                  <h3>$ 3,449</h3>
-                  <span class="persons-needed">5 personas</span>
-                </div>
-              </div>
-              <div class="checkpoint" style="right: 50%;">
-                <div class="details interested">
-                  <h3>$ 3,299</h3>
-                  <span class="persons-needed">10 personas</span>
-                </div>
-              </div>
-              <div class="checkpoint" style="right: 0;">
+              <div class="checkpoint" ng-class="{'reached': c.done, 'interested': (massdrop.count_reservations + massdrop.count_interested) >= c.starts}" ng-repeat="c in massdrop.checkpoints" style="right: {{ c.from_right }}%;">
                 <div class="details">
-                  <h3>$ 3,199</h3>
-                  <span class="persons-needed">20 personas</span>
+                  <h3>{{ c.price | currency:'$ ':0}}</h3>
+                  <span class="persons-needed">{{ c.starts }} personas</span>
+                </div>
+                <div class="extra-time" ng-if="c.timespan > 0">
+                  <span>+{{c.timespan}} horas</span>
                 </div>
               </div>
             </div>
           </div>
           <div class="row current-stats">
             <div class="col-md-6">
-              <div class="reached text-center"><strong>6</strong> Personas se unieron a la legión</div>
+              <div class="reached text-center"><strong>{{ massdrop.count_reservations }}</strong> Personas se unieron a la legión</div>
             </div>
             <div class="col-md-6">
-              <div class="interested text-center"><strong>8</strong> Personas interesadas en unirse</div>
+              <div class="interested text-center"><strong>{{ massdrop.count_interested }}</strong> Personas interesadas en unirse</div>
             </div>
           </div>
         </section>
 
-        <p class="alert alert-info">Esto es una compra en legión. Si no sabes qué significa, revisa nuestra sección <strong><a href="/compra-en-legion/faq">"¿Qué es una compra en legión?"</a></strong> para encontrar más detalles.</p>
+        <p class="alert alert-info">Esto es una compra en legión. Si no sabes qué significa, revisa nuestra sección <strong><a href="/compra-en-legion/faq" target="_blank">"¿Qué es una compra en legión?"</a></strong> para encontrar más detalles.</p>
 
         <section>
           <h3>Descripción</h3>
 
-          <section>
+          <div class="text-center space-for-text">
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/4juvM6hzOM4?showinfo=0" frameborder="0" allowfullscreen></iframe>
+          </div>
+
+          <p>La GTX 950 es la tarjeta de video que no solamente te asegura mejores gráficos que cualquier consola, sino también disfrutar los juegos de última generación en resolución 1080p con una excelente relación precio-rendimiento.</p>
+
+          <section class="space-for-text">
             <img src="/images/massdrop/GTX-950-1.JPG" style="width: 100%">
           </section>
 
-          <h3>Refrigeración</h3>
+          <p>Con esta versión de la GTX 950 de EVGA, además del desempeño gráfico, tienes un excelente diseño, doble ventilador con tecnología ACX 2.0, y un backplate que le da solidez, protección y que contribuye a la disipación de calor.</p>
 
-          <section>
+          <section class="space-for-text">
             <img src="/images/massdrop/GTX-950-2.JPG" style="width: 100%">
           </section>
         </section>
@@ -73,27 +77,43 @@
         <section>
           <h3>¿Qué incluye?</h3>
           <ul>
-            <li>Tarjeta de video EVGA GeForce GTX 950 GAMING ACX 2.0</li>
+            <li>Tarjeta de video {{ product.full_name }}</li>
             <li>Manuales de usuario</li>
-            <li>Medalla de EVGA</li>
+            <li>Garantía directamente con EVGA</li>
+            <li>Sticker de SpartanGeek</li>
+            <li>Primeros 5: Playera EVGA (valor $9.99 dólares)</li>
           </ul>
         </section>
 
         <section>
           <h3>Envío</h3>
 
-          <p>Envíos nacionales hechos por SpartanGeek por diferentes paqueterías.</p>
-          <p>Costo de envío: <strong>$ 139</strong> - No aplica en zona extendida. Se puede pagar con el crédito obtenido en la compra en legión.</p>
+          <p>Envíos a todo México por diferentes paqueterías.</p>
+          <p>Costo de envío: <strong>$ 139</strong> - No aplica en zona extendida.</p>
           <p>Fecha estimada de envío: <strong>Abril 18, 2016</strong>.</p>
-          <p>Después de que termine la compra en legión, se enviará un correo a los participantes con más información.</p>
+          <p>Tiempo de entrega: 2 días hábiles, excepto zona extendida</p>
+          <p>Al finalizar la Compra en Legión, recibirás un correo con toda la información.</p>
         </section>
+
+        <section>
+          <h3>Entregas en la Ciudad de México</h3>
+          <p>Durante la semana del 18 al 22 de Abril se establecerán horarios para recoger tu tarjeta personalmente <strong>sin costo</strong>.</p>
+          <p>El lugar será en un punto de la delegación Benito Juárez.</p>
+        </section>
+
+        <hr>
+
+        <p>Si tienes más dudas, revisa nuestra sección <strong><a href="/compra-en-legion/faq" target="_blank">"¿Qué es una compra en legión?"</a></strong> para encontrar más detalles.</p>
+
       </div>
       <div class="col-md-4">
         <section class="mb-40">
           <div class="price">
-            <h2>$ 3,499</h2>
-            <span class="description">MSRP: $3,850</span>
-            <span class="description">Ahorra desde 10%</span>
+            <h2>{{ massdrop.price | currency:'$ ':0 }}</h2>
+            <span class="description join" ng-if="massdrop.active">Únete con {{ massdrop.reserve_price | currency:'$ ':0 }}</span>
+            <span class="description" ng-if="massdrop.active">Paga <strong>la diferencia y el envío</strong> cuanto termine la compra en legión</span>
+            <h3 ng-if="massdrop.active">Quedan {{ counter.hours }} horas, {{ counter.minutes }} minutos</h3>
+            <h3 ng-if="!massdrop.active">La Compra en legión ha finalizado</h3>
           </div>
 
           <table class="table">
@@ -102,19 +122,17 @@
               <td>México</td>
             </tr>
             <tr>
-              <th>Tiempo restante</th>
-              <td>16 horas, 15 minutos</td>
-            </tr>
-            <tr>
-              <th>Compra inmediata</th>
-              <td><a href="">$ 3,599 en SpartanGeek</a></td>
+              <th>Precio en tienda</th>
+              <td><a href="/componentes/video-card/{{product.slug}}" target="_blank">{{ product.store.vendors.spartangeek.price | currency:'$ ':0 }} en SpartanGeek</a></td>
             </tr>
           </table>
+          <p>El precio en tienda es el total a pagar si <strong>no</strong> quieres <em>compra en legión</em>. Además, será el precio que tendrá cuando termine la compra en legión.</p>
 
           <div class="buttons">
-            <a href="/compra-en-legion/evga-gtx-950-acx/unirme" class="btn btn-block btn-success">Unirme a la legión</a>
-            <a href="" class="btn btn-block btn-default">Estoy interesado</a>
-            <a href="" class="btn btn-block btn-warning hidden">Estoy interesado</a>
+            <a href="/compra-en-legion/evga-gtx-950-acx/unirme" class="btn btn-block btn-success" ng-if="(counter.hours > 0 || counter.minutes > 0) && massdrop.active">Unirme a la legión</a>
+            <a href="" class="btn btn-block btn-default" ng-click="signIn()" ng-if="!user.isLogged">Estoy interesado</a>
+            <a href="" class="btn btn-block btn-default" ng-click="interested()" ng-if="user.isLogged && !massdrop.interested && massdrop.current != 'reservation'">Estoy interesado</a>
+            <a href="" class="btn btn-block btn-warning" ng-click="interested()" ng-if="user.isLogged && massdrop.interested && massdrop.current != 'reservation'">Estoy interesado</a>
             <a href="" class="btn btn-block btn-primary hidden">Estoy interesado</a>
           </div>
         </section>
@@ -122,46 +140,34 @@
         <section>
           <h4>Actividad reciente</h4>
 
-          <div class="user-activity checkpoint">
-            <a href="" title="Checkpoint alcanzado" class="avatar-container">
-              <img class="avatar" src="/images/massdrop/icon_timeplus.png" alt="AcidRod">
+          <p class="alert alert-info" ng-if="!massdrop.activities" ng-cloak>No hay actividad aún.</p>
+
+          <div class="user-activity" ng-repeat="a in massdrop.activities" ng-class="{'checkpoint': a.type == 'checkpoint'}">
+            <a href="" title="Checkpoint alcanzado" class="avatar-container" ng-if="a.type == 'checkpoint'">
+              <img class="avatar" src="/images/massdrop/icon_timeplus.png" alt="Time checkpoint">
             </a>
-            <div class="username">
+            <a href="/u/{{ a.attributes.user.username}}/{{ a.attributes.user.id }}" title="Perfil de {{ a.attributes.user.username}}" class="avatar-container" ng-if="a.type == 'reservation' || a.type == 'interested'" target="_blank">
+              <img class="avatar" ng-src="{{ a.attributes.user.image }}" alt="{{ a.attributes.user.username }}" ng-if="a.attributes.user.image">
+              <span class="avatar" title="{{ a.attributes.user.username }}" ng-if="!a.attributes.user.image">{{ a.attributes.user.username[0] }}</span>
+            </a>
+            <div class="username" ng-if="a.type == 'checkpoint'">
               <strong>Checkpoint</strong> alcanzado por la legión
             </div>
-            <div class="description">
-              Se agregaron <strong>24 horas</strong> a la <strong>compra en legión</strong>
-            </div>
-          </div>
-
-          <div class="user-activity">
-            <a href="/u/AcidRod/54e238652397381217000001" title="Perfil de AcidRod" class="avatar-container">
-              <img class="avatar" ng-src="https://s3-us-west-1.amazonaws.com/spartan-board/users/56f8e3a465d4402c7f4ed052-120x120.png" alt="AcidRod" src="https://s3-us-west-1.amazonaws.com/spartan-board/users/56f8e3a465d4402c7f4ed052-120x120.png">
-            </a>
-            <div class="username">
-              <a href="/u/AcidRod/54e238652397381217000001" title="Perfil de AcidRod" class="ng-binding">
-                AcidRod
+            <div class="username" ng-if="a.type == 'reservation' || a.type == 'interested'">
+              <a href="/u/{{ a.attributes.user.username}}/{{ a.attributes.user.id }}" title="Perfil de {{ a.attributes.user.username}}" class="ng-binding" target="_blank">
+                {{ a.attributes.user.username }}
               </a>
             </div>
-            <div class="description">
-              Se unió hace 3 horas
+            <div class="description" ng-if="a.type == 'checkpoint'">
+              Se agregó más tiempo a la <strong>Compra en Legión</strong>
+            </div>
+            <div class="description" ng-if="a.type == 'reservation'">
+              Se unió {{a.created_at | timeAgo}}
+            </div>
+            <div class="description" ng-if="a.type == 'interested'">
+              Está interesado desde {{a.created_at | timeAgo}}
             </div>
           </div>
-
-          <div class="user-activity">
-            <a href="/u/AcidRod/54e238652397381217000001" title="Perfil de AcidRod" class="avatar-container">
-              <img class="avatar" ng-src="https://s3-us-west-1.amazonaws.com/spartan-board/users/56f8e3a465d4402c7f4ed052-120x120.png" alt="AcidRod" src="https://s3-us-west-1.amazonaws.com/spartan-board/users/56f8e3a465d4402c7f4ed052-120x120.png">
-            </a>
-            <div class="username">
-              <a href="/u/AcidRod/54e238652397381217000001" title="Perfil de AcidRod" class="ng-binding">
-                AcidRod
-              </a>
-            </div>
-            <div class="description">
-              Está interesado desde hace 4 horas
-            </div>
-          </div>
-
         </section>
       </div>
     </div>
