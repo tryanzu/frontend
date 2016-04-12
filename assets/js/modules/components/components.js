@@ -17,7 +17,7 @@ ComponentsModule.factory('$localstorage', ['$window', function($window) {
   }
 }]);
 
-ComponentsModule.factory('cart', ['$localstorage', '$http', function($localstorage, $http) {
+ComponentsModule.factory('cart', ['$localstorage', '$http', 'AclService', function($localstorage, $http, AclService) {
 
   //var cart_keys = {}
   var cart = {};
@@ -31,13 +31,14 @@ ComponentsModule.factory('cart', ['$localstorage', '$http', function($localstora
       id = item.product_id;
     }
     //console.log(item);
+    if(AclService.can('debug')) console.log("Adding item...");
     $http.post(layer_path + 'store/cart', {
       "id": id,
       //"vendor": "spartangeek"
     }, {
       withCredentials: true
     }).then(function success(response) {
-      //console.log(response);
+      if(AclService.can('debug')) console.log(response);
       cart.isopen = true;
       var added = false;
       for(var i = 0; i < cart.items.length; i++) {
@@ -65,7 +66,7 @@ ComponentsModule.factory('cart', ['$localstorage', '$http', function($localstora
       }
       //console.log(cart);
     }, function(error) {
-      console.log(error);
+      if(AclService.can('debug')) console.log(error);
     })
   };
 
@@ -95,11 +96,11 @@ ComponentsModule.factory('cart', ['$localstorage', '$http', function($localstora
   }
 
   cart.getIndividualShippingFee = function(item) {
-    if(item.type == 'case') {
+    if(item.category == 'case') {
       return 320;
     } else {
       for(var i = 0; i < cart.items.length; i++) {
-        if(cart.items[i].type != 'case') {
+        if(cart.items[i].category != 'case') {
           return 60;
         }
       }
@@ -117,7 +118,7 @@ ComponentsModule.factory('cart', ['$localstorage', '$http', function($localstora
       var non_case_count = 0;
       var case_count = 0;
       for(var i = 0; i < cart.items.length; i++) {
-        if(cart.items[i].type == 'case') {
+        if(cart.items[i].category == 'case') {
           case_count += cart.items[i].quantity;
         } else {
           non_case_count += cart.items[i].quantity;
@@ -626,10 +627,10 @@ ComponentsModule.controller('CheckoutController', ['$scope', 'cart', '$http', '$
     $http.get(layer_path + 'store/cart', {
       withCredentials: true
     }).then(function success(response){
-      //console.log(response);
-      for(var i = 0; i < response.data.length; i++) {
+      if($scope.can('debug')) console.log(response);
+      /*for(var i = 0; i < response.data.length; i++) {
         response.data[i]._id = response.data[i].id;
-      }
+      }*/
       cart.replaceItems(response.data);
       //console.log(cart);
       $scope.f.verify_cart = false;
@@ -923,7 +924,6 @@ ComponentsModule.controller('MassdropController', ['$scope', '$http', '$timeout'
     }
 
   }, function(error){});
-
 }]);
 
 ComponentsModule.controller('MassdropPayController', ['$scope', '$http', function($scope, $http) {
@@ -1050,5 +1050,4 @@ ComponentsModule.controller('MassdropPayController', ['$scope', '$http', functio
   }, function(error){
     console.log(error);
   })
-
 }]);
