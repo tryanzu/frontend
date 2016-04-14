@@ -25,7 +25,7 @@
         <section class="checkpoints-diagram">
           <h2 ng-if="massdrop.active">Quedan {{ counter.hours }} horas, {{ counter.minutes }} minutos</h2>
           <h2 ng-if="!massdrop.active">La Compra en legión ha finalizado</h2>
-          <p class="join" ng-if="massdrop.active">¡Únete ahora a la Compra en Legión y ayuda a conseguir {{ massdrop.timespan }} horas más!</p>
+          <p class="join" ng-if="massdrop.active">¡Aparta ahora y ayuda a conseguir {{ massdrop.timespan }} horas más!</p>
           <div class="cp-bar" ng-if="massdrop.active">
             <div class="current-progress" style="width: {{ massdrop.reservations_width }}%"></div>
             <div class="current-progress-interested" style="width: {{ massdrop.interested_width }}%; left: {{ massdrop.reservations_width }}%"></div>
@@ -110,10 +110,14 @@
         <section class="mb-40">
           <div class="price">
             <h2>{{ massdrop.price | currency:'$ ':0 }}</h2>
-            <span class="description join" ng-if="massdrop.active">Únete con {{ massdrop.reserve_price | currency:'$ ':0 }}</span>
-            <span class="description" ng-if="massdrop.active">Paga <strong>la diferencia y el envío</strong> cuanto termine la compra en legión</span>
+            <span class="description join" ng-if="massdrop.active">Aparta con {{ massdrop.reserve_price | currency:'$ ':0 }}</span>
+            <span class="description" ng-if="massdrop.active">Paga <strong>la diferencia</strong> cuanto termine la compra en legión</span>
             <h3 ng-if="massdrop.active">Quedan {{ counter.hours }} horas, {{ counter.minutes }} minutos</h3>
             <h3 ng-if="!massdrop.active">La Compra en legión ha finalizado</h3>
+          </div>
+
+          <div class="buttons mb-20">
+            <a href="/compra-en-legion/evga-gtx-950-acx/unirme" class="btn btn-block btn-success" ng-if="(counter.hours > 0 || counter.minutes > 0) && massdrop.active">Comprar</a>
           </div>
 
           <table class="table">
@@ -129,11 +133,9 @@
           <p>El precio en tienda es el total a pagar si <strong>no</strong> quieres <em>compra en legión</em>. Además, será el precio que tendrá cuando termine la compra en legión.</p>
 
           <div class="buttons">
-            <a href="/compra-en-legion/evga-gtx-950-acx/unirme" class="btn btn-block btn-success" ng-if="(counter.hours > 0 || counter.minutes > 0) && massdrop.active">Unirme a la legión</a>
-            <a href="" class="btn btn-block btn-default" ng-click="signIn()" ng-if="!user.isLogged">Estoy interesado</a>
-            <a href="" class="btn btn-block btn-default" ng-click="interested()" ng-if="user.isLogged && !massdrop.interested && massdrop.current != 'reservation'">Estoy interesado</a>
-            <a href="" class="btn btn-block btn-warning" ng-click="interested()" ng-if="user.isLogged && massdrop.interested && massdrop.current != 'reservation'">Estoy interesado</a>
-            <a href="" class="btn btn-block btn-primary hidden">Estoy interesado</a>
+            <a href="" class="btn btn-block btn-default" ng-click="signIn()" ng-if="!user.isLogged">Recibir alertas de precios</a>
+            <a href="" class="btn btn-block btn-default" ng-click="interested()" ng-if="user.isLogged && !massdrop.interested && massdrop.current != 'reservation'">Recibir alertas de precios</a>
+            <a href="" class="btn btn-block btn-warning" ng-click="interested()" ng-if="user.isLogged && massdrop.interested && massdrop.current != 'reservation'">Recibir alertas de precios</a>
           </div>
         </section>
 
