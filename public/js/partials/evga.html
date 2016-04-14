@@ -134,7 +134,7 @@
 
           <div class="buttons">
             <a href="" class="btn btn-block btn-default" ng-click="signIn()" ng-if="!user.isLogged">Recibir alertas de precios</a>
-            <a href="" class="btn btn-block btn-default" ng-click="interested()" ng-if="user.isLogged && !massdrop.interested && massdrop.current != 'reservation'">Recibir alertas de precios</a>
+            <a href="" class="btn btn-block btn-default" ng-click="interestedDialog()" ng-if="user.isLogged && !massdrop.interested && massdrop.current != 'reservation'">Recibir alertas de precios</a>
             <a href="" class="btn btn-block btn-warning" ng-click="interested()" ng-if="user.isLogged && massdrop.interested && massdrop.current != 'reservation'">Recibir alertas de precios</a>
           </div>
         </section>
@@ -164,7 +164,7 @@
               Se agregó más tiempo a la <strong>Compra en Legión</strong>
             </div>
             <div class="description" ng-if="a.type == 'reservation'">
-              Se unió {{a.created_at | timeAgo}}
+              <strong style="color: #21b384;"><i class="fa fa-check" aria-hidden="true"></i> Compró {{a.created_at | timeAgo}}</strong>
             </div>
             <div class="description" ng-if="a.type == 'interested'">
               Está interesado desde {{a.created_at | timeAgo}}
