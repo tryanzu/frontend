@@ -827,7 +827,7 @@ ComponentsModule.controller('CheckoutController', ['$scope', 'cart', '$http', '$
   }
 }]);
 
-ComponentsModule.controller('MassdropController', ['$scope', '$http', '$timeout', function($scope, $http, $timeout) {
+ComponentsModule.controller('MassdropController', ['$scope', '$http', '$timeout', '$uibModal', function($scope, $http, $timeout, $uibModal) {
 
   $scope.interested = function() {
     $http.put(layer_path + 'store/product/' + $scope.product_id + '/massdrop').then(function success(response){
@@ -842,6 +842,28 @@ ComponentsModule.controller('MassdropController', ['$scope', '$http', '$timeout'
       console.log(error);
     });
   }
+
+  $scope.interestedDialog = function() {
+    var modalInstance = $uibModal.open({
+      templateUrl: '/js/partials/massdrop-interested.html',
+      controller: 'InterestedController',
+      size: 'sm',
+      resolve: {
+        product_id: function () {
+          return $scope.product_id;
+        },
+        massdrop: function () {
+          return $scope.massdrop;
+        }
+      }
+    });
+
+    modalInstance.result.then(function(massdrop) {
+      $scope.massdrop = massdrop;
+    }, function() {
+      //$log.info('Modal dismissed at: ' + new Date());
+    });
+  };
 
   // Initialize component viewing
   $http.get(layer_path + "store/product/evga-gtx-950-acx").then(function success(response){
@@ -1050,4 +1072,32 @@ ComponentsModule.controller('MassdropPayController', ['$scope', '$http', functio
   }, function(error){
     console.log(error);
   })
+}]);
+
+ComponentsModule.controller('InterestedController', ['$scope', '$http', '$uibModalInstance', 'product_id', 'massdrop',
+  function($scope, $http, $uibModalInstance, product_id, massdrop) {
+    $scope.form = {
+      reference: ''
+    };
+
+    $scope.product_id = product_id;
+    $scope.massdrop = massdrop;
+
+    $scope.interested = function() {
+      $http.put(layer_path + 'store/product/' + $scope.product_id + '/massdrop', {
+        'reference': $scope.form.reference
+      }).then(function success(response){
+        //console.log(response.data);
+        $scope.massdrop.interested = response.data.interested;
+        if(response.data.interested) {
+          $scope.massdrop.count_interested++;
+        } else {
+          $scope.massdrop.count_interested--;
+        }
+        $uibModalInstance.close($scope.massdrop);
+      }, function(error){
+        console.log(error);
+      });
+    }
+
 }]);

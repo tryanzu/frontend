@@ -1,0 +1,21 @@
+<button class="btn btn-icon btn-link close back-control" ng-click="cancel()">
+  <i class="fa fa-fw fa-times"></i>
+</button>
+
+<div class="modal-header" style="padding-bottom: 0;">
+  <h3 class="title-control">Alertas de precios</h3>
+</div>
+<div class="modal-body">
+  <p class="text-center">Gracias por tu interés en comprar dentro de esta Legión. Te mandaremos noticias del avance.</p>
+  <section>
+    <div class="form-centered">
+      <div class="form-group">
+        <label for="exampleInputPassword1">Escribe tu correo o teléfono</label>
+        <input type="text" name="reference" placeholder="Correo electrónico o teléfono" class="form-control" ng-model="form.reference">
+      </div>
+      <div class="form-group">
+        <a href="" ng-click="interested()" ng-class="{'disabled': form.reference.length < 5}" class="btn btn-primary btn-block">Quiero recibir notificaciones</a>
+      </div>
+    </div>
+  </section>
+</div>
