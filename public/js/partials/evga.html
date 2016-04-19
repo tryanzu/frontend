@@ -24,9 +24,9 @@
 
         <section class="checkpoints-diagram">
           <h2 ng-if="massdrop.active">Quedan {{ counter.hours }} horas, {{ counter.minutes }} minutos</h2>
-          <h2 ng-if="!massdrop.active">La Compra en legión ha finalizado</h2>
+          <h2 ng-if="!massdrop.active">La Compra en legión ha finalizado <small>Comenzó en $ 3,500</small></h2>
           <p class="join" ng-if="massdrop.active">¡Aparta ahora y ayuda a conseguir {{ massdrop.timespan }} horas más!</p>
-          <div class="cp-bar" ng-if="massdrop.active">
+          <div class="cp-bar">
             <div class="current-progress" style="width: {{ massdrop.reservations_width }}%"></div>
             <div class="current-progress-interested" style="width: {{ massdrop.interested_width }}%; left: {{ massdrop.reservations_width }}%"></div>
 
