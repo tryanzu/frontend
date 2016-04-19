@@ -31,7 +31,7 @@
   <!-- /Favicon -->
 
   <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-  <link type="text/css" rel="stylesheet" href="/css/app-048.css">
+  <link type="text/css" rel="stylesheet" href="/css/app-049.css">
 
   <script type="text/javascript" src="js/offline.js"></script>
   <script type="text/javascript" src="https://js.stripe.com/v2/"></script>
@@ -39,7 +39,7 @@
   <script src='https://cdn.firebase.com/js/client/2.2.1/firebase.js'></script>
   <script src="https://cdn.firebase.com/libs/angularfire/1.1.1/angularfire.min.js"></script>
   <script type="text/javascript" src="js/config.js"></script>
-  <script type="text/javascript" src="js/main-048.js"></script>
+  <script type="text/javascript" src="js/main-049.js"></script>
 
 </head>
 <body ng-controller="MainController">
@@ -136,7 +136,7 @@
             <a uib-dropdown-toggle href="" class="dropdown-toggle btn-user" data-toggle="dropdown" role="button" aria-expanded="false">
               <span class="notifications-icon"><i class="fa fa-fw fa-bell icon-glyph"></i></span>
               <span class="label visible-lg-inline">Notificaciones</span>
-              <span class="notification-badge" ng-if="total_notifications() + (user.info.validated?0:1) > 0">{{ total_notifications() + (user.info.validated?0:1) }}</span>
+              <span class="notification-badge" ng-if="total_notifications() + (user.info.validated?0:1) + (cart.hasMassdrop()?1:0) > 0">{{ total_notifications() + (user.info.validated?0:1) + (cart.hasMassdrop()?1:0) }}</span>
             </a>
             <ul class="dropdown-menu" role="menu">
               <div class="notifications-header">
@@ -149,6 +149,12 @@
                 <a class="unread" href="">
                   Tu correo no ha sido confirmado
                   <div class="description">Te enviamos un correo para que puedas validar tu cuenta.</div>
+                </a>
+              </li>
+              <li ng-if="cart.hasMassdrop()">
+                <a class="unread" href="/componentes/checkout">
+                  Concluye tu pago de Compra en legión
+                  <div class="description">Hemos agregado a tu carrito el pago que te falta por completar.</div>
                 </a>
               </li>
               <li class="hidden">

@@ -70,7 +70,7 @@ var boardApplication = angular.module('board', [
   'btford.socket-io'
 ]);
 
-var version = '048';
+var version = '049';
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider', 'AclServiceProvider',
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider, AclServiceProvider) {
@@ -852,6 +852,15 @@ boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', 'cart'
     title: "SpartanGeek.com | Comunidad de tecnología, geeks y más",
     description: "Creamos el mejor contenido para Geeks, y lo hacemos con pasión e irreverencia de Spartanos."
   };
+
+  // Initialize cart
+  $http.get(layer_path + 'store/cart', {
+    withCredentials: true
+  }).then(function success(response){
+    cart.replaceItems(response.data);
+  }, function(error){
+    console.log(error);
+  });
 
   // Set the ACL data.
   // The data should have the roles as the property names,
