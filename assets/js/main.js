@@ -853,6 +853,15 @@ boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', 'cart'
     description: "Creamos el mejor contenido para Geeks, y lo hacemos con pasión e irreverencia de Spartanos."
   };
 
+  // Initialize cart
+  $http.get(layer_path + 'store/cart', {
+    withCredentials: true
+  }).then(function success(response){
+    cart.replaceItems(response.data);
+  }, function(error){
+    console.log(error);
+  });
+
   // Set the ACL data.
   // The data should have the roles as the property names,
   // with arrays listing their permissions as their value.

@@ -9723,21 +9723,25 @@ ComponentsModule.factory('cart', ['$localstorage', '$http', 'AclService', functi
     cart.persist();
   }
 
-  cart.getShippingFee = function() {
+  cart.getShippingFee = function(ship_method) {
     if(cart.items.length > 0) {
-      var non_case_count = 0;
-      var case_count = 0;
-      for(var i = 0; i < cart.items.length; i++) {
-        if(cart.items[i].category == 'case') {
-          case_count += cart.items[i].quantity;
-        } else {
-          non_case_count += cart.items[i].quantity;
-        }
-      }
-      if(non_case_count > 0) {
-        return 139 + (non_case_count - 1) * 60 + 320 * case_count;
+      if(ship_method == 'pickup') {
+        return 0;
       } else {
-        return 320 * case_count;
+        var non_case_count = 0;
+        var case_count = 0;
+        for(var i = 0; i < cart.items.length; i++) {
+          if(cart.items[i].category == 'case') {
+            case_count += cart.items[i].quantity;
+          } else {
+            non_case_count += cart.items[i].quantity;
+          }
+        }
+        if(non_case_count > 0) {
+          return 139 + (non_case_count - 1) * 60 + 320 * case_count;
+        } else {
+          return 320 * case_count;
+        }
       }
     } else {
       return 0;
@@ -9753,6 +9757,19 @@ ComponentsModule.factory('cart', ['$localstorage', '$http', 'AclService', functi
       return total;
     } else {
       return 0;
+    }
+  }
+
+  cart.hasMassdrop = function() {
+    if(cart.items.length > 0) {
+      for(var i = 0; i < cart.items.length; i++) {
+        if(cart.items[i].attrs && cart.items[i].attrs.massdrop) {
+          return true;
+        }
+      }
+      return false;
+    } else {
+      return false;
     }
   }
 
@@ -10165,7 +10182,10 @@ ComponentsModule.controller('CheckoutController', ['$scope', 'cart', '$http', '$
     error_messages: {
       totals: false
     },
-    trying_to_pay: false
+    trying_to_pay: false,
+    ship_method: 'generic',
+    rfc: "",
+    razon_social: ""
   };
 
   $scope.payer = {
@@ -10267,6 +10287,19 @@ ComponentsModule.controller('CheckoutController', ['$scope', 'cart', '$http', '$
       meta = { token: token }
     }
 
+    if($scope.f.facturar) {
+      if($scope.f.rfc == '' || $scope.f.razon_social == '') {
+        $scope.f.rfc_error = true;
+        return false;
+      }
+      if($scope.f.rfc != '') {
+        meta.rfc = $scope.f.rfc;
+      }
+      if($scope.f.razon_social != '') {
+        meta.razon_social = $scope.f.razon_social;
+      }
+    }
+
     var gateways = {
       'withdrawal': 'offline',
       'credit_card': 'stripe'
@@ -10275,12 +10308,17 @@ ComponentsModule.controller('CheckoutController', ['$scope', 'cart', '$http', '$
     $scope.f.error_messages.totals = false;
     $scope.f.trying_to_pay = true;
 
-    $http.post(layer_path + 'store/checkout', {
+    var payload = {
       "gateway": gateways[$scope.pay_method.value],
       "meta": meta,
-      "ship_to": $scope.selected_address.id,
-      "total": cart.getTotal() + cart.getShippingFee() + $scope.getPaymentFee()
-    }, {
+      "ship_method": $scope.f.ship_method,
+      "total": cart.getTotal() + cart.getShippingFee($scope.f.ship_method) + $scope.getPaymentFee()
+    };
+    if($scope.f.ship_method == 'generic') {
+      payload.ship_to = $scope.selected_address.id;
+    }
+
+    $http.post(layer_path + 'store/checkout', payload, {
       withCredentials: true
     }).then(function success(response) {
       cart.empty();
@@ -10303,9 +10341,9 @@ ComponentsModule.controller('CheckoutController', ['$scope', 'cart', '$http', '$
       return 0;
     } else {
       if($scope.pay_method.value == 'credit_card') {
-        return Math.ceil( (cart.getTotal() + cart.getShippingFee()) * 0.042 + 4 );
+        return Math.ceil( (cart.getTotal() + cart.getShippingFee($scope.f.ship_method)) * 0.042 + 4 );
       } else {
-        return Math.ceil( (cart.getTotal() + cart.getShippingFee()) * 0.04 + 4 );
+        return Math.ceil( (cart.getTotal() + cart.getShippingFee($scope.f.ship_method)) * 0.04 + 4 );
       }
     }
   }
@@ -10365,6 +10403,7 @@ ComponentsModule.controller('CheckoutController', ['$scope', 'cart', '$http', '$
 
       $scope.status = 'paying';
       $scope.currentStep = "payment";
+      $scope.f.ship_method = 'generic';
     }, function(error) {
       console.log(error);
     });
@@ -10427,6 +10466,12 @@ ComponentsModule.controller('CheckoutController', ['$scope', 'cart', '$http', '$
 
   $scope.goToPay = function(address) {
     $scope.selected_address = address;
+    $scope.f.ship_method = 'generic';
+    $scope.currentStep = "payment";
+  }
+
+  $scope.goToPayPickup = function() {
+    $scope.f.ship_method = 'pickup';
     $scope.currentStep = "payment";
   }
 }]);
@@ -11560,6 +11605,15 @@ boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', 'cart'
     title: "SpartanGeek.com | Comunidad de tecnología, geeks y más",
     description: "Creamos el mejor contenido para Geeks, y lo hacemos con pasión e irreverencia de Spartanos."
   };
+
+  // Initialize cart
+  $http.get(layer_path + 'store/cart', {
+    withCredentials: true
+  }).then(function success(response){
+    cart.replaceItems(response.data);
+  }, function(error){
+    console.log(error);
+  });
 
   // Set the ACL data.
   // The data should have the roles as the property names,
