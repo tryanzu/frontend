@@ -365,6 +365,27 @@
 
         <hr>
 
+        <div class="checkbox">
+          <label>
+            <input type="checkbox" ng-model="f.facturar"> Requiero factura
+          </label>
+        </div>
+
+        <section ng-if="f.facturar">
+          <div class="form-group">
+            <label for="rfc">RFC</label>
+            <input type="text" ng-model="f.rfc" class="form-control" id="rfc" placeholder="RFC">
+          </div>
+          <div class="form-group">
+            <label for="razon_social">Razón social</label>
+            <input type="text" ng-model="f.razon_social" class="form-control" id="razon_social" placeholder="Razón social">
+          </div>
+
+          <p class="alert alert-warning" ng-if="f.rfc_error">Debes poner ambos datos (RFC y razón social)</p>
+
+          <hr class="mb-20">
+        </section>
+
         <a href="" class="btn btn-primary" ng-if="pay_method.value == 'withdrawal'" ng-click="makeOrder()">Finalizar mi pedido</a>
 
         <p class="alert alert-warning" ng-if="current_token_error != ''"><strong>Error en datos de tu tarjeta</strong><br>{{ token_errors[current_token_error] }}</p>
@@ -373,7 +394,7 @@
 
         <section ng-if="pay_method.value == 'credit_card'" class="mb-40">
           <form stripe:form="createToken" ng-hide="f.trying_to_pay">
-            <fieldset>
+            <fieldset class="row">
               <div class="form-group col-sm-8">
                 <label>Nombre impreso en la tarjeta</label>
                 <input type="text" size="40" maxlength="40" data-stripe="name" class="form-control" required />

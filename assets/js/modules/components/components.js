@@ -675,6 +675,19 @@ ComponentsModule.controller('CheckoutController', ['$scope', 'cart', '$http', '$
       meta = { token: token }
     }
 
+    if($scope.f.facturar) {
+      if($scope.f.rfc != '' && $scope.f.razon_social != '') {
+        $scope.f.rfc_error = true;
+        return false;
+      }
+      if($scope.f.rfc != '') {
+        meta.rfc = $scope.f.rfc;
+      }
+      if($scope.f.razon_social != '') {
+        meta.razon_social = $scope.f.razon_social;
+      }
+    }
+
     var gateways = {
       'withdrawal': 'offline',
       'credit_card': 'stripe'
