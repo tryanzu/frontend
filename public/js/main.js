@@ -9763,7 +9763,7 @@ ComponentsModule.factory('cart', ['$localstorage', '$http', 'AclService', functi
   cart.hasMassdrop = function() {
     if(cart.items.length > 0) {
       for(var i = 0; i < cart.items.length; i++) {
-        if(cart.items[i].attrs.massdrop) {
+        if(cart.items[i].attrs && cart.items[i].attrs.massdrop) {
           return true;
         }
       }
@@ -10183,7 +10183,9 @@ ComponentsModule.controller('CheckoutController', ['$scope', 'cart', '$http', '$
       totals: false
     },
     trying_to_pay: false,
-    ship_method: 'generic'
+    ship_method: 'generic',
+    rfc: "",
+    razon_social: ""
   };
 
   $scope.payer = {
@@ -10286,7 +10288,7 @@ ComponentsModule.controller('CheckoutController', ['$scope', 'cart', '$http', '$
     }
 
     if($scope.f.facturar) {
-      if($scope.f.rfc != '' && $scope.f.razon_social != '') {
+      if($scope.f.rfc == '' || $scope.f.razon_social == '') {
         $scope.f.rfc_error = true;
         return false;
       }
