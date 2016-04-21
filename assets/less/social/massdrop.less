@@ -204,3 +204,139 @@
   margin-top: 3em;
   margin-bottom: 3em;
 }
+
+.massdrop-index {
+
+  h2 {
+    margin-bottom: 1em;
+    font-size: 24px;
+
+    .fa {
+      color: #BBB;
+      margin-right: 0.5em;
+    }
+  }
+
+  .massdrop-card {
+    border: 1px solid #e1e1e1;
+
+    .image-container {
+      position: relative;
+      overflow: hidden;
+      height: 0;
+      background-color: #f8f8f8;
+      padding-bottom: 100%;
+      width: 100%;
+      display: block;
+
+      .price-container {
+        background: rgba(0,0,0,.6);
+        color: #fff;
+        font-size: 1.25em;
+        line-height: 2rem;
+        position: absolute;
+        top: 0;
+        left: 0;
+        padding: .4em .7em;
+        z-index: 9;
+        text-transform: uppercase;
+
+        .current-price {
+          font-size: 24px;
+          line-height: 2.5rem;
+          font-weight: 600;
+        }
+      }
+    }
+
+    .info-container {
+      padding-left: 15px;
+      padding-right: 15px;
+
+      hr {
+        margin-left: -15px;
+        margin-right: -15px;
+      }
+
+      .cp-bar {
+        background-color: #e1e1e1;
+        height: 10px;
+        border-radius: 5px;
+        margin-top: 30px;
+        margin-bottom: 30px;
+        position: relative;
+
+        .current-progress, .current-progress-interested {
+          height: 100%;
+          position: absolute;
+          top: 0;
+        }
+        .current-progress {
+          background-color: @brand-success;
+        }
+        .current-progress-interested {
+          background-color: #bbb;
+        }
+
+        .checkpoints {
+            position: relative;
+          .checkpoint {
+            display: inline-block;
+            position: absolute;
+            top: -20px;
+
+            .details {
+              display: inline-block;
+              padding-top: 0;
+              background-color: #fff;
+              border: 5px solid #e1e1e1;
+              width: 50px;
+              height: 50px;
+              border-radius: 50%;
+              text-align: center;
+
+              h3 {
+                margin-bottom: 0;
+                margin-top: 7px;
+                font-size: 14px;
+                color: #666;
+              }
+              .persons-needed {
+                display: block;
+                font-size: 11px;
+                text-transform: uppercase;
+                z-index: 1;
+              }
+            }
+            .extra-time {
+              text-align: center;
+              font-size: 13px;
+              font-weight: bold;
+              color: @brand-primary-opaque;
+            }
+
+            &.interested .details {
+              border-color: #bbb;
+            }
+            &.reached {
+              .details {
+                border-color: @brand-success;
+              }
+              .extra-time {
+                color: fade(@brand-success, 70%);
+              }
+            }
+          }
+        }
+      }
+
+      .timeleft {
+        font-size: 13px;
+        font-weight: 500;
+        text-transform: uppercase;
+        text-align: right;
+        color: @brand-primary;
+      }
+    }
+  }
+}
