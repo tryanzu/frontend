@@ -866,7 +866,7 @@ ComponentsModule.controller('CheckoutController', ['$scope', 'cart', '$http', '$
   }
 }]);
 
-ComponentsModule.controller('MassdropIndexController', ['$scope', function($scope){
+ComponentsModule.controller('MassdropIndexController', ['$scope', '$http', function($scope, $http){
 
   $scope.massdrops = [
     {
@@ -927,49 +927,57 @@ ComponentsModule.controller('MassdropIndexController', ['$scope', function($scop
     }
   ];
 
-  for(var i in $scope.massdrops) {
-    console.log(i);
-    var massdrop = $scope.massdrops[i];
-    console.log("first", massdrop);
-    var max = 0;
-    var min_price = massdrop.price;
-    for(var j in massdrop.checkpoints) {
-      if(massdrop.checkpoints[j].starts > max) {
-        max = massdrop.checkpoints[j].starts;
+  $scope.calculate = function() {
+    for(var i in $scope.massdrops) {
+      //console.log(i);
+      var massdrop = $scope.massdrops[i];
+      //console.log("first", massdrop);
+      var max = 0;
+      var min_price = massdrop.price;
+      for(var j in massdrop.checkpoints) {
+        if(massdrop.checkpoints[j].starts > max) {
+          max = massdrop.checkpoints[j].starts;
+        }
+        if(massdrop.checkpoints[j].price < min_price) {
+          min_price = massdrop.checkpoints[j].price;
+        }
       }
-      if(massdrop.checkpoints[j].price < min_price) {
-        min_price = massdrop.checkpoints[j].price;
+      massdrop.min_price = min_price;
+      //console.log("max", max)
+      for(var j in massdrop.checkpoints) {
+        massdrop.checkpoints[j].from_right = (max - massdrop.checkpoints[j].starts) / max * 100;
       }
-    }
-    massdrop.min_price = min_price;
-    console.log("max", max)
-    for(var j in massdrop.checkpoints) {
-      massdrop.checkpoints[j].from_right = (max - massdrop.checkpoints[j].starts) / max * 100;
-    }
 
-    massdrop.reservations_width = massdrop.count_reservations / max * 100;
-    if(massdrop.reservations_width > 100) {
-      massdrop.reservations_width = 100;
-    }
-    massdrop.interested_width = massdrop.count_interested / max * 100;
-    if(100 - massdrop.reservations_width < massdrop.interested_width) {
-      massdrop.interested_width = 100 - massdrop.reservations_width;
-    }
-    massdrop.interested = (massdrop.current == "interested") || (massdrop.current == "reservation");
-    //$scope.massdrop = massdrop;
-    //console.log($scope.massdrop);
+      massdrop.reservations_width = massdrop.count_reservations / max * 100;
+      if(massdrop.reservations_width > 100) {
+        massdrop.reservations_width = 100;
+      }
+      massdrop.interested_width = massdrop.count_interested / max * 100;
+      if(100 - massdrop.reservations_width < massdrop.interested_width) {
+        massdrop.interested_width = 100 - massdrop.reservations_width;
+      }
+      massdrop.interested = (massdrop.current == "interested") || (massdrop.current == "reservation");
 
-    var a = Date.now();
-    var b = new Date(massdrop.deadline);
-    var difference = Math.round( Math.round((b - a) / 1000) / 60);
+      var a = Date.now();
+      var b = new Date(massdrop.deadline);
+      console.log(b-a, (b-a)/1000, (b-a)/1000/60);
+      var difference = Math.round( Math.round((b - a) / 1000) / 60);
 
-    $scope.massdrops[i].counter = {
-      hours: Math.floor(difference / 60),
-      minutes: difference % 60
+      $scope.massdrops[i].counter = {
+        days: Math.floor(difference / 60 / 24),
+        hours: Math.floor(difference / 60 % 24),
+        minutes: difference % 60
+      };
+
+      //console.log("last", $scope.massdrops[i]);
     };
-
-    console.log("last", $scope.massdrops[i]);
   }
+
+  $http.get(layer_path + 'massdrop').then(function success(response){
+    console.log(response.data);
+    $scope.massdrops = response.data.results;
+    $scope.calculate();
+  }, function(error) {});
 
 }])
 
@@ -1046,6 +1054,10 @@ ComponentsModule.controller('MassdropController', ['$scope', '$http', '$timeout'
     var a = Date.now();
     var b = new Date(massdrop.deadline);
     var difference = Math.round( Math.round((b - a) / 1000) / 60);
+
+    var meses = new Array ("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
+    var f = new Date(massdrop.shipping_date);
+    massdrop.shipping_date_label = f.getDate() + " de " + meses[f.getMonth()] + " de " + f.getFullYear();
 
     $scope.counter = {
       hours: Math.floor(difference / 60),
