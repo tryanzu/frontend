@@ -212,7 +212,7 @@ ComponentsModule.controller('ComponentsController', ['$scope', '$timeout', '$htt
     'monitor': 'Monitores',
     'power-supply': 'Fuentes de Poder',
     'mouse': 'Mouse',
-    'keyboards': 'Teclados',
+    'keyboard': 'Teclados',
     'headphones': 'Audífonos/Headsets'
   }
 
