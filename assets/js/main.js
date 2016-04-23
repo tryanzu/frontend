@@ -43,7 +43,7 @@ var boardApplication = angular.module('board', [
   'sg.services',
   'activeReader',
   'hc.marked',
-  'idiotWizzy',
+  //'idiotWizzy',
   'infinite-scroll',
   'facebook',
   'feedModule',
@@ -70,7 +70,7 @@ var boardApplication = angular.module('board', [
   'btford.socket-io'
 ]);
 
-var version = '049';
+var version = '050';
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider', 'AclServiceProvider',
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider, AclServiceProvider) {
@@ -127,16 +127,20 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
     controller: 'ComponentController'
   });
   $routeProvider.when('/compra-en-legion/faq', {
-    templateUrl: '/js/partials/massdropfaq.html?v=' + version,
+    templateUrl: '/js/partials/massdrop/faq.html?v=' + version,
     //controller: 'ComponentController'
   });
-  $routeProvider.when('/compra-en-legion/evga-gtx-950-acx', {
-    templateUrl: '/js/partials/evga.html?v=' + version,
+  $routeProvider.when('/compra-en-legion/:slug', {
+    templateUrl: '/js/partials/massdrop/show.html?v=' + version,
     controller: 'MassdropController'
   });
   $routeProvider.when('/compra-en-legion/:slug/unirme', {
-    templateUrl: '/js/partials/evga_pay.html?v=' + version,
+    templateUrl: '/js/partials/massdrop/pay.html?v=' + version,
     controller: 'MassdropPayController'
+  });
+  $routeProvider.when('/compra-en-legion', {
+    templateUrl: '/js/partials/massdrop/index.html?v=' + version,
+    controller: 'MassdropIndexController'
   });
   $routeProvider.when('/c/:slug', {
     templateUrl: '/js/partials/main.html?v=' + version,
