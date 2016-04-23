@@ -210,7 +210,10 @@ ComponentsModule.controller('ComponentsController', ['$scope', '$timeout', '$htt
     'memory': 'Memorias RAM',
     'cpu-cooler': 'Enfriamiento para CPU',
     'monitor': 'Monitores',
-    'power-supply': 'Fuentes de Poder'
+    'power-supply': 'Fuentes de Poder',
+    'mouse': 'Mouse',
+    'keyboards': 'Teclados',
+    'headphones': 'Audífonos/Headsets'
   }
 
   $scope.current_facet = '';
@@ -866,7 +869,122 @@ ComponentsModule.controller('CheckoutController', ['$scope', 'cart', '$http', '$
   }
 }]);
 
-ComponentsModule.controller('MassdropController', ['$scope', '$http', '$timeout', '$uibModal', function($scope, $http, $timeout, $uibModal) {
+ComponentsModule.controller('MassdropIndexController', ['$scope', '$http', function($scope, $http){
+
+  $scope.massdrops = [
+    {
+      id: "570aadb31a01370d742284f7",
+      product_id: "570aaceb1a01370d742284f5",
+      name: "Corsair K30",
+      cover: "/images/massdrop/cover-2.jpg",
+      cover_small: "/images/massdrop/cover-small-2.jpg",
+      deadline: "2016-04-30T23:59:00-05:00",
+      price: 680,
+      reserve_price: 600,
+      active: true,
+      checkpoints: [
+        {
+          step: 1,
+          starts: 5,
+          price: 720,
+          done: true
+        },
+        {
+          step: 2,
+          starts: 20,
+          price: 680,
+          done: true
+        },
+      ],
+      count_reservations: 21,
+      count_interested: 30
+    },
+    {
+      id: "570aadb31a01370d742284f7",
+      product_id: "570aaceb1a01370d742284f5",
+      name: "Corsair Katar",
+      cover: "/images/massdrop/cover.jpg",
+      cover_small: "/images/massdrop/cover-small.jpg",
+      deadline: "2016-04-30T23:59:00-05:00",
+      price: 680,
+      reserve_price: 600,
+      active: true,
+      checkpoints: [
+        {
+          step: 1,
+          starts: 5,
+          ends: 0,
+          price: 650,
+          done: false
+        },
+        {
+          step: 2,
+          starts: 20,
+          ends: 0,
+          price: 620,
+          done: false
+        },
+      ],
+      count_reservations: 3,
+      count_interested: 10
+    }
+  ];
+
+  $scope.calculate = function() {
+    for(var i in $scope.massdrops) {
+      //console.log(i);
+      var massdrop = $scope.massdrops[i];
+      //console.log("first", massdrop);
+      var max = 0;
+      var min_price = massdrop.price;
+      for(var j in massdrop.checkpoints) {
+        if(massdrop.checkpoints[j].starts > max) {
+          max = massdrop.checkpoints[j].starts;
+        }
+        if(massdrop.checkpoints[j].price < min_price) {
+          min_price = massdrop.checkpoints[j].price;
+        }
+      }
+      massdrop.min_price = min_price;
+      //console.log("max", max)
+      for(var j in massdrop.checkpoints) {
+        massdrop.checkpoints[j].from_right = (max - massdrop.checkpoints[j].starts) / max * 100;
+      }
+
+      massdrop.reservations_width = massdrop.count_reservations / max * 100;
+      if(massdrop.reservations_width > 100) {
+        massdrop.reservations_width = 100;
+      }
+      massdrop.interested_width = massdrop.count_interested / max * 100;
+      if(100 - massdrop.reservations_width < massdrop.interested_width) {
+        massdrop.interested_width = 100 - massdrop.reservations_width;
+      }
+      massdrop.interested = (massdrop.current == "interested") || (massdrop.current == "reservation");
+
+      var a = Date.now();
+      var b = new Date(massdrop.deadline);
+      console.log(b-a, (b-a)/1000, (b-a)/1000/60);
+      var difference = Math.round( Math.round((b - a) / 1000) / 60);
+
+      $scope.massdrops[i].counter = {
+        days: Math.floor(difference / 60 / 24),
+        hours: Math.floor(difference / 60 % 24),
+        minutes: difference % 60
+      };
+
+      //console.log("last", $scope.massdrops[i]);
+    };
+  }
+
+  $http.get(layer_path + 'massdrop').then(function success(response){
+    console.log(response.data);
+    $scope.massdrops = response.data.results;
+    $scope.calculate();
+  }, function(error) {});
+
+}])
+
+ComponentsModule.controller('MassdropController', ['$scope', '$http', '$timeout', '$uibModal', '$routeParams', function($scope, $http, $timeout, $uibModal, $routeParams) {
 
   $scope.interested = function() {
     $http.put(layer_path + 'store/product/' + $scope.product_id + '/massdrop').then(function success(response){
@@ -884,7 +1002,7 @@ ComponentsModule.controller('MassdropController', ['$scope', '$http', '$timeout'
 
   $scope.interestedDialog = function() {
     var modalInstance = $uibModal.open({
-      templateUrl: '/js/partials/massdrop-interested.html',
+      templateUrl: '/js/partials/massdrop/interested-modal.html',
       controller: 'InterestedController',
       size: 'sm',
       resolve: {
@@ -905,7 +1023,7 @@ ComponentsModule.controller('MassdropController', ['$scope', '$http', '$timeout'
   };
 
   // Initialize component viewing
-  $http.get(layer_path + "store/product/evga-gtx-950-acx").then(function success(response){
+  $http.get(layer_path + "store/product/" + $routeParams.slug).then(function success(response){
     //console.log(response.data);
     $scope.product_id = response.data.id;
     var massdrop = response.data.massdrop;
@@ -939,6 +1057,10 @@ ComponentsModule.controller('MassdropController', ['$scope', '$http', '$timeout'
     var a = Date.now();
     var b = new Date(massdrop.deadline);
     var difference = Math.round( Math.round((b - a) / 1000) / 60);
+
+    var meses = new Array ("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
+    var f = new Date(massdrop.shipping_date);
+    massdrop.shipping_date_label = f.getDate() + " de " + meses[f.getMonth()] + " de " + f.getFullYear();
 
     $scope.counter = {
       hours: Math.floor(difference / 60),
@@ -983,7 +1105,6 @@ ComponentsModule.controller('MassdropController', ['$scope', '$http', '$timeout'
     $scope.share_fb = function(url) {
       window.open('https://www.facebook.com/sharer/sharer.php?u='+url,'facebook-share-dialog',"width=626,height=436")
     }
-
   }, function(error){});
 }]);
 
