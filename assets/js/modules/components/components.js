@@ -210,7 +210,10 @@ ComponentsModule.controller('ComponentsController', ['$scope', '$timeout', '$htt
     'memory': 'Memorias RAM',
     'cpu-cooler': 'Enfriamiento para CPU',
     'monitor': 'Monitores',
-    'power-supply': 'Fuentes de Poder'
+    'power-supply': 'Fuentes de Poder',
+    'mouse': 'Mouse',
+    'keyboards': 'Teclados',
+    'headphones': 'Audífonos/Headsets'
   }
 
   $scope.current_facet = '';

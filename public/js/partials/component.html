@@ -446,6 +446,136 @@
               <td>{{ component.dimensions }}</td>
             </tr>
 
+            <!-- KEYBOARD -->
+            <tr ng-if="component.design_type && component.type == 'keyboard'">
+              <th>Tipo de diseño</th>
+              <td>{{ component.design_type }}</td>
+            </tr>
+            <tr ng-if="component.design_style && component.type == 'keyboard'">
+              <th>Estilo de diseño</th>
+              <td>{{ component.design_style }}</td>
+            </tr>
+            <tr ng-if="component.normal_keys && component.type == 'keyboard'">
+              <th>Teclas normales</th>
+              <td>{{ component.normal_keys }}</td>
+            </tr>
+            <tr ng-if="component.features && component.type == 'keyboard'">
+              <th>Características</th>
+              <td>{{ component.features }}</td>
+            </tr>
+            <tr ng-if="component.color && component.type == 'keyboard'">
+              <th>Color</th>
+              <td>{{ component.color }}</td>
+            </tr>
+            <tr ng-if="component.keyboard_type && component.type == 'keyboard'">
+              <th>Tipo</th>
+              <td>{{ component.keyboard_type }}</td>
+            </tr>
+            <tr ng-if="component.backlit && component.type == 'keyboard'">
+              <th>Luz en teclas</th>
+              <td>{{ component.backlit }}</td>
+            </tr>
+            <tr ng-if="component.mechanical && component.type == 'keyboard'">
+              <th>Mecánico</th>
+              <td>{{ component.mechanical }}</td>
+            </tr>
+            <tr ng-if="component.switch_type && component.type == 'keyboard'">
+              <th>Tipo de Switch</th>
+              <td>{{ component.switch_type }}</td>
+            </tr>
+            <tr ng-if="component.includes_mouse && component.type == 'keyboard'">
+              <th>Incluye Mouse</th>
+              <td>{{ component.includes_mouse }}</td>
+            </tr>
+            <tr ng-if="component.mouse_hand_orientation && component.type == 'keyboard'">
+              <th>Orientación de mano del mouse</th>
+              <td>{{ component.mouse_hand_orientation }}</td>
+            </tr>
+            <tr ng-if="component.mouse_color && component.type == 'keyboard'">
+              <th>Color del mouse</th>
+              <td>{{ component.mouse_color }}</td>
+            </tr>
+            <tr ng-if="component.mouse_tracking_method && component.type == 'keyboard'">
+              <th>Tracking del mouse</th>
+              <td>{{ component.mouse_tracking_method }}</td>
+            </tr>
+
+            <!-- MOUSE -->
+            <tr ng-if="component.connection && component.type == 'mouse'">
+              <th>Conexión</th>
+              <td>{{ component.connection }}</td>
+            </tr>
+            <tr ng-if="component.tracking_method && component.type == 'mouse'">
+              <th>Tracking</th>
+              <td>{{ component.tracking_method }}</td>
+            </tr>
+            <tr ng-if="component.maximum_dpi && component.type == 'mouse'">
+              <th>DPI Máximo</th>
+              <td>{{ component.maximum_dpi }}</td>
+            </tr>
+            <tr ng-if="component.color && component.type == 'mouse'">
+              <th>Color</th>
+              <td>{{ component.color }}</td>
+            </tr>
+            <tr ng-if="component.hand_orientation && component.type == 'mouse'">
+              <th>Orientación de la mano</th>
+              <td>{{ component.hand_orientation }}</td>
+            </tr>
+
+            <!-- HEADSET -->
+            <tr ng-if="component.headphone_type && component.type == 'headphones'">
+              <th>Tipo</th>
+              <td>{{ component.headphone_type }}</td>
+            </tr>
+            <tr ng-if="component.enclosure_type && component.type == 'headphones'">
+              <th>Tipo de auricular</th>
+              <td>{{ component.enclosure_type }}</td>
+            </tr>
+            <tr ng-if="component.color && component.type == 'headphones'">
+              <th>Color</th>
+              <td>{{ component.color }}</td>
+            </tr>
+            <tr ng-if="component.channels && component.type == 'headphones'">
+              <th>Canales</th>
+              <td>{{ component.channels }}</td>
+            </tr>
+            <tr ng-if="component.microphone && component.type == 'headphones'">
+              <th>Micrófono</th>
+              <td>{{ component.microphone }}</td>
+            </tr>
+            <tr ng-if="component.impedance && component.type == 'headphones'">
+              <th>Impedancia</th>
+              <td>{{ component.impedance }}</td>
+            </tr>
+            <tr ng-if="component.active_noise_cancelling && component.type == 'headphones'">
+              <th>Cancelación de ruido activo</th>
+              <td>{{ component.active_noise_cancelling }}</td>
+            </tr>
+            <tr ng-if="component.sensitivity && component.type == 'headphones'">
+              <th>Sensibilidad</th>
+              <td>{{ component.sensitivity }}</td>
+            </tr>
+            <tr ng-if="component.frequency_response && component.type == 'headphones'">
+              <th>Frecuencia de respuesta</th>
+              <td>{{ component.frequency_response }}</td>
+            </tr>
+            <tr ng-if="component.connection && component.type == 'headphones'">
+              <th>Conexión</th>
+              <td>{{ component.connection }}</td>
+            </tr>
+            <tr ng-if="component.features && component.type == 'headphones'">
+              <th>Características</th>
+              <td>{{ component.features }}</td>
+            </tr>
+            <tr ng-if="component.cord_length && component.type == 'headphones'">
+              <th>Longitud de cable</th>
+              <td>{{ component.cord_length }}</td>
+            </tr>
+            <tr ng-if="component.weight && component.type == 'headphones'">
+              <th>Peso</th>
+              <td>{{ component.weight }}</td>
+            </tr>
+
             <!-- PSU -->
             <tr ng-if="component.psu_type">
               <th>Tipo de Fuente de poder</th>
