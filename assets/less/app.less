@@ -606,3 +606,15 @@ ul.counters {
 .dropdown-menu i.fa, .dropdown-menu i.sgi {
   margin-right: 10px;
 }
+
+.table>tbody>tr.success>td, .table>tbody>tr.success>th, .table>tbody>tr>td.success, .table>tbody>tr>th.success, .table>tfoot>tr.success>td, .table>tfoot>tr.success>th, .table>tfoot>tr>td.success, .table>tfoot>tr>th.success, .table>thead>tr.success>td, .table>thead>tr.success>th, .table>thead>tr>td.success, .table>thead>tr>th.success {
+    background-color: lighten(desaturate(@brand-success, 20%), 40%);
+}
+
+.match {
+  border: 1px solid #f1f1f1;
+  margin-bottom: 20px;
+  &.match-own {
+    border-color: @brand-primary;
+  }
+}

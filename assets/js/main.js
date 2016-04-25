@@ -34,6 +34,7 @@
 // @codekit-prepend "modules/chat/chat"
 // @codekit-prepend "modules/search/search"
 // @codekit-prepend "modules/components/components"
+// @codekit-prepend "modules/tournament/init"
 
 var boardApplication = angular.module('board', [
   'ngRoute',
@@ -56,6 +57,7 @@ var boardApplication = angular.module('board', [
   'sg.module.components',
   'sg.module.badges',
   'sg.module.top',
+  'sg.module.tournament',
   'chatModule',
   'angular-jwt',
   'firebase',
@@ -165,6 +167,10 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   $routeProvider.when('/chat', {
     templateUrl: '/js/partials/chat.html?v=' + version,
     controller: 'ChatController'
+  });
+  $routeProvider.when('/torneo', {
+    templateUrl: '/js/partials/tournament.html?v=' + version,
+    controller: 'TournamentController'
   });
   $routeProvider.when('/post/create/:cat_slug?', {
     templateUrl: '/js/partials/publish.html?v=' + version,
