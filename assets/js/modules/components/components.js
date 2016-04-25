@@ -871,7 +871,7 @@ ComponentsModule.controller('CheckoutController', ['$scope', 'cart', '$http', '$
 
 ComponentsModule.controller('MassdropIndexController', ['$scope', '$http', function($scope, $http){
 
-  $scope.massdrops = [
+  $scope.massdrops = [];/*[
     {
       id: "570aadb31a01370d742284f7",
       product_id: "570aaceb1a01370d742284f5",
@@ -928,7 +928,7 @@ ComponentsModule.controller('MassdropIndexController', ['$scope', '$http', funct
       count_reservations: 3,
       count_interested: 10
     }
-  ];
+  ];*/
 
   $scope.calculate = function() {
     for(var i in $scope.massdrops) {
@@ -1029,8 +1029,8 @@ ComponentsModule.controller('MassdropController', ['$scope', '$http', '$timeout'
     var massdrop = response.data.massdrop;
     var max = timespan = 0;
     for(var i in massdrop.checkpoints) {
-      if(massdrop.checkpoints[i].ends > max) {
-        max = massdrop.checkpoints[i].ends;
+      if(massdrop.checkpoints[i].starts > max) {
+        max = massdrop.checkpoints[i].starts;
       }
       if(!massdrop.checkpoints[i].done && timespan == 0) {
         timespan = massdrop.checkpoints[i].timespan;
