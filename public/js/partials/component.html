@@ -57,7 +57,8 @@
       </div>
       <div class="col-md-4">
         <div ng-if="component.image">
-          <img ng-src="https://assets.spartangeek.com/components/{{ component.image }}" class="img-responsive">
+          <img ng-src="https://assets.spartangeek.com/components/{{ component.image }}" class="img-responsive" ng-if="component.type!='keyboard'&&component.type!='mouse'&&component.type!='headphones'">
+          <img ng-src="https://assets.spartangeek.com/games/full/{{ component.image }}" class="img-responsive" ng-if="component.type=='keyboard'||component.type=='mouse'||component.type=='headphones'">
         </div>
       </div>
       <div class="col-md-3">
@@ -67,8 +68,11 @@
   </div>
   <div class="component-images" ng-if="component.images && (!component.store || component.view_more)">
     <div class="container">
-      <div class="text-center">
+      <div class="text-center" ng-if="component.type!='keyboard'&&component.type!='mouse'&&component.type!='headphones'">
         <img ng-src="https://assets.spartangeek.com/components/{{ image }}" ng-repeat="image in component.images">
+      </div>
+      <div class="text-center" ng-if="component.type=='keyboard'||component.type=='mouse'||component.type=='headphones'">
+        <img ng-src="https://assets.spartangeek.com/games/full/{{ image }}" ng-repeat="image in component.images">
       </div>
     </div>
   </div>

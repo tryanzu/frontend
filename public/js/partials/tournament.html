@@ -1,0 +1,93 @@
+<main class="global-content">
+  <div class="container">
+    <h1>Rocket League Champions League</h1>
+
+    <div class="row mb-40">
+      <div class="col-md-3">
+        <div class="sidebar-menu">
+          <ul class="nav nav-pills nav-stacked">
+            <li role="presentation" ng-class="{active: section == 'calendar'}">
+              <a href="" ng-click="section = 'calendar'">Calendario</a>
+            </li>
+            <li role="presentation" ng-class="{active: section == 'groups'}">
+              <a href="" ng-click="section = 'groups'">Fase de grupos</a>
+            </li>
+            <li role="presentation" ng-class="{active: section == 'final'}">
+              <a href="" ng-click="section = 'final'">Fase final</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-md-9">
+        <section ng-if="section == 'calendar'">
+          <h2>Calendario de partidos</h2>
+          <hr>
+          <h3>Fase de grupos</h3>
+          <div ng-repeat="group in groups">
+            <h3>Grupo {{ group.name }}</h3>
+            <div class="row">
+              <div ng-repeat="match in group.matches" class="col-md-4">
+                <div class="match" ng-class="{'match-own': (user.info.username == match.player1 || user.info.username == match.player2)}">
+                  <table class="table">
+                    <tr>
+                      <th>{{match.player1}}</th>
+                      <th class="text-right">{{match.player2}}</th>
+                    </tr>
+                    <tr>
+                      <td colspan="2" class="text-center">
+                        <span ng-if="match.player1_score || match.player2_score">{{match.player1_score || '-'}} : {{match.player2_score || '-'}}</span>
+                        <span ng-if="!match.player1_score || !match.player2_score">Partido por jugar</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td colspan="2" class="text-center">29/04/2016 20:45</td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section ng-if="section == 'groups'">
+          <h2>Tabla de fase de grupos</h2>
+
+          <div class="row">
+            <div class="col-md-12">
+              <table class="table" ng-repeat="group in groups">
+                <tr>
+                  <th colspan="8">Grupo {{ group.name }}</th>
+                </tr>
+                <tr>
+                  <th>&nbsp;</th>
+                  <th>PJ</th>
+                  <th>PG</th>
+                  <th>PP</th>
+                  <th>GF</th>
+                  <th>GC</th>
+                  <th>DG</th>
+                  <th>Puntos</th>
+                </tr>
+                <tr ng-repeat="member in group.members" ng-class="{'success': $index < 2}">
+                  <td>{{ member }}</td>
+                  <td>0</td>
+                  <td>0</td>
+                  <td>0</td>
+                  <td>0</td>
+                  <td>0</td>
+                  <td>0</td>
+                  <td>0</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section ng-if="section == 'final'">
+          <h2>Fase final</h2>
+        </section>
+      </div>
+    </div>
+
+  </div>
+</main>

@@ -10481,7 +10481,7 @@ ComponentsModule.controller('CheckoutController', ['$scope', 'cart', '$http', '$
 
 ComponentsModule.controller('MassdropIndexController', ['$scope', '$http', function($scope, $http){
 
-  $scope.massdrops = [
+  $scope.massdrops = [];/*[
     {
       id: "570aadb31a01370d742284f7",
       product_id: "570aaceb1a01370d742284f5",
@@ -10538,7 +10538,7 @@ ComponentsModule.controller('MassdropIndexController', ['$scope', '$http', funct
       count_reservations: 3,
       count_interested: 10
     }
-  ];
+  ];*/
 
   $scope.calculate = function() {
     for(var i in $scope.massdrops) {
@@ -10639,8 +10639,8 @@ ComponentsModule.controller('MassdropController', ['$scope', '$http', '$timeout'
     var massdrop = response.data.massdrop;
     var max = timespan = 0;
     for(var i in massdrop.checkpoints) {
-      if(massdrop.checkpoints[i].ends > max) {
-        max = massdrop.checkpoints[i].ends;
+      if(massdrop.checkpoints[i].starts > max) {
+        max = massdrop.checkpoints[i].starts;
       }
       if(!massdrop.checkpoints[i].done && timespan == 0) {
         timespan = massdrop.checkpoints[i].timespan;
@@ -10872,6 +10872,48 @@ ComponentsModule.controller('InterestedController', ['$scope', '$http', '$uibMod
 
 }]);
 
+var TournamentModule = angular.module('sg.module.tournament', []);
+
+
+// Rank module controllers
+TournamentModule.controller('TournamentController', ['$scope', '$http', function($scope, $http) {
+
+  $scope.section = 'groups';
+
+  $scope.groups = [
+    {'name': 'A', 'members': ['RealWhistle8', 'Leon', 'Dxmnttx', 'Meneses']},
+    {'name': 'B', 'members': ['shanks-bosco','hjean17', 'jose-santillan-batani', 'eurovancrazy']},
+    {'name': 'C', 'members': ['WarHell', 'KeinterCabezas', 'Antonio-v', 'Drak']},
+    {'name': 'D', 'members': ['Nobody', 'FBNKB', 'Cesar-tiza', 'Miguemex64']},
+    {'name': 'E', 'members': ['TogeXD', 'Furybomber-Mancilla', 'Sadak-gr', 'Diego-armando-jordan-gonzalez']},
+    {'name': 'F', 'members': ['AcidRod', 'GTBrother', 'Jimp', 'Jharet-rulz']},
+    {'name': 'G', 'members': ['IdealistaMx', 'Sheik000', 'MauSV', 'DiegoWinchester']},
+    {'name': 'H', 'members': ['BolilloSpartano', 'Calvi', 'Sheko', 'Dannielnino']},
+  ];
+
+  // Calculate matches
+  for(var i in $scope.groups) {
+    $scope.groups[i].matches = [];
+    var members1 = members2 = $scope.groups[i].members
+    for(var j in members1) {
+      for(var k in members2) {
+        if(members1[j] != members2[k]) {
+          var match = {
+            player1: members1[j],
+            player2: members2[k],
+            player1_score: null,
+            player2_score: null
+          }
+          //console.log(match);
+          $scope.groups[i].matches.push(match);
+        }
+      }
+    }
+    console.log($scope.groups[i].matches);
+  }
+
+}]);
+
 // @codekit-prepend "vendor/angular-marked"
 // @codekit-prepend "vendor/wizzy"
 // @codekit-prepend "vendor/infinite-scroll"
@@ -10908,6 +10950,7 @@ ComponentsModule.controller('InterestedController', ['$scope', '$http', '$uibMod
 // @codekit-prepend "modules/chat/chat"
 // @codekit-prepend "modules/search/search"
 // @codekit-prepend "modules/components/components"
+// @codekit-prepend "modules/tournament/init"
 
 var boardApplication = angular.module('board', [
   'ngRoute',
@@ -10930,6 +10973,7 @@ var boardApplication = angular.module('board', [
   'sg.module.components',
   'sg.module.badges',
   'sg.module.top',
+  'sg.module.tournament',
   'chatModule',
   'angular-jwt',
   'firebase',
@@ -11039,6 +11083,10 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   $routeProvider.when('/chat', {
     templateUrl: '/js/partials/chat.html?v=' + version,
     controller: 'ChatController'
+  });
+  $routeProvider.when('/torneo', {
+    templateUrl: '/js/partials/tournament.html?v=' + version,
+    controller: 'TournamentController'
   });
   $routeProvider.when('/post/create/:cat_slug?', {
     templateUrl: '/js/partials/publish.html?v=' + version,
