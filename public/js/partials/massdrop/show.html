@@ -5,7 +5,7 @@
         <h1 ng-cloak>{{ product.full_name }}</h1>
 
         <div class="btn-toolbar">
-          <a href="" class="btn btn-default disabled">Tarjetas de video</a>
+          <a href="/compra-en-legion" class="btn btn-default">Compra en Legión</a>
           <a href="" ng-click="share_fb('https://spartangeek.com/compra-en-legion/evga-gtx-950-acx?r=sg')" rel="nofollow" target="_blank" class="btn btn-fb"><i class="fa fa-facebook-official"></i> <span class="hidden-xs">Compartir en FB</span></a>
           <a href="https://twitter.com/intent/tweet?text=Quiero%20comprar%20la%20EVGA%20950%20GTX%20ACX%202.0,%20si%20tambi%C3%A9n%20est%C3%A1s%20interesado,%20podremos%20obtener%20un%20precio%20m%C3%A1s%20bajo%20juntos...%20&url=https://spartangeek.com/compra-en-legion/evga-gtx-950-acx&original_referer=https://spartangeek.com/compra-en-legion/evga-gtx-950-acx" class="btn btn-twitter"><i class="fa fa-twitter"></i> <span class="hidden-xs">Compartir en Twitter</span></a>
         </div>
@@ -34,10 +34,11 @@
               <div class="checkpoint" ng-class="{'reached': c.done, 'interested': (massdrop.count_reservations + massdrop.count_interested) >= c.starts}" ng-repeat="c in massdrop.checkpoints" style="right: {{ c.from_right }}%;">
                 <div class="details">
                   <h3>{{ c.price | currency:'$ ':0}}</h3>
-                  <span class="persons-needed">{{ c.starts }} personas</span>
+                  <span class="persons-needed" ng-if="c.done">{{ c.starts }} unidas</span>
+                  <span class="persons-needed" ng-if="!c.done">Si se unen {{ c.starts }}</span>
                 </div>
                 <div class="extra-time" ng-if="c.timespan > 0">
-                  <span>+{{c.timespan}} horas</span>
+                  <span>{{c.timespan}} horas extra</span>
                 </div>
               </div>
             </div>

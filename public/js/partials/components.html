@@ -23,7 +23,8 @@
               <div class="row">
                 <div class="col-md-3">
                   <div class="component-thumbnail">
-                    <img ng-src="https://assets.spartangeek.com/components/{{ hit.image }}" alt="{{ hit.full_name || hit.name }}" ng-if="hit.image" class="portrait2">
+                    <img ng-src="https://assets.spartangeek.com/components/{{ hit.image }}" alt="{{ hit.full_name || hit.name }}" ng-if="hit.image && (hit.category!='keyboard'&&hit.category!='mouse'&&hit.category!='headphones')" class="portrait2">
+                    <img ng-src="https://assets.spartangeek.com/games/full/{{ hit.image }}" alt="{{ hit.full_name || hit.name }}" ng-if="hit.image && (hit.category=='keyboard'||hit.category=='mouse'||hit.category=='headphones')" class="portrait2">
                     <img src="/images/noimage.jpg" alt="{{ hit.full_name || hit.name }}" ng-if="!hit.image">
                   </div>
                 </div>
