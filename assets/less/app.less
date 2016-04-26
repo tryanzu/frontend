@@ -612,9 +612,36 @@ ul.counters {
 }
 
 .match {
-  border: 1px solid #f1f1f1;
+  border: 2px solid #f1f1f1;
   margin-bottom: 20px;
+  padding: 5px;
+  .players, .match-date {
+    color: #aaa;
+    font-weight: 400;
+  }
   &.match-own {
     border-color: @brand-primary;
+
+    &.won {
+      border-color: @brand-success !important;
+    }
+    &.lost {
+      border-color: @brand-danger !important;
+    }
   }
+  &.played {
+    .players {
+      color: #333;
+    }
+    .score {
+      color: @brand-primary;
+      font-weight: 600;
+    }
+  }
+}
+
+.steam {
+  color: @brand-primary-opaque;
+  font-size: 13px;
+  font-weight: 600;
 }

@@ -1,6 +1,27 @@
 <main class="global-content">
   <div class="container">
-    <h1>Rocket League Champions League</h1>
+    <h1>Spartan Champions League</h1>
+
+    <div class="row">
+      <div class="col-md-6">
+        <table class="table">
+          <tr>
+            <th colspan="2">Comunicación por voz / Narraciones / Comentarios de expertos</th>
+          </tr>
+          <tr>
+            <th>DiscordApp</th>
+            <td><a href="https://discord.gg/0tZbJidtOpNxuz3a">https://discord.gg/0tZbJidtOpNxuz3a</a></td>
+          </tr>
+          <tr>
+            <th>TeamSpeak</th>
+            <td>198.50.155.239:10080 </td>
+          </tr>
+        </table>
+      </div>
+      <div class="col-md-6 text-right">
+        <img src="https://s3-us-west-1.amazonaws.com/spartan-board/posts/571e7b4465d440410fb4d23b.png" alt="Spartan Champions League" height="140">
+      </div>
+    </div>
 
     <div class="row mb-40">
       <div class="col-md-3">
@@ -27,22 +48,39 @@
             <h3>Grupo {{ group.name }}</h3>
             <div class="row">
               <div ng-repeat="match in group.matches" class="col-md-4">
-                <div class="match" ng-class="{'match-own': (user.info.username == match.player1 || user.info.username == match.player2)}">
-                  <table class="table">
-                    <tr>
-                      <th>{{match.player1}}</th>
-                      <th class="text-right">{{match.player2}}</th>
+                <div class="match" ng-class="{'match-own': (user.info.username == match.player1 || user.info.username == match.player2), 'played': (match.player1_score > 0 || match.player2_score > 0), 'won': match.winner == user.info.username, 'lost': match.loser == user.info.username}">
+                  <table class="table table-bordered">
+                    <tr class="players">
+                      <th style="width: 50%; height: 58px; vertical-align: middle;">{{match.player1}}</th>
+                      <th class="text-right" style="vertical-align: middle;">{{match.player2}}</th>
                     </tr>
-                    <tr>
+                    <tr ng-if="!match.editing" class="score">
                       <td colspan="2" class="text-center">
                         <span ng-if="match.player1_score || match.player2_score">{{match.player1_score || '-'}} : {{match.player2_score || '-'}}</span>
                         <span ng-if="!match.player1_score || !match.player2_score">Partido por jugar</span>
                       </td>
                     </tr>
-                    <tr>
-                      <td colspan="2" class="text-center">29/04/2016 20:45</td>
+                    <tr ng-if="match.editing">
+                      <td class="text-center">
+                        <input type="number" class="form-control" ng-model="match.player1_score">
+                      </td>
+                      <td class="text-center">
+                        <input type="number" class="form-control" ng-model="match.player2_score">
+                      </td>
+                    </tr>
+                    <tr ng-if="!match.editing" class="match-date">
+                      <td colspan="2" class="text-center">{{ match.date }}</td>
+                    </tr>
+                    <tr ng-if="match.editing">
+                      <td colspan="2">
+                        <input type="text" class="form-control" ng-model="match.date">
+                      </td>
                     </tr>
                   </table>
+                  <div class="btn-toolbar" ng-if="can('solve-board-posts')">
+                    <a href="" ng-if="!match.editing" ng-click="match.editing = true" class="btn btn-default">Editar</a>
+                    <a href="" ng-if="match.editing" ng-click="updateScore(match, group)" class="btn btn-success">Guardar</a>
+                  </div>
                 </div>
               </div>
             </div>
@@ -59,7 +97,7 @@
                   <th colspan="8">Grupo {{ group.name }}</th>
                 </tr>
                 <tr>
-                  <th>&nbsp;</th>
+                  <th style="width: 300px;">&nbsp;</th>
                   <th>PJ</th>
                   <th>PG</th>
                   <th>PP</th>
@@ -68,15 +106,15 @@
                   <th>DG</th>
                   <th>Puntos</th>
                 </tr>
-                <tr ng-repeat="member in group.members" ng-class="{'success': $index < 2}">
-                  <td>{{ member }}</td>
-                  <td>0</td>
-                  <td>0</td>
-                  <td>0</td>
-                  <td>0</td>
-                  <td>0</td>
-                  <td>0</td>
-                  <td>0</td>
+                <tr ng-repeat="member in group.members | orderBy:['-points','-dg','-gf','-gc']" ng-class="{'success': $index < 2}">
+                  <td>{{ member.username }} <span class="steam" ng-if="member.steam_id">({{ member.steam_id }})</span></td>
+                  <td>{{ member.pj }}</td>
+                  <td>{{ member.pg }}</td>
+                  <td>{{ member.pp }}</td>
+                  <td>{{ member.gf }}</td>
+                  <td>{{ member.gc }}</td>
+                  <td>{{ member.gf - member.gc }}</td>
+                  <td>{{ member.points }}</td>
                 </tr>
               </table>
             </div>
@@ -85,6 +123,121 @@
 
         <section ng-if="section == 'final'">
           <h2>Fase final</h2>
+          <h3>Octavos de final</h3>
+          <div class="row">
+            <div class="col-md-6">
+              <table class="table">
+                <tr>
+                  <th style="width: 50px;">1A</th>
+                  <th>{{ (groups[0].members | orderBy:['-points','-dg','-gf','-gc'])[0].username }}</th>
+                  <td style="width: 50px;">&nbsp;</td>
+                </tr>
+                <tr>
+                  <th>2B</th>
+                  <th>{{ (groups[1].members | orderBy:['-points','-dg','-gf','-gc'])[1].username }}</th>
+                  <td>&nbsp;</td>
+                </tr>
+              </table>
+            </div>
+            <div class="col-md-6">
+              <table class="table">
+                <tr>
+                  <th style="width: 50px;">1C</th>
+                  <th>{{ (groups[2].members | orderBy:['-points','-dg','-gf','-gc'])[0].username }}</th>
+                  <td style="width: 50px;">&nbsp;</td>
+                </tr>
+                <tr>
+                  <th>2D</th>
+                  <th>{{ (groups[3].members | orderBy:['-points','-dg','-gf','-gc'])[1].username }}</th>
+                  <td>&nbsp;</td>
+                </tr>
+              </table>
+            </div>
+            <div class="col-md-6">
+              <table class="table">
+                <tr>
+                  <th style="width: 50px;">1E</th>
+                  <th>{{ (groups[4].members | orderBy:['-points','-dg','-gf','-gc'])[0].username }}</th>
+                  <td style="width: 50px;">&nbsp;</td>
+                </tr>
+                <tr>
+                  <th>2F</th>
+                  <th>{{ (groups[5].members | orderBy:['-points','-dg','-gf','-gc'])[1].username }}</th>
+                  <td>&nbsp;</td>
+                </tr>
+              </table>
+            </div>
+            <div class="col-md-6">
+              <table class="table">
+                <tr>
+                  <th style="width: 50px;">1G</th>
+                  <th>{{ (groups[6].members | orderBy:['-points','-dg','-gf','-gc'])[0].username }}</th>
+                  <td style="width: 50px;">&nbsp;</td>
+                </tr>
+                <tr>
+                  <th>2H</th>
+                  <th>{{ (groups[7].members | orderBy:['-points','-dg','-gf','-gc'])[1].username }}</th>
+                  <td>&nbsp;</td>
+                </tr>
+              </table>
+            </div>
+            <div class="col-md-6">
+              <table class="table">
+                <tr>
+                  <th style="width: 50px;">1B</th>
+                  <th>{{ (groups[1].members | orderBy:['-points','-dg','-gf','-gc'])[0].username }}</th>
+                  <td style="width: 50px;">&nbsp;</td>
+                </tr>
+                <tr>
+                  <th>2A</th>
+                  <th>{{ (groups[0].members | orderBy:['-points','-dg','-gf','-gc'])[1].username }}</th>
+                  <td>&nbsp;</td>
+                </tr>
+              </table>
+            </div>
+            <div class="col-md-6">
+              <table class="table">
+                <tr>
+                  <th style="width: 50px;">1D</th>
+                  <th>{{ (groups[3].members | orderBy:['-points','-dg','-gf','-gc'])[0].username }}</th>
+                  <td style="width: 50px;">&nbsp;</td>
+                </tr>
+                <tr>
+                  <th>2C</th>
+                  <th>{{ (groups[2].members | orderBy:['-points','-dg','-gf','-gc'])[1].username }}</th>
+                  <td>&nbsp;</td>
+                </tr>
+              </table>
+            </div>
+            <div class="col-md-6">
+              <table class="table">
+                <tr>
+                  <th style="width: 50px;">1F</th>
+                  <th>{{ (groups[5].members | orderBy:['-points','-dg','-gf','-gc'])[0].username }}</th>
+                  <td style="width: 50px;">&nbsp;</td>
+                </tr>
+                <tr>
+                  <th>2E</th>
+                  <th>{{ (groups[4].members | orderBy:['-points','-dg','-gf','-gc'])[1].username }}</th>
+                  <td>&nbsp;</td>
+                </tr>
+              </table>
+            </div>
+            <div class="col-md-6">
+              <table class="table">
+                <tr>
+                  <th style="width: 50px;">1H</th>
+                  <th>{{ (groups[7].members | orderBy:['-points','-dg','-gf','-gc'])[0].username }}</th>
+                  <td style="width: 50px;">&nbsp;</td>
+                </tr>
+                <tr>
+                  <th>2G</th>
+                  <th>{{ (groups[6].members | orderBy:['-points','-dg','-gf','-gc'])[1].username }}</th>
+                  <td>&nbsp;</td>
+                </tr>
+              </table>
+            </div>
+          </div>
         </section>
       </div>
     </div>
