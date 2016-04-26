@@ -56,8 +56,8 @@
                     </tr>
                     <tr ng-if="!match.editing" class="score">
                       <td colspan="2" class="text-center">
-                        <span ng-if="match.player1_score || match.player2_score">{{match.player1_score || '-'}} : {{match.player2_score || '-'}}</span>
-                        <span ng-if="!match.player1_score || !match.player2_score">Partido por jugar</span>
+                        <span ng-if="match.player1_score !== '' && match.player2_score !== ''">{{match.player1_score}} : {{match.player2_score}}</span>
+                        <span ng-if="match.player1_score === '' || match.player2_score === ''">Partido por jugar</span>
                       </td>
                     </tr>
                     <tr ng-if="match.editing">
