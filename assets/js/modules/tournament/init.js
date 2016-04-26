@@ -20,46 +20,46 @@ TournamentModule.controller('TournamentController', ['$scope', '$timeout', funct
       {username:'Meneses',steam_id:'',pj:0,pg:0,pp:0,gf:0,gc:0,dg:0,points:0}
     ]},
     {'name': 'B', 'members': [
-      {username:'shanks-bosco',steam_id:'',pj:0,pg:0,pp:0,gf:0,gc:0,dg:0,points:0},
-      {username:'hjean17',steam_id:'',pj:0,pg:0,pp:0,gf:0,gc:0,dg:0,points:0},
-      {username:'jose-santillan-batani',steam_id:'',pj:0,pg:0,pp:0,gf:0,gc:0,dg:0,points:0},
-      {username:'eurovancrazy',steam_id:'',pj:0,pg:0,pp:0,gf:0,gc:0,dg:0,points:0}
+      {username:'shanks-bosco',steam_id:'Shanks_Bosco',pj:0,pg:0,pp:0,gf:0,gc:0,dg:0,points:0},
+      {username:'hjean17',steam_id:'hjean16',pj:0,pg:0,pp:0,gf:0,gc:0,dg:0,points:0},
+      {username:'jose-santillan-batani',steam_id:'drsantillanbatani',pj:0,pg:0,pp:0,gf:0,gc:0,dg:0,points:0},
+      {username:'eurovancrazy',steam_id:'eurovancrazy',pj:0,pg:0,pp:0,gf:0,gc:0,dg:0,points:0}
     ]},
     {'name': 'C', 'members': [
-      {username:'WarHell',steam_id:'',pj:0,pg:0,pp:0,gf:0,gc:0,dg:0,points:0},
-      {username:'KeinterCabezas',steam_id:'',pj:0,pg:0,pp:0,gf:0,gc:0,dg:0,points:0},
-      {username:'Antonio-v',steam_id:'',pj:0,pg:0,pp:0,gf:0,gc:0,dg:0,points:0},
-      {username:'Drak',steam_id:'',pj:0,pg:0,pp:0,gf:0,gc:0,dg:0,points:0}
+      {username:'WarHell',steam_id:'WarHell',pj:0,pg:0,pp:0,gf:0,gc:0,dg:0,points:0},
+      {username:'KeinterCabezas',steam_id:'iKeinter',pj:0,pg:0,pp:0,gf:0,gc:0,dg:0,points:0},
+      {username:'Antonio-v',steam_id:'Antonio-V',pj:0,pg:0,pp:0,gf:0,gc:0,dg:0,points:0},
+      {username:'Drak',steam_id:'Drak Spartan',pj:0,pg:0,pp:0,gf:0,gc:0,dg:0,points:0}
     ]},
     {'name': 'D', 'members': [
       {username:'nobody',steam_id:'nobody',pj:0,pg:0,pp:0,gf:0,gc:0,dg:0,points:0},
-      {username:'FBNKB',steam_id:'',pj:0,pg:0,pp:0,gf:0,gc:0,dg:0,points:0},
-      {username:'Cesar-tiza',steam_id:'',pj:0,pg:0,pp:0,gf:0,gc:0,dg:0,points:0},
+      {username:'FBNKB',steam_id:'fbnkb',pj:0,pg:0,pp:0,gf:0,gc:0,dg:0,points:0},
+      {username:'Cesar-tiza',steam_id:'CesarTiza',pj:0,pg:0,pp:0,gf:0,gc:0,dg:0,points:0},
       {username:'Miguemex64',steam_id:'',pj:0,pg:0,pp:0,gf:0,gc:0,dg:0,points:0}
     ]},
     {'name': 'E', 'members': [
-      {username:'TogeXD',steam_id:'',pj:0,pg:0,pp:0,gf:0,gc:0,dg:0,points:0},
+      {username:'TogeXD',steam_id:'TogexD',pj:0,pg:0,pp:0,gf:0,gc:0,dg:0,points:0},
       {username:'Furybomber-Mancilla',steam_id:'',pj:0,pg:0,pp:0,gf:0,gc:0,dg:0,points:0},
-      {username:'Sadak-gr',steam_id:'',pj:0,pg:0,pp:0,gf:0,gc:0,dg:0,points:0},
+      {username:'Sadak-gr',steam_id:'Sadak',pj:0,pg:0,pp:0,gf:0,gc:0,dg:0,points:0},
       {username:'Diego-armando-jordan-gonzalez',steam_id:'',pj:0,pg:0,pp:0,gf:0,gc:0,dg:0,points:0}
     ]},
     {'name': 'F', 'members': [
       {username:'AcidRod',steam_id:'Rocky Raccoon',pj:0,pg:0,pp:0,gf:0,gc:0,dg:0,points:0},
-      {username:'GTBrother',steam_id:'',pj:0,pg:0,pp:0,gf:0,gc:0,dg:0,points:0},
-      {username:'Jimp',steam_id:'',pj:0,pg:0,pp:0,gf:0,gc:0,dg:0,points:0},
-      {username:'Jharet-rulz',steam_id:'',pj:0,pg:0,pp:0,gf:0,gc:0,dg:0,points:0}
+      {username:'GTBrother',steam_id:'GTBrother',pj:0,pg:0,pp:0,gf:0,gc:0,dg:0,points:0},
+      {username:'Jimp',steam_id:'Jimp',pj:0,pg:0,pp:0,gf:0,gc:0,dg:0,points:0},
+      {username:'Jharet-rulz',steam_id:'jharet89',pj:0,pg:0,pp:0,gf:0,gc:0,dg:0,points:0}
     ]},
     {'name': 'G', 'members': [
-      {username:'IdealistaMx',steam_id:'',pj:0,pg:0,pp:0,gf:0,gc:0,dg:0,points:0},
-      {username:'Sheik000',steam_id:'',pj:0,pg:0,pp:0,gf:0,gc:0,dg:0,points:0},
+      {username:'IdealistaMx',steam_id:'iDeaLiSTaMx',pj:0,pg:0,pp:0,gf:0,gc:0,dg:0,points:0},
+      {username:'Sheik000',steam_id:'Sheik000',pj:0,pg:0,pp:0,gf:0,gc:0,dg:0,points:0},
       {username:'MauSV',steam_id:'',pj:0,pg:0,pp:0,gf:0,gc:0,dg:0,points:0},
       {username:'DiegoWinchester',steam_id:'',pj:0,pg:0,pp:0,gf:0,gc:0,dg:0,points:0}
     ]},
     {'name': 'H', 'members': [
       {username:'BolilloSpartano',steam_id:'BolilloSpartano',pj:0,pg:0,pp:0,gf:0,gc:0,dg:0,points:0},
-      {username:'Calvi',steam_id:'',pj:0,pg:0,pp:0,gf:0,gc:0,dg:0,points:0},
+      {username:'Calvi',steam_id:'Calvi',pj:0,pg:0,pp:0,gf:0,gc:0,dg:0,points:0},
       {username:'Sheko',steam_id:'',pj:0,pg:0,pp:0,gf:0,gc:0,dg:0,points:0},
-      {username:'Dannielnino',steam_id:'',pj:0,pg:0,pp:0,gf:0,gc:0,dg:0,points:0}
+      {username:'Dannielnino',steam_id:'Dannielnino',pj:0,pg:0,pp:0,gf:0,gc:0,dg:0,points:0}
     ]},
   ];
 
@@ -68,7 +68,7 @@ TournamentModule.controller('TournamentController', ['$scope', '$timeout', funct
   var fb_info = [];
   $scope._matchesRef.once('value', function(ss) {
     fb_info = ss.val();
-    console.log("Loaded", fb_info)
+    //console.log("Loaded", fb_info)
 
     // Calculate matches
     for(var i in $scope.groups) {
@@ -136,16 +136,17 @@ TournamentModule.controller('TournamentController', ['$scope', '$timeout', funct
   $scope.updateScore = function(match, group) {
     var slug = match.player1 + '-' + match.player2;
     //console.log('saving...', slug, match);
+    console.log(match);
     var new_match = {
       player1: match.player1,
       player2: match.player2,
-      player1_score: match.player1_score || "",
-      player2_score: match.player2_score || "",
+      player1_score: match.player1_score !== "" ? match.player1_score : "",
+      player2_score: match.player2_score !== "" ? match.player2_score : "",
       winner: "",
       loser: "",
       date: match.date
     }
-    if(match.player1_score != "" && match.player2_score != "") {
+    if(match.player1_score !== "" && match.player2_score !== "") {
       if(match.player1_score > match.player2_score) {
         new_match.winner = match.player1;
         new_match.loser = match.player2;
@@ -154,6 +155,7 @@ TournamentModule.controller('TournamentController', ['$scope', '$timeout', funct
         new_match.loser = match.player1;
       }
     }
+    console.log(new_match);
     $scope._matchesRef.child(slug).set(new_match);
 
     group.matches[slug] = new_match;
