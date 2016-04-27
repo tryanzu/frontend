@@ -51,8 +51,8 @@
                 <div class="match" ng-class="{'match-own': (user.info.username == match.player1 || user.info.username == match.player2), 'played': (match.player1_score > 0 || match.player2_score > 0), 'won': match.winner == user.info.username, 'lost': match.loser == user.info.username}">
                   <table class="table table-bordered">
                     <tr class="players">
-                      <th style="width: 50%; height: 58px; vertical-align: middle;">{{match.player1}}</th>
-                      <th class="text-right" style="vertical-align: middle;">{{match.player2}}</th>
+                      <th ng-class="{winner: match.player1 == match.winner, loser: match.player1 == match.loser}" style="width: 50%; height: 58px; vertical-align: middle;">{{match.player1}}</th>
+                      <th ng-class="{winner: match.player2 == match.winner, loser: match.player2 == match.loser}" class="text-right" style="vertical-align: middle;">{{match.player2}}</th>
                     </tr>
                     <tr ng-if="!match.editing" class="score">
                       <td colspan="2" class="text-center">
