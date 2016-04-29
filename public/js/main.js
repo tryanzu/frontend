@@ -10673,7 +10673,8 @@ ComponentsModule.controller('MassdropController', ['$scope', '$http', '$timeout'
     massdrop.shipping_date_label = f.getDate() + " de " + meses[f.getMonth()] + " de " + f.getFullYear();
 
     $scope.counter = {
-      hours: Math.floor(difference / 60),
+      days: Math.floor(difference / 60 / 24),
+      hours: Math.floor(difference / 60 % 24),
       minutes: difference % 60
     };
 
@@ -11150,7 +11151,7 @@ var boardApplication = angular.module('board', [
   'btford.socket-io'
 ]);
 
-var version = '051';
+var version = '052';
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider', 'AclServiceProvider',
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider, AclServiceProvider) {

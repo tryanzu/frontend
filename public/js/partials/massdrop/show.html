@@ -88,7 +88,7 @@
             <h2>{{ massdrop.price | currency:'$ ':0 }}</h2>
             <span class="description join" ng-if="massdrop.active">Aparta con {{ massdrop.reserve_price | currency:'$ ':0 }}</span>
             <span class="description" ng-if="massdrop.active">Paga <strong>la diferencia</strong> cuanto termine la compra en legión</span>
-            <h3 ng-if="massdrop.active">Quedan {{ counter.hours }} horas, {{ counter.minutes }} minutos</h3>
+            <h3 ng-if="massdrop.active">Quedan <span ng-if="counter.days > 0">{{ counter.days }} días, </span>{{ counter.hours }} horas<span ng-if="counter.days < 1">, {{ counter.minutes }} minutos</span></h3>
             <h3 ng-if="!massdrop.active">La Compra en legión ha finalizado</h3>
           </div>
 
