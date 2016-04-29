@@ -10673,7 +10673,8 @@ ComponentsModule.controller('MassdropController', ['$scope', '$http', '$timeout'
     massdrop.shipping_date_label = f.getDate() + " de " + meses[f.getMonth()] + " de " + f.getFullYear();
 
     $scope.counter = {
-      hours: Math.floor(difference / 60),
+      days: Math.floor(difference / 60 / 24),
+      hours: Math.floor(difference / 60 % 24),
       minutes: difference % 60
     };
 
