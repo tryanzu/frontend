@@ -10634,8 +10634,9 @@ ComponentsModule.controller('MassdropController', ['$scope', '$http', '$timeout'
 
   // Initialize component viewing
   $http.get(layer_path + "store/product/" + $routeParams.slug).then(function success(response){
-    //console.log(response.data);
+    console.log(response.data);
     $scope.product_id = response.data.id;
+    $scope.slug = response.data.slug;
     var massdrop = response.data.massdrop;
     var max = timespan = 0;
     for(var i in massdrop.checkpoints) {
@@ -10719,7 +10720,7 @@ ComponentsModule.controller('MassdropController', ['$scope', '$http', '$timeout'
   }, function(error){});
 }]);
 
-ComponentsModule.controller('MassdropPayController', ['$scope', '$http', function($scope, $http) {
+ComponentsModule.controller('MassdropPayController', ['$scope', '$http', '$routeParams', function($scope, $http, $routeParams) {
   // Flags
   $scope.f = {
     verify_cart: false,
@@ -10763,7 +10764,7 @@ ComponentsModule.controller('MassdropPayController', ['$scope', '$http', functio
   }
 
   $scope.currentStep = 'pay';
-  $scope.price_per_unit = 2500;
+  $scope.price_per_unit = null;
 
   $scope.getPaymentFee = function() {
     if($scope.pay_method.value == 'withdrawal') {
@@ -10837,9 +10838,11 @@ ComponentsModule.controller('MassdropPayController', ['$scope', '$http', functio
     });
   }
 
-  $http.get(layer_path + "store/product/evga-gtx-950-acx").then(function success(response){
-    //console.log(response.data);
+  $http.get(layer_path + "store/product/" + $routeParams.slug).then(function success(response){
+    console.log(response.data);
     $scope.product_id = response.data.id;
+    $scope.price_per_unit = response.data.massdrop.reserve_price;
+    $scope.name =  response.data.name;
   }, function(error){
     console.log(error);
   })
