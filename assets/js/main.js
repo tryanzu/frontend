@@ -164,7 +164,7 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
     templateUrl: '/js/partials/recovery.html?v=' + version,
     controller: 'UserRecoveryController'
   });
-  $routeProvider.when('/chat', {
+  $routeProvider.when('/chat/:slug?', {
     templateUrl: '/js/partials/chat.html?v=' + version,
     controller: 'ChatController'
   });

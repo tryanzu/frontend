@@ -3,7 +3,10 @@ var ChatController = [
   '$firebaseArray',
   '$firebaseObject',
   '$timeout',
-  function($scope, $firebaseArray, $firebaseObject, $timeout) {
+  '$location',
+  '$route',
+  '$routeParams',
+  function($scope, $firebaseArray, $firebaseObject, $timeout, $location, $route, $routeParams) {
 
     $scope.people = [];
 
@@ -87,8 +90,11 @@ var ChatController = [
 
     $scope.changeChannel = function(channel) {
       if($scope.channel.selected == channel) return;
+
       $scope.exitChannel();
       $scope.channel.selected = channel;
+      $location.path('/chat/' + channel.slug);
+
       var messagesRef = $scope._messageRef.child(channel.$id).orderByChild('created_at').limitToLast(50);
 
       if($scope.channel.selected.fullscreen) {
@@ -279,7 +285,21 @@ var ChatController = [
 
     $scope.channels = $firebaseArray($scope._channelRef);
     $scope.channels.$loaded().then(function() {
-      $scope.changeChannel($scope.channels[0]);
+      if($routeParams.slug != '') {
+        var found = false;
+        for(i in $scope.channels) {
+          if($scope.channels[i].slug == $routeParams.slug) {
+            $scope.changeChannel($scope.channels[i]);
+            found = true;
+            break;
+          }
+        }
+        if(!found) {
+          $scope.changeChannel($scope.channels[0]);
+        }
+      } else {
+        $scope.changeChannel($scope.channels[0]);
+      }
     });
 
     $scope.checkValidation = function() {
@@ -314,7 +334,7 @@ var ChatController = [
     });
 
     $scope.$on("$destroy", function() {
-      console.log("Closing chat");
+      if($scope.can('debug')) console.log("Closing chat");
       $scope.exitChannel();
     });
 
@@ -352,6 +372,18 @@ var ChatController = [
       }
       $scope.scroll_help.lastScrollTop = $scope.scroll_help.from_top;
       $scope.scroll_help.last_height = $scope.scroll_help.max_height;
+    });
+
+    // Hack, so we don't have to reload the controller if the route uses the same controller
+    var lastRoute = $route.current;
+    $scope.$on('$locationChangeSuccess', function(event) {
+      if(lastRoute.$$route.controller === $route.current.$$route.controller) {
+        // Will not load only if my view use the same controller
+        // We recover new params
+        new_params = $route.current.params;
+        $route.current = lastRoute;
+        $route.current.params = new_params;
+      }
     });
   }
 ];
