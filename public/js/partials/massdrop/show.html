@@ -4,10 +4,20 @@
       <div class="col-md-12">
         <h1 ng-cloak>{{ product.full_name }}</h1>
 
-        <div class="btn-toolbar">
-          <a href="/compra-en-legion" class="btn btn-default">Compra en Legión</a>
-          <a href="" ng-click="share_fb('https://spartangeek.com/compra-en-legion/{{product.slug}}?r=sg2')" rel="nofollow" target="_blank" class="btn btn-fb"><i class="fa fa-facebook-official"></i> <span class="hidden-xs">Compartir en FB</span></a>
-          <a href="https://twitter.com/intent/tweet?text=Quiero%20comprar%20el%20{{product.name}},%20si%20tambi%C3%A9n%20est%C3%A1s%20interesado,%20podremos%20obtener%20un%20precio%20m%C3%A1s%20bajo%20juntos...%20&url=https://spartangeek.com/compra-en-legion/{{product.slug}}&original_referer=https://spartangeek.com/compra-en-legion/{{product.slug}}" class="btn btn-twitter"><i class="fa fa-twitter"></i> <span class="hidden-xs">Compartir en Twitter</span></a>
+        <div class="row">
+          <div class="col-md-6">
+            <ol class="breadcrumb">
+              <li><a href="/compra-en-legion" alt="Compras en Legión">Compras en Legión</a></li>
+              <li class="active">{{ product.full_name }}</li>
+            </ol>
+          </div>
+
+          <div class="col-md-6">
+            <div class="text-right">
+              <a href="" ng-click="share_fb()" rel="nofollow" target="_blank" class="btn btn-fb"><i class="fa fa-facebook-official"></i> <span class="hidden-xs">Compartir en FB</span></a>
+              <a href="https://twitter.com/intent/tweet?text=Quiero%20comprar%20el%20{{product.name}},%20si%20tambi%C3%A9n%20est%C3%A1s%20interesado,%20podremos%20obtener%20un%20precio%20m%C3%A1s%20bajo%20juntos...%20&url=https://spartangeek.com/compra-en-legion/{{product.slug}}&original_referer=https://spartangeek.com/compra-en-legion/{{product.slug}}" class="btn btn-twitter"><i class="fa fa-twitter"></i> <span class="hidden-xs">Compartir en Twitter</span></a>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -28,10 +38,9 @@
           <p class="join" ng-if="massdrop.active">¡Aparta ahora y ayuda a conseguir {{ massdrop.timespan }} horas más!</p>
           <div class="cp-bar">
             <div class="current-progress" style="width: {{ massdrop.reservations_width }}%"></div>
-            <div class="current-progress-interested" style="width: {{ massdrop.interested_width }}%; left: {{ massdrop.reservations_width }}%"></div>
 
             <div class="checkpoints">
-              <div class="checkpoint" ng-class="{'reached': c.done, 'interested': (massdrop.count_reservations + massdrop.count_interested) >= c.starts}" ng-repeat="c in massdrop.checkpoints" style="right: {{ c.from_right }}%;">
+              <div class="checkpoint" ng-class="{'reached': c.done}" ng-repeat="c in massdrop.checkpoints" style="right: {{ c.from_right }}%;">
                 <div class="details">
                   <h3>{{ c.price | currency:'$ ':0}}</h3>
                   <span class="persons-needed" ng-if="c.done">{{ c.starts }} unidas</span>
@@ -146,6 +155,8 @@
               Está interesado desde {{a.created_at | timeAgo}}
             </div>
           </div>
+
+          <textarea class="form-control mb-40" rows="8" ng-if="can('sensitive-data')">{{ usersInfo() }}</textarea>
         </section>
       </div>
     </div>

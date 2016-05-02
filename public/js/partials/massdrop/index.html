@@ -28,10 +28,9 @@
 
                     <div class="cp-bar">
                       <div class="current-progress" style="width: {{ massdrop.reservations_width }}%"></div>
-                      <div class="current-progress-interested" style="width: {{ massdrop.interested_width }}%; left: {{ massdrop.reservations_width }}%"></div>
 
                       <div class="checkpoints">
-                        <div class="checkpoint" ng-class="{'reached': c.done, 'interested': (massdrop.count_reservations + massdrop.count_interested) >= c.starts}" ng-repeat="c in massdrop.checkpoints" style="right: {{ c.from_right }}%;">
+                        <div class="checkpoint" ng-class="{'reached': c.done}" ng-repeat="c in massdrop.checkpoints" style="right: {{ c.from_right }}%;">
                           <div class="details">
                             <h3><i class="fa fa-users" aria-hidden="true"></i></h3>
                             <span class="persons-needed">{{ c.starts }}</span>

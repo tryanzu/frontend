@@ -10610,6 +10610,17 @@ ComponentsModule.controller('MassdropController', ['$scope', '$http', '$timeout'
     });
   }
 
+  $scope.usersInfo = function() {
+    var text = "";
+    if($scope.massdrop) {
+      for(i in $scope.massdrop.users) {
+        user = $scope.massdrop.users[i];
+        text += user.username + ", " + user.email + ", " + (user.contact_input || "no conctact info") + "\n---\n";
+      }
+    }
+    return text;
+  }
+
   $scope.interestedDialog = function() {
     var modalInstance = $uibModal.open({
       templateUrl: '/js/partials/massdrop/interested-modal.html',
@@ -10714,7 +10725,8 @@ ComponentsModule.controller('MassdropController', ['$scope', '$http', '$timeout'
       return false;
     });
 
-    $scope.share_fb = function(url) {
+    $scope.share_fb = function() {
+      url = 'https://spartangeek.com/compra-en-legion/' + $scope.product.slug + '?ref="spartangeek.com"';
       window.open('https://www.facebook.com/sharer/sharer.php?u='+url,'facebook-share-dialog',"width=626,height=436")
     }
   }, function(error){});
@@ -11154,7 +11166,7 @@ var boardApplication = angular.module('board', [
   'btford.socket-io'
 ]);
 
-var version = '053';
+var version = '054';
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider', 'AclServiceProvider',
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider, AclServiceProvider) {
