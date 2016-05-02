@@ -95,7 +95,7 @@
                       <a href="" ng-click="current_page = 'owning'">Lo quiero, lo tengo, lo tuve</a>
                     </li>
                     <li role="presentation" ng-class="{active: current_page == 'feed'}">
-                      <a href="" ng-click="current_page = 'feed'">Publicaciones <span class="count hidden">2</span></a>
+                      <a href="" ng-click="current_page = 'feed'">Publicaciones <span class="count">{{ posts.count | number:0 }}</span></a>
                     </li>
                     <li role="presentation" ng-class="{active: current_page == 'comments'}">
                       <a href="" ng-click="current_page = 'comments'">Comentarios <span class="count">{{ comments.count | number:0 }}</span></a>
