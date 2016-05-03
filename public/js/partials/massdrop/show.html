@@ -33,8 +33,8 @@
         </div>
 
         <section class="checkpoints-diagram">
-          <h2 ng-if="massdrop.active">Quedan <span ng-if="counter.days > 0">{{ counter.days }} días, </span>{{ counter.hours }} horas<span ng-if="counter.days < 1">, {{ counter.minutes }} minutos</span></h2>
-          <h2 ng-if="!massdrop.active">La Compra en legión ha finalizado <small>Comenzó en $ 3,500</small></h2>
+          <h2 ng-if="massdrop.active">Quedan <span ng-if="counter.days > 0">{{ counter.days }} días, </span>{{ counter.hours }} horas<span ng-if="counter.days < 1">, {{ counter.minutes }} minutos</span> <small ng-if="massdrop.starting_price > massdrop.price">Comenzó en {{ massdrop.starting_price | currency:'$ ':0 }}</small></h2>
+          <h2 ng-if="!massdrop.active">La Compra en legión ha finalizado <small>Comenzó en {{ massdrop.starting_price | currency:'$ ':0 }}</small></h2>
           <p class="join" ng-if="massdrop.active">¡Aparta ahora y ayuda a conseguir {{ massdrop.timespan }} horas más!</p>
           <div class="cp-bar">
             <div class="current-progress" style="width: {{ massdrop.reservations_width }}%"></div>

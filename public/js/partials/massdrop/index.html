@@ -19,6 +19,7 @@
                       </div>
                       <div class="lowest-price">
                         <span ng-if="massdrop.min_price < massdrop.price">Objetivo {{ massdrop.min_price | currency:'$ ':0 }}</span>
+                        <span ng-if="massdrop.starting_price > massdrop.price"><br>Empezó en {{ massdrop.starting_price | currency:'$ ':0 }}</span>
                         <span ng-if="massdrop.min_price == massdrop.price">Precio más bajo</span>
                       </div>
                     </div>
