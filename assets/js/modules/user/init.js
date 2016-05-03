@@ -151,6 +151,7 @@ UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed
     Feed.get({ limit: 10, offset: $scope.posts.offset, user_id: $scope.profile.id }, function(data) {
       //console.log(data);
       $scope.posts.data = data.feed;
+      $scope.posts.count = data.count;
       $scope.posts.resolving = false;
       $scope.posts.offset = $scope.posts.offset + data.feed.length;
       $scope.posts.first_load = true;

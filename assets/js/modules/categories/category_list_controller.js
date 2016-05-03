@@ -166,7 +166,9 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
       return posts[newer_i].created_at;
     }
 
-    $scope.getNewer = function() {
+    $scope.getNewer = function(scroll_to) {
+      scroll_to = typeof scroll_to !== 'undefined' ? scroll_to : true;
+
       if(!$scope.resolving.newer) {
         $scope.resolving.newer = true;
         var pending = $scope.status.pending;
@@ -198,9 +200,10 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
             $scope.status.pending = 0;
           }
           $scope.resolving.newer = false;
-          // return to the top of the feed
-          $('.discussions-list').animate({ scrollTop: 0}, 100);
-
+          if(scroll_to) {
+            // return to the top of the feed
+            $('.discussions-list').animate({ scrollTop: 0}, 100);
+          }
         }, function (error){
           console.log("Error getting new posts");
           $scope.status.pending = 0;

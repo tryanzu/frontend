@@ -72,7 +72,7 @@ var boardApplication = angular.module('board', [
   'btford.socket-io'
 ]);
 
-var version = '054';
+var version = '055';
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider', 'AclServiceProvider',
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider, AclServiceProvider) {
@@ -164,7 +164,7 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
     templateUrl: '/js/partials/recovery.html?v=' + version,
     controller: 'UserRecoveryController'
   });
-  $routeProvider.when('/chat', {
+  $routeProvider.when('/chat/:slug?', {
     templateUrl: '/js/partials/chat.html?v=' + version,
     controller: 'ChatController'
   });

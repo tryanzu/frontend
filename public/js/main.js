@@ -6831,7 +6831,9 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
       return posts[newer_i].created_at;
     }
 
-    $scope.getNewer = function() {
+    $scope.getNewer = function(scroll_to) {
+      scroll_to = typeof scroll_to !== 'undefined' ? scroll_to : true;
+
       if(!$scope.resolving.newer) {
         $scope.resolving.newer = true;
         var pending = $scope.status.pending;
@@ -6863,9 +6865,10 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
             $scope.status.pending = 0;
           }
           $scope.resolving.newer = false;
-          // return to the top of the feed
-          $('.discussions-list').animate({ scrollTop: 0}, 100);
-
+          if(scroll_to) {
+            // return to the top of the feed
+            $('.discussions-list').animate({ scrollTop: 0}, 100);
+          }
         }, function (error){
           console.log("Error getting new posts");
           $scope.status.pending = 0;
@@ -8630,6 +8633,7 @@ UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed
     Feed.get({ limit: 10, offset: $scope.posts.offset, user_id: $scope.profile.id }, function(data) {
       //console.log(data);
       $scope.posts.data = data.feed;
+      $scope.posts.count = data.count;
       $scope.posts.resolving = false;
       $scope.posts.offset = $scope.posts.offset + data.feed.length;
       $scope.posts.first_load = true;
@@ -8894,7 +8898,10 @@ var ChatController = [
   '$firebaseArray',
   '$firebaseObject',
   '$timeout',
-  function($scope, $firebaseArray, $firebaseObject, $timeout) {
+  '$location',
+  '$route',
+  '$routeParams',
+  function($scope, $firebaseArray, $firebaseObject, $timeout, $location, $route, $routeParams) {
 
     $scope.people = [];
 
@@ -8978,8 +8985,11 @@ var ChatController = [
 
     $scope.changeChannel = function(channel) {
       if($scope.channel.selected == channel) return;
+
       $scope.exitChannel();
       $scope.channel.selected = channel;
+      $location.path('/chat/' + channel.slug);
+
       var messagesRef = $scope._messageRef.child(channel.$id).orderByChild('created_at').limitToLast(50);
 
       if($scope.channel.selected.fullscreen) {
@@ -9170,7 +9180,21 @@ var ChatController = [
 
     $scope.channels = $firebaseArray($scope._channelRef);
     $scope.channels.$loaded().then(function() {
-      $scope.changeChannel($scope.channels[0]);
+      if($routeParams.slug != '') {
+        var found = false;
+        for(i in $scope.channels) {
+          if($scope.channels[i].slug == $routeParams.slug) {
+            $scope.changeChannel($scope.channels[i]);
+            found = true;
+            break;
+          }
+        }
+        if(!found) {
+          $scope.changeChannel($scope.channels[0]);
+        }
+      } else {
+        $scope.changeChannel($scope.channels[0]);
+      }
     });
 
     $scope.checkValidation = function() {
@@ -9205,7 +9229,7 @@ var ChatController = [
     });
 
     $scope.$on("$destroy", function() {
-      console.log("Closing chat");
+      if($scope.can('debug')) console.log("Closing chat");
       $scope.exitChannel();
     });
 
@@ -9243,6 +9267,18 @@ var ChatController = [
       }
       $scope.scroll_help.lastScrollTop = $scope.scroll_help.from_top;
       $scope.scroll_help.last_height = $scope.scroll_help.max_height;
+    });
+
+    // Hack, so we don't have to reload the controller if the route uses the same controller
+    var lastRoute = $route.current;
+    $scope.$on('$locationChangeSuccess', function(event) {
+      if(lastRoute.$$route.controller === $route.current.$$route.controller) {
+        // Will not load only if my view use the same controller
+        // We recover new params
+        new_params = $route.current.params;
+        $route.current = lastRoute;
+        $route.current.params = new_params;
+      }
     });
   }
 ];
@@ -10953,6 +10989,8 @@ TournamentModule.controller('TournamentController', ['$scope', '$timeout', funct
     ]},
   ];
 
+  $scope.final_matches = []
+
 
   // Load matches
   var fb_info = [];
@@ -11020,6 +11058,55 @@ TournamentModule.controller('TournamentController', ['$scope', '$timeout', funct
         }
       }
       //console.log($scope.groups[i].matches);
+    }
+    for(var m = 1; m < 16; m++) {
+      var slug = "G" + m;
+      if(fb_info && slug in fb_info) {
+        match = fb_info[slug];
+        /*if(match.winner != "") {
+          //console.log("winner!", match.winner);
+          for(m in members) {
+            if(members[m].username == match.winner) {
+              members[m].pj++;
+              members[m].pg++;
+              members[m].points += 3;
+              if(match.player1_score > match.player2_score) {
+                members[m].gf += match.player1_score;
+                members[m].gc += match.player2_score;
+              } else {
+                members[m].gf += match.player2_score;
+                members[m].gc += match.player1_score;
+              }
+              members[m].dg = members[m].gf - members[m].gc;
+            }
+            if(members[m].username == match.loser) {
+              members[m].pj++;
+              members[m].pp++;
+              if(match.player1_score > match.player2_score) {
+                members[m].gf += match.player2_score;
+                members[m].gc += match.player1_score;
+              } else {
+                members[m].gf += match.player1_score;
+                members[m].gc += match.player2_score;
+              }
+              members[m].dg = members[m].gf - members[m].gc;
+            }
+          }
+        }*/
+      } else {
+        match = {
+          player1: "",
+          player2: "",
+          player1_score: "",
+          player2_score: "",
+          winner: "",
+          loser: "",
+          date: "07/05/2016 20:00",
+          slug: slug
+        }
+        $scope._matchesRef.child(slug).set(match);
+      }
+      $scope.final_matches.push(match);
     }
   });
 
@@ -11166,7 +11253,7 @@ var boardApplication = angular.module('board', [
   'btford.socket-io'
 ]);
 
-var version = '054';
+var version = '055';
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider', 'AclServiceProvider',
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider, AclServiceProvider) {
@@ -11258,7 +11345,7 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
     templateUrl: '/js/partials/recovery.html?v=' + version,
     controller: 'UserRecoveryController'
   });
-  $routeProvider.when('/chat', {
+  $routeProvider.when('/chat/:slug?', {
     templateUrl: '/js/partials/chat.html?v=' + version,
     controller: 'ChatController'
   });
