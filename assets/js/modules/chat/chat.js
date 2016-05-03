@@ -287,9 +287,7 @@ var ChatController = [
 
     $scope.channels = $firebaseArray($scope._channelRef);
     $scope.channels.$loaded().then(function() {
-      console.log("Channels loaded...")
       if($routeParams.slug != undefined) {
-        console.log("Channel selected!", $routeParams.slug);
         var found = false;
         for(i in $scope.channels) {
           if($scope.channels[i].slug == $routeParams.slug) {
@@ -302,7 +300,6 @@ var ChatController = [
           $scope.changeChannel($scope.channels[0]);
         }
       } else {
-        console.log("No channel selected... load first one");
         $scope.changeChannel($scope.channels[0]);
       }
     });
