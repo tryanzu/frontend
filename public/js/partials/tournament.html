@@ -123,121 +123,254 @@
 
         <section ng-if="section == 'final'">
           <h2>Fase final</h2>
-          <h3>Octavos de final</h3>
-          <div class="row">
-            <div class="col-md-6">
-              <table class="table">
-                <tr>
-                  <th style="width: 50px;">1A</th>
-                  <th>{{ (groups[0].members | orderBy:['-points','-dg','-gf','-gc'])[0].username }}</th>
-                  <td style="width: 50px;">&nbsp;</td>
-                </tr>
-                <tr>
-                  <th>2B</th>
-                  <th>{{ (groups[1].members | orderBy:['-points','-dg','-gf','-gc'])[1].username }}</th>
-                  <td>&nbsp;</td>
-                </tr>
-              </table>
+          <section>
+            <h3>Octavos de final</h3>
+            <div class="row">
+              <div class="col-md-6">
+                <table class="table">
+                  <tr>
+                    <th rowspan="2" class="game-key">G1</th>
+                    <th class="game-key-winner">1A</th>
+                    <th>{{ (groups[0].members | orderBy:['-points','-dg','-gf','-gc'])[0].username }}</th>
+                    <td style="width: 50px;">&nbsp;</td>
+                  </tr>
+                  <tr>
+                    <th class="game-key-winner">2B</th>
+                    <th>{{ (groups[1].members | orderBy:['-points','-dg','-gf','-gc'])[1].username }}</th>
+                    <td>&nbsp;</td>
+                  </tr>
+                </table>
+              </div>
+              <div class="col-md-6">
+                <table class="table">
+                  <tr>
+                    <th rowspan="2" class="game-key">G2</th>
+                    <th class="game-key-winner">1C</th>
+                    <th>{{ (groups[2].members | orderBy:['-points','-dg','-gf','-gc'])[0].username }}</th>
+                    <td style="width: 50px;">&nbsp;</td>
+                  </tr>
+                  <tr>
+                    <th class="game-key-winner">2D</th>
+                    <th>{{ (groups[3].members | orderBy:['-points','-dg','-gf','-gc'])[1].username }}</th>
+                    <td>&nbsp;</td>
+                  </tr>
+                </table>
+              </div>
+              <div class="col-md-6">
+                <table class="table">
+                  <tr>
+                    <th rowspan="2" class="game-key">G3</th>
+                    <th class="game-key-winner">1E</th>
+                    <th>{{ (groups[4].members | orderBy:['-points','-dg','-gf','-gc'])[0].username }}</th>
+                    <td style="width: 50px;">&nbsp;</td>
+                  </tr>
+                  <tr>
+                    <th class="game-key-winner">2F</th>
+                    <th>{{ (groups[5].members | orderBy:['-points','-dg','-gf','-gc'])[1].username }}</th>
+                    <td>&nbsp;</td>
+                  </tr>
+                </table>
+              </div>
+              <div class="col-md-6">
+                <table class="table">
+                  <tr>
+                    <th rowspan="2" class="game-key">G4</th>
+                    <th class="game-key-winner">1G</th>
+                    <th>{{ (groups[6].members | orderBy:['-points','-dg','-gf','-gc'])[0].username }}</th>
+                    <td style="width: 50px;">&nbsp;</td>
+                  </tr>
+                  <tr>
+                    <th class="game-key-winner">2H</th>
+                    <th>{{ (groups[7].members | orderBy:['-points','-dg','-gf','-gc'])[1].username }}</th>
+                    <td>&nbsp;</td>
+                  </tr>
+                </table>
+              </div>
+              <div class="col-md-6">
+                <table class="table">
+                  <tr>
+                    <th rowspan="2" class="game-key">G5</th>
+                    <th class="game-key-winner">1B</th>
+                    <th>{{ (groups[1].members | orderBy:['-points','-dg','-gf','-gc'])[0].username }}</th>
+                    <td style="width: 50px;">&nbsp;</td>
+                  </tr>
+                  <tr>
+                    <th class="game-key-winner">2A</th>
+                    <th>{{ (groups[0].members | orderBy:['-points','-dg','-gf','-gc'])[1].username }}</th>
+                    <td>&nbsp;</td>
+                  </tr>
+                </table>
+              </div>
+              <div class="col-md-6">
+                <table class="table">
+                  <tr>
+                    <th rowspan="2" class="game-key">G6</th>
+                    <th class="game-key-winner">1D</th>
+                    <th>{{ (groups[3].members | orderBy:['-points','-dg','-gf','-gc'])[0].username }}</th>
+                    <td style="width: 50px;">&nbsp;</td>
+                  </tr>
+                  <tr>
+                    <th class="game-key-winner">2C</th>
+                    <th>{{ (groups[2].members | orderBy:['-points','-dg','-gf','-gc'])[1].username }}</th>
+                    <td>&nbsp;</td>
+                  </tr>
+                </table>
+              </div>
+              <div class="col-md-6">
+                <table class="table">
+                  <tr>
+                    <th rowspan="2" class="game-key">G7</th>
+                    <th class="game-key-winner">1F</th>
+                    <th>{{ (groups[5].members | orderBy:['-points','-dg','-gf','-gc'])[0].username }}</th>
+                    <td style="width: 50px;">&nbsp;</td>
+                  </tr>
+                  <tr>
+                    <th class="game-key-winner">2E</th>
+                    <th>{{ (groups[4].members | orderBy:['-points','-dg','-gf','-gc'])[1].username }}</th>
+                    <td>&nbsp;</td>
+                  </tr>
+                </table>
+              </div>
+              <div class="col-md-6">
+                <table class="table">
+                  <tr>
+                    <th rowspan="2" class="game-key">G8</th>
+                    <th class="game-key-winner">1H</th>
+                    <th>{{ (groups[7].members | orderBy:['-points','-dg','-gf','-gc'])[0].username }}</th>
+                    <td style="width: 50px;">&nbsp;</td>
+                  </tr>
+                  <tr>
+                    <th class="game-key-winner">2G</th>
+                    <th>{{ (groups[6].members | orderBy:['-points','-dg','-gf','-gc'])[1].username }}</th>
+                    <td>&nbsp;</td>
+                  </tr>
+                </table>
+              </div>
             </div>
-            <div class="col-md-6">
-              <table class="table">
-                <tr>
-                  <th style="width: 50px;">1C</th>
-                  <th>{{ (groups[2].members | orderBy:['-points','-dg','-gf','-gc'])[0].username }}</th>
-                  <td style="width: 50px;">&nbsp;</td>
-                </tr>
-                <tr>
-                  <th>2D</th>
-                  <th>{{ (groups[3].members | orderBy:['-points','-dg','-gf','-gc'])[1].username }}</th>
-                  <td>&nbsp;</td>
-                </tr>
-              </table>
+          </section>
+
+          <section>
+            <h3>Cuartos de final</h3>
+            <div class="row">
+              <div class="col-md-6">
+                <table class="table">
+                  <tr>
+                    <th rowspan="2" class="game-key">G9</th>
+                    <th class="game-key-winner">G1</th>
+                    <th>{{ final_matches[8].player1 || "-" }}</th>
+                    <td style="width: 50px;">{{ final_matches[8].player1_score || "-" }}</td>
+                  </tr>
+                  <tr>
+                    <th class="game-key-winner">G2</th>
+                    <th>{{ final_matches[8].player2 || "-" }}</th>
+                    <td>{{ final_matches[8].player2_score || "-" }}</td>
+                  </tr>
+                </table>
+              </div>
+              <div class="col-md-6">
+                <table class="table">
+                  <tr>
+                    <th rowspan="2" class="game-key">G10</th>
+                    <th class="game-key-winner">G3</th>
+                    <th>{{ final_matches['G10'].player1 || "-" }}</th>
+                    <td style="width: 50px;">{{ final_matches['G10'].player1_score || "-" }}</td>
+                  </tr>
+                  <tr>
+                    <th class="game-key-winner">G4</th>
+                    <th>{{ final_matches['G10'].player2 || "-" }}</th>
+                    <td>{{ final_matches['G10'].player2_score || "-" }}</td>
+                  </tr>
+                </table>
+              </div>
+              <div class="col-md-6">
+                <table class="table">
+                  <tr>
+                    <th rowspan="2" class="game-key">G11</th>
+                    <th class="game-key-winner">G5</th>
+                    <th>{{ final_matches['G11'].player1 || "-" }}</th>
+                    <td style="width: 50px;">{{ final_matches['G11'].player1_score || "-" }}</td>
+                  </tr>
+                  <tr>
+                    <th class="game-key-winner">G6</th>
+                    <th>{{ final_matches['G11'].player2 || "-" }}</th>
+                    <td>{{ final_matches['G11'].player2_score || "-" }}</td>
+                  </tr>
+                </table>
+              </div>
+              <div class="col-md-6">
+                <table class="table">
+                  <tr>
+                    <th rowspan="2" class="game-key">G12</th>
+                    <th class="game-key-winner">G7</th>
+                    <th>{{ final_matches['G12'].player1 || "-" }}</th>
+                    <td style="width: 50px;">{{ final_matches['G12'].player1_score || "-" }}</td>
+                  </tr>
+                  <tr>
+                    <th class="game-key-winner">G8</th>
+                    <th>{{ final_matches['G12'].player2 || "-" }}</th>
+                    <td>{{ final_matches['G12'].player2_score || "-" }}</td>
+                  </tr>
+                </table>
+              </div>
             </div>
-            <div class="col-md-6">
-              <table class="table">
-                <tr>
-                  <th style="width: 50px;">1E</th>
-                  <th>{{ (groups[4].members | orderBy:['-points','-dg','-gf','-gc'])[0].username }}</th>
-                  <td style="width: 50px;">&nbsp;</td>
-                </tr>
-                <tr>
-                  <th>2F</th>
-                  <th>{{ (groups[5].members | orderBy:['-points','-dg','-gf','-gc'])[1].username }}</th>
-                  <td>&nbsp;</td>
-                </tr>
-              </table>
+          </section>
+
+          <section>
+            <h3>Semifinales</h3>
+            <div class="row">
+              <div class="col-md-6">
+                <table class="table">
+                  <tr>
+                    <th rowspan="2" class="game-key">G13</th>
+                    <th class="game-key-winner">G9</th>
+                    <th>{{ final_matches['G13'].player1 || "-" }}</th>
+                    <td style="width: 50px;">{{ final_matches['G13'].player1_score || "-" }}</td>
+                  </tr>
+                  <tr>
+                    <th class="game-key-winner">G10</th>
+                    <th>{{ final_matches['G13'].player2 || "-" }}</th>
+                    <td>{{ final_matches['G13'].player2_score || "-" }}</td>
+                  </tr>
+                </table>
+              </div>
+              <div class="col-md-6">
+                <table class="table">
+                  <tr>
+                    <th rowspan="2" class="game-key">G14</th>
+                    <th class="game-key-winner">G11</th>
+                    <th>{{ final_matches['G14'].player1 || "-" }}</th>
+                    <td style="width: 50px;">{{ final_matches['G14'].player1_score || "-" }}</td>
+                  </tr>
+                  <tr>
+                    <th class="game-key-winner">G12</th>
+                    <th>{{ final_matches['G14'].player2 || "-" }}</th>
+                    <td>{{ final_matches['G14'].player2_score || "-" }}</td>
+                  </tr>
+                </table>
+              </div>
             </div>
-            <div class="col-md-6">
-              <table class="table">
-                <tr>
-                  <th style="width: 50px;">1G</th>
-                  <th>{{ (groups[6].members | orderBy:['-points','-dg','-gf','-gc'])[0].username }}</th>
-                  <td style="width: 50px;">&nbsp;</td>
-                </tr>
-                <tr>
-                  <th>2H</th>
-                  <th>{{ (groups[7].members | orderBy:['-points','-dg','-gf','-gc'])[1].username }}</th>
-                  <td>&nbsp;</td>
-                </tr>
-              </table>
+          </section>
+
+          <section>
+            <h3>Final</h3>
+            <div class="row">
+              <div class="col-md-6">
+                <table class="table">
+                  <tr>
+                    <th rowspan="2" class="game-key">G15</th>
+                    <th class="game-key-winner">G13</th>
+                    <th>{{ final_matches['G15'].player1 || "-" }}</th>
+                    <td style="width: 50px;">{{ final_matches['G15'].player1_score || "-" }}</td>
+                  </tr>
+                  <tr>
+                    <th class="game-key-winner">G14</th>
+                    <th>{{ final_matches['G15'].player2 || "-" }}</th>
+                    <td>{{ final_matches['G15'].player2_score || "-" }}</td>
+                  </tr>
+                </table>
+              </div>
             </div>
-            <div class="col-md-6">
-              <table class="table">
-                <tr>
-                  <th style="width: 50px;">1B</th>
-                  <th>{{ (groups[1].members | orderBy:['-points','-dg','-gf','-gc'])[0].username }}</th>
-                  <td style="width: 50px;">&nbsp;</td>
-                </tr>
-                <tr>
-                  <th>2A</th>
-                  <th>{{ (groups[0].members | orderBy:['-points','-dg','-gf','-gc'])[1].username }}</th>
-                  <td>&nbsp;</td>
-                </tr>
-              </table>
-            </div>
-            <div class="col-md-6">
-              <table class="table">
-                <tr>
-                  <th style="width: 50px;">1D</th>
-                  <th>{{ (groups[3].members | orderBy:['-points','-dg','-gf','-gc'])[0].username }}</th>
-                  <td style="width: 50px;">&nbsp;</td>
-                </tr>
-                <tr>
-                  <th>2C</th>
-                  <th>{{ (groups[2].members | orderBy:['-points','-dg','-gf','-gc'])[1].username }}</th>
-                  <td>&nbsp;</td>
-                </tr>
-              </table>
-            </div>
-            <div class="col-md-6">
-              <table class="table">
-                <tr>
-                  <th style="width: 50px;">1F</th>
-                  <th>{{ (groups[5].members | orderBy:['-points','-dg','-gf','-gc'])[0].username }}</th>
-                  <td style="width: 50px;">&nbsp;</td>
-                </tr>
-                <tr>
-                  <th>2E</th>
-                  <th>{{ (groups[4].members | orderBy:['-points','-dg','-gf','-gc'])[1].username }}</th>
-                  <td>&nbsp;</td>
-                </tr>
-              </table>
-            </div>
-            <div class="col-md-6">
-              <table class="table">
-                <tr>
-                  <th style="width: 50px;">1H</th>
-                  <th>{{ (groups[7].members | orderBy:['-points','-dg','-gf','-gc'])[0].username }}</th>
-                  <td style="width: 50px;">&nbsp;</td>
-                </tr>
-                <tr>
-                  <th>2G</th>
-                  <th>{{ (groups[6].members | orderBy:['-points','-dg','-gf','-gc'])[1].username }}</th>
-                  <td>&nbsp;</td>
-                </tr>
-              </table>
-            </div>
-          </div>
+          </section>
         </section>
       </div>
     </div>

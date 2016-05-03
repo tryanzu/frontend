@@ -10989,6 +10989,8 @@ TournamentModule.controller('TournamentController', ['$scope', '$timeout', funct
     ]},
   ];
 
+  $scope.final_matches = []
+
 
   // Load matches
   var fb_info = [];
@@ -11056,6 +11058,55 @@ TournamentModule.controller('TournamentController', ['$scope', '$timeout', funct
         }
       }
       //console.log($scope.groups[i].matches);
+    }
+    for(var m = 1; m < 16; m++) {
+      var slug = "G" + m;
+      if(fb_info && slug in fb_info) {
+        match = fb_info[slug];
+        /*if(match.winner != "") {
+          //console.log("winner!", match.winner);
+          for(m in members) {
+            if(members[m].username == match.winner) {
+              members[m].pj++;
+              members[m].pg++;
+              members[m].points += 3;
+              if(match.player1_score > match.player2_score) {
+                members[m].gf += match.player1_score;
+                members[m].gc += match.player2_score;
+              } else {
+                members[m].gf += match.player2_score;
+                members[m].gc += match.player1_score;
+              }
+              members[m].dg = members[m].gf - members[m].gc;
+            }
+            if(members[m].username == match.loser) {
+              members[m].pj++;
+              members[m].pp++;
+              if(match.player1_score > match.player2_score) {
+                members[m].gf += match.player2_score;
+                members[m].gc += match.player1_score;
+              } else {
+                members[m].gf += match.player1_score;
+                members[m].gc += match.player2_score;
+              }
+              members[m].dg = members[m].gf - members[m].gc;
+            }
+          }
+        }*/
+      } else {
+        match = {
+          player1: "",
+          player2: "",
+          player1_score: "",
+          player2_score: "",
+          winner: "",
+          loser: "",
+          date: "07/05/2016 20:00",
+          slug: slug
+        }
+        $scope._matchesRef.child(slug).set(match);
+      }
+      $scope.final_matches.push(match);
     }
   });
 
