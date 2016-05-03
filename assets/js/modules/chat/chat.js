@@ -91,7 +91,9 @@ var ChatController = [
     $scope.changeChannel = function(channel) {
       if($scope.channel.selected == channel) return;
 
-      $scope.exitChannel();
+      if($scope.channel.selected != null) {
+        $scope.exitChannel();
+      }
       $scope.channel.selected = channel;
       $location.path('/chat/' + channel.slug);
 
@@ -285,7 +287,9 @@ var ChatController = [
 
     $scope.channels = $firebaseArray($scope._channelRef);
     $scope.channels.$loaded().then(function() {
-      if($routeParams.slug != '') {
+      console.log("Channels loaded...")
+      if($routeParams.slug != undefined) {
+        console.log("Channel selected!", $routeParams.slug);
         var found = false;
         for(i in $scope.channels) {
           if($scope.channels[i].slug == $routeParams.slug) {
@@ -298,6 +302,7 @@ var ChatController = [
           $scope.changeChannel($scope.channels[0]);
         }
       } else {
+        console.log("No channel selected... load first one");
         $scope.changeChannel($scope.channels[0]);
       }
     });
