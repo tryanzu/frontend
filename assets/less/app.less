@@ -1,4 +1,5 @@
 @import url(https://fonts.googleapis.com/css?family=Roboto:400,300,500,700);
+@import url(https://fonts.googleapis.com/css?family=Lato:400,300,700);
 @import "fonts";
 @import "bootstrap/bootstrap";
 @import "variables";
@@ -607,6 +608,10 @@ ul.counters {
   margin-right: 10px;
 }
 
+.tournament {
+  font-family: 'Lato', sans-serif;
+}
+
 .table>tbody>tr.success>td, .table>tbody>tr.success>th, .table>tbody>tr>td.success, .table>tbody>tr>th.success, .table>tfoot>tr.success>td, .table>tfoot>tr.success>th, .table>tfoot>tr>td.success, .table>tfoot>tr>th.success, .table>thead>tr.success>td, .table>thead>tr.success>th, .table>thead>tr>td.success, .table>thead>tr>th.success {
     background-color: lighten(desaturate(@brand-success, 10%), 48%);
 }
@@ -647,6 +652,9 @@ ul.counters {
   color: @brand-primary-opaque;
   font-size: 13px;
   font-weight: 600;
+}
+.score {
+  width: 60px;
 }
 .game-key, .game-key-winner {
   width: 40px;
