@@ -37,6 +37,7 @@
 // @codekit-prepend "modules/tournament/init"
 
 var boardApplication = angular.module('board', [
+  'ngRaven',
   'ngRoute',
   'ui.bootstrap',
   'directivesModule',
