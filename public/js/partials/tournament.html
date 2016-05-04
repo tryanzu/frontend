@@ -1,4 +1,4 @@
-<main class="global-content">
+<main class="global-content tournament">
   <div class="container">
     <h1>Spartan Champions League</h1>
 
@@ -33,8 +33,8 @@
             <li role="presentation" ng-class="{active: section == 'groups'}">
               <a href="" ng-click="section = 'groups'">Fase de grupos</a>
             </li>
-            <li role="presentation" ng-class="{active: section == 'final'}">
-              <a href="" ng-click="section = 'final'">Fase final</a>
+            <li role="presentation" ng-class="{active: section == 'second_round'}">
+              <a href="" ng-click="section = 'second_round'">Octavos de final</a>
             </li>
           </ul>
         </div>
@@ -121,38 +121,123 @@
           </div>
         </section>
 
-        <section ng-if="section == 'final'">
-          <h2>Fase final</h2>
+        <section ng-if="section == 'second_round'">
           <section>
             <h3>Octavos de final</h3>
             <div class="row">
               <div class="col-md-6">
                 <table class="table">
                   <tr>
+                    <th colspan="3">&nbsp;</th>
+                    <th class="score">Ida</th>
+                    <th class="score">Vuelta</th>
+                  </tr>
+                  <tr>
                     <th rowspan="2" class="game-key">G1</th>
                     <th class="game-key-winner">1A</th>
                     <th>{{ (groups[0].members | orderBy:['-points','-dg','-gf','-gc'])[0].username }}</th>
-                    <td style="width: 50px;">&nbsp;</td>
+                    <td ng-if="!final_matches[0].editing">{{ final_matches[0].player1_score || "-" }}</td>
+                    <td ng-if="final_matches[0].editing" class="text-center">
+                      <input type="number" class="form-control" ng-model="final_matches[0].player1_score">
+                    </td>
+                    <td ng-if="!final_matches[1].editing">{{ final_matches[1].player1_score || "-" }}</td>
+                    <td ng-if="final_matches[1].editing" class="text-center">
+                      <input type="number" class="form-control" ng-model="final_matches[1].player1_score">
+                    </td>
                   </tr>
                   <tr>
                     <th class="game-key-winner">2B</th>
                     <th>{{ (groups[1].members | orderBy:['-points','-dg','-gf','-gc'])[1].username }}</th>
-                    <td>&nbsp;</td>
+                    <td ng-if="!final_matches[0].editing">{{ final_matches[0].player2_score || "-" }}</td>
+                    <td ng-if="final_matches[0].editing" class="text-center">
+                      <input type="number" class="form-control" ng-model="final_matches[0].player2_score">
+                    </td>
+                    <td ng-if="!final_matches[1].editing">{{ final_matches[1].player2_score || "-" }}</td>
+                    <td ng-if="final_matches[1].editing" class="text-center">
+                      <input type="number" class="form-control" ng-model="final_matches[1].player2_score">
+                    </td>
+                  </tr>
+                  <tr ng-if="!final_matches[0].editing">
+                    <td colspan="3">Fecha Partido de ida: {{ final_matches[0].date || "-" }}</td>
+                    <td colspan="2">
+                      <a href="" ng-if="can('solve-category-posts')" ng-click="final_matches[0].editing = true" class="btn btn-default btn-sm">Editar</a>
+                    </td>
+                  </tr>
+                  <tr ng-if="final_matches[0].editing">
+                    <td colspan="3"><input type="text" class="form-control" ng-model="final_matches[0].date"></td>
+                    <td colspan="2">
+                      <a href="" ng-if="can('solve-category-posts')" ng-click="final_matches[0].editing = false" class="btn btn-default btn-sm">Guardar</a>
+                    </td>
+                  </tr>
+                  <tr ng-if="!final_matches[1].editing">
+                    <td colspan="3">Fecha Partido de vuelta: {{ final_matches[1].date || "-" }}</td>
+                    <td colspan="2">
+                      <a href="" ng-if="can('solve-category-posts')" ng-click="final_matches[1].editing = true" class="btn btn-default btn-sm">Editar</a>
+                    </td>
+                  </tr>
+                  <tr ng-if="final_matches[1].editing">
+                    <td colspan="3"><input type="text" class="form-control" ng-model="final_matches[1].date"></td>
+                    <td colspan="2">
+                      <a href="" ng-if="can('solve-category-posts')" ng-click="final_matches[1].editing = false" class="btn btn-default btn-sm">Guardar</a>
+                    </td>
                   </tr>
                 </table>
               </div>
               <div class="col-md-6">
                 <table class="table">
                   <tr>
+                    <th colspan="3">&nbsp;</th>
+                    <th class="score">Ida</th>
+                    <th class="score">Vuelta</th>
+                  </tr>
+                  <tr>
                     <th rowspan="2" class="game-key">G2</th>
                     <th class="game-key-winner">1C</th>
-                    <th>{{ (groups[2].members | orderBy:['-points','-dg','-gf','-gc'])[0].username }}</th>
-                    <td style="width: 50px;">&nbsp;</td>
+                    <th>{{ (groups[2].members | orderBy:['-points','-dg','-gf','-gc'])[2].username }}</th>
+                    <td ng-if="!final_matches[2].editing">{{ final_matches[2].player1_score || "-" }}</td>
+                    <td ng-if="final_matches[2].editing" class="text-center">
+                      <input type="number" class="form-control" ng-model="final_matches[2].player1_score">
+                    </td>
+                    <td ng-if="!final_matches[3].editing">{{ final_matches[3].player1_score || "-" }}</td>
+                    <td ng-if="final_matches[3].editing" class="text-center">
+                      <input type="number" class="form-control" ng-model="final_matches[3].player1_score">
+                    </td>
                   </tr>
                   <tr>
                     <th class="game-key-winner">2D</th>
                     <th>{{ (groups[3].members | orderBy:['-points','-dg','-gf','-gc'])[1].username }}</th>
-                    <td>&nbsp;</td>
+                    <td ng-if="!final_matches[2].editing">{{ final_matches[2].player2_score || "-" }}</td>
+                    <td ng-if="final_matches[2].editing" class="text-center">
+                      <input type="number" class="form-control" ng-model="final_matches[2].player2_score">
+                    </td>
+                    <td ng-if="!final_matches[3].editing">{{ final_matches[3].player2_score || "-" }}</td>
+                    <td ng-if="final_matches[3].editing" class="text-center">
+                      <input type="number" class="form-control" ng-model="final_matches[3].player2_score">
+                    </td>
+                  </tr>
+                  <tr ng-if="!final_matches[2].editing">
+                    <td colspan="3">Fecha Partido de ida: {{ final_matches[2].date || "-" }}</td>
+                    <td colspan="2">
+                      <a href="" ng-if="can('solve-category-posts')" ng-click="final_matches[2].editing = true" class="btn btn-default btn-sm">Editar</a>
+                    </td>
+                  </tr>
+                  <tr ng-if="final_matches[2].editing">
+                    <td colspan="3"><input type="text" class="form-control" ng-model="final_matches[2].date"></td>
+                    <td colspan="2">
+                      <a href="" ng-if="can('solve-category-posts')" ng-click="final_matches[2].editing = false" class="btn btn-default btn-sm">Guardar</a>
+                    </td>
+                  </tr>
+                  <tr ng-if="!final_matches[3].editing">
+                    <td colspan="3">Fecha Partido de vuelta: {{ final_matches[1].date || "-" }}</td>
+                    <td colspan="2">
+                      <a href="" ng-if="can('solve-category-posts')" ng-click="final_matches[3].editing = true" class="btn btn-default btn-sm">Editar</a>
+                    </td>
+                  </tr>
+                  <tr ng-if="final_matches[3].editing">
+                    <td colspan="3"><input type="text" class="form-control" ng-model="final_matches[3].date"></td>
+                    <td colspan="2">
+                      <a href="" ng-if="can('solve-category-posts')" ng-click="final_matches[3].editing = false" class="btn btn-default btn-sm">Guardar</a>
+                    </td>
                   </tr>
                 </table>
               </div>
@@ -248,7 +333,9 @@
               </div>
             </div>
           </section>
+        </section>
 
+        <section ng-if="section == 'quarter_finals'">
           <section>
             <h3>Cuartos de final</h3>
             <div class="row">
@@ -314,7 +401,9 @@
               </div>
             </div>
           </section>
+        </section>
 
+        <section ng-if="section == 'semifinals'">
           <section>
             <h3>Semifinales</h3>
             <div class="row">
@@ -350,7 +439,9 @@
               </div>
             </div>
           </section>
+        </section>
 
+        <section ng-if="section == 'final'">
           <section>
             <h3>Final</h3>
             <div class="row">
