@@ -361,17 +361,25 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
                 if(!$scope.posts[i].comments.new) {
                   $scope.posts[i].comments.new = 0;
                 }
-                if($scope.user.isLogged && data.user_id != $scope.user.info.id) {
-                  $scope.posts[i].comments.new++;
-                  $scope.posts[i].unread = true;
+                if($scope.user.isLogged) {
+                  $scope.promises.self.then(function() {
+                    if(data.user_id != $scope.user.info.id) {
+                      $scope.posts[i].comments.new++;
+                      $scope.posts[i].unread = true;
+                    }
+                  });
                 } else {
                   $scope.posts[i].comments.count++;
                 }
                 break;
               }
             }
-            if($scope.user.isLogged && data.user_id != $scope.user.info.id) {
-              $scope.$broadcast('new-comment', data);
+            if($scope.user.isLogged) {
+              $scope.promises.self.then(function(){
+                if(data.user_id != $scope.user.info.id) {
+                  $scope.$broadcast('new-comment', data);
+                }
+              });
             }
             break;
           case "delete-post":
