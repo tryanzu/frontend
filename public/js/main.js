@@ -6901,7 +6901,11 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
       if(category.selected) {
         $http.put(layer_path + 'category/subscription/' + category.id)
           .then(function success(response){
-            if($scope.user.info.categories.indexOf(category.id) == -1) {
+            if($scope.user.info.categories) {
+              if($scope.user.info.categories.indexOf(category.id) == -1) {
+                $scope.user.info.categories.push(category.id);
+              }
+            } else {
               $scope.user.info.categories.push(category.id);
             }
           }, function(error){
@@ -6910,8 +6914,10 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
       } else {
         $http.delete(layer_path + 'category/subscription/' + category.id)
           .then(function success(response){
-            if($scope.user.info.categories.indexOf(category.id) > -1) {
-              $scope.user.info.categories.splice($scope.user.info.categories.indexOf(category.id),1);
+            if($scope.user.info.categories) {
+              if($scope.user.info.categories.indexOf(category.id) > -1) {
+                $scope.user.info.categories.splice($scope.user.info.categories.indexOf(category.id),1);
+              }
             }
           }, function(error){
             category.selected = true;
@@ -9078,9 +9084,10 @@ var ChatController = [
       if($scope.channel.selected) {
         channel = $scope.channel.selected;
         if($scope.user.isLogged) {
-          $scope._statusRef.off();
-          //var statusRef = new Firebase(firebase_url + 'members/' + channel.$id + '/' + $scope.user.info.id);
-          $scope._statusRef.set(null);
+          if($scope._statusRef) {
+            $scope._statusRef.off();
+            $scope._statusRef.set(null);
+          }
         }
       }
     };
