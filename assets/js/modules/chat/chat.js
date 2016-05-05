@@ -146,25 +146,27 @@ var ChatController = [
 
       // Some status validation if user is logged in
       if($scope.user.isLogged) {
-        var amOnline = new Firebase(firebase_url + '.info/connected');
-        $scope._statusRef = new Firebase(firebase_url + 'members/' + channel.$id + '/' + $scope.user.info.id);
+        $scope.promises.self.then(function() {
+          var amOnline = new Firebase(firebase_url + '.info/connected');
+          $scope._statusRef = new Firebase(firebase_url + 'members/' + channel.$id + '/' + $scope.user.info.id);
 
-        amOnline.on('value', function(snapshot) {
-          if(snapshot.val()) {
-            var image = $scope.user.info.image || "";
-            $scope._statusRef.onDisconnect().remove();
-            $scope._statusRef.on('value', function(ss) {
-              if( ss.val() == null ) {
-                // another window went offline, so mark me still online
-                $scope._statusRef.set({
-                  id: $scope.user.info.id,
-                  username: $scope.user.info.username,
-                  image: image,
-                  writing: false
-                });
-              }
-            });
-          }
+          amOnline.on('value', function(snapshot) {
+            if(snapshot.val()) {
+              var image = $scope.user.info.image || "";
+              $scope._statusRef.onDisconnect().remove();
+              $scope._statusRef.on('value', function(ss) {
+                if( ss.val() == null ) {
+                  // another window went offline, so mark me still online
+                  $scope._statusRef.set({
+                    id: $scope.user.info.id,
+                    username: $scope.user.info.username,
+                    image: image,
+                    writing: false
+                  });
+                }
+              });
+            }
+          });
         });
       }
     };
