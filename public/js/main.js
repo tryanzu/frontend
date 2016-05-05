@@ -7652,7 +7652,9 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
 
   $scope.$on('new-comment', function(event, data) {
     if(data.id == $scope.post.id) {
-      $scope.post.comments.new++;
+      if($scope.post.comments) {
+        $scope.post.comments.new++;
+      }
     }
   });
 
@@ -11274,7 +11276,7 @@ var boardApplication = angular.module('board', [
   'btford.socket-io'
 ]);
 
-var version = '059';
+var version = '060';
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider', 'AclServiceProvider', '$opbeatProvider',
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider, AclServiceProvider, $opbeatProvider) {
