@@ -236,7 +236,11 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
       if(category.selected) {
         $http.put(layer_path + 'category/subscription/' + category.id)
           .then(function success(response){
-            if($scope.user.info.categories.indexOf(category.id) == -1) {
+            if($scope.user.info.categories) {
+              if($scope.user.info.categories.indexOf(category.id) == -1) {
+                $scope.user.info.categories.push(category.id);
+              }
+            } else {
               $scope.user.info.categories.push(category.id);
             }
           }, function(error){
@@ -245,8 +249,10 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
       } else {
         $http.delete(layer_path + 'category/subscription/' + category.id)
           .then(function success(response){
-            if($scope.user.info.categories.indexOf(category.id) > -1) {
-              $scope.user.info.categories.splice($scope.user.info.categories.indexOf(category.id),1);
+            if($scope.user.info.categories) {
+              if($scope.user.info.categories.indexOf(category.id) > -1) {
+                $scope.user.info.categories.splice($scope.user.info.categories.indexOf(category.id),1);
+              }
             }
           }, function(error){
             category.selected = true;

@@ -6901,7 +6901,11 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
       if(category.selected) {
         $http.put(layer_path + 'category/subscription/' + category.id)
           .then(function success(response){
-            if($scope.user.info.categories.indexOf(category.id) == -1) {
+            if($scope.user.info.categories) {
+              if($scope.user.info.categories.indexOf(category.id) == -1) {
+                $scope.user.info.categories.push(category.id);
+              }
+            } else {
               $scope.user.info.categories.push(category.id);
             }
           }, function(error){
@@ -6910,8 +6914,10 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
       } else {
         $http.delete(layer_path + 'category/subscription/' + category.id)
           .then(function success(response){
-            if($scope.user.info.categories.indexOf(category.id) > -1) {
-              $scope.user.info.categories.splice($scope.user.info.categories.indexOf(category.id),1);
+            if($scope.user.info.categories) {
+              if($scope.user.info.categories.indexOf(category.id) > -1) {
+                $scope.user.info.categories.splice($scope.user.info.categories.indexOf(category.id),1);
+              }
             }
           }, function(error){
             category.selected = true;
@@ -7646,7 +7652,9 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
 
   $scope.$on('new-comment', function(event, data) {
     if(data.id == $scope.post.id) {
-      $scope.post.comments.new++;
+      if($scope.post.comments) {
+        $scope.post.comments.new++;
+      }
     }
   });
 
@@ -9078,9 +9086,10 @@ var ChatController = [
       if($scope.channel.selected) {
         channel = $scope.channel.selected;
         if($scope.user.isLogged) {
-          $scope._statusRef.off();
-          //var statusRef = new Firebase(firebase_url + 'members/' + channel.$id + '/' + $scope.user.info.id);
-          $scope._statusRef.set(null);
+          if($scope._statusRef) {
+            $scope._statusRef.off();
+            $scope._statusRef.set(null);
+          }
         }
       }
     };
@@ -11267,7 +11276,7 @@ var boardApplication = angular.module('board', [
   'btford.socket-io'
 ]);
 
-var version = '059';
+var version = '060';
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider', 'AclServiceProvider', '$opbeatProvider',
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider, AclServiceProvider, $opbeatProvider) {
