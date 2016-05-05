@@ -13,14 +13,14 @@
 @secondary-hue:                    hue(@brand-primary-light);
 @secondary-sat:                    saturation(@brand-primary-light);
 
-@brand-primary-light:       lighten(@brand-primary, 42%);
-@brand-primary-lighter:     hsl(@secondary-hue, max(70%, @secondary-sat), 95%);//lighten(@brand-primary, 49%);
+@brand-primary-light:       #e8e8e8;//lighten(@brand-primary, 42%);
+@brand-primary-lighter:     #f1f1f1;//hsl(@secondary-hue, max(70%, @secondary-sat), 95%);
 @brand-primary-light-text:  desaturate(lighten(@brand-primary, 25%), 30%);
 @brand-primary-normal:      desaturate(darken(@brand-primary, 5%), 10%);
 @brand-primary-dark:        desaturate(darken(@brand-primary, 10%), 20%);
 @brand-primary-opaque:      desaturate(@brand-primary, 50%);
 
-@control-bg:                     hsl(@secondary-hue, max(70%, @secondary-sat), 94%); //@brand-primary-lighter;
+@control-bg:                     @brand-primary-lighter;//hsl(@secondary-hue, max(70%, @secondary-sat), 94%);
 @control-color:                  @brand-primary-light-text;
 @control-danger-bg:              #411;
 @control-danger-color:           #a88;
@@ -66,10 +66,10 @@
 //
 //## Font, line-height, and color for body text, headings, and more.
 
-@font-family-sans-serif:  'Lato', 'Roboto', Arial, sans-serif;
+@font-family-sans-serif:  "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
 @font-size-base:          14px;
 @headings-font-family:    "Proxima", "Gotham", Helvetica, Arial;
-@headings-font-weight:    500;
+@headings-font-weight:    600;
 
 //== Components
 //

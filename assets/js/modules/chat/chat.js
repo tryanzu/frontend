@@ -83,7 +83,9 @@ var ChatController = [
 
     $scope.goToBottom = function() {
       var mh_window = $('.message-history');
-      mh_window.scrollTop(mh_window[0].scrollHeight);
+      if(mh_window[0]) {
+        mh_window.scrollTop(mh_window[0].scrollHeight);
+      }
       $scope.old_messages = [];
       $scope.scroll_help.scrolledUp = false;
     }
@@ -110,16 +112,20 @@ var ChatController = [
       $scope.messages.$loaded().then(function(x) {
         $timeout(function() {
           var mh_window = $('.message-history');
-          mh_window.scrollTop(mh_window[0].scrollHeight);
-        }, 0);
+          if(mh_window[0]) {
+            mh_window.scrollTop(mh_window[0].scrollHeight);
+          }
+        }, 200);
 
         x.$watch(function(event) {
           if(event.event === "child_added") {
             if(!$scope.scroll_help.scrolledUp) {
               $timeout(function() {
                 var mh_window = $('.message-history');
-                mh_window.scrollTop(mh_window[0].scrollHeight);
-              }, 0);
+                if(mh_window[0]) {
+                  mh_window.scrollTop(mh_window[0].scrollHeight);
+                }
+              }, 200);
             }
           }
         });
