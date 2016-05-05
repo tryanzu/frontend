@@ -37,7 +37,6 @@
 // @codekit-prepend "modules/tournament/init"
 
 var boardApplication = angular.module('board', [
-  'ngRaven',
   'ngOpbeat',
   'ngRoute',
   'ui.bootstrap',
@@ -74,7 +73,7 @@ var boardApplication = angular.module('board', [
   'btford.socket-io'
 ]);
 
-var version = '060';
+var version = '061';
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider', 'AclServiceProvider', '$opbeatProvider',
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider, AclServiceProvider, $opbeatProvider) {
