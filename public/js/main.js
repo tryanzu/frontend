@@ -8695,13 +8695,13 @@ UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed
     var userRef = fbRef.child("users").child(data.id);
     var presenceRef = userRef.child("presence");
     presenceRef.on('value', function(ss) {
-      $scope.$apply(function() {
+      //$scope.$apply(function() {
         if(ss.val() !== null) {
           $scope.status = true;
         } else {
           $scope.status = false;
         }
-      });
+      //});
     });
 
     //$scope.profile.status = $firebaseObject(presenceRef);
@@ -11239,7 +11239,6 @@ TournamentModule.controller('TournamentController', ['$scope', '$timeout', funct
 // @codekit-prepend "modules/tournament/init"
 
 var boardApplication = angular.module('board', [
-  'ngRaven',
   'ngOpbeat',
   'ngRoute',
   'ui.bootstrap',
@@ -11276,7 +11275,7 @@ var boardApplication = angular.module('board', [
   'btford.socket-io'
 ]);
 
-var version = '060';
+var version = '061';
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider', 'AclServiceProvider', '$opbeatProvider',
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider, AclServiceProvider, $opbeatProvider) {
