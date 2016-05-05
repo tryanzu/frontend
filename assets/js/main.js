@@ -38,6 +38,7 @@
 
 var boardApplication = angular.module('board', [
   'ngRaven',
+  'ngOpbeat',
   'ngRoute',
   'ui.bootstrap',
   'directivesModule',
@@ -75,8 +76,8 @@ var boardApplication = angular.module('board', [
 
 var version = '057';
 
-boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider', 'AclServiceProvider',
-  function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider, AclServiceProvider) {
+boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider', 'AclServiceProvider', '$opbeatProvider',
+  function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider, AclServiceProvider, $opbeatProvider) {
 
   $routeProvider.when('/home', {
     templateUrl: '/js/partials/home.html?v=' + version
@@ -225,6 +226,11 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   $httpProvider.interceptors.push('jwtInterceptor');
 
   FacebookProvider.init(fb_api_key);
+
+  $opbeatProvider.config({
+    orgId: '4718fb1324fc4d3897ee39d393f9b734',
+    appId: '0fecd2a8d9'
+  })
 
   // ACL Configuration
   AclServiceProvider.config({storage: false});
@@ -505,7 +511,8 @@ boardApplication.controller('MainController', [
   'Facebook',
   'AclService',
   '$location',
-  function($scope, $rootScope, $http, $uibModal, $timeout, $firebaseObject, $firebaseArray, Facebook, AclService, $location) {
+  '$q',
+  function($scope, $rootScope, $http, $uibModal, $timeout, $firebaseObject, $firebaseArray, Facebook, AclService, $location, $q) {
     $scope.user = {
       isLogged: false,
       info: null,
@@ -568,128 +575,131 @@ boardApplication.controller('MainController', [
     }
 
     $scope.logUser = function() {
-      $scope.promises.self = $http.get(layer_path + 'user/my', {
-        withCredentials: true
-      }).then(function success(response) {
-          var data = response.data;
-          //console.log(data);
-          $scope.user.info = data;
-          $scope.user.isLogged = true;
+      $scope.promises.self = $q(function(resolve, reject) {
+        $http.get(layer_path + 'user/my', {
+          withCredentials: true
+        }).then(function success(response) {
+            var data = response.data;
+            //console.log(data);
+            $scope.user.info = data;
+            $scope.user.isLogged = true;
 
-          // Attach the member roles to the current user
-          for(var i in data.roles) {
-            AclService.attachRole(data.roles[i].name);
-          }
+            // Attach the member roles to the current user
+            for(var i in data.roles) {
+              AclService.attachRole(data.roles[i].name);
+            }
 
-          // Match badges
-          $scope.promises.gaming.then(function() {
-            $timeout(function() {
-              // Match owned badges with current badge info
-              for(var i in data.gaming.badges) {
-                for(var j in $scope.misc.gaming.badges) {
-                  if(data.gaming.badges[i].id === $scope.misc.gaming.badges[j].id) {
-                    $scope.misc.gaming.badges[j].owned = true;
-                    break;
+            // Match badges
+            $scope.promises.gaming.then(function() {
+              $timeout(function() {
+                // Match owned badges with current badge info
+                for(var i in data.gaming.badges) {
+                  for(var j in $scope.misc.gaming.badges) {
+                    if(data.gaming.badges[i].id === $scope.misc.gaming.badges[j].id) {
+                      $scope.misc.gaming.badges[j].owned = true;
+                      break;
+                    }
                   }
                 }
-              }
 
-              // We check if a required badge is still needed
-              for(var i in $scope.misc.gaming.badges) {
-                if($scope.misc.gaming.badges[i].required_badge) {
-                  for(var j in $scope.misc.gaming.badges) {
-                    if($scope.misc.gaming.badges[i].required_badge.id === $scope.misc.gaming.badges[j].id) {
-                      if(!$scope.misc.gaming.badges[j].owned) {
-                        $scope.misc.gaming.badges[i].badge_needed = true;
+                // We check if a required badge is still needed
+                for(var i in $scope.misc.gaming.badges) {
+                  if($scope.misc.gaming.badges[i].required_badge) {
+                    for(var j in $scope.misc.gaming.badges) {
+                      if($scope.misc.gaming.badges[i].required_badge.id === $scope.misc.gaming.badges[j].id) {
+                        if(!$scope.misc.gaming.badges[j].owned) {
+                          $scope.misc.gaming.badges[i].badge_needed = true;
+                        }
                       }
                     }
                   }
                 }
+              }, 0);
+            });
+
+            // FIREBASE PREPARATION
+            var fbRef = new Firebase(firebase_url);
+            fbRef.onAuth(function onComplete(authData) {
+              if (authData) {
+                //if($scope.can('debug')) console.log("Authenticated to Firebase", authData);
+              } else {
+                console.log("Client unauthenticated.");
+                //$scope.signOut();
               }
-            }, 0);
-          });
+            });
+            fbRef.authWithCustomToken(localStorage.firebase_token, function(error, authData) {
+              if (error) {
+                console.log("Login to Firebase failed!", error);
+              } else {
+                var amOnline = fbRef.child(".info/connected");
+                var userRef = fbRef.child("users").child(data.id);
+                var presenceRef = userRef.child("presence");
 
-          // FIREBASE PREPARATION
-          var fbRef = new Firebase(firebase_url);
-          fbRef.onAuth(function onComplete(authData) {
-            if (authData) {
-              //if($scope.can('debug')) console.log("Authenticated to Firebase", authData);
-            } else {
-              console.log("Client unauthenticated.");
-              //$scope.signOut();
-            }
-          });
-          fbRef.authWithCustomToken(localStorage.firebase_token, function(error, authData) {
-            if (error) {
-              console.log("Login to Firebase failed!", error);
-            } else {
-              var amOnline = fbRef.child(".info/connected");
-              var userRef = fbRef.child("users").child(data.id);
-              var presenceRef = userRef.child("presence");
+                // We generate a random string to use as a client id
+                var client_id = (0|Math.random()*9e6).toString(36);
+                amOnline.on('value', function(snapshot) {
+                  if(snapshot.val()) {
+                    presenceRef.child(client_id).onDisconnect().remove();
+                    presenceRef.child(client_id).set(true);
+                  }
+                });
 
-              // We generate a random string to use as a client id
-              var client_id = (0|Math.random()*9e6).toString(36);
-              amOnline.on('value', function(snapshot) {
-                if(snapshot.val()) {
-                  presenceRef.child(client_id).onDisconnect().remove();
-                  presenceRef.child(client_id).set(true);
-                }
-              });
+                // Personal info
+                var image = $scope.user.info.image || "";
+                userRef.child("info").set({
+                  username: $scope.user.info.username,
+                  image: image
+                });
 
-              // Personal info
-              var image = $scope.user.info.image || "";
-              userRef.child("info").set({
-                username: $scope.user.info.username,
-                image: image
-              });
+                // Gamification attributes
+                var gamingRef = userRef.child("gaming");
+                $scope.user.gaming = $firebaseObject(gamingRef);
+                //$scope.user.gaming.$loaded(function() {});
 
-              // Gamification attributes
-              var gamingRef = userRef.child("gaming");
-              $scope.user.gaming = $firebaseObject(gamingRef);
-              //$scope.user.gaming.$loaded(function() {});
+                // download the data into a local object
+                var notificationsCountRef = userRef.child("notifications/count");
+                var count = $firebaseObject(notificationsCountRef)
+                // synchronize the object with a three-way data binding
+                count.$bindTo($scope, "user.notifications.count");
+                count.$loaded( function() {
+                  var to_show = 15;
+                  if(count.$value > 15){
+                    to_show = count.$value;
+                  }
+                  var list_ref = userRef.child("notifications/list");
+                  $scope.user.notifications.list = $firebaseArray(list_ref.limitToLast(to_show));
 
-              // download the data into a local object
-              var notificationsCountRef = userRef.child("notifications/count");
-              var count = $firebaseObject(notificationsCountRef)
-              // synchronize the object with a three-way data binding
-              count.$bindTo($scope, "user.notifications.count");
-              count.$loaded( function() {
-                var to_show = 15;
-                if(count.$value > 15){
-                  to_show = count.$value;
-                }
-                var list_ref = userRef.child("notifications/list");
-                $scope.user.notifications.list = $firebaseArray(list_ref.limitToLast(to_show));
-
-                // We wait till notifications list is loaded
-                $scope.user.notifications.list.$loaded()
-                .then(function(x) {
-                  x.$watch(function(event) {
-                    // Notification sound
-                    if(event.event === "child_added") {
-                      var audio = new Audio('/sounds/notification.mp3');
-                      audio.play();
-                    }
+                  // We wait till notifications list is loaded
+                  $scope.user.notifications.list.$loaded()
+                  .then(function(x) {
+                    x.$watch(function(event) {
+                      // Notification sound
+                      if(event.event === "child_added") {
+                        var audio = new Audio('/sounds/notification.mp3');
+                        audio.play();
+                      }
+                    });
                   });
                 });
-              });
+              }
+            });
+
+            if($location.path() == '/home') {
+              window.location.href = "/";
             }
-          });
 
-          if($location.path() == '/home') {
-            window.location.href = "/";
-          }
-
-          // Warn everyone
-          $timeout(function() {
-            $scope.$broadcast('userLogged');
-            $scope.$broadcast('changedContainers');
-          }, 100);
-        },
-        function(response) {
+            // Warn everyone
+            $timeout(function() {
+              $scope.$broadcast('userLogged');
+              $scope.$broadcast('changedContainers');
+              resolve();
+            }, 100);
+        }, function(response) {
           // If error while getting personal info, just log him out
           $scope.signOut();
+          reject();
         });
+      });
     }
 
     $scope.signIn = function() {
