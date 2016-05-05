@@ -175,9 +175,10 @@ var ChatController = [
       if($scope.channel.selected) {
         channel = $scope.channel.selected;
         if($scope.user.isLogged) {
-          $scope._statusRef.off();
-          //var statusRef = new Firebase(firebase_url + 'members/' + channel.$id + '/' + $scope.user.info.id);
-          $scope._statusRef.set(null);
+          if($scope._statusRef) {
+            $scope._statusRef.off();
+            $scope._statusRef.set(null);
+          }
         }
       }
     };
