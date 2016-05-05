@@ -193,7 +193,7 @@
                   <tr>
                     <th rowspan="2" class="game-key">G2</th>
                     <th class="game-key-winner">1C</th>
-                    <th>{{ (groups[2].members | orderBy:['-points','-dg','-gf','-gc'])[2].username }}</th>
+                    <th>{{ (groups[2].members | orderBy:['-points','-dg','-gf','-gc'])[1].username }}</th>
                     <td ng-if="!final_matches[2].editing">{{ final_matches[2].player1_score || "-" }}</td>
                     <td ng-if="final_matches[2].editing" class="text-center">
                       <input type="number" class="form-control" ng-model="final_matches[2].player1_score">
@@ -205,7 +205,7 @@
                   </tr>
                   <tr>
                     <th class="game-key-winner">2D</th>
-                    <th>{{ (groups[3].members | orderBy:['-points','-dg','-gf','-gc'])[1].username }}</th>
+                    <th>{{ (groups[3].members | orderBy:['-points','-dg','-gf','-gc'])[0].username }}</th>
                     <td ng-if="!final_matches[2].editing">{{ final_matches[2].player2_score || "-" }}</td>
                     <td ng-if="final_matches[2].editing" class="text-center">
                       <input type="number" class="form-control" ng-model="final_matches[2].player2_score">
