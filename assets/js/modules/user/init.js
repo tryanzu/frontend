@@ -197,13 +197,13 @@ UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed
     var userRef = fbRef.child("users").child(data.id);
     var presenceRef = userRef.child("presence");
     presenceRef.on('value', function(ss) {
-      $scope.$apply(function() {
+      //$scope.$apply(function() {
         if(ss.val() !== null) {
           $scope.status = true;
         } else {
           $scope.status = false;
         }
-      });
+      //});
     });
 
     //$scope.profile.status = $firebaseObject(presenceRef);
