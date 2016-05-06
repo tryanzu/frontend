@@ -74,12 +74,8 @@
 
             <div class="footer">
               <div class="input-box" ng-if="user.isLogged">
-                <div emoji-form emoji-message="emojiMessage" ng-keydown="addMessageNew($event)">
-                  <textarea id="messageInput" class="input-box_text" ng-model="emojiMessage.messagetext" mentio mentio-typed-text="typedTerm" mentio-items="people | filter:label:typedTerm" ng-readonly="helpers.spam_count > 1"></textarea>
-
-                  <button id="emojibtn" class="emoji-pop-btn">
-                    <i class="icon icon-emoji"></i>
-                  </button>
+                <div class="input-group" style="display: inline;">
+                  <input type="text" ng-model="message.content" class="input-box_text" placeholder="Escribe..." sg-enter="addMessage()" sg-send="message.send_on_enter" ng-readonly="helpers.spam_count > 2">
                 </div>
                 <div class="row">
                   <div class="col-md-8">
@@ -90,7 +86,7 @@
                     </div>
                   </div>
                   <div class="col-md-4">
-                    <p class="text-right">Te quedan {{ 200 - emojiMessage.messagetext.length }} caracteres</p>
+                    <p class="text-right" style="margin-top: 10px;">Te quedan {{ 200 - message.content.length }} caracteres</p>
                     <span class="input-group-btn" ng-if="!message.send_on_enter" style="text-align: right;">
                       <button class="btn btn-primary btn-send" type="button" ng-click="addMessage()"><span class="label">Enviar</span></button>
                     </span>
