@@ -69,10 +69,10 @@
   <div class="component-images" ng-if="component.images && (!component.store || component.view_more)">
     <div class="container">
       <div class="text-center" ng-if="component.category!='keyboard'&&component.category!='mouse'&&component.category!='headphones'">
-        <img ng-src="https://assets.spartangeek.com/components/{{ image }}" ng-repeat="image in component.images">
+        <img ng-src="https://assets.spartangeek.com/components/{{ image }}" ng-repeat="image in component.images track by $index">
       </div>
       <div class="text-center" ng-if="component.category=='keyboard'||component.category=='mouse'||component.category=='headphones'">
-        <img ng-src="https://assets.spartangeek.com/games/full/{{ image }}" ng-repeat="image in component.images">
+        <img ng-src="https://assets.spartangeek.com/games/full/{{ image }}" ng-repeat="image in component.images track by $index">
       </div>
     </div>
   </div>
