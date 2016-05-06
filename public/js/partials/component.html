@@ -69,10 +69,10 @@
   <div class="component-images" ng-if="component.images && (!component.store || component.view_more)">
     <div class="container">
       <div class="text-center" ng-if="component.category!='keyboard'&&component.category!='mouse'&&component.category!='headphones'">
-        <img ng-src="https://assets.spartangeek.com/components/{{ image }}" ng-repeat="image in component.images">
+        <img ng-src="https://assets.spartangeek.com/components/{{ image }}" ng-repeat="image in component.images track by $index">
       </div>
       <div class="text-center" ng-if="component.category=='keyboard'||component.category=='mouse'||component.category=='headphones'">
-        <img ng-src="https://assets.spartangeek.com/games/full/{{ image }}" ng-repeat="image in component.images">
+        <img ng-src="https://assets.spartangeek.com/games/full/{{ image }}" ng-repeat="image in component.images track by $index">
       </div>
     </div>
   </div>
@@ -97,37 +97,37 @@
             </tr>
 
             <!-- Cooler -->
-            <tr ng-if="component.supported_sockets">
+            <tr ng-if="component.supported_sockets && component.category == 'cpu-cooler'">
               <th>Sockets soportados</th>
               <td>{{ component.supported_sockets }}</td>
             </tr>
-            <tr ng-if="component.liquid_cooled">
+            <tr ng-if="component.liquid_cooled && component.category == 'cpu-cooler'">
               <th>Enfriamiento líquido</th>
               <td>{{ component.liquid_cooled?"Si":"No" }}</td>
             </tr>
-            <tr ng-if="component.bearing_type">
+            <tr ng-if="component.bearing_type && component.category == 'cpu-cooler'">
               <th>Tipo de Rodamiento</th>
               <td>{{ component.bearing_type }}</td>
             </tr>
-            <tr ng-if="component.radiator_size">
+            <tr ng-if="component.radiator_size && component.category == 'cpu-cooler'">
               <th>Tamaño de radiador</th>
               <td>{{ component.radiator_size }}</td>
             </tr>
-            <tr ng-if="component.noise_level">
+            <tr ng-if="component.noise_level && component.category == 'cpu-cooler'">
               <th>Nivel de ruido</th>
               <td>{{ component.noise_level }}</td>
             </tr>
-            <tr ng-if="component.fan_rpm">
+            <tr ng-if="component.fan_rpm && component.category == 'cpu-cooler'">
               <th>RPM de ventilador</th>
               <td>{{ component.fan_rpm }}</td>
             </tr>
 
             <!-- CPU -->
-            <tr ng-if="component.data_width">
+            <tr ng-if="component.data_width && component.category == 'cpu'">
               <th>Ancho de dato</th>
               <td>{{ component.data_width }}</td>
             </tr>
-            <tr ng-if="component.socket">
+            <tr ng-if="component.socket && component.category == 'cpu'">
               <th>Socket</th>
               <td>{{ component.socket }}</td>
             </tr>
@@ -135,39 +135,39 @@
               <th>Velocidad</th>
               <td>{{ component.speed }}</td>
             </tr>
-            <tr ng-if="component.cores">
+            <tr ng-if="component.cores && component.category == 'cpu'">
               <th>Núcleos</th>
               <td>{{ component.cores }}</td>
             </tr>
-            <tr ng-if="component.l1_cache">
+            <tr ng-if="component.l1_cache && component.category == 'cpu'">
               <th>Cache L1</th>
               <td>{{ component.l1_cache }}</td>
             </tr>
-            <tr ng-if="component.l2_cache">
+            <tr ng-if="component.l2_cache && component.category == 'cpu'">
               <th>Cache L2</th>
               <td>{{ component.l2_cache }}</td>
             </tr>
-            <tr ng-if="component.l3_cache">
+            <tr ng-if="component.l3_cache && component.category == 'cpu'">
               <th>Cache L3</th>
               <td>{{ component.l3_cache }}</td>
             </tr>
-            <tr ng-if="component.lithography">
+            <tr ng-if="component.lithography && component.category == 'cpu'">
               <th>Litografía</th>
               <td>{{ component.lithography }}</td>
             </tr>
-            <tr ng-if="component.thermal_design_power">
+            <tr ng-if="component.thermal_design_power && component.category == 'cpu'">
               <th>Potencia de diseño térmico (TDP)</th>
               <td>{{ component.thermal_design_power }}</td>
             </tr>
-            <tr ng-if="component.includes_cpu_cooler">
+            <tr ng-if="component.includes_cpu_cooler && component.category == 'cpu'">
               <th>Incluye cooler de CPU</th>
               <td>{{ component.includes_cpu_cooler }}</td>
             </tr>
-            <tr ng-if="component.hyper_threading">
+            <tr ng-if="component.hyper_threading && component.category == 'cpu'">
               <th>Hyper-threading</th>
               <td>{{ component.hyper_threading }}</td>
             </tr>
-            <tr ng-if="component.integrated_graphics">
+            <tr ng-if="component.integrated_graphics && component.category == 'cpu'">
               <th>Gráficos integrados</th>
               <td>{{ component.integrated_graphics }}</td>
             </tr>
@@ -821,10 +821,15 @@
 
             <p class="alert alert-warning" ng-if="question.content_error">Tienes que escribir tu duda o pregunta.</p>
 
-            <div class="alert alert-info">La pregunta tiene que ser relacionada con el producto. Por ejemplo: <ul><li>"¿Puedo hacer overclock con esta tarjeta madre?"</li><li>"Alguien sabe si es compatible con esta fuente de poder? {nombre de la fuente}".</li></ul><br>Si tienes dudas sobre stock o envíos, puedes revisar el FAQ o enviar correo a pedidos@spartangeek.com.
+            <div class="alert alert-info">La pregunta tiene que ser relacionada con el producto. Por ejemplo:
+              <ul>
+                <li>"¿Puedo hacer overclock con esta tarjeta madre?"</li>
+                <li>"Alguien sabe si es compatible con esta fuente de poder? {nombre de la fuente}".</li>
+              </ul>
+              <br>Si tienes dudas sobre stock o envíos, puedes revisar el FAQ o enviar correo a pedidos@spartangeek.com.
               <div ng-if="!question.instructions">
                 <br>
-                <a href="" class="btn btn-sm btn-primary" ng-click="question.instructions = true">Entiendo, mi pregunta NO es sobre envíos, costos, o stock.</a>
+                <a href="" class="btn btn-primary" ng-click="question.instructions = true">Entiendo, mi pregunta NO es sobre envíos, costos, o stock.</a>
               </div>
             </div>
 

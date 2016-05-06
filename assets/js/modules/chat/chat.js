@@ -44,6 +44,7 @@ var ChatController = [
 
     // The number of historical messages to load per room.
     $scope._options.numMaxMessages = $scope._options.numMaxMessages || 50;
+    $scope._options.messagesLength = $scope._options.messagesLength || 200;
 
     $scope.channels = [];
     $scope.channel = {
@@ -54,7 +55,7 @@ var ChatController = [
     $scope.message = {
       content: '',
       send_on_enter: true,
-      previous: '-'
+      previous: 'Acid Rulz!'
     };
     $scope.show_details = false;
 
@@ -204,9 +205,8 @@ var ChatController = [
     }
 
     $scope.addMessage = function() {
-      $scope.message.content = $scope.emojiMessage.messagetext;
-
-      if($scope.message.content != '' && $scope.message.content.length < 201) {
+      if($scope.message.content && ($scope.message.content.length <= $scope._options.messagesLength && $scope.message.content.length > 0)) {
+        // If message is contained in previous message, or viceversa, or they're the same...
         if($scope.message.content === $scope.message.previous || ($scope.message.previous.indexOf($scope.message.content) > -1) || ($scope.message.content.indexOf($scope.message.previous) > -1)) {
 
           $scope.helpers.spam_count++;
@@ -217,12 +217,12 @@ var ChatController = [
         }
 
         if($scope.helpers.spam_count > 2) {
-          $('.emoji-wysiwyg-editor').blur();
-          $scope._userRef.child('chat/blocked').set(true);
+          $('.input-box_text').blur();
+          if($scope._userRef) {
+            $scope._userRef.child('chat/blocked').set(true);
+          }
           $scope.helpers.spam_count = 0;
-
           $scope.message.content = '';
-          $scope.emojiMessage = {};
         } else {
           $scope.message.previous = $scope.message.content;
 
@@ -399,7 +399,7 @@ var ChatController = [
   }
 ];
 
-var chatModule = angular.module('chatModule', ['firebase', 'ngSanitize', 'emojiApp']);
+var chatModule = angular.module('chatModule', ['firebase', 'ngSanitize']);
 
 chatModule.controller('ChatController', ChatController);
 

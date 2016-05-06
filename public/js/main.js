@@ -7567,10 +7567,12 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
               break;
             case "comment-upvote":
               if(debug) console.log("New event: comment-upvote", data);
-              for(var i in $scope.post.comments.set) {
-                if($scope.post.comments.set[i].position == data.index) {
-                  $scope.post.comments.set[i].votes.up++;
-                  break;
+              if($scope.post.comments) {
+                for(var i in $scope.post.comments.set) {
+                  if($scope.post.comments.set[i].position == data.index) {
+                    $scope.post.comments.set[i].votes.up++;
+                    break;
+                  }
                 }
               }
               break;
@@ -7765,7 +7767,7 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
 
       /* TEMPORAL - TODO: MOVE TO A DIRECTIVE */
       $scope.total_h = $scope.viewport_h = 0;
-      $timeout(function() {
+      /*$timeout(function() {
         $scope.total_h = $('.current-article')[0].scrollHeight;
         $scope.viewport_h = $('.current-article').height();
 
@@ -7798,7 +7800,7 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
           };
           //console.log(index + 1, $scope.comments_positions[index+1]);
         });
-      }, 350);
+      }, 350);*/
 
       var from_top, surplus, lastScrollTop = 0;
       $scope.scrubber = {
@@ -8955,6 +8957,7 @@ var ChatController = [
 
     // The number of historical messages to load per room.
     $scope._options.numMaxMessages = $scope._options.numMaxMessages || 50;
+    $scope._options.messagesLength = $scope._options.messagesLength || 200;
 
     $scope.channels = [];
     $scope.channel = {
@@ -8965,7 +8968,7 @@ var ChatController = [
     $scope.message = {
       content: '',
       send_on_enter: true,
-      previous: '-'
+      previous: 'Acid Rulz!'
     };
     $scope.show_details = false;
 
@@ -9115,9 +9118,8 @@ var ChatController = [
     }
 
     $scope.addMessage = function() {
-      $scope.message.content = $scope.emojiMessage.messagetext;
-
-      if($scope.message.content != '' && $scope.message.content.length < 201) {
+      if($scope.message.content && ($scope.message.content.length <= $scope._options.messagesLength && $scope.message.content.length > 0)) {
+        // If message is contained in previous message, or viceversa, or they're the same...
         if($scope.message.content === $scope.message.previous || ($scope.message.previous.indexOf($scope.message.content) > -1) || ($scope.message.content.indexOf($scope.message.previous) > -1)) {
 
           $scope.helpers.spam_count++;
@@ -9128,12 +9130,12 @@ var ChatController = [
         }
 
         if($scope.helpers.spam_count > 2) {
-          $('.emoji-wysiwyg-editor').blur();
-          $scope._userRef.child('chat/blocked').set(true);
+          $('.input-box_text').blur();
+          if($scope._userRef) {
+            $scope._userRef.child('chat/blocked').set(true);
+          }
           $scope.helpers.spam_count = 0;
-
           $scope.message.content = '';
-          $scope.emojiMessage = {};
         } else {
           $scope.message.previous = $scope.message.content;
 
@@ -9310,7 +9312,7 @@ var ChatController = [
   }
 ];
 
-var chatModule = angular.module('chatModule', ['firebase', 'ngSanitize', 'emojiApp']);
+var chatModule = angular.module('chatModule', ['firebase', 'ngSanitize']);
 
 chatModule.controller('ChatController', ChatController);
 
@@ -11281,7 +11283,7 @@ var boardApplication = angular.module('board', [
   'btford.socket-io'
 ]);
 
-var version = '062';
+var version = '063';
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider', 'AclServiceProvider', '$opbeatProvider',
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider, AclServiceProvider, $opbeatProvider) {
