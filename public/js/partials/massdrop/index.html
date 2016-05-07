@@ -6,7 +6,65 @@
         <section class="massdrop-index mb-40">
           <h2><i class="fa fa-th-large" aria-hidden="true"></i> Populares</h2>
           <div class="row">
+            <p class="alert alert-info" ng-if="(massdrops | filter:{active:true}).length == 0">
+              No hay actualmente Compras en Legión activas
+            </p>
             <div class="col-md-3" ng-repeat="massdrop in massdrops | filter:{active:true}">
+              <a href="/compra-en-legion/{{ massdrop.slug }}" alt="{{ massdrop.name }}">
+                <div class="massdrop-card">
+                  <div class="image-container">
+                    <picture>
+                      <img ng-src="{{ massdrop.cover_small }}" class="img-responsive" alt="GTX 950">
+                    </picture>
+                    <div class="price-container">
+                      <div class="current-price">
+                        {{ massdrop.price | currency:'$ ':0 }}
+                      </div>
+                      <div class="lowest-price">
+                        <span ng-if="massdrop.min_price < massdrop.price">Objetivo {{ massdrop.min_price | currency:'$ ':0 }}</span>
+                        <span ng-if="massdrop.starting_price > massdrop.price"><br>Empezó en {{ massdrop.starting_price | currency:'$ ':0 }}</span>
+                        <span ng-if="massdrop.min_price == massdrop.price">Precio más bajo</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="info-container">
+                    <h3>{{ massdrop.name }}</h3>
+
+                    <div class="cp-bar">
+                      <div class="current-progress" style="width: {{ massdrop.reservations_width }}%"></div>
+
+                      <div class="checkpoints">
+                        <div class="checkpoint" ng-class="{'reached': c.done}" ng-repeat="c in massdrop.checkpoints" style="right: {{ c.from_right }}%;">
+                          <div class="details">
+                            <h3><i class="fa fa-users" aria-hidden="true"></i></h3>
+                            <span class="persons-needed">{{ c.starts }}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row current-stats">
+                      <div class="col-md-6">
+                        <div class="reached text-center"><strong>{{ massdrop.count_reservations }}</strong> Compras</div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="interested text-center"><strong>{{ massdrop.count_interested }}</strong> Interesados</div>
+                      </div>
+                    </div>
+
+                    <hr>
+                    <p class="timeleft"><i class="fa fa-clock-o" aria-hidden="true"></i> Quedan <span ng-if="massdrop.counter.days > 0">{{ massdrop.counter.days }} días, </span>{{ massdrop.counter.hours }} horas<span ng-if="massdrop.counter.days < 1">, {{ massdrop.counter.minutes }} minutos</span></p>
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <section class="massdrop-index mb-40">
+          <h2><i class="fa fa-check-circle-o" aria-hidden="true"></i> Finalizadas</h2>
+          <div class="row">
+            <div class="col-md-3" ng-repeat="massdrop in massdrops | filter:{active:false}">
               <a href="/compra-en-legion/{{ massdrop.slug }}" alt="{{ massdrop.name }}">
                 <div class="massdrop-card">
                   <div class="image-container">
