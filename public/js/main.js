@@ -9771,15 +9771,19 @@ ComponentsModule.factory('cart', ['$localstorage', '$http', 'AclService', functi
   }
 
   cart.getIndividualShippingFee = function(item) {
-    if(item.category == 'case') {
-      return 320;
+    if(item.attrs && item.attrs.shipping_cost && item.attrs.shipping_cost > 0) {
+      return parseFloat(item.shipping_cost);
     } else {
-      for(var i = 0; i < cart.items.length; i++) {
-        if(cart.items[i].category != 'case') {
-          return 60;
+      if(item.category == 'case') {
+        return 320;
+      } else {
+        for(var i = 0; i < cart.items.length; i++) {
+          if(cart.items[i].category != 'case') {
+            return 60;
+          }
         }
+        return 139;
       }
-      return 139;
     }
   }
 
@@ -9795,17 +9799,22 @@ ComponentsModule.factory('cart', ['$localstorage', '$http', 'AclService', functi
       } else {
         var non_case_count = 0;
         var case_count = 0;
+        var special_price = 0;
         for(var i = 0; i < cart.items.length; i++) {
-          if(cart.items[i].category == 'case') {
-            case_count += cart.items[i].quantity;
+          if(cart.items[i].attrs && cart.items[i].attrs.shipping_cost && cart.items[i].attrs.shipping_cost > 0) {
+            special_price += (cart.items[i].attrs.shipping_cost * cart.items[i].quantity);
           } else {
-            non_case_count += cart.items[i].quantity;
+            if(cart.items[i].category == 'case') {
+              case_count += cart.items[i].quantity;
+            } else {
+              non_case_count += cart.items[i].quantity;
+            }
           }
         }
         if(non_case_count > 0) {
-          return 139 + (non_case_count - 1) * 60 + 320 * case_count;
+          return 139 + (non_case_count - 1) * 60 + 320 * case_count + special_price;
         } else {
-          return 320 * case_count;
+          return 320 * case_count + special_price;
         }
       }
     } else {
@@ -11283,7 +11292,7 @@ var boardApplication = angular.module('board', [
   'btford.socket-io'
 ]);
 
-var version = '063';
+var version = '064';
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider', 'AclServiceProvider', '$opbeatProvider',
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider, AclServiceProvider, $opbeatProvider) {
