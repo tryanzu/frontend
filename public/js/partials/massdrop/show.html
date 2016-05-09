@@ -149,10 +149,10 @@
               Se agregó más tiempo a la <strong>Compra en Legión</strong>
             </div>
             <div class="description" ng-if="a.type == 'reservation'">
-              <strong style="color: #21b384;"><i class="fa fa-check" aria-hidden="true"></i> Compró {{a.created_at | timeAgo}}</strong>
+              <strong style="color: #21b384;"><i class="fa fa-check" aria-hidden="true"></i> Compró <span ng-if="false">{{a.created_at | timeAgo}}</span></strong>
             </div>
             <div class="description" ng-if="a.type == 'interested'">
-              Está interesado desde {{a.created_at | timeAgo}}
+              Está interesado <span ng-if="false">desde {{a.created_at | timeAgo}}</span>
             </div>
           </div>
 

@@ -346,6 +346,7 @@
         <section>
           <h2>Elige tu forma de pago</h2>
 
+          <section ng-hide="cart.getTotal() + cart.getShippingFee(f.ship_method) + getPaymentFee() == 0">
           <div class="radio">
             <label>
               <input type="radio" ng-model="pay_method.value" name="optionsRadios" id="optionsRadios1" value="withdrawal" checked>
@@ -360,6 +361,7 @@
             </label>
           </div>
           <img src="/images/pay-card.png" height="80" alt="Pago con tarjeta de débido o crédito">
+          </section>
 
         </section>
 
