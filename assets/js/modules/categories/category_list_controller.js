@@ -241,7 +241,7 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
                 $scope.user.info.categories.push(category.id);
               }
             } else {
-              $scope.user.info.categories.push(category.id);
+              $scope.user.info.categories = [category.id];
             }
           }, function(error){
             category.selected = false;
