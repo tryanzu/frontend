@@ -7092,7 +7092,7 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
             }
             break;
           case "best-answer":
-            if(debug) if(debug) console.log("New event: best-answer");
+            if(debug) console.log("New event: best-answer");
             for(var i = 0; i < $scope.posts.length; i++) {
               if($scope.posts[i].id == data.id) {
                 $scope.posts[i].solved = true;
@@ -7100,6 +7100,15 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
               }
             }
             break;
+          case "changed-title":
+            if(debug) console.log("New event: changed-title");
+            for(var i = 0; i < $scope.posts.length; i++) {
+              if($scope.posts[i].id == data.id) {
+                $scope.posts[i].title = data.title;
+                $scope.posts[i].slug = data.slug;
+                break;
+              }
+            }
           default:
             if(debug) console.log("I don't know what the hell did Blacker say!")
         }
@@ -7506,6 +7515,7 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
     Post.get({id: $scope.post.id}, function success(data) {
       if($scope.can("debug")) console.log(data);
       $scope.post.content = data.content;
+      $scope.post.title = data.title;
       addMediaEmbed($scope.post);
     }, function (error) {
       console.log("Error loading post", error);
@@ -7618,7 +7628,9 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
                     if(response.data.comments.set.length == 1) {
                       new_comment = response.data.comments.set[0];
                       addMediaEmbed(new_comment);
-                      $scope.post.comments.set[i] = new_comment;
+                      if($scope.post.comments !== undefined) {
+                        $scope.post.comments.set[i] = new_comment;
+                      }
                     }
                   }, function (error){
                     console.log("Error updating comment");
@@ -8451,27 +8463,27 @@ var EditPostController = ['$scope', '$routeParams', '$http', 'Category', 'Part',
 
   if(!$scope.user.isLogged) {
     window.location = '/';
-  }
+  } else {
+    // Load categories
+    Category.writable( function (data) {
+      $scope.categories = data;
 
-  // Load categories
-  Category.writable(function(data) {
-    $scope.categories = data;
-
-    Post.light({id: $routeParams.id}, function(data) {
-      //console.log(data);
-      $scope.post = data;
-      $scope.post_edit = {
-        title: data.title,
-        content: data.content,
-        category: data.category,
-        kind: 'category-post',
-        is_question: data.is_question,
-        pinned: data.pinned,
-        lock: data.lock
-      };
-      $scope.publishing = false;
+      Post.light({id: $routeParams.id}, function(data) {
+        if($scope.can('debug')) console.log(data);
+        $scope.post = data;
+        $scope.post_edit = {
+          title: data.title,
+          content: data.content,
+          category: data.category,
+          kind: 'category-post',
+          is_question: data.is_question,
+          pinned: data.pinned,
+          lock: data.lock
+        };
+        $scope.publishing = false;
+      });
     });
-  });
+  }
 }];
 
 // @codekit-prepend "publish_controller"

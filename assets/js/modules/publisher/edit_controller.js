@@ -61,25 +61,25 @@ var EditPostController = ['$scope', '$routeParams', '$http', 'Category', 'Part',
 
   if(!$scope.user.isLogged) {
     window.location = '/';
-  }
+  } else {
+    // Load categories
+    Category.writable( function (data) {
+      $scope.categories = data;
 
-  // Load categories
-  Category.writable(function(data) {
-    $scope.categories = data;
-
-    Post.light({id: $routeParams.id}, function(data) {
-      //console.log(data);
-      $scope.post = data;
-      $scope.post_edit = {
-        title: data.title,
-        content: data.content,
-        category: data.category,
-        kind: 'category-post',
-        is_question: data.is_question,
-        pinned: data.pinned,
-        lock: data.lock
-      };
-      $scope.publishing = false;
+      Post.light({id: $routeParams.id}, function(data) {
+        if($scope.can('debug')) console.log(data);
+        $scope.post = data;
+        $scope.post_edit = {
+          title: data.title,
+          content: data.content,
+          category: data.category,
+          kind: 'category-post',
+          is_question: data.is_question,
+          pinned: data.pinned,
+          lock: data.lock
+        };
+        $scope.publishing = false;
+      });
     });
-  });
+  }
 }];
