@@ -91,7 +91,31 @@
         <p>Si tienes más dudas, revisa nuestra sección <strong><a href="/compra-en-legion/faq" target="_blank">"¿Qué es una compra en legión?"</a></strong> para encontrar más detalles.</p>
 
       </div>
+
+      <!-- Sidebar -->
       <div class="col-md-4">
+        <section class="mb-40">
+          <div class="prices-widget">
+            <div class="prices-bar">
+              <div class="bar-progress" style="height: {{ massdrop.reservations_width*.8 + 20 }}%"></div>
+            </div>
+            <div class="price-labels">
+              <div class="price-label">
+                <span class="content completed">{{ product.store.vendors.spartangeek.price | currency:'$ ':0 }} (Precio normal)</span>
+              </div>
+            </div>
+            <div class="price-labels" style="top: 20%">
+              <div class="price-label">
+                <span class="content" ng-class="{'current': massdrop.starting_price == massdrop.price, 'completed': massdrop.starting_price > massdrop.price}">{{ massdrop.starting_price | currency:'$ ':0 }} (Precio inicial)</span>
+              </div>
+            </div>
+            <div class="price-labels" ng-repeat="c in massdrop.checkpoints" style="top: {{ 100 - c.from_right*.8 }}%;">
+              <div class="price-label">
+                <span class="content" ng-class="{'current': c.price == massdrop.price,'completed': c.price > massdrop.price}">{{ c.price | currency:'$ ':0 }} <span ng-if="$last">(Objetivo)</span></span>
+              </div>
+            </div>
+          </div>
+        </section>
         <section class="mb-40">
           <div class="price">
             <h2>{{ massdrop.price | currency:'$ ':0 }}</h2>
@@ -149,10 +173,10 @@
               Se agregó más tiempo a la <strong>Compra en Legión</strong>
             </div>
             <div class="description" ng-if="a.type == 'reservation'">
-              <strong style="color: #21b384;"><i class="fa fa-check" aria-hidden="true"></i> Compró <span ng-if="false">{{a.created_at | timeAgo}}</span></strong>
+              <strong style="color: #21b384;"><i class="fa fa-check" aria-hidden="true"></i> Compró <span ng-if="massdrop.active">{{a.created_at | timeAgo}}</span></strong>
             </div>
             <div class="description" ng-if="a.type == 'interested'">
-              Está interesado <span ng-if="false">desde {{a.created_at | timeAgo}}</span>
+              Está interesado <span ng-if="massdrop.active">desde {{a.created_at | timeAgo}}</span>
             </div>
           </div>
 

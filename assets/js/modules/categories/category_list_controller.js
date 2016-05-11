@@ -427,7 +427,7 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
             }
             break;
           case "best-answer":
-            if(debug) if(debug) console.log("New event: best-answer");
+            if(debug) console.log("New event: best-answer");
             for(var i = 0; i < $scope.posts.length; i++) {
               if($scope.posts[i].id == data.id) {
                 $scope.posts[i].solved = true;
@@ -435,6 +435,15 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
               }
             }
             break;
+          case "changed-title":
+            if(debug) console.log("New event: changed-title");
+            for(var i = 0; i < $scope.posts.length; i++) {
+              if($scope.posts[i].id == data.id) {
+                $scope.posts[i].title = data.title;
+                $scope.posts[i].slug = data.slug;
+                break;
+              }
+            }
           default:
             if(debug) console.log("I don't know what the hell did Blacker say!")
         }
