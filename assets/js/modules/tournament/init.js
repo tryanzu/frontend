@@ -69,8 +69,9 @@ TournamentModule.controller('TournamentController', ['$scope', '$timeout', funct
   // Load matches
   var fb_info = [];
   $scope._matchesRef.once('value', function(ss) {
+    console.log("Loading...")
     fb_info = ss.val();
-    //console.log("Loaded", fb_info)
+    console.log("Loaded", fb_info)
 
     // Calculate matches
     for(var i in $scope.groups) {

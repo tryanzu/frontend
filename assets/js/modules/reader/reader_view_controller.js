@@ -281,6 +281,7 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
     Post.get({id: $scope.post.id}, function success(data) {
       if($scope.can("debug")) console.log(data);
       $scope.post.content = data.content;
+      $scope.post.title = data.title;
       addMediaEmbed($scope.post);
     }, function (error) {
       console.log("Error loading post", error);
@@ -393,7 +394,9 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
                     if(response.data.comments.set.length == 1) {
                       new_comment = response.data.comments.set[0];
                       addMediaEmbed(new_comment);
-                      $scope.post.comments.set[i] = new_comment;
+                      if($scope.post.comments !== undefined) {
+                        $scope.post.comments.set[i] = new_comment;
+                      }
                     }
                   }, function (error){
                     console.log("Error updating comment");
