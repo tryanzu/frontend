@@ -365,3 +365,48 @@
     }
   }
 }
+
+.prices-widget {
+  margin-top: 1em;
+  position: relative;
+  margin-left: 3em;
+
+  .prices-bar {
+    width: 50px;
+    height: 220px;
+    background-color: #eaeaef;
+
+    .bar-progress {
+      top:0;
+      height: 20%;
+      background-color: @brand-success;
+    }
+  }
+  .price-labels {
+    top: 0;
+    left: 70px;
+    display: inline-block;
+    position: absolute;
+
+    .price-label {
+      border-top: 1px dashed #999;
+      padding-left: 80px;
+
+      & > span {
+        background-color: #fff;
+        padding: 0px 10px 0 20px;
+        margin-top: -10px;
+        display: block;
+
+        &.completed {
+          text-decoration: line-through;
+          color: #aaa;
+        }
+        &.current {
+          font-size: 15px;
+          font-weight: bold;
+        }
+      }
+    }
+  }
+}
