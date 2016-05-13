@@ -571,7 +571,7 @@
                 </div>
 
                 <div class="text-center" style="margin-bottom: 3em;" ng-if="comments_status.loaded < post.comments.total">
-                  <a class="btn btn-default" href="" ng-click="loadPreviousComments()" ng-if="!comments_status.loading">Mostrar <strong>10</strong> anteriores</a>
+                  <a class="btn btn-default" href="" ng-click="loadPreviousComments()" ng-if="!comments_status.loading">Mostrar <strong>{{ post.comments.total - comments_status.loaded | min }}</strong> anteriores</a>
                   <a class="btn btn-default" href="" ng-click="loadAllPreviousComments()" ng-if="!comments_status.loading">Mostrar todos los comentarios</a>
                   <a href="" class="btn btn-default disabled" role="button" ng-if="comments_status.loading">Cargando...</a>
                 </div>

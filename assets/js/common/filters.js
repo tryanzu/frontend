@@ -28,3 +28,9 @@ filters.filter('percentage', function ($window) {
     return Math.round(input * Math.pow(10, decimals + 2))/Math.pow(10, decimals) + suffix
   };
 });
+
+filters.filter('min', function() {
+  return function(input) {
+    return Math.min(10, input);
+  };
+});

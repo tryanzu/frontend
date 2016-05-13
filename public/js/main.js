@@ -6537,6 +6537,12 @@ filters.filter('percentage', function ($window) {
   };
 });
 
+filters.filter('min', function() {
+  return function(input) {
+    return Math.min(10, input);
+  };
+});
+
 var activeReader = angular.module('activeReader', []);
 
 activeReader.factory('Bridge', function($rootScope) {
@@ -7377,14 +7383,14 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
     if(comment.content_edit === comment.content) {
       comment.editing = false;
     } else {
-      // Insert promise here...
-      $http.put(layer_path + 'post/comment/' + $scope.post.id + '/' + comment.position, {content: comment.content_edit})
-        .then(function() {
-          // On success
-          comment.content = comment.content_edit;
-          addMediaEmbed(comment);
-          comment.editing = false;
-        })
+      $http.put(layer_path + 'post/comment/' + comment.id, {
+        content: comment.content_edit
+      }).then(function success(response) {
+        // On success
+        comment.content = comment.content_edit;
+        addMediaEmbed(comment);
+        comment.editing = false;
+      });
     }
   };
 
@@ -7398,7 +7404,7 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
     };
 
     modalService.showModal({}, modalOptions).then(function(result) {
-      $http.delete(layer_path + 'post/comment/' + $scope.post.id + '/' + comment.position)
+      $http.delete(layer_path + 'post/comment/' + comment.id)
         .then(function success(response) {
           deleteCommentObject(comment);
         });
@@ -7625,6 +7631,7 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
                     'offset': data.index,
                     'limit': 1
                   }}).then(function success(response) {
+                    if(debug) console.log(response);
                     if(response.data.comments.set.length == 1) {
                       new_comment = response.data.comments.set[0];
                       addMediaEmbed(new_comment);
@@ -7719,12 +7726,14 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
           $scope.comments_status.loading = true;
 
           var comments_offset = $scope.view_comment.position;
-          var comments_to_load = $scope.post.comments.total - comments_offset - $scope.comments_status.loaded;
+          var comments_to_load = $scope.post.comments.total- $scope.comments_status.loaded - comments_offset;
 
-          $http.get(layer_path + 'posts/' + $scope.post.id + '/comments', { params: {
-            'offset': comments_offset,
-            'limit': comments_to_load
-          } } ).then(function success(response){
+          $http.get(layer_path + 'posts/' + $scope.post.id + '/comments', {
+            params: {
+              'offset': comments_offset,
+              'limit': comments_to_load
+            }
+          }).then(function success(response) {
             //console.log(response.data.comments.set);
             new_comments = response.data.comments.set;
             for(var c in new_comments) {
@@ -7896,10 +7905,6 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
     var to_replace = "<div class=\"img-preview\"><a href=\"$1\" target=\"_blank\"><img src=\"$1\"></a></div>";
     comment.content_final = comment.content.replace(regex, to_replace);
 
-    // Replace Youtube videos
-    var yt_re = /(https?:\/\/)?(www\.)?(youtu\.be\/|youtube\.com\/)(?:v\/|u\/\w\/|embed\/|watch\?v=)([^#\&\?]{11})\S*/g;
-    var to_replace = "<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/$4\" frameborder=\"0\" allowfullscreen></iframe>";
-
     // Replace emoji
     var emojis = [
       "bowtie", "smile", "laughing", "blush", "smiley", "relaxed",
@@ -8068,6 +8073,10 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
     comment.content_final = comment.content_final.replace(rEmojis, function (match, text) {
       return "<i class='emoji emoji_" + text + "' title=':" + text + ":'>" + text + "</i>";
     });
+
+    // Replace Youtube videos
+    var yt_re = /(https?:\/\/)?(www\.)?(youtu\.be\/|youtube\.com\/)(?:v\/|u\/\w\/|embed\/|watch\?v=)([^#\&\?]{11})\S*/g;
+    var to_replace = "<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/$4\" frameborder=\"0\" allowfullscreen></iframe>";
 
     comment.content_final = comment.content_final.replace(yt_re, to_replace);
   }
