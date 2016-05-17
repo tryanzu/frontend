@@ -7280,11 +7280,9 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
 
   // Comment and Post vote
   $scope.comment_vote = function(post_id, comment, direction) {
-    $http.post(layer_path + 'vote/comment/' + post_id, {
-      comment: '' + comment.position,
+    $http.post(layer_path + 'vote/comment/' + comment.id, {
       'direction': direction
     }).then(function success(response) {
-      //comment.liked = !comment.liked;
       var d = {'up': 1, 'down': -1};
       if(comment.liked == d[direction]) {
         comment.liked = null;
@@ -7500,7 +7498,7 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
   $scope.loadNewComments = function() {
     $scope.comments_status.loading_new = true;
     $http.get(layer_path + 'posts/' + $scope.post.id + '/comments', { params: {
-      'offset': $scope.post.comments.total,
+      'offset': $scope.post.comments.count,
       'limit': $scope.post.comments.new
     } } ).then(function success(response) {
       if($scope.can("debug")) console.log(response.data.comments.set);
