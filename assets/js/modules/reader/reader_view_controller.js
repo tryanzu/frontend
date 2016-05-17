@@ -8,7 +8,7 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
   $scope.adding_file = false;
   $scope.comments_status = {
     'loaded': 10,
-    'offset': -20,
+    'offset': -10,
     'limit': 10,
     'loading': false,
     'loading_new': false
@@ -176,7 +176,7 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
       $scope.post.comments.set.splice(position, 1);
       $scope.post.comments.count--; // Total remains the same
     }
-    $scope.$broadcast('scrubberRecalculate');
+    //$scope.$broadcast('scrubberRecalculate');
   }
 
   // Delete post
@@ -202,14 +202,18 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
   $scope.loadPreviousComments = function() {
     $scope.comments_status.loading = true;
     //console.log("Loading", $scope.comments_status.loaded, $scope.comments_status.offset, $scope.post.comments.total);
-    if($scope.post.comments.total - $scope.comments_status.loaded < 10) {
-      $scope.comments_status.limit = $scope.post.comments.total - $scope.comments_status.loaded;
+    if($scope.post.comments.count - $scope.comments_status.loaded < 10) {
+      $scope.comments_status.limit = $scope.post.comments.count - $scope.comments_status.loaded;
+    } else {
+      $scope.comments_status.limit = 10;
     }
-    $http.get(layer_path + 'posts/' + $scope.post.id + '/comments', { params: {
-      'offset': $scope.comments_status.offset,
-      'limit': $scope.comments_status.limit
-    } } ).then(function success(response){
-      console.log(response.data.comments.set);
+    $http.get(layer_path + 'posts/' + $scope.post.id + '/comments', {
+      params: {
+        'offset': $scope.comments_status.offset - $scope.comments_status.limit,
+        'limit': $scope.comments_status.limit
+      }
+    }).then(function success(response){
+      if($scope.can('debug')) console.log(response.data.comments);
       new_comments = response.data.comments.set;
       for(var c in new_comments) {
         addMediaEmbed(new_comments[c]);
@@ -220,7 +224,7 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
       $scope.comments_status.offset -= $scope.comments_status.limit;
       $scope.comments_status.loading = false;
 
-      console.log("Loaded", $scope.comments_status.loaded, $scope.comments_status.offset, $scope.post.comments.total);
+      //console.log("Loaded", $scope.comments_status.loaded, $scope.comments_status.offset, $scope.post.comments.total);
     }, function(error){
       console.log("Error while loading...");
       $scope.comments_status.loading = false;
@@ -228,12 +232,14 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
   }
   $scope.loadAllPreviousComments = function() {
     $scope.comments_status.loading = true;
-    if($scope.post.comments.total - $scope.comments_status.loaded > 0) {
-      $http.get(layer_path + 'posts/' + $scope.post.id + '/comments', { params: {
-        'offset': 0,
-        'limit': $scope.post.comments.total - $scope.comments_status.loaded
-      } } ).then(function success(response){
-        //console.log(response.data.comments.set);
+    if($scope.post.comments.count - $scope.comments_status.loaded > 0) {
+      $http.get(layer_path + 'posts/' + $scope.post.id + '/comments', {
+        params: {
+          'offset': 0,
+          'limit': $scope.post.comments.count - $scope.comments_status.loaded
+        }
+      }).then(function success(response) {
+        if($scope.can('debug')) console.log(response.data.comments.set);
         $scope.comments_status.loaded += response.data.comments.set.length;
         new_comments = response.data.comments.set;
         for(var c in new_comments) {
@@ -409,7 +415,7 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
             case "delete-comment":
               if(debug) console.log("New event: delete-comment", data);
               for(var i in $scope.post.comments.set) {
-                if($scope.post.comments.set[i].position == data.index) {
+                if($scope.post.comments.set[i].id == data.id) {
                   deleteCommentObject($scope.post.comments.set[i]);
                   break;
                 }
@@ -503,6 +509,7 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
             $scope.post.comments.set = new_comments;
             $scope.comments_status.loaded += comments_to_load;
             $scope.comments_status.offset = comments_offset;
+            $scope.comments_status.limit = 10;
             $scope.comments_status.loading = false;
 
             $timeout(function() {
@@ -527,6 +534,10 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
             }
           }, 500);
         }
+      } else {
+        $scope.comments_status.loaded = 10;
+        $scope.comments_status.offset = -10;
+        $scope.comments_status.limit = 10;
       }
 
       // Postproccess every comment
