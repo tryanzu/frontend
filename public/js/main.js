@@ -7632,8 +7632,7 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
               for(var i in $scope.post.comments.set) {
                 if($scope.post.comments.set[i].position == data.index) {
                   $http.get(layer_path + 'posts/' + $scope.post.id + '/comments', { params: {
-                    'offset': data.index,
-                    'limit': 1
+                    'id': data.id
                   }}).then(function success(response) {
                     if(debug) console.log(response);
                     if(response.data.comments.set.length == 1) {
