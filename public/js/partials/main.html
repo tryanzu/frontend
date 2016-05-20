@@ -6,23 +6,23 @@
             <div class="feed-sidebar">
               <div class="category-selector">
                 <div id="actions" class="row" ng-if="user.isLogged">
-                  <div class="" ng-class="{'col-xs-12': category.slug != null, 'col-xs-8': category.slug == null}">
+                  <div class="" ng-class="{'col-xs-8': category.slug != null, 'col-xs-6': category.slug == null}">
                     <a href="/" ng-if="category.slug != null" style="margin-right: 1rem;" ng-click="toggleCategories()"><h2><i class="fa fa-chevron-left"></i></h2></a>
                     <h2>{{ category.name || "Mi Feed personal" }}</h2>
                   </div>
-                  <div class="col-xs-4 text-right" ng-if="category.id == null">
+                  <div class="text-right" ng-class="{'col-xs-4': category.slug != null, 'col-xs-6': category.slug == null}" ng-if="category.id == null">
                     <a class="toggle" href="" ng-click="toggleCategories()" ng-if="status.show_categories"><i class="fa fa-chevron-up"></i> Terminar</a>
-                    <a class="toggle" href="" ng-click="toggleCategories()" ng-if="!status.show_categories"><i class="fa fa-chevron-down"></i> Configurar</a>
+                    <a class="toggle" href="" ng-click="toggleCategories()" ng-if="!status.show_categories"><i class="fa fa-chevron-down"></i> Configurar Categorías</a>
                   </div>
                 </div>
                 <div id="actions" class="row" ng-if="!user.isLogged">
-                  <div class="" ng-class="{'col-xs-12': category.slug != null, 'col-xs-8': category.slug == null}">
+                  <div class="" ng-class="{'col-xs-12': category.slug != null, 'col-xs-1': category.slug == null}">
                     <a href="/" ng-if="category.slug != null" style="margin-right: 1rem;" ng-click="toggleCategories()"><h2><i class="fa fa-chevron-left"></i></h2></a>
-                    <h2>{{ category.name || "Categorías disponibles" }}</h2>
+                    <h2>{{ category.name }}</h2>
                   </div>
-                  <div class="col-xs-4 text-right" ng-if="category.id == null">
+                  <div class="text-right" ng-class="{'col-xs-4': category.slug != null, 'col-xs-11': category.slug == null}" ng-if="category.id == null">
                     <a class="toggle" href="" ng-click="toggleCategories()" ng-if="status.show_categories"><i class="fa fa-chevron-up"></i> Ocultar</a>
-                    <a class="toggle" href="" ng-click="toggleCategories()" ng-if="!status.show_categories"><i class="fa fa-chevron-down"></i> Mostrar</a>
+                    <a class="toggle" href="" ng-click="toggleCategories()" ng-if="!status.show_categories"><i class="fa fa-chevron-down"></i> Mostrar Categorías</a>
                   </div>
                 </div>
                 <div id="instructions" ng-if="user.isLogged && status.show_categories">
@@ -177,6 +177,19 @@
         <div class="current-article" ng-controller="ReaderViewController" adjust-height>
 
           <div class="waiting" ng-show="waiting">
+            <section>
+              <ul class="page-stats">
+                <li ng-cloak>
+                  <i class="fa fa-users"></i> <span class="hidden-md">Usuarios</span>: {{ status.stats.users | number:0 }}
+                </li>
+                <li ng-cloak>
+                  <i class="fa fa-file"></i> <span class="hidden-md">Publicaciones</span>: {{ status.stats.posts | number:0 }}
+                </li>
+                <li ng-cloak>
+                  <i class="fa fa-comments"></i> <span class="hidden-md">Comentarios</span>: {{ status.stats.comments | number:0 }}
+                </li>
+              </ul>
+            </section>
             <section>
               <div class="row">
                 <div class="col-md-6 text-left">

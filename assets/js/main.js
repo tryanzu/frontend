@@ -169,6 +169,10 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
     templateUrl: '/js/partials/chat.html?v=' + version,
     controller: 'ChatController'
   });
+  $routeProvider.when('/donacion', {
+    templateUrl: '/js/partials/donations.html?v=' + version,
+    //controller: 'DonationsController'
+  });
   $routeProvider.when('/torneo', {
     templateUrl: '/js/partials/tournament.html?v=' + version,
     controller: 'TournamentController'

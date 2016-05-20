@@ -1,0 +1,78 @@
+<main class="global-content">
+  <div class="container">
+    <h1>Donar a SpartanGeek</h1>
+
+    <div class="row">
+      <div class="col-md-6">
+        <div class="well">
+          <p>Estimado spartano:</p>
+          <p>Vamos directo al grano. Hoy, te pedimos que ayudes a SpartanGeek. Como ya sabrás, no queremos poner avisos publicitarios. Pero para esto necesitamos sostenernos gracias a donaciones de poco menos de $150.</p>
+          <p>Solo una pequeña porción de nuestros usuarios dona. Ahora es el momento en que tenemos que pedirte algo. Si todos los que están leyendo esto ahora donaran $50, nuestra campaña de recaudación de fondos finalizaría en una hora y alcanzaría para comprarle a Acid unas chelas.</p>
+          <p>Somos una pequeña organización con los costos de un gran sitio web: servidores, personal y programas. Brindamos servicios a miles de usuarios, pero funcionamos con solo una fracción de lo que otros grandes sitios gastan. Si SpartanGeek te resulta útil, por favor, tómate un minuto para mantenerla en línea y que siga creciendo.</p>
+          <p>Creemos que el conocimiento es una base. Una base para el potencial humano, para la libertad, para las oportunidades. Creemos que todos deberían tener acceso al conocimiento: gratis, sin restricciones, sin limitaciones. Ayúdanos a finalizar la campaña de recaudación de fondos y mejorar SpartanGeek. Muchas gracias.</p>
+        </div>
+      </div>
+      <div class="col-md-5 col-md-offset-1">
+        <h3>Escoge la forma de apoyarnos</h3>
+
+        <section>
+          <div class="radio">
+            <label>
+              <input type="radio" name="pay_period" value="once" ng-model="form.pay_period">
+              Una sóla vez&mdash;se hará un sólo cargo a tu tarjeta
+            </label>
+          </div>
+          <div class="radio disabled">
+            <label>
+              <input type="radio" name="pay_period" value="monthly" ng-model="form.pay_period" disabled>
+              Mensual&mdash;se hará un cargo recurrente a tu tarjeta
+            </label>
+          </div>
+        </section>
+
+        <section class="mb-40">
+          <h4>Cantidad</h4>
+          <div class="btn-toolbar mb-10">
+            <a href="" class="btn btn-default">$30</a>
+            <a href="" class="btn btn-default">$50</a>
+            <a href="" class="btn btn-default">$100</a>
+            <a href="" class="btn btn-default">$200</a>
+            <a href="" class="btn btn-default">$500</a>
+            <a href="" class="btn btn-default">Personalizada</a>
+          </div>
+          <div class="form-group">
+            <label class="sr-only" for="exampleInputAmount">Cantidad (MXN)</label>
+            <div class="input-group">
+              <div class="input-group-addon">$</div>
+              <input type="number" class="form-control" placeholder="Cantidad" min="30" max="10000" step="10">
+              <div class="input-group-addon">.00</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="mb-40">
+          <a href="" class="btn btn-xl btn-primary"><i class="fa fa-paypal" aria-hidden="true"></i> Pagar con Paypal</a>
+        </section>
+
+        <section>
+          <h3>Top de donadores</h3>
+
+          <div class="user-activity" ng-repeat="a in donators">
+            <a href="/u/{{ a.attributes.user.username}}/{{ a.attributes.user.id }}" title="Perfil de {{ a.attributes.user.username}}" class="avatar-container" ng-if="a.type == 'reservation' || a.type == 'interested'" target="_blank">
+              <img class="avatar" ng-src="{{ a.attributes.user.image }}" alt="{{ a.attributes.user.username }}" ng-if="a.attributes.user.image">
+              <span class="avatar" title="{{ a.attributes.user.username }}" ng-if="!a.attributes.user.image">{{ a.attributes.user.username[0] }}</span>
+            </a>
+            <div class="username" ng-if="a.type == 'reservation' || a.type == 'interested'">
+              <a href="/u/{{ a.attributes.user.username}}/{{ a.attributes.user.id }}" title="Perfil de {{ a.attributes.user.username}}" class="ng-binding" target="_blank">
+                {{ a.attributes.user.username }}
+              </a>
+            </div>
+            <div class="description">
+              Donó <strong>$ 100</strong> {{a.created_at | timeAgo}}
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+</main>

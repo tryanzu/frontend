@@ -8801,7 +8801,9 @@ UserModule.controller('UserValidationController', ['$scope', '$http', '$routePar
         $scope.validation_in_progress = false;
         $scope.validated = true;
         if($scope.user.isLogged) {
-          $scope.user.info.validated = true;
+          $scope.promises.self.then(function success(response) {
+            $scope.user.info.validated = true;
+          });
         }
       }, function() {
         $scope.validation_in_progress = false;
@@ -11417,6 +11419,10 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   $routeProvider.when('/chat/:slug?', {
     templateUrl: '/js/partials/chat.html?v=' + version,
     controller: 'ChatController'
+  });
+  $routeProvider.when('/donacion', {
+    templateUrl: '/js/partials/donations.html?v=' + version,
+    //controller: 'DonationsController'
   });
   $routeProvider.when('/torneo', {
     templateUrl: '/js/partials/tournament.html?v=' + version,
