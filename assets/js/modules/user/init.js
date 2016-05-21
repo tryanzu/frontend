@@ -272,7 +272,9 @@ UserModule.controller('UserValidationController', ['$scope', '$http', '$routePar
         $scope.validation_in_progress = false;
         $scope.validated = true;
         if($scope.user.isLogged) {
-          $scope.user.info.validated = true;
+          $scope.promises.self.then(function success(response) {
+            $scope.user.info.validated = true;
+          });
         }
       }, function() {
         $scope.validation_in_progress = false;

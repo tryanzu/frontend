@@ -1,11 +1,13 @@
 // ---------------------------------
 // COLORS
 
-@brand-primary:         #2C65AF;//#386db8;
+@brand-primary:         #386db8;
 @brand-success:         #21b384;
 @brand-info:            #3498DB;
 @brand-warning:         #F39C12;
 @brand-danger:          #E74C3C;
+
+@gray-lighter:           #eeeef2; // #eee
 
 @primary-hue:                      hue(@brand-primary);
 @primary-sat:                      saturation(@brand-primary);
@@ -140,9 +142,9 @@
 @btn-link-disabled-color:        @gray-light;
 
 // Allows for customizing button radius independently from global border radius
-@btn-border-radius-base:         2px;
-@btn-border-radius-large:        4px;
-@btn-border-radius-small:        1px;
+@btn-border-radius-base:         4px;
+@btn-border-radius-large:        6px;
+@btn-border-radius-small:        2px;
 
 
 //== Forms
@@ -157,7 +159,7 @@
 //** Text color for `<input>`s
 @input-color:                    @text-color;
 //** `<input>` border color
-@input-border:                   #dce4ec;
+@input-border:                   @brand-primary-light-text; //#dce4ec;
 
 // TODO: Rename `@input-border-radius` to `@input-border-radius-base` in v4
 //** Default `.form-control` border radius
