@@ -35,6 +35,7 @@
 // @codekit-prepend "modules/search/search"
 // @codekit-prepend "modules/components/components"
 // @codekit-prepend "modules/tournament/init"
+// @codekit-prepend "modules/donations/donations"
 
 var boardApplication = angular.module('board', [
   'ngOpbeat',
@@ -59,6 +60,7 @@ var boardApplication = angular.module('board', [
   'sg.module.badges',
   'sg.module.top',
   'sg.module.tournament',
+  'sg.module.donations',
   'chatModule',
   'angular-jwt',
   'firebase',
@@ -171,7 +173,15 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   });
   $routeProvider.when('/donacion', {
     templateUrl: '/js/partials/donations.html?v=' + version,
-    //controller: 'DonationsController'
+    controller: 'DonationsController'
+  });
+  $routeProvider.when('/donacion/error', {
+    templateUrl: '/js/partials/donations.html?v=' + version,
+    controller: 'DonationsController'
+  });
+  $routeProvider.when('/donacion/exitosa', {
+    templateUrl: '/js/partials/donations.html?v=' + version,
+    controller: 'DonationsController'
   });
   $routeProvider.when('/torneo', {
     templateUrl: '/js/partials/tournament.html?v=' + version,

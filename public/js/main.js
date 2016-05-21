@@ -11249,6 +11249,71 @@ TournamentModule.controller('TournamentController', ['$scope', '$timeout', funct
   };
 }]);
 
+var DonationsModule = angular.module("sg.module.donations", []);
+
+DonationsModule.controller('DonationsController', ['$scope', '$timeout', '$http', '$route', '$location', '$routeParams', function($scope, $timeout, $http, $route, $location, $routeParams) {
+  $scope.form = {
+    pay_period: "once",
+    quantity: 0,
+    custom_amount: 1000,
+    loading: false
+  };
+
+  $scope.action = '';
+
+  $scope.donate = function() {
+    $scope.form.loading = true;
+    var amount = 0;
+    if($scope.form.quantity == 'custom') {
+      amount = $scope.form.custom_amount;
+    } else {
+      amount = $scope.form.quantity;
+    }
+    $http.post(layer_path + 'payments', {
+      "type": "donation",
+      "amount": amount,
+      "description": "Donación para mantener SpartanGeek.com"
+    }).then(function success(response) {
+      //console.log(response);
+      window.location.href = response.data.response.approval_url;
+    }, function (error) {
+      console.log(error);
+    });
+  }
+
+  if($routeParams.paymentId != null && $routeParams.PayerID != null) {
+    $scope.action = 'paying';
+
+    $http.post(layer_path + 'payments/execute', {
+      paymentID: $routeParams.paymentId,
+      payerID: $routeParams.PayerID
+    }).then(function success(response) {
+      $scope.action = 'payed';
+      $location.path('/donacion');
+      $location.search('paymentId', null);
+      $location.search('PayerID', null);
+      $location.search('token', null);
+    }, function(error) {
+      $scope.action = 'pay_error';
+      $location.path('/donacion');
+      $location.search('paymentId', null);
+      $location.search('PayerID', null);
+      $location.search('token', null);
+    });
+  } else {
+    $scope.action = 'pay';
+  }
+
+  $http.get(layer_path + 'payments/donators').then(function success(response){
+    console.log(response.data);
+    $scope.donations = response.data;
+  }, function(error){
+    console.log(error);
+  });
+
+
+}]);
+
 // @codekit-prepend "vendor/angular-marked"
 // @codekit-prepend "vendor/wizzy"
 // @codekit-prepend "vendor/infinite-scroll"
@@ -11286,6 +11351,7 @@ TournamentModule.controller('TournamentController', ['$scope', '$timeout', funct
 // @codekit-prepend "modules/search/search"
 // @codekit-prepend "modules/components/components"
 // @codekit-prepend "modules/tournament/init"
+// @codekit-prepend "modules/donations/donations"
 
 var boardApplication = angular.module('board', [
   'ngOpbeat',
@@ -11310,6 +11376,7 @@ var boardApplication = angular.module('board', [
   'sg.module.badges',
   'sg.module.top',
   'sg.module.tournament',
+  'sg.module.donations',
   'chatModule',
   'angular-jwt',
   'firebase',
@@ -11422,7 +11489,15 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   });
   $routeProvider.when('/donacion', {
     templateUrl: '/js/partials/donations.html?v=' + version,
-    //controller: 'DonationsController'
+    controller: 'DonationsController'
+  });
+  $routeProvider.when('/donacion/error', {
+    templateUrl: '/js/partials/donations.html?v=' + version,
+    controller: 'DonationsController'
+  });
+  $routeProvider.when('/donacion/exitosa', {
+    templateUrl: '/js/partials/donations.html?v=' + version,
+    controller: 'DonationsController'
   });
   $routeProvider.when('/torneo', {
     templateUrl: '/js/partials/tournament.html?v=' + version,
