@@ -1,0 +1,98 @@
+<main class="global-content">
+  <div class="container">
+    <h1>Donar a SpartanGeek</h1>
+
+    <div class="row">
+      <div class="col-md-6">
+        <div class="well">
+          <p>Estimado spartano:</p>
+          <p>Vamos directo al grano. Hoy, te pedimos que ayudes a SpartanGeek. Como ya sabrás, no queremos poner avisos publicitarios. Pero para esto necesitamos sostenernos gracias a donaciones.</p>
+          <p>Solo una pequeña porción de nuestros usuarios dona. Ahora es el momento en que tenemos que pedirte algo. Si todos los que están leyendo esto ahora donaran $50, nuestra campaña de recaudación de fondos finalizaría en una hora y hasta alcanzaría para comprarle a Acid un par de chelas.</p>
+          <p>Somos una pequeña organización con los costos de un gran sitio web: servidores, personal y programas. Brindamos servicios a miles de usuarios, pero funcionamos con solo una fracción de lo que otros grandes sitios gastan. Si SpartanGeek te resulta útil, por favor, tómate un minuto para mantenerla en línea y que siga creciendo.</p>
+          <p>Creemos que el conocimiento es una base. Una base para el potencial humano, para la libertad, para las oportunidades. Creemos que todos deberían tener acceso al conocimiento: gratis, sin restricciones, sin limitaciones. Ayúdanos a finalizar la campaña de recaudación de fondos y mejorar SpartanGeek. Muchas gracias.</p>
+        </div>
+      </div>
+      <div class="col-md-5 col-md-offset-1">
+        <div ng-if="action == 'pay'">
+          <h3>Escoge la forma de apoyarnos</h3>
+
+          <section>
+            <div class="radio">
+              <label>
+                <input type="radio" name="pay_period" value="once" ng-model="form.pay_period">
+                Una sóla vez&mdash;se hará un sólo cargo a tu tarjeta
+              </label>
+            </div>
+            <div class="radio disabled">
+              <label>
+                <input type="radio" name="pay_period" value="monthly" ng-model="form.pay_period" disabled>
+                Mensual&mdash;se hará un cargo recurrente a tu tarjeta
+              </label>
+            </div>
+          </section>
+
+          <section class="mb-40">
+            <h4>Cantidad</h4>
+            <div class="btn-toolbar mb-10">
+              <a href="" ng-click="form.quantity = 30" class="btn" ng-class="{'btn-default': form.quantity != 30, 'btn-primary': form.quantity == 30}">$30</a>
+              <a href="" ng-click="form.quantity = 50" class="btn" ng-class="{'btn-default': form.quantity != 50, 'btn-primary': form.quantity == 50}">$50</a>
+              <a href="" ng-click="form.quantity = 100" class="btn" ng-class="{'btn-default': form.quantity != 100, 'btn-primary': form.quantity == 100}">$100</a>
+              <a href="" ng-click="form.quantity = 200" class="btn" ng-class="{'btn-default': form.quantity != 200, 'btn-primary': form.quantity == 200}">$200</a>
+              <a href="" ng-click="form.quantity = 500" class="btn" ng-class="{'btn-default': form.quantity != 500, 'btn-primary': form.quantity == 500}">$500</a>
+              <a href="" ng-click="form.quantity = 'custom'" class="btn" ng-class="{'btn-default': form.quantity != 'custom', 'btn-primary': form.quantity =='custom'}">Personalizada</a>
+            </div>
+            <div class="form-group" ng-if="form.quantity == 'custom'">
+              <label class="sr-only" for="exampleInputAmount">Cantidad (MXN)</label>
+              <div class="input-group">
+                <div class="input-group-addon">$</div>
+                <input type="number" ng-model="form.custom_amount" class="form-control" placeholder="Cantidad" min="30" max="10000" step="10">
+                <div class="input-group-addon">.00</div>
+              </div>
+            </div>
+          </section>
+
+          <section class="mb-40">
+            <a ng-if="user.isLogged" href="" ng-click="donate()" class="btn btn-xl btn-primary" ng-class="{disabled: form.loading || form.quantity == 0}"><i class="fa fa-paypal" aria-hidden="true"></i> <span ng-if="!form.loading">Pagar con Paypal</span><span ng-if="form.loading">Conectando con Paypal...</span></a>
+            <a ng-if="!user.isLogged" ng-click="signIn()" href="" class="btn btn-default btn-xl">Iniciar sesión para donar</a>
+          </section>
+        </div>
+
+        <div ng-if="action == 'paying'">
+          <h3>Estamos procesando tu donación.</h3>
+          <i class="fa fa-spinner fa-pulse fa-2x fa-fw"></i>
+        </div>
+
+        <div ng-if="action == 'payed'">
+          <h3>Gracias por tu donación</h3>
+
+          <p class="alert alert-success">Tu pago fue recibido. Gracias por apoyarnos a mantener SpartanGeek</p>
+        </div>
+
+        <div ng-if="action == 'pay_error'">
+          <h3>Ocurrió un error</h3>
+
+          <p class="alert alert-info">No pudimos procesar el pago de tu donación. Inténtalo nuevamente.</p>
+        </div>
+
+        <section>
+          <h3>Top de donadores</h3>
+
+          <div class="user-activity" ng-repeat="d in donations">
+            <a href="/u/{{ d.user.username}}/{{ d.user.id }}" title="Perfil de {{ d.user.username}}" class="avatar-container" target="_blank">
+              <img class="avatar" ng-src="{{ d.user.image }}" alt="{{ d.user.username }}" ng-if="d.user.image">
+              <span class="avatar" title="{{ d.user.username }}" ng-if="!d.user.image">{{ d.user.username[0] }}</span>
+            </a>
+            <div class="username">
+              <a href="/u/{{ d.user.username}}/{{ d.user.id }}" title="Perfil de {{ d.user.username}}" class="ng-binding" target="_blank">
+                {{ d.user.username }}
+              </a>
+            </div>
+            <div class="description">
+              Donó <strong>{{ d.amount | currency:'$ ':0}}</strong> {{d.created_at | timeAgo}}
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+</main>

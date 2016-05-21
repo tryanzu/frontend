@@ -31,7 +31,7 @@
   <!-- /Favicon -->
 
   <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-  <link type="text/css" rel="stylesheet" href="/css/app.css?v=066">
+  <link type="text/css" rel="stylesheet" href="/css/app.css?v=067">
 
   <script type="text/javascript" src="js/offline.js"></script>
   <script src="https://d3tvtfb6518e3e.cloudfront.net/2/angular-opbeat.min.js"></script>
@@ -40,7 +40,7 @@
   <script src='https://cdn.firebase.com/js/client/2.2.1/firebase.js'></script>
   <script src="https://cdn.firebase.com/libs/angularfire/1.1.1/angularfire.min.js"></script>
   <script type="text/javascript" src="js/config.js"></script>
-  <script type="text/javascript" src="js/main.js?v=066"></script>
+  <script type="text/javascript" src="js/main.js?v=067"></script>
 
 </head>
 <body ng-controller="MainController">
@@ -86,23 +86,11 @@
         </a>
       </div>
 
-      <ul class="nav navbar-nav hidden-xs">
+      <ul class="nav navbar-nav hidden-xs" ng-hide="location.path() == '/donacion' || location.path() == '/compra-en-legion'">
         <li>
           <div role="search" id="top-search" ng-controller="SearchController">
             <div search-bar></div>
           </div>
-        </li>
-      </ul>
-
-      <ul class="nav navbar-nav navbar-stats hidden-xs" ng-if="!user.isLogged && location.path() == '/'">
-        <li ng-cloak>
-          <a><i class="fa fa-users"></i> <span class="hidden-md">Usuarios</span>: {{ status.stats.users | number:0 }}</a>
-        </li>
-        <li ng-cloak>
-          <a><i class="fa fa-file"></i> <span class="hidden-md">Publicaciones</span>: {{ status.stats.posts | number:0 }}</a>
-        </li>
-        <li ng-cloak>
-          <a><i class="fa fa-comments"></i> <span class="hidden-md">Comentarios</span>: {{ status.stats.comments | number:0 }}</a>
         </li>
       </ul>
 
@@ -113,6 +101,13 @@
           <li><a href="" ng-click="signUp()">Únete</a></li>
         </ul>
         <ul class="nav navbar-nav" ng-class="{'hidden-md': !user.isLogged}" ng-cloak>
+          <li ng-if="location.path() != '/donacion' && location.path() != '/compra-en-legion'">
+            <a href="/donacion"><i class="fa fa-heart" style="color: #FF6E6E; padding-right: 5px;" aria-hidden="true"></i> Donar</a>
+          </li>
+          <li ng-if="location.path() == '/donacion' || location.path() == '/compra-en-legion'">
+            <a href="/"><i class="fa fa-users"></i> Comunidad</a>
+          </li>
+          <li class="hidden-md"><a href="/componentes"><i class="fa fa-th-large"></i> Componentes de PC</a></li>
           <li class="dropdown" uib-dropdown>
             <a uib-dropdown-toggle href="">
               Secciones <span class="caret"></span>
