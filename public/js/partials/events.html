@@ -1,0 +1,117 @@
+<main class="global-content">
+  <div class="container">
+    <h1>Eventos de SpartanGeek</h1>
+
+    <div class="mb-40" ng-if="load.first">
+      <i class="fa fa-spinner fa-pulse fa-2x fa-fw"></i> <span class="sr-only">Cargando...</span>
+    </div>
+
+    <div class="row" ng-if="!load.first" ng-show="current_event.name == ''">
+      <p ng-if="events.length == 0" class="alert alert-warning">No hay eventos actualmente</p>
+
+      <div class="col-md-4" ng-repeat="(key, e) in events">
+        <div class="event">
+          <h3>{{ e.name }}</h3>
+          <section>
+            <p>Lugar: {{ e.place }}</p>
+            <p>Fecha: {{ e.date }}</p>
+            <p>Hora: {{ e.hour }}</p>
+          </section>
+          <section>
+            <p>
+              <strong>Tipo de evento:</strong>
+              <span ng-if="e.type == 'invitation'"><i class="fa fa-lock" aria-hidden="true"></i> Cerrado</span>
+              <span ng-if="e.type == 'open'"><i class="fa fa-unlock-alt" aria-hidden="true"></i> Abierto</span>
+            </p>
+          </section>
+          <a href="" class="btn btn-primary" ng-if="user.isLogged" ng-click="selectEvent(key, e)">Quiero asistir</a>
+        </div>
+      </div>
+    </div>
+
+    <section class="row" ng-if="current_event.name != ''">
+      <div class="col-md-12">
+        <h2>{{ current_event.name }}</h2>
+      </div>
+
+      <div class="mb-40" ng-if="load.second">
+        <i class="fa fa-spinner fa-pulse fa-2x fa-fw"></i> <span class="sr-only">Cargando...</span>
+      </div>
+
+
+      <div class="col-md-12" ng-if="!load.second && !load.completed">
+        <p>Este es un evento cerrado, es decir, que necesitas una invitación para poder entrar. Para asistir a este evento, tienes que rellenar el siguiente formulario con la información que se pide a continuación:</p>
+
+        <section>
+          <h3>Datos personales</h3>
+          <div class="row">
+            <div class="col-md-4">
+              <div class="form-group">
+                <label class="control-label" for="email">Correo electrónico</label>
+                <input name="email" type="email" class="form-control" placeholder="nobody@spartangeek.com" ng-model="personal.mail">
+                <span class="help-block">El correo que usas como principal para comunicarte. Será el nuevo correo de tu cuenta en SpartanGeek.</span>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <label class="control-label" for="whatsapp">WhatsApp (número de teléfono)</label>
+                <input name="whatsapp" type="phone" class="form-control" placeholder="5512345678" ng-model="personal.whatsapp">
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <label class="control-label" for="ife">IFE (Foto)</label>
+                <br>
+                <a href="" class="btn btn-sm btn-default" ngf-select ngf-change="uploadPicture($files)" ngf-multiple="false" ngf-accept="'image/*'" ng-show="!adding_file"><i class="fa fa-picture-o"></i> <span class="label hidden-xs">Adjuntar imagen</span></a>
+                <a href="" class="btn btn-sm btn-default disabled" ng-show="adding_file"><i class="fa fa-picture-o"></i> <span class="label hidden-xs">Adjuntando imagen...</span></a>
+              </div>
+              <div ng-if="form.ife != ''">
+                <img ng-src="{{ form.ife }}" class="img-responsive">
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h3>Cuestionario</h3>
+
+          <div class="form-group">
+            <label class="control-label" for="question_1">1. ¿En qué día de hueva apareción el "Lic" por primera vez?</label>
+            <input name="question_1" type="text" class="form-control" placeholder="" ng-model="form.q1">
+          </div>
+
+          <div class="form-group">
+            <label class="control-label" for="question_1">2. ¿Quien ganó el concurso de "enchúlame la PC"?</label>
+            <input name="question_1" type="text" class="form-control" placeholder="" ng-model="form.q2">
+          </div>
+
+          <div class="form-group">
+            <label class="control-label" for="question_1">3. ¿Qué juego prefieres, Battlefield o Call of Duty?</label>
+            <input name="question_1" type="text" class="form-control" placeholder="" ng-model="form.q3">
+          </div>
+
+          <div class="form-group">
+            <label class="control-label" for="question_1">4. ¿Quienes son los programadores de SpartanGeek?</label>
+            <input name="question_1" type="text" class="form-control" placeholder="" ng-model="form.q4">
+          </div>
+
+          <div class="form-group">
+            <label class="control-label" for="question_1">5. Pregunta Pilón: ¿Quien es el papurro?</label>
+            <input name="question_1" type="text" class="form-control" placeholder="" ng-model="form.q5">
+          </div>
+        </section>
+
+        <p>Responder este cuestionario no te asegura un lugar en el evento. Los elegidos para asistir recibiran un correo y un mensaje via WA para poder obtener su invitación.</p>
+        <p>Sólo tendrás <strong>una oportunidad</strong> de mandar este formulario. Relee lo que pusiste. Ya que estés seguro de que hayas puesto tu información correctamente, haz click en el siguiente botón.</p>
+
+        <a href="" class="btn btn-success" ng-click="sendApplication()">Ya revisé mi información, quiero ir!</a>
+      </div>
+
+      <div class="col-md-12" ng-if="!load.second && load.completed">
+        <p class="alert alert-info" ng-if="!load.first_time">Ya mandaste tu aplicación para este evento, no es necesario volverlo a enviar. Espera a que te contactemos.</p>
+        <p class="alert alert-success" ng-if="load.first_time">Se ha mandado tu aplicación para este evento, no es necesario volverlo a enviar. Espera a que te contactemos.</p>
+      </div>
+    </section>
+
+  </div>
+</main>

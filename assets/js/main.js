@@ -36,6 +36,7 @@
 // @codekit-prepend "modules/components/components"
 // @codekit-prepend "modules/tournament/init"
 // @codekit-prepend "modules/donations/donations"
+// @codekit-prepend "modules/events/event"
 
 var boardApplication = angular.module('board', [
   'ngOpbeat',
@@ -61,6 +62,7 @@ var boardApplication = angular.module('board', [
   'sg.module.top',
   'sg.module.tournament',
   'sg.module.donations',
+  'sg.module.events',
   'chatModule',
   'angular-jwt',
   'firebase',
@@ -75,7 +77,7 @@ var boardApplication = angular.module('board', [
   'btford.socket-io'
 ]);
 
-var version = '067';
+var version = '068';
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider', 'AclServiceProvider', '$opbeatProvider',
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider, AclServiceProvider, $opbeatProvider) {
@@ -186,6 +188,10 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   $routeProvider.when('/torneo', {
     templateUrl: '/js/partials/tournament.html?v=' + version,
     controller: 'TournamentController'
+  });
+  $routeProvider.when('/eventos', {
+    templateUrl: '/js/partials/events.html?v=' + version,
+    controller: 'EventController'
   });
   $routeProvider.when('/post/create/:cat_slug?', {
     templateUrl: '/js/partials/publish.html?v=' + version,
