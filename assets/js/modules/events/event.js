@@ -7,10 +7,9 @@ EventModule.controller('EventController', ['$scope', '$timeout', '$http', 'Uploa
   $scope.load = {
     first: true,
     second: true,
-    completed: false
+    completed: false,
+    first_time: false
   };
-  $scope.loading = true;
-  $scope.loading_inner = true;
   $scope.current_event = {
     name: ''
   };
@@ -54,7 +53,9 @@ EventModule.controller('EventController', ['$scope', '$timeout', '$http', 'Uploa
         $scope.load.completed = false;
       }
       //$scope.loading_inner = false;
-      $scope.load.second = false;
+      $timeout(function(){
+        $scope.load.second = false;
+      }, 100);
       //console.log("Evento", ss.val(), $scope.load.second);
     });
   };
@@ -82,6 +83,8 @@ EventModule.controller('EventController', ['$scope', '$timeout', '$http', 'Uploa
       'phone': $scope.personal.whastapp,
       'email': $scope.personal.mail
     }).then(function success(response) {
+      console.log($scope.form);
+      $scope.load.first_time = true;
       $scope.form.name = $scope.user.info.username;
       $scope._firebase.child('applications').child($scope.user.info.id).set($scope.form);
     }, function(error){
