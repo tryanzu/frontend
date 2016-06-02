@@ -16,6 +16,7 @@
 // @codekit-prepend "vendor/emoji.min.js"
 // @codekit-prepend "vendor/jquery.knob.min.js"
 // @codekit-prepend "vendor/socket.min.js"
+// @codekit-prepend "vendor/country-picker.min.js"
 
 // @codekit-prepend "common/directives"
 // @codekit-prepend "common/filters"
@@ -77,7 +78,7 @@ var boardApplication = angular.module('board', [
   'btford.socket-io'
 ]);
 
-var version = '069';
+var version = '070';
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider', 'AclServiceProvider', '$opbeatProvider',
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider, AclServiceProvider, $opbeatProvider) {

@@ -347,20 +347,20 @@
           <h2>Elige tu forma de pago</h2>
 
           <section ng-hide="cart.getTotal() + cart.getShippingFee(f.ship_method) + getPaymentFee() == 0">
-          <div class="radio">
-            <label>
-              <input type="radio" ng-model="pay_method.value" name="optionsRadios" id="optionsRadios1" value="withdrawal" checked>
-              Pago con depósito o transferencia bancaria &mdash; <strong>Tienes 3 días hábiles para hacer el pago</strong>
-            </label>
-          </div>
-          <img src="/images/pay-deposit.png" height="80" alt="Pago con depósito o transferencia bancaria">
-          <div class="radio">
-            <label>
-              <input type="radio" ng-model="pay_method.value" name="optionsRadios" id="optionsRadios2" value="credit_card">
-              Pago con tarjeta de débido o crédito &mdash; <strong>Comisión de 4.2% + $4</strong>
-            </label>
-          </div>
-          <img src="/images/pay-card.png" height="80" alt="Pago con tarjeta de débido o crédito">
+            <div class="radio">
+              <label>
+                <input type="radio" ng-model="pay_method.value" name="optionsRadios" id="optionsRadios1" value="withdrawal" checked>
+                Pago con depósito o transferencia bancaria &mdash; <strong>Tienes 3 días hábiles para hacer el pago</strong>
+              </label>
+            </div>
+            <img src="/images/pay-deposit.png" height="80" alt="Pago con depósito o transferencia bancaria">
+            <div class="radio" ng-if="false">
+              <label>
+                <input type="radio" ng-model="pay_method.value" name="optionsRadios" id="optionsRadios2" value="credit_card">
+                Pago con tarjeta de débido o crédito &mdash; <strong>Comisión de 4.2% + $4</strong>
+              </label>
+            </div>
+            <img src="/images/pay-card.png" height="80" alt="Pago con tarjeta de débido o crédito"  ng-if="false">
           </section>
 
         </section>

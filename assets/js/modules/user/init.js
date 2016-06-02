@@ -1,4 +1,4 @@
-var UserModule = angular.module('userModule',[]);
+var UserModule = angular.module('userModule',['puigcerber.countryPicker']);
 
 // Service of the user module
 UserModule.factory('User', ['$resource', function($resource) {
@@ -39,6 +39,41 @@ UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed
     'show_message': false,
     'which_message': null
   };
+
+  $scope.user_form = {
+    steam: '',
+    origin: '',
+    battlenet: '',
+    country: '',
+    editing: false
+  };
+
+  $scope.loadInfoForm = function() {
+    $scope.user_form.steam = $scope.profile.steam_id;
+    $scope.user_form.origin = $scope.profile.origin_id;
+    $scope.user_form.battlenet= $scope.profile.battlenet_id;
+    $scope.user_form.country = $scope.profile.country;
+    $scope.user_form.editing = true;
+  }
+
+  $scope.updateInfo = function() {
+
+    $http.put(layer_path + 'user/my', {
+      steam_id: $scope.user_form.steam,
+      origin_id: $scope.user_form.origin,
+      battlenet_id: $scope.user_form.battlenet,
+      country: $scope.user_form.country
+    }).then(function success(response) {
+      console.log(response);
+      $scope.profile.steam_id = $scope.user_form.steam;
+      $scope.profile.origin_id = $scope.user_form.origin;
+      $scope.profile.battlenet_id = $scope.user_form.battlenet;
+      $scope.profile.country = $scope.user_form.country;
+      $scope.user_form.editing = false;
+    }, function (error) {
+      console.log(error);
+    });
+  }
 
   $scope.updatePassword = function() {
     $scope.password_update.in_progress = true;
