@@ -151,6 +151,60 @@
                           </div>
                         </div>
                       </div>
+
+                      <hr>
+
+                      <section>
+                        <h3>Cuentas externas</h3>
+
+                        <table class="table">
+                          <tr>
+                            <th>Steam</th>
+                            <td ng-if="!user_form.editing">{{ profile.steam_id || '-'}}</td>
+                            <td ng-if="user_form.editing">
+                              <input type="text" name="" ng-model="user_form.steam" class="form-control">
+                            </td>
+                          </tr>
+                          <tr ng-show="profile.origin_id != '' || user_form.editing">
+                            <th>Origin</th>
+                            <td ng-if="!user_form.editing">{{ profile.origin_id || '-'}}</td>
+                            <td ng-if="user_form.editing">
+                              <input type="text" name="" ng-model="user_form.origin" class="form-control">
+                            </td>
+                          </tr>
+                          <tr ng-show="profile.battlenet_id != '' || user_form.editing">
+                            <th>Battle.net</th>
+                            <td ng-if="!user_form.editing">{{ profile.battlenet_id || '-'}}</td>
+                            <td ng-if="user_form.editing">
+                              <input type="text" name="" ng-model="user_form.battlenet" class="form-control">
+                            </td>
+                          </tr>
+                        </table>
+
+                        <div class="btn-toolbar text-right" ng-if="user.info.id == profile.id">
+                          <a href="" class="btn btn-default btn-sm" ng-click="loadInfoForm()" ng-if="!user_form.editing">Actualizar información</a>
+                          <a href="" class="btn btn-success btn-sm" ng-click="updateInfo()" ng-if="user_form.editing">Guardar</a>
+                        </div>
+                      </section>
+
+                      <hr>
+
+                      <section>
+                        <h3>Información adicional</h3>
+
+                        <table class="table">
+                          <tr>
+                            <th>País de residencia</th>
+                            <td ng-if="!user_form.editing">{{ profile.country || 'Sin especificar'}}</td>
+                            <td ng-if="user_form.editing"><select class="form-control" ng-model="user_form.country" pvp-country-picker="alpha3"></select></td>
+                          </tr>
+                        </table>
+
+                        <div class="btn-toolbar text-right" ng-if="user.info.id == profile.id">
+                          <a href="" class="btn btn-default btn-sm" ng-click="loadInfoForm()" ng-if="!user_form.editing">Actualizar información</a>
+                          <a href="" class="btn btn-success btn-sm" ng-click="updateInfo()" ng-if="user_form.editing">Guardar</a>
+                        </div>
+                      </section>
                     </div>
                     <div class="col-md-7 col-md-offset-1 mb-40">
                       <h3>Medallas</h3>

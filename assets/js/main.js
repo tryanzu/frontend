@@ -16,6 +16,7 @@
 // @codekit-prepend "vendor/emoji.min.js"
 // @codekit-prepend "vendor/jquery.knob.min.js"
 // @codekit-prepend "vendor/socket.min.js"
+// @codekit-prepend "vendor/country-picker.min.js"
 
 // @codekit-prepend "common/directives"
 // @codekit-prepend "common/filters"
