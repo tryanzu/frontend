@@ -29,16 +29,24 @@
             <div class="col-md-6">
               <div class="radio">
                 <label>
-                  <input type="radio" ng-model="pay_method.value" name="optionsRadios" id="optionsRadios1" value="withdrawal" checked>
+                  <input type="radio" ng-model="pay_method.value" name="optionsRadios" value="withdrawal" checked>
                   Pago con depósito o transferencia bancaria &mdash; <strong>Tienes 1 día para hacer el pago</strong>
                 </label>
               </div>
               <img src="/images/pay-deposit.png" alt="Pago con depósito o transferencia bancaria" height="80px">
             </div>
+            <div class="col-md-6">
+              <div class="radio">
+                <label>
+                  <input type="radio" ng-model="pay_method.value" name="optionsRadios" value="paypal" checked>
+                  Pago con Paypal &mdash; <strong>Comisión de 4.6% + $5</strong>
+                </label>
+              </div>
+              <img src="/images/pay-paypal.jpg" alt="Pago con Paypal" height="80">
             <div class="col-md-6" ng-if="false">
               <div class="radio">
                 <label>
-                  <input type="radio" ng-model="pay_method.value" name="optionsRadios" id="optionsRadios2" value="credit_card">
+                  <input type="radio" ng-model="pay_method.value" name="optionsRadios" value="credit_card">
                   Pago con tarjeta de débido o crédito &mdash; <strong>Comisión de 4.2% + $4</strong>
                 </label>
               </div>
@@ -106,14 +114,14 @@
             </tr>
           </table>
 
-          <div class="checkbox" ng-if="user.isLogged && pay_method.value == 'withdrawal'">
+          <div class="checkbox" ng-if="user.isLogged && (pay_method.value == 'withdrawal' || pay_method.value == 'paypal')">
             <label>
               <input type="checkbox" ng-model="f.understand"> Quiero realizar mi Compra en Legión y entiendo que aún falta por pagar <strong>una diferencia y el envío</strong>.
             </label>
           </div>
 
           <div class="buttons">
-            <a href="" class="btn btn-block btn-success" ng-class="{disabled: !f.understand}" ng-if="user.isLogged && pay_method.value == 'withdrawal'" ng-click="makeOrder()">Comprar</a>
+            <a href="" class="btn btn-block btn-success" ng-class="{disabled: !f.understand}" ng-if="user.isLogged && (pay_method.value == 'withdrawal' || pay_method.value == 'paypal')" ng-click="makeOrder()">Comprar</a>
           </div>
 
           <div class="buttons text-center" ng-if="!user.isLogged">
@@ -146,5 +154,7 @@
         </div>
       </div>
     </div>
+
+
   </div>
 </main>

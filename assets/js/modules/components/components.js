@@ -1131,7 +1131,7 @@ ComponentsModule.controller('MassdropController', ['$scope', '$http', '$timeout'
   }, function(error){});
 }]);
 
-ComponentsModule.controller('MassdropPayController', ['$scope', '$http', '$routeParams', function($scope, $http, $routeParams) {
+ComponentsModule.controller('MassdropPayController', ['$scope', '$http', '$routeParams', '$location', function($scope, $http, $routeParams, $location) {
   // Flags
   $scope.f = {
     verify_cart: false,
@@ -1183,6 +1183,8 @@ ComponentsModule.controller('MassdropPayController', ['$scope', '$http', '$route
     } else {
       if($scope.pay_method.value == 'credit_card') {
         return Math.ceil( ($scope.f.quantity * $scope.price_per_unit) * 0.042 + 4 );
+      } else if($scope.pay_method.value == 'paypal') {
+        return Math.ceil( ($scope.f.quantity * $scope.price_per_unit) * 0.046 + 5 );
       } else {
         return Math.ceil( ($scope.f.quantity * $scope.price_per_unit) * 0.04 + 4 );
       }
@@ -1218,7 +1220,8 @@ ComponentsModule.controller('MassdropPayController', ['$scope', '$http', '$route
 
     var gateways = {
       'withdrawal': 'offline',
-      'credit_card': 'stripe'
+      'credit_card': 'stripe',
+      'paypal': 'paypal'
     }
 
     $scope.f.error_messages.totals = false;
@@ -1229,13 +1232,15 @@ ComponentsModule.controller('MassdropPayController', ['$scope', '$http', '$route
       "meta": meta,
       "quantity": parseInt($scope.f.quantity),
       "product_id": $scope.product_id
-      //"ship_to": $scope.selected_address.id,
-      //"total": cart.getTotal() + cart.getShippingFee() + $scope.getPaymentFee()
     }, {
       withCredentials: true
     }).then(function success(response) {
       //cart.empty();
-      $scope.currentStep = "completed";
+      if($scope.pay_method.value == 'paypal') {
+        window.location.href = response.data.response.approval_url;
+      } else {
+        $scope.currentStep = "completed";
+      }
     }, function(error){
       console.log(error);
       if(error.data.key == "bad-total") {
@@ -1247,6 +1252,28 @@ ComponentsModule.controller('MassdropPayController', ['$scope', '$http', '$route
       }
       $scope.f.trying_to_pay = false;
     });
+  }
+
+  if($routeParams.paymentId != null && $routeParams.PayerID != null) {
+    $scope.currentStep = 'paying';
+
+    $http.post(layer_path + 'payments/execute', {
+      paymentID: $routeParams.paymentId,
+      payerID: $routeParams.PayerID
+    }).then(function success(response) {
+      $scope.currentStep = "completed";
+      $location.search('paymentId', null);
+      $location.search('PayerID', null);
+      $location.search('token', null);
+    }, function(error) {
+      $scope.f.error_messages.totals = true;
+      $scope.currentStep = "pay";
+      $location.search('paymentId', null);
+      $location.search('PayerID', null);
+      $location.search('token', null);
+    });
+  } else {
+    $scope.currentStep = "pay";
   }
 
   $http.get(layer_path + "store/product/" + $routeParams.slug).then(function success(response){
