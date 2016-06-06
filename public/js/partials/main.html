@@ -112,14 +112,14 @@
                         </li>
                       </ul>
                       <ul class="extra-info">
+                        <li class="pinned" ng-if="post.pinned">
+                          <i class="fa fa-exclamation-circle"></i> <span>Importante</span>
+                        </li>
                         <li class="category">
                           <i class="fa fa-asterisk" ng-style="{'color': post.category.color}"></i> <span class="label-category">{{ post.category.name }}</span>
                         </li>
                         <li class="solved" ng-if="post.solved">
                           <i class="fa fa-check-circle"></i> <span>Resuelto</span>
-                        </li>
-                        <li class="pinned" ng-if="post.pinned">
-                          <i class="fa fa-exclamation-circle"></i> <span>Importante</span>
                         </li>
                       </ul>
                     </a>

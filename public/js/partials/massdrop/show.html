@@ -117,16 +117,15 @@
           </div>
         </section>
         <section class="mb-40">
-          <div class="price">
-            <h3 ng-if="massdrop.active">Quedan <span ng-if="counter.days > 0">{{ counter.days }} días, </span>{{ counter.hours }} horas<span ng-if="counter.days < 1">, {{ counter.minutes }} minutos</span></h3>
-            <h3 ng-if="!massdrop.active">La Compra en legión ha finalizado</h3>
-          </div>
-
           <div class="buttons mb-10">
             <a href="/compra-en-legion/{{product.slug}}/unirme" class="btn btn-block btn-success" ng-if="(counter.hours > 0 || counter.minutes > 0) && massdrop.active" style="font-size:24px; margin-bottom: 10px;">Aparta con {{ massdrop.reserve_price | currency:'$ ':0 }}</a>
           </div>
 
-          <p class="description" ng-if="massdrop.active" style="text-align:center; margin-bottom: 20px;">Paga <strong>la diferencia</strong> cuando termine la compra en legión</p>
+          <div class="price">
+            <span class="description" ng-if="massdrop.active">Paga <strong>la diferencia</strong> cuanto termine la compra en legión</span>
+            <h3 ng-if="massdrop.active">Quedan <span ng-if="counter.days > 0">{{ counter.days }} días, </span>{{ counter.hours }} horas<span ng-if="counter.days < 1">, {{ counter.minutes }} minutos</span></h3>
+            <h3 ng-if="!massdrop.active">La Compra en legión ha finalizado</h3>
+          </div>
 
           <table class="table">
             <tr>
