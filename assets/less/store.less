@@ -11,8 +11,9 @@
       font-weight: 300;
       font-size: 48px;
     }
-    h3 {
-      margin-bottom: 2em;
+    h2 {
+      margin-bottom: 1em;
+      margin-top: 0;
     }
   }
 }
@@ -58,6 +59,9 @@
   padding: 4em 0;
 }
 
+.mb-10 {
+  margin-bottom: 10px;
+}
 .mb-20 {
   margin-bottom: 20px;
 }
@@ -90,4 +94,55 @@
     content: "";
     clear: both;
   }
+}
+
+.computers-list {
+  .computer-single {
+    border: 1px solid #e3e3e9;
+    padding: 1em;
+    h2 {
+      margin: 10px 20px;
+    }
+
+    .computer-price {
+      margin-left: 1em;
+      border-radius: 5px;
+      background-color: #f9f9fc;
+      padding: 1em;
+      border: 1px solid #f4f4fa;
+      margin-bottom: 1em;
+
+      &.recommended {
+        border-color: @brand-primary;
+      }
+
+      .price-number {
+        font-size: 24px;
+        font-weight: 300;
+        text-align: right;
+        margin-right: 5px;
+        margin-bottom: 10px;
+      }
+    }
+  }
+}
+
+.product-feature {
+  margin-bottom: 20px;
+  .info {
+    h3 {
+      font-family: 'Proxima';
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+  }
+}
+
+.cs_new {
+  height: 18px!important;
+  font-size: 18px!important;
+  font-family: inherit!important;
+  font-weight: 600!important;
+  margin-top: 15px!important;
+  width: 29px!important;
 }
