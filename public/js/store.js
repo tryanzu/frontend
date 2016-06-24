@@ -32,6 +32,9 @@ storeApp.config(['$routeProvider', '$locationProvider', function($routeProvider,
   $routeProvider.when('/computadoras/:category?', {
     templateUrl: '/js/partials/shop/list.html?v=' + version,
   });
+  $routeProvider.when('/computadoras/:category/:slug?', {
+    templateUrl: '/js/partials/shop/show.html?v=' + version,
+  });
   $routeProvider.otherwise({ redirectTo: '/' });
 
   // use the HTML5 History API
