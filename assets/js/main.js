@@ -118,7 +118,7 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
     templateUrl: '/js/partials/components.html?v=' + version,
     controller: 'ComponentsController'
   });
-  $routeProvider.when('/componentes/armar-pc', {
+  $routeProvider.when('/computadoras/armar-pc', {
     templateUrl: '/js/partials/pc_builder.html?v=' + version,
     controller: 'PcBuilderController'
   });

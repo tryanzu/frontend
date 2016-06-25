@@ -3,129 +3,129 @@
     <div class="row">
       <div class="col-md-12">
 
-        <h1>Lista de componentes actual</h1>
+        <h1>Lista actual de componentes</h1>
 
         <div class="components">
-          <div ng-if="post.components.cpu.content || true" class="component">
+          <div ng-if="current_build.cpu.name || true" class="component">
             <div class="row">
               <div class="col-md-1 col-sm-3">
                 <img src="/images/components/cpu.png" alt="CPU" />
               </div>
 
               <div class="col-md-10 col-sm-9">
-                <h6>Procesador <span class="status" ng-if="post.components.cpu.status == 'needed'">Lo necesito</span> <span class="status owned" ng-if="post.components.cpu.status == 'owned'">Ya lo tengo</span></h6>
-                {{ post.components.cpu.content }}
+                <h6>Procesador <span class="status" ng-if="current_build.cpu.status == 'needed'">Lo necesito</span> <span class="status owned" ng-if="current_build.cpu.status == 'owned'">Ya lo tengo</span></h6>
+                <p>{{ current_build.cpu.name }}</p>
               </div>
             </div>
           </div>
 
-          <div ng-if="post.components.motherboard.content || true" class="component">
+          <div ng-if="current_build.motherboard.name || true" class="component">
             <div class="row">
               <div class="col-md-1 col-sm-3">
                 <img src="/images/components/motherboard.png" alt="CPU" />
               </div>
 
               <div class="col-md-10 col-sm-9">
-                <h6>Motherboard <span class="status" ng-if="post.components.motherboard.status == 'needed'">Lo necesito</span> <span class="status owned" ng-if="post.components.motherboard.status == 'owned'">Ya lo tengo</span></h6>
-                {{ post.components.motherboard.content }}
+                <h6>Motherboard <span class="status" ng-if="current_build.motherboard.status == 'needed'">Lo necesito</span> <span class="status owned" ng-if="current_build.motherboard.status == 'owned'">Ya lo tengo</span></h6>
+                <p>{{ current_build.motherboard.name }}</p>
               </div>
             </div>
           </div>
 
-          <div ng-if="post.components.cabinet.content || true" class="component">
+          <div ng-if="current_build.cabinet.name || true" class="component">
             <div class="row">
               <div class="col-md-1 col-sm-3">
                 <img src="/images/components/cabinet.png" alt="CPU" />
               </div>
 
               <div class="col-md-10 col-sm-9">
-                <h6>Gabinete <span class="status" ng-if="post.components.cabinet.status == 'needed'">Lo necesito</span> <span class="status owned" ng-if="post.components.cabinet.status == 'owned'">Ya lo tengo</span></h6>
-                {{ post.components.cabinet.content }}
+                <h6>Gabinete <span class="status" ng-if="current_build.cabinet.status == 'needed'">Lo necesito</span> <span class="status owned" ng-if="current_build.cabinet.status == 'owned'">Ya lo tengo</span></h6>
+                {{ current_build.cabinet.name }}
               </div>
             </div>
           </div>
 
-          <div ng-if="post.components.ram.content || true" class="component">
+          <div ng-if="current_build.ram.name || true" class="component">
             <div class="row">
               <div class="col-md-1 col-sm-3">
                 <img src="/images/components/ram.png" alt="CPU" />
               </div>
 
               <div class="col-md-10 col-sm-9">
-                <h6>Memoria RAM <span class="status" ng-if="post.components.ram.status == 'needed'">Lo necesito</span> <span class="status owned" ng-if="post.components.ram.status == 'owned'">Ya lo tengo</span></h6>
-                {{ post.components.ram.content }}
+                <h6>Memoria RAM <span class="status" ng-if="current_build.ram.status == 'needed'">Lo necesito</span> <span class="status owned" ng-if="current_build.ram.status == 'owned'">Ya lo tengo</span></h6>
+                {{ current_build.ram.name }}
               </div>
             </div>
           </div>
 
-          <div ng-if="post.components.screen.content || true" class="component">
+          <div ng-if="current_build.screen.name || true" class="component">
             <div class="row">
               <div class="col-md-1 col-sm-3">
                 <img src="/images/components/screen.png" alt="CPU" />
               </div>
 
               <div class="col-md-10 col-sm-9">
-                <h6>Monitor <span class="status" ng-if="post.components.screen.status == 'needed'">Lo necesito</span> <span class="status owned" ng-if="post.components.screen.status == 'owned'">Ya lo tengo</span></h6>
-                {{ post.components.screen.content }}
+                <h6>Monitor <span class="status" ng-if="current_build.screen.status == 'needed'">Lo necesito</span> <span class="status owned" ng-if="current_build.screen.status == 'owned'">Ya lo tengo</span></h6>
+                {{ current_build.screen.name }}
               </div>
             </div>
           </div>
 
-          <div ng-if="post.components.videocard.content || true" class="component">
+          <div ng-if="current_build.videocard.name || true" class="component">
             <div class="row">
               <div class="col-md-1 col-sm-3">
                 <img src="/images/components/videocard.png" alt="CPU" />
               </div>
 
               <div class="col-md-10 col-sm-9">
-                <h6>Tarjeta gráfica <span class="status" ng-if="post.components.videocard.status == 'needed'">Lo necesito</span> <span class="status owned" ng-if="post.components.videocard.status == 'owned'">Ya lo tengo</span></h6>
-                {{ post.components.videocard.content }}
+                <h6>Tarjeta gráfica <span class="status" ng-if="current_build.videocard.status == 'needed'">Lo necesito</span> <span class="status owned" ng-if="current_build.videocard.status == 'owned'">Ya lo tengo</span></h6>
+                <p ng-repeat="gpu in current_build.videocard">{{ gpu.name }}</p>
               </div>
             </div>
           </div>
 
-          <div ng-if="post.components.power.content || true" class="component">
+          <div ng-if="current_build.power.name || true" class="component">
             <div class="row">
               <div class="col-md-1 col-sm-3">
                 <img src="/images/components/power.png" alt="CPU" />
               </div>
 
               <div class="col-md-10 col-sm-9">
-                <h6>Fuente de Poder <span class="status" ng-if="post.components.power.status == 'needed'">Lo necesito</span> <span class="status owned" ng-if="post.components.power.status == 'owned'">Ya lo tengo</span></h6>
-                {{ post.components.power.content }}
+                <h6>Fuente de Poder <span class="status" ng-if="current_build.power.status == 'needed'">Lo necesito</span> <span class="status owned" ng-if="current_build.power.status == 'owned'">Ya lo tengo</span></h6>
+                {{ current_build.power.name }}
               </div>
             </div>
           </div>
 
-          <div ng-if="post.components.storage.content || true" class="component">
+          <div ng-if="current_build.storage.name || true" class="component">
             <div class="row">
               <div class="col-md-1 col-sm-3">
                 <img src="/images/components/storage.png" alt="CPU" />
               </div>
 
               <div class="col-md-10 col-sm-9">
-                <h6>Almacenamiento <span class="status" ng-if="post.components.storage.status == 'needed'">Lo necesito</span> <span class="status owned" ng-if="post.components.storage.status == 'owned'">Ya lo tengo</span></h6>
-                {{ post.components.storage.content }}
+                <h6>Almacenamiento <span class="status" ng-if="current_build.storage.status == 'needed'">Lo necesito</span> <span class="status owned" ng-if="current_build.storage.status == 'owned'">Ya lo tengo</span></h6>
+                {{ current_build.storage.name }}
               </div>
             </div>
           </div>
 
-          <div ng-if="post.components.cooler.content || true" class="component">
+          <div ng-if="current_build.cooler.name || true" class="component">
             <div class="row">
               <div class="col-md-1 col-sm-3">
                 <img src="/images/components/cooler.png" alt="CPU" />
               </div>
 
               <div class="col-md-10 col-sm-9">
-                <h6>Enfriamento <span class="status" ng-if="post.components.cooler.status == 'needed'">Lo necesito</span> <span class="status owned" ng-if="post.components.cooler.status == 'owned'">Ya lo tengo</span></h6>
-                {{ post.components.cooler.content }}
+                <h6>Enfriamento <span class="status" ng-if="current_build.cooler.status == 'needed'">Lo necesito</span> <span class="status owned" ng-if="current_build.cooler.status == 'owned'">Ya lo tengo</span></h6>
+                {{ current_build.cooler.name }}
               </div>
             </div>
           </div>
 
-          <div class="component" ng-if="post.components.software">
+          <div class="component" ng-if="current_build.software">
             <h6>Programas que utilizaré</h6>
-            {{ post.components.software }}
+            {{ current_build.software }}
           </div>
         </div>
 

@@ -10316,6 +10316,22 @@ ComponentsModule.controller('ComponentController', ['$scope', '$routeParams', '$
 }]);
 
 ComponentsModule.controller('PcBuilderController', ['$scope', function($scope) {
+  $scope.current_build = {
+    cpu:{
+      name: 'Intel Core i5-6600K 3.5GHz Quad-Core'
+    },
+    motherboard: {
+      name: 'Prueba de nombre'
+    },
+    videocard: [
+      {
+        name: 'GPU 1'
+      },
+      {
+        name: 'GPU 2'
+      }
+    ]
+  };
 }]);
 
 ComponentsModule.controller('CheckoutController', ['$scope', 'cart', '$http', '$timeout', function($scope, cart, $http, $timeout) {
@@ -11594,7 +11610,7 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
     templateUrl: '/js/partials/components.html?v=' + version,
     controller: 'ComponentsController'
   });
-  $routeProvider.when('/componentes/armar-pc', {
+  $routeProvider.when('/computadoras/armar-pc', {
     templateUrl: '/js/partials/pc_builder.html?v=' + version,
     controller: 'PcBuilderController'
   });
