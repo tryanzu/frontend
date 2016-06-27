@@ -10318,10 +10318,23 @@ ComponentsModule.controller('ComponentController', ['$scope', '$routeParams', '$
 ComponentsModule.controller('PcBuilderController', ['$scope', function($scope) {
   $scope.current_build = {
     cpu:{
-      name: 'Intel Core i5-6600K 3.5GHz Quad-Core'
+      name: 'Intel Core i5-6600K 3.5GHz Quad-Core',
+      url: 'https://spartangeek.com/componentes/cpu/intel-cpu-bx80662i56600k',
+      image: 'https://assets.spartangeek.com/components/a78eddcf763b2efc4a330e323914fc6f7b54a6e9.jpg',
+      price: {
+        store: 'Amazon México',
+        value: 6400,
+        shipping: 0
+      }
     },
     motherboard: {
-      name: 'Prueba de nombre'
+      name: 'Asus MAXIMUS VIII HERO ATX LGA1151',
+      image: 'https://assets.spartangeek.com/components/08fa13b01ceaa9a9e12bbbe7f5c02f12539a01f0.jpg',
+      price: {
+        store: 'Amazon México',
+        value: 7000,
+        shipping: 0
+      }
     },
     videocard: [
       {
@@ -10330,7 +10343,17 @@ ComponentsModule.controller('PcBuilderController', ['$scope', function($scope) {
       {
         name: 'GPU 2'
       }
-    ]
+    ],
+    screen: [],
+    power: {
+      name: 'CoolMax 400W ATX',
+      image: 'https://assets.spartangeek.com/components/2829fc852de66d5fb0c91bae9c89623147aaef57.jpg',
+      price: {
+        store: null,
+        value: null,
+        shipping: null
+      }
+    }
   };
 }]);
 
@@ -11610,7 +11633,7 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
     templateUrl: '/js/partials/components.html?v=' + version,
     controller: 'ComponentsController'
   });
-  $routeProvider.when('/computadoras/armar-pc', {
+  $routeProvider.when('/computadoras/armar', {
     templateUrl: '/js/partials/pc_builder.html?v=' + version,
     controller: 'PcBuilderController'
   });
