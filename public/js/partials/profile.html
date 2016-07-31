@@ -195,8 +195,13 @@
                         <table class="table">
                           <tr>
                             <th>País de residencia</th>
-                            <td ng-if="!user_form.editing">{{ profile.country || 'Sin especificar'}}</td>
-                            <td ng-if="user_form.editing"><select class="form-control" ng-model="user_form.country" pvp-country-picker="alpha3"></select></td>
+                            <td ng-if="!user_form.editing">
+                              <span><flag country="{{ profile.country }}" size="16"></flag></span>
+                              {{ profile.country || 'Sin especificar'}}
+                            </td>
+                            <td ng-if="user_form.editing">
+                              <select class="form-control" ng-model="user_form.country" pvp-country-picker></select>
+                            </td>
                           </tr>
                         </table>
 
