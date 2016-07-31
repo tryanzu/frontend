@@ -6508,6 +6508,36 @@ directives.directive('populometro', function() {
   }
 });
 
+/**
+ * ng-flags module
+ * Turns country ISO code to flag thumbnail.
+ *
+ * Author: asafdav - https://github.com/asafdav
+ */
+directives.directive('flag', function() {
+  return {
+    restrict: 'E',
+    replace: true,
+    template: '<span class="f{{ size }}"><span class="flag {{ country }}"></span></span>',
+    scope: {
+      country: '@',
+      size: '@'
+    },
+    link: function(scope, elm, attrs) {
+      // Default flag size
+      scope.size = 16;
+
+      scope.$watch('country', function(value) {
+        scope.country = angular.lowercase(value);
+      });
+
+      scope.$watch('size', function(value) {
+        scope.size = value;
+      });
+    }
+  };
+});
+
 var filters = angular.module('filtersModule', []);
 
 filters.filter('date_at', function() {
@@ -11515,6 +11545,8 @@ EventModule.controller('EventController', ['$scope', '$timeout', '$http', 'Uploa
 // @codekit-prepend "modules/donations/donations"
 // @codekit-prepend "modules/events/event"
 
+var version = '071b';
+
 var boardApplication = angular.module('board', [
   'ngOpbeat',
   'ngRoute',
@@ -11553,8 +11585,6 @@ var boardApplication = angular.module('board', [
   'stripe',
   'btford.socket-io'
 ]);
-
-var version = '071';
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider', 'AclServiceProvider', '$opbeatProvider',
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider, AclServiceProvider, $opbeatProvider) {

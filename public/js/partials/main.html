@@ -373,6 +373,28 @@
                                 </div>
                               </div>
                             </li>
+                            <li class="item-game-tags">
+                              <div class="row">
+                                <div class="col-md-12">
+                                  <div class="row">
+                                    <div class="col-md-4">Steam</div>
+                                    <div class="col-md-8">{{ post.author.steam_id || 'No especificado'}}</div>
+                                  </div>
+                                </div>
+                                <div class="col-md-12" ng-show="post.author.origin_id != ''">
+                                  <div class="row">
+                                    <div class="col-md-4">Origin</div>
+                                    <div class="col-md-8">{{ post.author.origin_id || 'No especificado'}}</div>
+                                  </div>
+                                </div>
+                                <div class="col-md-12" ng-show="post.author.battlenet_id != ''">
+                                  <div class="row">
+                                    <div class="col-md-4">Battle.net</div>
+                                    <div class="col-md-8">{{ post.author.battlenet_id || 'No especificado'}}</div>
+                                  </div>
+                                </div>
+                              </table>
+                            </li>
                             <li class="item-lastSeen">
                               <span class="user-last-seen online" ng-if="post.author.status">
                                 <i class="fa fa-fw fa-circle"></i> Online
@@ -404,6 +426,7 @@
                     </span>
 
                     <div>
+                      <span ng-if="post.author.country"><flag country="{{ post.author.country }}" size="16"></flag></span>
                       <span class="level">{{ misc.gaming.rules[post.author.gaming.level].name }}</span>
                     </div>
                   </div>
@@ -637,6 +660,28 @@
                                     </div>
                                   </div>
                                 </li>
+                                <li class="item-game-tags">
+                                  <div class="row">
+                                    <div class="col-md-12">
+                                      <div class="row">
+                                        <div class="col-md-4">Steam</div>
+                                        <div class="col-md-8">{{ comment.author.steam_id || 'No especificado'}}</div>
+                                      </div>
+                                    </div>
+                                    <div class="col-md-12" ng-show="comment.author.origin_id != ''">
+                                      <div class="row">
+                                        <div class="col-md-4">Origin</div>
+                                        <div class="col-md-8">{{ comment.author.origin_id || 'No especificado'}}</div>
+                                      </div>
+                                    </div>
+                                    <div class="col-md-12" ng-show="comment.author.battlenet_id != ''">
+                                      <div class="row">
+                                        <div class="col-md-4">Battle.net</div>
+                                        <div class="col-md-8">{{ comment.author.battlenet_id || 'No especificado'}}</div>
+                                      </div>
+                                    </div>
+                                  </table>
+                                </li>
                                 <li class="item-lastSeen">
                                   <span class="user-last-seen online" ng-if="comment.author.status">
                                     <i class="fa fa-fw fa-circle"></i> Online
@@ -671,7 +716,8 @@
                         </span>
 
                         <div>
-                          <span class="level">{{ ::misc.gaming.rules[comment.author.gaming.level].name }}
+                          <span ng-if="comment.author.country"><flag country="{{ comment.author.country }}" size="16"></flag></span>
+                          <span class="level">{{ misc.gaming.rules[comment.author.gaming.level].name }}
                         </div>
                       </div>
                     </div>
