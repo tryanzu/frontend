@@ -34,6 +34,10 @@
     <div class="row">
       <div class="col-md-12">
 
+        <div class="compatibility-check">
+          <strong>Prueba de compatibilidad:</strong> No se encontraron problemas/incompatibilidades
+        </div>
+
         <table class="table components">
           <tr>
             <th>Componente</th>
@@ -63,16 +67,16 @@
             <td>{{ current_build.cpu.price.shipping == 0?'Gratis':(current_build.cpu.price.shipping | currency:'$ ':0) }}</td>
             <td>{{ current_build.cpu.price.store }}</td>
             <td>
-              <div class="btn-group">
+              <div class="btn-group" uib-dropdown>
                 <button type="button" class="btn btn-default btn-sm"><i class="fa fa-star"></i> Lo quiero</button>
-                <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" uib-dropdown-toggle>
                   <span class="caret"></span>
-                  <span class="sr-only">Toggle Dropdown</span>
+                  <span class="sr-only">Mostrar opciones</span>
                 </button>
-                <ul class="dropdown-menu">
-                  <li><a href="#">Action</a></li>
-                  <li><a href="#">Another action</a></li>
-                  <li><a href="#">Something else here</a></li>
+                <ul class="dropdown-menu" uib-dropdown-menu>
+                  <li><a href="#">Lo tengo</a></li>
+                  <li><a href="#">Lo tuve</a></li>
+                  <li><a href="#">Lo quiero</a></li>
                 </ul>
               </div>
             </td>
@@ -164,7 +168,6 @@
             <td>
               <h6>Memoria RAM</h6>
               <p>{{ current_build.ram.name }}</p>
-              <a href="" class="btn btn-default btn-xs" ng-if="!current_build.ram.name">Elegir memoria RAM</a>
             </td>
             <td>{{ current_build.ram.price.value | currency:'$ ':0 }}</td>
             <td>{{ current_build.ram.price.shipping == 0?'Gratis':(current_build.ram.price.shipping | currency:'$ ':0) }}</td>
@@ -189,6 +192,11 @@
                 <a href="" class="btn btn-link btn-sm"><i class="fa fa-times" aria-hidden="true"></i></a>
               </div>
             </td>
+          </tr>
+          <tr class="add-item">
+            <td colspan="2"></td>
+            <td><a href="" class="btn btn-default btn-xs" ng-if="!current_build.ram.name">Elegir memoria RAM</a></td>
+            <td colspan="5"></td>
           </tr>
           <tr class="component monitor">
             <td>
