@@ -39,6 +39,8 @@
 // @codekit-prepend "modules/donations/donations"
 // @codekit-prepend "modules/events/event"
 
+var version = '071b';
+
 var boardApplication = angular.module('board', [
   'ngOpbeat',
   'ngRoute',
@@ -77,8 +79,6 @@ var boardApplication = angular.module('board', [
   'stripe',
   'btford.socket-io'
 ]);
-
-var version = '071';
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider', 'AclServiceProvider', '$opbeatProvider',
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider, AclServiceProvider, $opbeatProvider) {
