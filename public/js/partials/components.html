@@ -1,14 +1,5 @@
 <div class="global-content">
   <div class="container">
-    <section ng-if="onlyStore" class="hidden">
-      <div class="banner">
-        <img src="/images/shop/banners/nvidia.jpg" height="auto">
-      </div>
-
-      <div class="banner banner-empty visible-lg-inline-block">
-        <p>Promoción disponible</p>
-      </div>
-    </section>
 
     <div class="row">
       <div class="col-md-9">
@@ -56,11 +47,6 @@
         <h4>Buscar</h4>
         <input type="text" class="form-control" ng-model="query" id="search-text" placeholder="Busqueda por componente, modelo, serie" autocomplete="off" autocorrect="off"  ng-keyup="do($event)" />
 
-        <div class="switch-control">
-          <switch id="enabled" name="enabled" ng-model="onlyStore" on="Si" off="No" class="sg"></switch>
-          <span class="switch-label">Mostrar sólo componentes vendidos en SpartanGeek</span>
-        </div>
-
         <h4>Categorías</h4>
         <ul class="collections">
           <li ng-repeat="facet in facets" ng-class="{'active': facet.category == current_facet}">
@@ -71,16 +57,6 @@
             <a href="" ng-click="change_facet('')">Mostrar todas</a>
           </li>
         </ul>
-
-        <section class="hidden">
-          <h4>Recomendaciones</h4>
-          <ul class="collections">
-            <li><a href="#">Los más vendidos</a></li>
-            <li><a href="#">Los más vistos</a></li>
-            <li><a href="#">Procesadores de menos de $3,000</a></li>
-            <li><a href="#">Heroes of the Storm de regalo</a></li>
-          </ul>
-        </section>
 
       </div>
 
