@@ -11497,7 +11497,7 @@ EventModule.controller('EventController', ['$scope', '$timeout', '$http', 'Uploa
 // @codekit-prepend "modules/donations/donations"
 // @codekit-prepend "modules/events/event"
 
-var version = '071b';
+var version = '072';
 
 var boardApplication = angular.module('board', [
   'ngOpbeat',
