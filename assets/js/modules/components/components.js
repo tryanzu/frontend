@@ -195,9 +195,6 @@ ComponentsModule.factory('cart', ['$localstorage', '$http', 'AclService', functi
 ComponentsModule.controller('ComponentsController', ['$scope', '$timeout', '$http', '$route', '$location', '$routeParams', function($scope, $timeout, $http, $route, $location, $routeParams) {
 
   $scope.onlyStore = false;
-  if($scope.location.path().indexOf('tienda') > -1) {
-    $scope.onlyStore = true;
-  }
 
   $scope.results = [];
   $scope.query = '';
@@ -572,9 +569,6 @@ ComponentsModule.controller('ComponentController', ['$scope', '$routeParams', '$
   });
 }]);
 
-ComponentsModule.controller('PcBuilderController', ['$scope', function($scope) {
-}]);
-
 ComponentsModule.controller('CheckoutController', ['$scope', 'cart', '$http', '$timeout', function($scope, cart, $http, $timeout) {
   $scope.currentStep = "cart";
 
@@ -654,11 +648,7 @@ ComponentsModule.controller('CheckoutController', ['$scope', 'cart', '$http', '$
       withCredentials: true
     }).then(function success(response){
       if($scope.can('debug')) console.log(response);
-      /*for(var i = 0; i < response.data.length; i++) {
-        response.data[i]._id = response.data[i].id;
-      }*/
       cart.replaceItems(response.data);
-      //console.log(cart);
       $scope.f.verify_cart = false;
     }, function(error){
       console.log(error);
@@ -666,19 +656,6 @@ ComponentsModule.controller('CheckoutController', ['$scope', 'cart', '$http', '$
   };
   $scope.validateCart();
 
-  // After getting Stripe token, we make our API call
-  // to try to make the charge
-  $scope.createToken = function(status, response) {
-    $scope.current_token_error = '';
-    $scope.current_charge_error = '';
-    if(status == 402) {
-      console.log(status, response);
-      $scope.current_token_error = response.error.code;
-    } else {
-      //console.log(response.id);
-      $scope.makeOrder(response.id);
-    }
-  };
 
   // General purpose order processor
   $scope.makeOrder = function(token) {
@@ -703,8 +680,7 @@ ComponentsModule.controller('CheckoutController', ['$scope', 'cart', '$http', '$
     }
 
     var gateways = {
-      'withdrawal': 'offline',
-      'credit_card': 'stripe'
+      'withdrawal': 'offline'
     }
 
     $scope.f.error_messages.totals = false;
@@ -1220,7 +1196,6 @@ ComponentsModule.controller('MassdropPayController', ['$scope', '$http', '$route
 
     var gateways = {
       'withdrawal': 'offline',
-      'credit_card': 'stripe',
       'paypal': 'paypal'
     }
 

@@ -354,13 +354,6 @@
               </label>
             </div>
             <img src="/images/pay-deposit.png" height="80" alt="Pago con depósito o transferencia bancaria">
-            <div class="radio" ng-if="false">
-              <label>
-                <input type="radio" ng-model="pay_method.value" name="optionsRadios" id="optionsRadios2" value="credit_card">
-                Pago con tarjeta de débido o crédito &mdash; <strong>Comisión de 4.2% + $4</strong>
-              </label>
-            </div>
-            <img src="/images/pay-card.png" height="80" alt="Pago con tarjeta de débido o crédito"  ng-if="false">
           </section>
 
         </section>
@@ -390,43 +383,6 @@
 
         <a href="" class="btn btn-primary" ng-if="pay_method.value == 'withdrawal'" ng-click="makeOrder()">Finalizar mi pedido</a>
 
-        <p class="alert alert-warning" ng-if="current_token_error != ''"><strong>Error en datos de tu tarjeta</strong><br>{{ token_errors[current_token_error] }}</p>
-
-        <p class="alert alert-warning" ng-if="current_charge_error != ''"><strong>Error al intentar hacer el pago</strong><br>{{ charge_errors[current_charge_error] }}</p>
-
-        <section ng-if="pay_method.value == 'credit_card'" class="mb-40">
-          <form stripe:form="createToken" ng-hide="f.trying_to_pay">
-            <fieldset class="row">
-              <div class="form-group col-sm-8">
-                <label>Nombre impreso en la tarjeta</label>
-                <input type="text" size="40" maxlength="40" data-stripe="name" class="form-control" required />
-              </div>
-              <div class="form-group col-sm-8">
-                <label>Número de tarjeta</label>
-                <input type="text" size="16" maxlength="16" data-stripe="number" class="form-control" />
-              </div>
-              <div class="form-group col-sm-4">
-                <label>CVC</label>
-                <input type="text" size="4" maxlength="4" data-stripe="cvc" class="form-control" />
-              </div>
-              <div class="form-group col-sm-5">
-                <label>Fecha de expiración</label>
-                <input type="text" size="2" maxlength="2" data-stripe="exp-month" class="form-control" />
-                <p class="help-block">Mes (MM)</p>
-              </div>
-              <div class="form-group col-sm-5">
-                <label></label>
-                <input type="text" size="4" maxlength="4" data-stripe="exp-year" class="form-control" />
-                <p class="help-block">Año (AAAA)</p>
-              </div>
-            </fieldset>
-            <button type="submit" class="btn btn-primary">Pagar y completar mi pedido</button>
-          </form>
-
-          <div class="text-center mb-40" ng-show="f.trying_to_pay">
-            <i class="fa fa-spinner fa-pulse fa-4x"></i>
-          </div>
-        </section>
       </div>
     </div>
 

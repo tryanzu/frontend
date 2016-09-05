@@ -11,7 +11,6 @@
 // @codekit-prepend "vendor/angular-acl.min.js"
 // @codekit-prepend "vendor/angular-timeago.js"
 // @codekit-prepend "vendor/algoliasearch.angular.min.js"
-// @codekit-prepend "vendor/stripe-angular.js"
 // @codekit-prepend "vendor/emoji.config.js"
 // @codekit-prepend "vendor/emoji.min.js"
 // @codekit-prepend "vendor/jquery.knob.min.js"
@@ -76,7 +75,6 @@ var boardApplication = angular.module('board', [
   'mm.acl',
   'yaru22.angular-timeago',
   'searchBar',
-  'stripe',
   'btford.socket-io'
 ]);
 
@@ -113,10 +111,6 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   $routeProvider.when('/signup/confirm/:code', {
     templateUrl: '/js/partials/validate.html?v=' + version,
     controller: 'UserValidationController'
-  });
-  $routeProvider.when('/componentes/tienda/:type?', {
-    templateUrl: '/js/partials/components.html?v=' + version,
-    controller: 'ComponentsController'
   });
   $routeProvider.when('/componentes/armar-pc', {
     templateUrl: '/js/partials/pc_builder.html?v=' + version,
@@ -186,10 +180,6 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
     templateUrl: '/js/partials/donations.html?v=' + version,
     controller: 'DonationsController'
   });
-  $routeProvider.when('/torneo', {
-    templateUrl: '/js/partials/tournament.html?v=' + version,
-    controller: 'TournamentController'
-  });
   $routeProvider.when('/eventos', {
     templateUrl: '/js/partials/events.html?v=' + version,
     controller: 'EventController'
@@ -211,9 +201,6 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
 
   // use the HTML5 History API
   $locationProvider.html5Mode(true);
-
-  // Stripe
-  Stripe.setPublishableKey(stripe_public_key);
 
   // Marked
   markedProvider.setRenderer({
