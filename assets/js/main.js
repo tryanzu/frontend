@@ -38,7 +38,7 @@
 // @codekit-prepend "modules/donations/donations"
 // @codekit-prepend "modules/events/event"
 
-var version = '072';
+var version = '073';
 
 var boardApplication = angular.module('board', [
   'ngOpbeat',
@@ -51,7 +51,7 @@ var boardApplication = angular.module('board', [
   'hc.marked',
   //'idiotWizzy',
   'infinite-scroll',
-  'facebook',
+  //'facebook',
   'feedModule',
   'categoryModule',
   'readerModule',
@@ -78,8 +78,8 @@ var boardApplication = angular.module('board', [
   'btford.socket-io'
 ]);
 
-boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'FacebookProvider', 'markedProvider', 'AclServiceProvider', '$opbeatProvider',
-  function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, FacebookProvider, markedProvider, AclServiceProvider, $opbeatProvider) {
+boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'markedProvider', 'AclServiceProvider', '$opbeatProvider',
+  function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, markedProvider, AclServiceProvider, $opbeatProvider) {
 
   $routeProvider.when('/home', {
     templateUrl: '/js/partials/home.html?v=' + version
@@ -232,8 +232,6 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   }];
   $httpProvider.interceptors.push('jwtInterceptor');
 
-  FacebookProvider.init(fb_api_key);
-
   $opbeatProvider.config({
     orgId: '4718fb1324fc4d3897ee39d393f9b734',
     appId: '0fecd2a8d9'
@@ -243,8 +241,8 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   AclServiceProvider.config({storage: false});
 }]);
 
-boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http', '$uibModalInstance', 'Facebook',
-  function($scope, $rootScope, $http, $uibModalInstance, Facebook) {
+boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http', '$uibModalInstance',
+  function($scope, $rootScope, $http, $uibModalInstance) {
     $scope.form = {
       email: '',
       password: '',
@@ -302,84 +300,11 @@ boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http'
     $scope.cancel = function() {
       $uibModalInstance.dismiss('cancel');
     };
-
-    var checkPermissions = function(response) {
-      if(response.status === 'connected') {
-        return $http.get("https://graph.facebook.com/me/permissions?access_token=" + response.authResponse.accessToken).
-          then(function success(response) {
-            var permissions = response.data.data;
-            var found = false;
-            for(p in permissions) {
-              if(permissions[p].permission == "email") {
-                return permissions[p].status == "granted";
-              }
-            }
-            return false;
-          }, function(error){
-            return false;
-          });
-      } else {
-        return false;
-      }
-    }
-
-    $scope.loginFb = function() {
-      $scope.fb_loading = true;
-      Facebook.login(function(response) {
-        if(response.authResponse != null) {
-          checkPermissions(response).then(function (result) {
-            if(result) {
-              $scope.fb_try(response);
-            } else {
-              $scope.form.error = {message:'Debes aceptar todos los permisos en FB para poder iniciar sesión.'};
-              $scope.fb_loading = false;
-            }
-          });
-        } else {
-          $scope.form.error = {message:'Debes aceptar los permisos en FB para poder iniciar sesión.'};
-          $scope.fb_loading = false;
-        }
-      }, {
-        scope: 'public_profile,email',
-        auth_type: 'rerequest'
-      });
-    };
-
-    $scope.fb_try = function(response) {
-      $http.get("https://graph.facebook.com/me?access_token=" + response.authResponse.accessToken).
-        success(function(data, status, headers, config) {
-          //var info = data;
-          var ref = localStorage.getItem('ref');
-          if(ref) {
-            data.ref = ref;
-          }
-          $http.post(layer_path + 'user/get-token/facebook', data).
-            error(function(data, status, headers, config) {
-              if(data.message == "Not trusted.") {
-                $scope.form.error = {message:'Tu cuenta ha sido bloqueada.'};
-              } else {
-                $scope.form.error = {message:'No se pudo iniciar sesión.'};
-              }
-            })
-            .success(function(data) {
-              localStorage.setItem('id_token', data.token);
-              localStorage.setItem('firebase_token', data.firebase);
-              localStorage.setItem('signed_in', true);
-
-              $uibModalInstance.dismiss('logged');
-              $rootScope.$broadcast('login');
-            });
-        }).
-        error(function(data, status, headers, config) {
-          $scope.form.error = {message: 'Error conectando con FB'};
-          return;
-        });
-    }
   }
 ]);
 
-boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http', '$uibModalInstance', 'Facebook',
-  function($scope, $rootScope, $http, $uibModalInstance, Facebook) {
+boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http', '$uibModalInstance',
+  function($scope, $rootScope, $http, $uibModalInstance) {
     $scope.form = {
       email: '',
       password: '',
@@ -435,76 +360,6 @@ boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http'
       $uibModalInstance.dismiss('cancel');
     };
 
-    var checkPermissions = function(response) {
-      if(response.status === 'connected') {
-        return $http.get("https://graph.facebook.com/me/permissions?access_token=" + response.authResponse.accessToken).
-          then(function success(response) {
-            var permissions = response.data.data;
-            var found = false;
-            for(p in permissions) {
-              if(permissions[p].permission == "email") {
-                return permissions[p].status == "granted";
-              }
-            }
-            return false;
-          }, function(error){
-            return false;
-          });
-      } else {
-        return false;
-      }
-    }
-    $scope.loginFb = function() {
-      $scope.fb_loading = true;
-      Facebook.login(function(response) {
-        if(response.authResponse != null) {
-          checkPermissions(response).then(function (result) {
-            if(result) {
-              $scope.fb_try(response);
-            } else {
-              $scope.form.error = {message:'Debes aceptar todos los permisos en FB para poder iniciar sesión.'};
-              $scope.fb_loading = false;
-            }
-          });
-        } else {
-          $scope.form.error = {message:'Debes aceptar los permisos en FB para poder iniciar sesión.'};
-          $scope.fb_loading = false;
-        }
-      }, {
-        scope: 'public_profile,email',
-        auth_type: 'rerequest'
-      });
-    };
-
-    $scope.fb_try = function(response) {
-      $http.get("https://graph.facebook.com/me?access_token=" + response.authResponse.accessToken)
-        .then(function success(response){
-          var data = response.data;
-          var ref = localStorage.getItem('ref');
-          if(ref) {
-            data.ref = ref;
-          }
-          $http.post(layer_path + 'user/get-token/facebook', data).
-            then(function success(response){
-              var data = response.data;
-              localStorage.setItem('id_token', data.token);
-              localStorage.setItem('firebase_token', data.firebase);
-              localStorage.setItem('signed_in', true);
-              $uibModalInstance.dismiss('logged');
-              $rootScope.$broadcast('login');
-            }, function error(response){
-              var data = response.data;
-              if(data.message == "Not trusted.") {
-                $scope.form.error = {message:'Tu cuenta ha sido bloqueada.'};
-              } else {
-                $scope.form.error = {message:'No se pudo iniciar sesión.'};
-              }
-            });
-        }, function(error){
-          $scope.form.error = {message: 'Error conectando con FB'};
-          return;
-        });
-    }
 }]);
 
 boardApplication.controller('MainController', [
@@ -515,11 +370,10 @@ boardApplication.controller('MainController', [
   '$timeout',
   '$firebaseObject',
   '$firebaseArray',
-  'Facebook',
   'AclService',
   '$location',
   '$q',
-  function($scope, $rootScope, $http, $uibModal, $timeout, $firebaseObject, $firebaseArray, Facebook, AclService, $location, $q) {
+  function($scope, $rootScope, $http, $uibModal, $timeout, $firebaseObject, $firebaseArray, AclService, $location, $q) {
     $scope.user = {
       isLogged: false,
       info: null,
@@ -786,13 +640,6 @@ boardApplication.controller('MainController', [
       $scope.logUser();
     });
 
-    // Check for FB Login Status, this is necessary so later calls doesn't make
-    // the pop up to be blocked by the browser
-    Facebook.getLoginStatus(function(r) {
-      //console.log(r);
-      $rootScope.fb_response = r;
-    });
-
     // Board updates notification
     var fbRef = new Firebase(firebase_url);
     var updatesRef = fbRef.child('version');
@@ -869,10 +716,24 @@ boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', 'cart'
   var location = $location.path();
   //console.log(location);
 
+  if($location.search().fbToken && $location.search().token) {
+    console.log( $location.search().token, $location.search().fbToken);
+    localStorage.setItem('signed_in', 'true');
+    localStorage.setItem('id_token', $location.search().token);
+    localStorage.setItem('firebase_token', $location.search().fbToken);
+    console.log("Sesión iniciada...", localStorage.id_token, localStorage.firebase_token);
+    $location.search('fbToken', null);
+    $location.search('token', null);
+  } else {
+    console.log("No viene el token...");
+  }
+
   if(localStorage.signed_in === 'false' && localStorage.redirect_to_home !== 'true' && location == '/') {
     localStorage.setItem('redirect_to_home', 'true');
     window.location.href = "/home";
   }
+
+
 
   $rootScope.cart = cart;
 
@@ -882,13 +743,13 @@ boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', 'cart'
   };
 
   // Initialize cart
-  $http.get(layer_path + 'store/cart', {
+  /*$http.get(layer_path + 'store/cart', {
     withCredentials: true
   }).then(function success(response){
     cart.replaceItems(response.data);
   }, function(error){
     console.log(error);
-  });
+  });*/
 
   // Set the ACL data.
   // The data should have the roles as the property names,
