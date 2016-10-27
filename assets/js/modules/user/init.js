@@ -6,8 +6,8 @@ UserModule.factory('User', ['$resource', function($resource) {
 }]);
 
 // User Profile controller
-UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed', 'Upload', '$http', '$timeout', '$firebaseObject',
-  function($scope, User, $routeParams, Feed, Upload, $http, $timeout, $firebaseObject) {
+UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed', 'Upload', '$http', '$timeout', '$firebaseObject', '$location',
+  function($scope, User, $routeParams, Feed, Upload, $http, $timeout, $firebaseObject, $location) {
 
   $scope.profile = null;
   $scope.resolving_posts = false;
@@ -47,6 +47,16 @@ UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed
     country: '',
     editing: false
   };
+  $scope.revalidate = {
+    status: 'init'
+  }
+
+  var valid_sections = ['info', 'config', 'comments', 'feed', 'owning'];
+  if($location.search().section) {
+    if($.inArray($location.search().section, valid_sections)) {
+      $scope.current_page = $location.search().section;
+    }
+  }
 
   $scope.loadInfoForm = function() {
     $scope.user_form.steam = $scope.profile.steam_id;
@@ -220,6 +230,14 @@ UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed
 
         $scope.comments = response.data;
       }, function(response) {});
+  }
+  $scope.resendValidationMail = function() {
+    $scope.revalidate.status = 'sending';
+    $http.get(layer_path + 'auth/resend-confirmation').then(function success(response){
+      $scope.revalidate.status = 'sent';
+    }, function error(){
+      $scope.revalidate.status = 'init';
+    });
   }
 
   User.get({user_id: $routeParams.id}, function success(data) {

@@ -8545,8 +8545,8 @@ UserModule.factory('User', ['$resource', function($resource) {
 }]);
 
 // User Profile controller
-UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed', 'Upload', '$http', '$timeout', '$firebaseObject',
-  function($scope, User, $routeParams, Feed, Upload, $http, $timeout, $firebaseObject) {
+UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed', 'Upload', '$http', '$timeout', '$firebaseObject', '$location',
+  function($scope, User, $routeParams, Feed, Upload, $http, $timeout, $firebaseObject, $location) {
 
   $scope.profile = null;
   $scope.resolving_posts = false;
@@ -8586,6 +8586,16 @@ UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed
     country: '',
     editing: false
   };
+  $scope.revalidate = {
+    status: 'init'
+  }
+
+  var valid_sections = ['info', 'config', 'comments', 'feed', 'owning'];
+  if($location.search().section) {
+    if($.inArray($location.search().section, valid_sections)) {
+      $scope.current_page = $location.search().section;
+    }
+  }
 
   $scope.loadInfoForm = function() {
     $scope.user_form.steam = $scope.profile.steam_id;
@@ -8759,6 +8769,14 @@ UserModule.controller('UserController', ['$scope', 'User', '$routeParams', 'Feed
 
         $scope.comments = response.data;
       }, function(response) {});
+  }
+  $scope.resendValidationMail = function() {
+    $scope.revalidate.status = 'sending';
+    $http.get(layer_path + 'auth/resend-confirmation').then(function success(response){
+      $scope.revalidate.status = 'sent';
+    }, function error(){
+      $scope.revalidate.status = 'init';
+    });
   }
 
   User.get({user_id: $routeParams.id}, function success(data) {
@@ -11497,7 +11515,7 @@ EventModule.controller('EventController', ['$scope', '$timeout', '$http', 'Uploa
 // @codekit-prepend "modules/donations/donations"
 // @codekit-prepend "modules/events/event"
 
-var version = '073';
+var version = '074';
 
 var boardApplication = angular.module('board', [
   'ngOpbeat',
@@ -12176,15 +12194,11 @@ boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', 'cart'
   //console.log(location);
 
   if($location.search().fbToken && $location.search().token) {
-    console.log( $location.search().token, $location.search().fbToken);
     localStorage.setItem('signed_in', 'true');
     localStorage.setItem('id_token', $location.search().token);
     localStorage.setItem('firebase_token', $location.search().fbToken);
-    console.log("Sesión iniciada...", localStorage.id_token, localStorage.firebase_token);
     $location.search('fbToken', null);
     $location.search('token', null);
-  } else {
-    console.log("No viene el token...");
   }
 
   if(localStorage.signed_in === 'false' && localStorage.redirect_to_home !== 'true' && location == '/') {

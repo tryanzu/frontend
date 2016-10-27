@@ -485,7 +485,6 @@
                       </div>
                     </div>
                   </div>
-
                 </div>
 
                 <div class="offset-content user-content" ng-if="current_page == 'feed'">
@@ -670,33 +669,43 @@
 
                 <div class="offset-content user-content" ng-if="current_page == 'config'">
                   <h3>Cuenta</h3>
-                  <h4>Cambiar contraseña</h4>
-                  <p>Puedes cambiar tu contraseña, la cual debe tener una longitud mínima de 8 caracteres.</p>
+                  <div>
+                      <h4>Cambiar contraseña</h4>
+                      <p>Puedes cambiar tu contraseña, la cual debe tener una longitud mínima de 8 caracteres.</p>
 
-                  <p class="alert alert-warning" ng-if="password_update.show_message && password_update.which_message == 'length'">La contraseña deber tener al menos 8 y máximo 20 caracteres.</p>
-                  <p class="alert alert-warning" ng-if="password_update.show_message && password_update.which_message == 'not_equal'">Las contraseñas no coinciden.</p>
-                  <p class="alert alert-info" ng-if="password_update.show_message && password_update.which_message == 'error'">Hubo un problema al actualizar tu contraseña, intenta de nuevo más tarde.</p>
-                  <p class="alert alert-success" ng-if="password_update.show_message && password_update.which_message == 'success'">Tu contraseña fue actualizada correctamente.</p>
-                  <div class="row">
-                    <div class="col-md-5">
-                      <form>
-                        <div class="form-group">
-                          <label for="password">Nueva contraseña</label>
-                          <input type="password" ng-model="password_update.password" class="form-control" id="password" placeholder="Contraseña">
+                      <p class="alert alert-warning" ng-if="password_update.show_message && password_update.which_message == 'length'">La contraseña deber tener al menos 8 y máximo 20 caracteres.</p>
+                      <p class="alert alert-warning" ng-if="password_update.show_message && password_update.which_message == 'not_equal'">Las contraseñas no coinciden.</p>
+                      <p class="alert alert-info" ng-if="password_update.show_message && password_update.which_message == 'error'">Hubo un problema al actualizar tu contraseña, intenta de nuevo más tarde.</p>
+                      <p class="alert alert-success" ng-if="password_update.show_message && password_update.which_message == 'success'">Tu contraseña fue actualizada correctamente.</p>
+                      <div class="row">
+                        <div class="col-md-5">
+                          <form>
+                            <div class="form-group">
+                              <label for="password">Nueva contraseña</label>
+                              <input type="password" ng-model="password_update.password" class="form-control" id="password" placeholder="Contraseña">
+                            </div>
+                            <div class="form-group">
+                              <label for="password_repeat">Repetir nueva contraseña</label>
+                              <input type="password" ng-model="password_update.password_repeat" class="form-control" id="password_repeat" placeholder="Repetir contraseña">
+                            </div>
+                            <a href="" class="btn btn-default" ng-class="{'disabled': password_update.in_progress}" role="button" ng-click="updatePassword()">Guardar nueva contraseña</a>
+                          </form>
                         </div>
-                        <div class="form-group">
-                          <label for="password_repeat">Repetir nueva contraseña</label>
-                          <input type="password" ng-model="password_update.password_repeat" class="form-control" id="password_repeat" placeholder="Repetir contraseña">
-                        </div>
-                        <a href="" class="btn btn-default" ng-class="{'disabled': password_update.in_progress}" role="button" ng-click="updatePassword()">Guardar nueva contraseña</a>
-                      </form>
+                      </div>
+                  </div>
+                  <hr>
+                  <div>
+                    <h4>Validar mi cuenta</h4>
+                    <p ng-if="user.info.validated" class="alert alert-info">Tu cuenta ya ha sido validada!</p>
+                    <div ng-if="!user.info.validated">
+                        <p>Para usar SpartanGeek con todas las funciones solicitamos a los usuarios que validen sus cuentas con su correo electrónico.</p>
+                        <p>Si no encuentras el correo electrónico revisa tu <strong>correo no deseado</strong>.</p>
+                        <p>Si aún no lo ves, puedes solicitar el reenvío del correo de validación de cuenta dando click en el siguiente botón.</p>
+                        <a href="" ng-click="resendValidationMail()" class="btn btn-default" ng-show="revalidate.status == 'init'">Reenviar correo de validación de cuenta.</a>
+                        <button type="button" class="btn btn-default" ng-show="revalidate.status == 'sending'" disabled>Reenviando correo...</button>
+                        <p class="alert alert-info" ng-show="revalidate.status == 'sent'">Se reenvió el correo a tu cuenta.</p>
                     </div>
                   </div>
-
-                  <hr>
-
-                  <h3>Notificaciones</h3>
-                  <p>Próximamente</p>
                 </div>
               </div>
             </div>

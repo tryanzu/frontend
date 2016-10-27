@@ -31,7 +31,7 @@
   <!-- /Favicon -->
 
   <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-  <link type="text/css" rel="stylesheet" href="/css/app.css?v=073">
+  <link type="text/css" rel="stylesheet" href="/css/app.css?v=074">
 
   <script type="text/javascript" src="js/offline.js"></script>
   <script src="https://d3tvtfb6518e3e.cloudfront.net/2/angular-opbeat.min.js"></script>
@@ -39,7 +39,7 @@
   <script src='https://cdn.firebase.com/js/client/2.2.1/firebase.js'></script>
   <script src="https://cdn.firebase.com/libs/angularfire/1.1.1/angularfire.min.js"></script>
   <script type="text/javascript" src="js/config.js"></script>
-  <script type="text/javascript" src="js/main.js?v=073"></script>
+  <script type="text/javascript" src="js/main.js?v=074"></script>
 
 </head>
 <body ng-controller="MainController">
@@ -142,7 +142,7 @@
                 <h4>Notificaciones</h4>
               </div>
               <li ng-if="!user.info.validated">
-                <a class="unread" href="">
+                <a class="unread" href="/u/{{user.info.username}}/{{user.info.id}}/?section=config">
                   Tu correo no ha sido confirmado
                   <div class="description">Te enviamos un correo para que puedas validar tu cuenta.</div>
                 </a>
