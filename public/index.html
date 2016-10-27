@@ -142,7 +142,7 @@
                 <h4>Notificaciones</h4>
               </div>
               <li ng-if="!user.info.validated">
-                <a class="unread" href="">
+                <a class="unread" href="/u/{{user.info.username}}/{{user.info.id}}/?section=config">
                   Tu correo no ha sido confirmado
                   <div class="description">Te enviamos un correo para que puedas validar tu cuenta.</div>
                 </a>

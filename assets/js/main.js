@@ -717,15 +717,11 @@ boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', 'cart'
   //console.log(location);
 
   if($location.search().fbToken && $location.search().token) {
-    console.log( $location.search().token, $location.search().fbToken);
     localStorage.setItem('signed_in', 'true');
     localStorage.setItem('id_token', $location.search().token);
     localStorage.setItem('firebase_token', $location.search().fbToken);
-    console.log("Sesión iniciada...", localStorage.id_token, localStorage.firebase_token);
     $location.search('fbToken', null);
     $location.search('token', null);
-  } else {
-    console.log("No viene el token...");
   }
 
   if(localStorage.signed_in === 'false' && localStorage.redirect_to_home !== 'true' && location == '/') {
