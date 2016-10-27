@@ -716,10 +716,24 @@ boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', 'cart'
   var location = $location.path();
   //console.log(location);
 
+  if($location.search().fbToken && $location.search().token) {
+    console.log( $location.search().token, $location.search().fbToken);
+    localStorage.setItem('signed_in', 'true');
+    localStorage.setItem('id_token', $location.search().token);
+    localStorage.setItem('firebase_token', $location.search().fbToken);
+    console.log("Sesión iniciada...", localStorage.id_token, localStorage.firebase_token);
+    $location.search('fbToken', null);
+    $location.search('token', null);
+  } else {
+    console.log("No viene el token...");
+  }
+
   if(localStorage.signed_in === 'false' && localStorage.redirect_to_home !== 'true' && location == '/') {
     localStorage.setItem('redirect_to_home', 'true');
     window.location.href = "/home";
   }
+
+
 
   $rootScope.cart = cart;
 
@@ -729,13 +743,13 @@ boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', 'cart'
   };
 
   // Initialize cart
-  $http.get(layer_path + 'store/cart', {
+  /*$http.get(layer_path + 'store/cart', {
     withCredentials: true
   }).then(function success(response){
     cart.replaceItems(response.data);
   }, function(error){
     console.log(error);
-  });
+  });*/
 
   // Set the ACL data.
   // The data should have the roles as the property names,
