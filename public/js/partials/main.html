@@ -836,8 +836,8 @@
                   <div ng-if="post.lock && post.comments.count == 0">
                     <p class="alert alert-info">Esta publicación no permite comentarios.</p>
                   </div>
-                  <div ng-if="!user.info.validated">
-                    <p class="alert alert-info">Necestias <a href="/u/{{user.info.username}}/{{user.info.id}}/?section=config"><strong>validar tu cuenta</strong></a> para poder escribir comentarios.</p>
+                  <div ng-if="user.isLogged && !user.info.validated">
+                    <p class="alert alert-info">Necesitas <a href="/u/{{user.info.username}}/{{user.info.id}}/?section=config"><strong>validar tu cuenta</strong></a> para poder escribir comentarios.</p>
                   </div>
                 </div>
               </div>
