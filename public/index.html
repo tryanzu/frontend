@@ -39,8 +39,9 @@
     OneSignal.push(["init", {
       appId: "a382a052-ea8c-416d-a90f-c62b553f15d3",
       autoRegister: false,
+      persistNotification: false, // Automatically dismiss the notification after ~20 seconds in Chrome Deskop v47+
       notifyButton: {
-        enable: true /* Set to false to hide */
+        enable: false /* Set to false to hide */
       },
       safari_web_id: 'web.onesignal.auto.6a76584b-4903-4cb9-b550-82d6a06974fc'
     }]);
