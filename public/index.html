@@ -24,7 +24,6 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-  <link rel="manifest" href="/manifest.json">
   <meta name="msapplication-TileColor" content="#ffffff">
   <meta name="msapplication-TileImage" content="/favicon/ms-icon-144x144.png">
   <meta name="theme-color" content="#ffffff">
@@ -32,6 +31,20 @@
 
   <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
   <link type="text/css" rel="stylesheet" href="/css/app.css?v=074">
+
+  <link rel="manifest" href="/manifest.json">
+  <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async></script>
+  <script>
+    var OneSignal = window.OneSignal || [];
+    OneSignal.push(["init", {
+      appId: "a382a052-ea8c-416d-a90f-c62b553f15d3",
+      autoRegister: false,
+      notifyButton: {
+        enable: true /* Set to false to hide */
+      },
+      safari_web_id: 'web.onesignal.auto.6a76584b-4903-4cb9-b550-82d6a06974fc'
+    }]);
+  </script>
 
   <script type="text/javascript" src="js/offline.js"></script>
   <script src="https://d3tvtfb6518e3e.cloudfront.net/2/angular-opbeat.min.js"></script>
