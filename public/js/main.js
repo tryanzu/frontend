@@ -12279,14 +12279,6 @@ boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', 'cart'
   $rootScope.can = AclService.can;
   $rootScope.aacl = AdvancedAcl;
 
-  var OneSignal = window.OneSignal || [];
-  // Initialize the local storage
-  if(!localStorage.suscribed)
-    localStorage.suscribed = false;
 
-  if(localStorage.suscribed !== 'true') {
-    localStorage.setItem('suscribed', 'true');
-    OneSignal.showHttpPrompt();
-  }
 }]);
 
