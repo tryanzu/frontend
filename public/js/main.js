@@ -11515,7 +11515,7 @@ EventModule.controller('EventController', ['$scope', '$timeout', '$http', 'Uploa
 // @codekit-prepend "modules/donations/donations"
 // @codekit-prepend "modules/events/event"
 
-var version = '074';
+var version = '076';
 
 var boardApplication = angular.module('board', [
   'ngOpbeat',
@@ -11887,7 +11887,8 @@ boardApplication.controller('MainController', [
     };
     $scope.promises = {
       'gaming': null,
-      'board_stats': null
+      'board_stats': null,
+      'self': null
     }
     $scope.update = {
       available: false,
@@ -12018,6 +12019,17 @@ boardApplication.controller('MainController', [
                       }
                     });
                   });
+                });
+              }
+            });
+
+            OneSignal.getUserId( function(userId) {
+              if($scope.user.isLogged) {
+                // Make a POST call to your server with the user ID
+                $http.patch(layer_path + 'me/onesignal_id', {value: userId}).then(function success(response){
+                  console.log("Suscribed and registered!")
+                }, function error(response){
+                  console.log(response);
                 });
               }
             });
@@ -12172,6 +12184,26 @@ boardApplication.controller('MainController', [
     if(ref != undefined) {
       localStorage.setItem('ref', ref);
     }
+
+    OneSignal.push(function() {
+      OneSignal.on('subscriptionChange', function(isSubscribed) {
+        if (isSubscribed) {
+          // The user is subscribed
+          // Either the user subscribed for the first time
+          // Or the user was subscribed -> unsubscribed -> subscribed
+          OneSignal.getUserId( function(userId) {
+            if($scope.user.isLogged) {
+              // Make a POST call to your server with the user ID
+              $http.patch(layer_path + 'me/onesignal_id', {value: userId}).then(function success(response){
+                console.log("Suscribed and registered!")
+              }, function error(response){
+                console.log(response);
+              });
+            }
+          });
+        }
+      });
+    });
   }
 ]);
 
@@ -12246,5 +12278,15 @@ boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', 'cart'
     });
   $rootScope.can = AclService.can;
   $rootScope.aacl = AdvancedAcl;
+
+  var OneSignal = window.OneSignal || [];
+  // Initialize the local storage
+  if(!localStorage.suscribed)
+    localStorage.suscribed = false;
+
+  if(localStorage.suscribed !== 'true') {
+    localStorage.setItem('suscribed', 'true');
+    OneSignal.showHttpPrompt();
+  }
 }]);
 
