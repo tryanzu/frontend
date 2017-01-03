@@ -359,7 +359,6 @@ boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http'
     $scope.cancel = function () {
       $uibModalInstance.dismiss('cancel');
     };
-
 }]);
 
 boardApplication.controller('MainController', [
@@ -801,6 +800,4 @@ boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', 'cart'
     });
   $rootScope.can = AclService.can;
   $rootScope.aacl = AdvancedAcl;
-
-
 }]);
