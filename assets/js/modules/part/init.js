@@ -1,4 +1,4 @@
-// @codekit-prepend "part_service"
+// @codekit-prepend part_service.js
 
 var PartModule = angular.module('partModule', ['ngResource']);
 

@@ -1,5 +1,5 @@
-// @codekit-prepend "shop/classie"
-// @codekit-prepend "shop/fullscreenForm"
-// @codekit-prepend "shop/selectFx"
-// @codekit-prepend "shop/jquery-2.1.4.min"
-// @codekit-prepend "shop/jquery.range"
+// @codekit-prepend shop/classie.js
+// @codekit-prepend shop/fullscreenForm.js
+// @codekit-prepend shop/selectFx.js
+// @codekit-prepend shop/jquery-2.1.4.min.js
+// @codekit-prepend shop/jquery.range.js
