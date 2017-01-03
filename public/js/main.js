@@ -12092,6 +12092,7 @@ boardApplication.controller('MainController', [
       localStorage.setItem('ref', ref);
     }
 
+    /*
     OneSignal.push(function() {
       OneSignal.on('subscriptionChange', function(isSubscribed) {
         if (isSubscribed) {
@@ -12111,6 +12112,7 @@ boardApplication.controller('MainController', [
         }
       });
     });
+    */
   }
 ]);
 

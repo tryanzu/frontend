@@ -2,26 +2,26 @@
 var gulp = require('gulp');
 
 // plugins
-const connect = require('gulp-connect');
 const minifyCSS = require('gulp-minify-css');
 const sourcemaps = require('gulp-sourcemaps');
 const less = require('gulp-less');
 const postcss = require('gulp-postcss');
 const autoprefixer = require('autoprefixer');
 const codekit = require("gulp-codekit");
+const browserSync = require('browser-sync').create();
+const spa = require("browser-sync-spa");
 
+browserSync.use(spa({
+    // Only needed for angular apps
+    selector: "[ng-app]",
 
-gulp.task('connect', function () {
-  connect.server({
-    //host: 'spartangeek.dev',
-    root: 'public/',
-    port: 8080,
-    fallback: 'public/index.html',
-    livereload: true
-  });
-  gulp.src('./public/*.html').pipe(connect.reload());
-  gulp.src('./public/js/*.js').pipe(connect.reload());
-});
+    // Options to pass to connect-history-api-fallback.
+    // If your application already provides fallback urls (such as an existing proxy server),
+    // this value can be set to false to omit using the connect-history-api-fallback middleware entirely.
+    history: {
+        index: '/index.html'
+    }
+}));
 
 gulp.task('styles', function() {
   var opts = {comments:true,spare:true};
@@ -33,7 +33,7 @@ gulp.task('styles', function() {
     .pipe(minifyCSS(opts))
     .pipe(sourcemaps.write('.'))
     .pipe(gulp.dest('public/css/'))
-    //.pipe(browserSync.stream());
+    .pipe(browserSync.stream());
 });
 
 gulp.task("scripts", function() {
@@ -42,9 +42,23 @@ gulp.task("scripts", function() {
   gulp.src("assets/js/main.js")
     .pipe(codekit())
       .on('error', console.log)
-    .pipe(gulp.dest("public/js"));
+    .pipe(gulp.dest("public/js"))
+    .pipe(browserSync.stream());
 });
 
-gulp.task('serve',
-  ['styles', 'connect']
-);
+// Static Server + watching less/html files
+gulp.task('serve', ['styles', 'scripts'], function() {
+
+  browserSync.init({
+    server: {
+      baseDir: "public"
+    }
+  });
+
+  gulp.watch("assets/less/*.less", ['styles']);
+  gulp.watch("assets/js/*.js", ['scripts']);
+  gulp.watch("public/js/partials/*.html").on('change', browserSync.reload);
+  gulp.watch("public/*.html").on('change', browserSync.reload);
+});
+
+gulp.task('default', ['serve']);
