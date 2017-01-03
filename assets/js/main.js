@@ -1,42 +1,42 @@
-// @codekit-prepend "vendor/angular-marked"
-// @codekit-prepend "vendor/wizzy"
-// @codekit-prepend "vendor/infinite-scroll"
-// @codekit-prepend "vendor/ui-bootstrap-tpls-0.14.3.min"
-// @codekit-prepend "vendor/angular-facebook"
-// @codekit-prepend "vendor/angular-jwt.min"
-// @codekit-prepend "vendor/ng-file-upload-all.min.js"
-// @codekit-prepend "vendor/elastic.js"
-// @codekit-prepend "vendor/mentio.min.js"
-// @codekit-prepend "vendor/angular-ui-switch.min.js"
-// @codekit-prepend "vendor/angular-acl.min.js"
-// @codekit-prepend "vendor/angular-timeago.js"
-// @codekit-prepend "vendor/algoliasearch.angular.min.js"
-// @codekit-prepend "vendor/emoji.config.js"
-// @codekit-prepend "vendor/emoji.min.js"
-// @codekit-prepend "vendor/jquery.knob.min.js"
-// @codekit-prepend "vendor/socket.min.js"
-// @codekit-prepend "vendor/country-picker.min.js"
+// @codekit-prepend vendor/angular-marked.js
+// @codekit-prepend vendor/wizzy.js
+// @codekit-prepend vendor/infinite-scroll.js
+// @codekit-prepend vendor/ui-bootstrap-tpls-0.14.3.min.js
+// @codekit-prepend vendor/angular-facebook.js
+// @codekit-prepend vendor/angular-jwt.min.js
+// @codekit-prepend vendor/ng-file-upload-all.min.js
+// @codekit-prepend vendor/elastic.js
+// @codekit-prepend vendor/mentio.min.js
+// @codekit-prepend vendor/angular-ui-switch.min.js
+// @codekit-prepend vendor/angular-acl.min.js
+// @codekit-prepend vendor/angular-timeago.js
+// @codekit-prepend vendor/algoliasearch.angular.min.js
+// @codekit-prepend vendor/emoji.config.js
+// @codekit-prepend vendor/emoji.min.js
+// @codekit-prepend vendor/jquery.knob.min.js
+// @codekit-prepend vendor/socket.min.js
+// @codekit-prepend vendor/country-picker.min.js
 
-// @codekit-prepend "common/directives"
-// @codekit-prepend "common/filters"
-// @codekit-prepend "common/active_reader"
-// @codekit-prepend "common/services"
+// @codekit-prepend common/directives.js
+// @codekit-prepend common/filters.js
+// @codekit-prepend common/active_reader.js
+// @codekit-prepend common/services.js
 
-// @codekit-prepend "modules/feed/init"
-// @codekit-prepend "modules/categories/init"
-// @codekit-prepend "modules/reader/init"
-// @codekit-prepend "modules/publisher/init"
-// @codekit-prepend "modules/part/init"
-// @codekit-prepend "modules/user/init"
-// @codekit-prepend "modules/rank/init"
-// @codekit-prepend "modules/badges/init"
-// @codekit-prepend "modules/top/init"
-// @codekit-prepend "modules/chat/chat"
-// @codekit-prepend "modules/search/search"
-// @codekit-prepend "modules/components/components"
-// @codekit-prepend "modules/tournament/init"
-// @codekit-prepend "modules/donations/donations"
-// @codekit-prepend "modules/events/event"
+// @codekit-prepend modules/feed/init.js
+// @codekit-prepend modules/categories/init.js
+// @codekit-prepend modules/reader/init.js
+// @codekit-prepend modules/publisher/init.js
+// @codekit-prepend modules/part/init.js
+// @codekit-prepend modules/user/init.js
+// @codekit-prepend modules/rank/init.js
+// @codekit-prepend modules/badges/init.js
+// @codekit-prepend modules/top/init.js
+// @codekit-prepend modules/chat/chat.js
+// @codekit-prepend modules/search/search.js
+// @codekit-prepend modules/components/components.js
+// @codekit-prepend modules/tournament/init.js
+// @codekit-prepend modules/donations/donations.js
+// @codekit-prepend modules/events/event.js
 
 var version = '076';
 
@@ -359,7 +359,6 @@ boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http'
     $scope.cancel = function () {
       $uibModalInstance.dismiss('cancel');
     };
-
 }]);
 
 boardApplication.controller('MainController', [
@@ -708,6 +707,7 @@ boardApplication.controller('MainController', [
       localStorage.setItem('ref', ref);
     }
 
+    /*
     OneSignal.push(function() {
       OneSignal.on('subscriptionChange', function(isSubscribed) {
         if (isSubscribed) {
@@ -727,6 +727,7 @@ boardApplication.controller('MainController', [
         }
       });
     });
+    */
   }
 ]);
 
@@ -801,6 +802,4 @@ boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', 'cart'
     });
   $rootScope.can = AclService.can;
   $rootScope.aacl = AdvancedAcl;
-
-
 }]);

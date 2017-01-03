@@ -1,5 +1,5 @@
-// @codekit-prepend "publish_controller"
-// @codekit-prepend "edit_controller"
+// @codekit-prepend publish_controller.js
+// @codekit-prepend edit_controller.js
 
 var PublisherModule = angular.module('publisherModule', ['ngResource']);
 // Publisher module controllers
