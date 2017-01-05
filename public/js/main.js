@@ -2322,6 +2322,493 @@ return a>v||p>a&&u>a},a.noDecrementHours=function(){var a=n(p,60*-s);return u>a|
 !function(){angular.module("angular-jwt",["angular-jwt.interceptor","angular-jwt.jwt"]),angular.module("angular-jwt.interceptor",[]).provider("jwtInterceptor",function(){this.urlParam=null,this.authHeader="Authorization",this.authPrefix="Bearer ",this.tokenGetter=function(){return null};var e=this;this.$get=["$q","$injector","$rootScope",function(r,t,a){return{request:function(a){if(a.skipAuthorization)return a;if(e.urlParam){if(a.params=a.params||{},a.params[e.urlParam])return a}else if(a.headers=a.headers||{},a.headers[e.authHeader])return a;var n=r.when(t.invoke(e.tokenGetter,this,{config:a}));return n.then(function(r){return r&&(e.urlParam?a.params[e.urlParam]=r:a.headers[e.authHeader]=e.authPrefix+r),a})},responseError:function(e){return 401===e.status&&a.$broadcast("unauthenticated",e),r.reject(e)}}}]}),angular.module("angular-jwt.jwt",[]).service("jwtHelper",function(){this.urlBase64Decode=function(e){var r=e.replace(/-/g,"+").replace(/_/g,"/");switch(r.length%4){case 0:break;case 2:r+="==";break;case 3:r+="=";break;default:throw"Illegal base64url string!"}return decodeURIComponent(escape(window.atob(r)))},this.decodeToken=function(e){var r=e.split(".");if(3!==r.length)throw new Error("JWT must have 3 parts");var t=this.urlBase64Decode(r[1]);if(!t)throw new Error("Cannot decode the token");return JSON.parse(t)},this.getTokenExpirationDate=function(e){var r;if(r=this.decodeToken(e),"undefined"==typeof r.exp)return null;var t=new Date(0);return t.setUTCSeconds(r.exp),t},this.isTokenExpired=function(e,r){var t=this.getTokenExpirationDate(e);return r=r||0,null===t?!1:!(t.valueOf()>(new Date).valueOf()+1e3*r)}})}();
 /*! 5.0.9 */
 !function(){function a(a,b){window.XMLHttpRequest.prototype[a]=b(window.XMLHttpRequest.prototype[a])}function b(a,b,c){try{Object.defineProperty(a,b,{get:c})}catch(d){}}if(window.FileAPI||(window.FileAPI={}),FileAPI.shouldLoad=window.XMLHttpRequest&&!window.FormData||FileAPI.forceLoad,FileAPI.shouldLoad){var c=function(a){if(!a.__listeners){a.upload||(a.upload={}),a.__listeners=[];var b=a.upload.addEventListener;a.upload.addEventListener=function(c,d){a.__listeners[c]=d,b&&b.apply(this,arguments)}}};a("open",function(a){return function(b,d,e){c(this),this.__url=d;try{a.apply(this,[b,d,e])}catch(f){f.message.indexOf("Access is denied")>-1&&(this.__origError=f,a.apply(this,[b,"_fix_for_ie_crossdomain__",e]))}}}),a("getResponseHeader",function(a){return function(b){return this.__fileApiXHR&&this.__fileApiXHR.getResponseHeader?this.__fileApiXHR.getResponseHeader(b):null==a?null:a.apply(this,[b])}}),a("getAllResponseHeaders",function(a){return function(){return this.__fileApiXHR&&this.__fileApiXHR.getAllResponseHeaders?this.__fileApiXHR.getAllResponseHeaders():null==a?null:a.apply(this)}}),a("abort",function(a){return function(){return this.__fileApiXHR&&this.__fileApiXHR.abort?this.__fileApiXHR.abort():null==a?null:a.apply(this)}}),a("setRequestHeader",function(a){return function(b,d){if("__setXHR_"===b){c(this);var e=d(this);e instanceof Function&&e(this)}else this.__requestHeaders=this.__requestHeaders||{},this.__requestHeaders[b]=d,a.apply(this,arguments)}}),a("send",function(a){return function(){var c=this;if(arguments[0]&&arguments[0].__isFileAPIShim){var d=arguments[0],e={url:c.__url,jsonp:!1,cache:!0,complete:function(a,d){c.__completed=!0,!a&&c.__listeners.load&&c.__listeners.load({type:"load",loaded:c.__loaded,total:c.__total,target:c,lengthComputable:!0}),!a&&c.__listeners.loadend&&c.__listeners.loadend({type:"loadend",loaded:c.__loaded,total:c.__total,target:c,lengthComputable:!0}),"abort"===a&&c.__listeners.abort&&c.__listeners.abort({type:"abort",loaded:c.__loaded,total:c.__total,target:c,lengthComputable:!0}),void 0!==d.status&&b(c,"status",function(){return 0===d.status&&a&&"abort"!==a?500:d.status}),void 0!==d.statusText&&b(c,"statusText",function(){return d.statusText}),b(c,"readyState",function(){return 4}),void 0!==d.response&&b(c,"response",function(){return d.response});var e=d.responseText||(a&&0===d.status&&"abort"!==a?a:void 0);b(c,"responseText",function(){return e}),b(c,"response",function(){return e}),a&&b(c,"err",function(){return a}),c.__fileApiXHR=d,c.onreadystatechange&&c.onreadystatechange(),c.onload&&c.onload()},progress:function(a){if(a.target=c,c.__listeners.progress&&c.__listeners.progress(a),c.__total=a.total,c.__loaded=a.loaded,a.total===a.loaded){var b=this;setTimeout(function(){c.__completed||(c.getAllResponseHeaders=function(){},b.complete(null,{status:204,statusText:"No Content"}))},FileAPI.noContentTimeout||1e4)}},headers:c.__requestHeaders};e.data={},e.files={};for(var f=0;f<d.data.length;f++){var g=d.data[f];null!=g.val&&null!=g.val.name&&null!=g.val.size&&null!=g.val.type?e.files[g.key]=g.val:e.data[g.key]=g.val}setTimeout(function(){if(!FileAPI.hasFlash)throw'Adode Flash Player need to be installed. To check ahead use "FileAPI.hasFlash"';c.__fileApiXHR=FileAPI.upload(e)},1)}else{if(this.__origError)throw this.__origError;a.apply(c,arguments)}}}),window.XMLHttpRequest.__isFileAPIShim=!0,window.FormData=FormData=function(){return{append:function(a,b,c){b.__isFileAPIBlobShim&&(b=b.data[0]),this.data.push({key:a,val:b,name:c})},data:[],__isFileAPIShim:!0}},window.Blob=Blob=function(a){return{data:a,__isFileAPIBlobShim:!0}}}}(),function(){function a(a){return"input"===a[0].tagName.toLowerCase()&&a.attr("type")&&"file"===a.attr("type").toLowerCase()}function b(){try{var a=new ActiveXObject("ShockwaveFlash.ShockwaveFlash");if(a)return!0}catch(b){if(void 0!==navigator.mimeTypes["application/x-shockwave-flash"])return!0}return!1}function c(a){var b=0,c=0;if(window.jQuery)return jQuery(a).offset();if(a.offsetParent)do b+=a.offsetLeft-a.scrollLeft,c+=a.offsetTop-a.scrollTop,a=a.offsetParent;while(a);return{left:b,top:c}}if(FileAPI.shouldLoad){if(FileAPI.forceLoad&&(FileAPI.html5=!1),!FileAPI.upload){var d,e,f,g,h,i=document.createElement("script"),j=document.getElementsByTagName("script");if(window.FileAPI.jsUrl)d=window.FileAPI.jsUrl;else if(window.FileAPI.jsPath)e=window.FileAPI.jsPath;else for(f=0;f<j.length;f++)if(h=j[f].src,g=h.search(/\/ng\-file\-upload[\-a-zA-z0-9\.]*\.js/),g>-1){e=h.substring(0,g+1);break}null==FileAPI.staticPath&&(FileAPI.staticPath=e),i.setAttribute("src",d||e+"FileAPI.min.js"),document.getElementsByTagName("head")[0].appendChild(i),FileAPI.hasFlash=b()}FileAPI.ngfFixIE=function(d,e,f,g){if(!b())throw'Adode Flash Player need to be installed. To check ahead use "FileAPI.hasFlash"';var h=function(){if(d.attr("disabled"))d.$$ngfRefElem.removeClass("js-fileapi-wrapper");else{var b=d.$$ngfRefElem;b?f(d.$$ngfRefElem):(b=d.$$ngfRefElem=e(),b.addClass("js-fileapi-wrapper"),!a(d),setTimeout(function(){b.bind("mouseenter",h)},10),b.bind("change",function(a){i.apply(this,[a]),g.apply(this,[a])})),a(d)||b.css("position","absolute").css("top",c(d[0]).top+"px").css("left",c(d[0]).left+"px").css("width",d[0].offsetWidth+"px").css("height",d[0].offsetHeight+"px").css("filter","alpha(opacity=0)").css("display",d.css("display")).css("overflow","hidden").css("z-index","900000").css("visibility","visible")}};d.bind("mouseenter",h);var i=function(a){for(var b=FileAPI.getFiles(a),c=0;c<b.length;c++)void 0===b[c].size&&(b[c].size=0),void 0===b[c].name&&(b[c].name="file"),void 0===b[c].type&&(b[c].type="undefined");a.target||(a.target={}),a.target.files=b,a.target.files!==b&&(a.__files_=b),(a.__files_||a.target.files).item=function(b){return(a.__files_||a.target.files)[b]||null}}},FileAPI.disableFileInput=function(a,b){b?a.removeClass("js-fileapi-wrapper"):a.addClass("js-fileapi-wrapper")}}}(),window.FileReader||(window.FileReader=function(){var a=this,b=!1;this.listeners={},this.addEventListener=function(b,c){a.listeners[b]=a.listeners[b]||[],a.listeners[b].push(c)},this.removeEventListener=function(b,c){a.listeners[b]&&a.listeners[b].splice(a.listeners[b].indexOf(c),1)},this.dispatchEvent=function(b){var c=a.listeners[b.type];if(c)for(var d=0;d<c.length;d++)c[d].call(a,b)},this.onabort=this.onerror=this.onload=this.onloadstart=this.onloadend=this.onprogress=null;var c=function(b,c){var d={type:b,target:a,loaded:c.loaded,total:c.total,error:c.error};return null!=c.result&&(d.target.result=c.result),d},d=function(d){b||(b=!0,a.onloadstart&&a.onloadstart(c("loadstart",d)));var e;"load"===d.type?(a.onloadend&&a.onloadend(c("loadend",d)),e=c("load",d),a.onload&&a.onload(e),a.dispatchEvent(e)):"progress"===d.type?(e=c("progress",d),a.onprogress&&a.onprogress(e),a.dispatchEvent(e)):(e=c("error",d),a.onerror&&a.onerror(e),a.dispatchEvent(e))};this.readAsArrayBuffer=function(a){FileAPI.readAsBinaryString(a,d)},this.readAsBinaryString=function(a){FileAPI.readAsBinaryString(a,d)},this.readAsDataURL=function(a){FileAPI.readAsDataURL(a,d)},this.readAsText=function(a){FileAPI.readAsText(a,d)}}),!window.XMLHttpRequest||window.FileAPI&&FileAPI.shouldLoad||(window.XMLHttpRequest.prototype.setRequestHeader=function(a){return function(b,c){if("__setXHR_"===b){var d=c(this);d instanceof Function&&d(this)}else a.apply(this,arguments)}}(window.XMLHttpRequest.prototype.setRequestHeader));var ngFileUpload=angular.module("ngFileUpload",[]);ngFileUpload.version="5.0.9",ngFileUpload.service("Upload",["$http","$q","$timeout",function(a,b,c){function d(d){d.method=d.method||"POST",d.headers=d.headers||{};var e=b.defer(),f=e.promise;return d.headers.__setXHR_=function(){return function(a){a&&(d.__XHR=a,d.xhrFn&&d.xhrFn(a),a.upload.addEventListener("progress",function(a){a.config=d,e.notify?e.notify(a):f.progressFunc&&c(function(){f.progressFunc(a)})},!1),a.upload.addEventListener("load",function(a){a.lengthComputable&&(a.config=d,e.notify?e.notify(a):f.progressFunc&&c(function(){f.progressFunc(a)}))},!1))}},a(d).then(function(a){e.resolve(a)},function(a){e.reject(a)},function(a){e.notify(a)}),f.success=function(a){return f.then(function(b){a(b.data,b.status,b.headers,d)}),f},f.error=function(a){return f.then(null,function(b){a(b.data,b.status,b.headers,d)}),f},f.progress=function(a){return f.progressFunc=a,f.then(null,null,function(b){a(b)}),f},f.abort=function(){return d.__XHR&&c(function(){d.__XHR.abort()}),f},f.xhr=function(a){return d.xhrFn=function(b){return function(){b&&b.apply(f,arguments),a.apply(f,arguments)}}(d.xhrFn),f},f}this.upload=function(a){function b(c,d,e){if(void 0!==d)if(angular.isDate(d)&&(d=d.toISOString()),angular.isString(d))c.append(e,d);else if("form"===a.sendFieldsAs)if(angular.isObject(d))for(var f in d)d.hasOwnProperty(f)&&b(c,d[f],e+"["+f+"]");else c.append(e,d);else d=angular.isString(d)?d:JSON.stringify(d),"json-blob"===a.sendFieldsAs?c.append(e,new Blob([d],{type:"application/json"})):c.append(e,d)}return a.headers=a.headers||{},a.headers["Content-Type"]=void 0,a.transformRequest=a.transformRequest?angular.isArray(a.transformRequest)?a.transformRequest:[a.transformRequest]:[],a.transformRequest.push(function(c){var d,e=new FormData,f={};for(d in a.fields)a.fields.hasOwnProperty(d)&&(f[d]=a.fields[d]);c&&(f.data=c);for(d in f)if(f.hasOwnProperty(d)){var g=f[d];a.formDataAppender?a.formDataAppender(e,d,g):b(e,g,d)}if(null!=a.file){var h=a.fileFormDataName||"file";if(angular.isArray(a.file))for(var i=angular.isString(h),j=0;j<a.file.length;j++)e.append(i?h:h[j],a.file[j],a.fileName&&a.fileName[j]||a.file[j].name);else e.append(h,a.file,a.fileName||a.file.name)}return e}),d(a)},this.http=function(b){return b.transformRequest=b.transformRequest||function(b){return window.ArrayBuffer&&b instanceof window.ArrayBuffer||b instanceof Blob?b:a.defaults.transformRequest[0](arguments)},d(b)}}]),function(){function a(a,e,f,g,h,i,j){function k(){return"input"===e[0].tagName.toLowerCase()&&f.type&&"file"===f.type.toLowerCase()}function l(b){if(!r){r=!0;try{for(var e=b.__files_||b.target&&b.target.files,j=[],k=[],l=0;l<e.length;l++){var m=e.item(l);c(a,h,f,m,b)?j.push(m):k.push(m)}d(h,i,a,g,f,f.ngfChange||f.ngfSelect,j,k,b),0===j.length&&(b.target.value=j)}finally{r=!1}}}function m(b){f.ngfMultiple&&b.attr("multiple",h(f.ngfMultiple)(a)),f.ngfCapture&&b.attr("capture",h(f.ngfCapture)(a)),f.accept&&b.attr("accept",f.accept);for(var c=0;c<e[0].attributes.length;c++){var d=e[0].attributes[c];(k()&&"type"!==d.name||"type"!==d.name&&"class"!==d.name&&"id"!==d.name&&"style"!==d.name)&&b.attr(d.name,d.value)}}function n(b,c){if(!c&&(b||k()))return e.$$ngfRefElem||e;var d=angular.element('<input type="file">');return m(d),k()?(e.replaceWith(d),e=d,d.attr("__ngf_gen__",!0),j(e)(a)):(d.css("visibility","hidden").css("position","absolute").css("overflow","hidden").css("width","0px").css("height","0px").css("z-index","-100000").css("border","none").css("margin","0px").css("padding","0px").attr("tabindex","-1"),e.$$ngfRefElem&&e.$$ngfRefElem.remove(),e.$$ngfRefElem=d,document.body.appendChild(d[0])),d}function o(b){d(h,i,a,g,f,f.ngfChange||f.ngfSelect,[],[],b,!0)}function p(c){function d(a){a&&i[0].click(),(k()||!a)&&e.bind("click touchend",p)}if(e.attr("disabled")||q)return!1;null!=c&&(c.preventDefault(),c.stopPropagation());var g=h(f.ngfResetOnClick)(a)!==!1,i=n(c,g);return i&&((!c||g)&&i.bind("change",l),c&&g&&h(f.ngfResetModelOnClick)(a)!==!1&&o(c),b(navigator.userAgent)?setTimeout(function(){d(c)},0):d(c)),!1}if(!e.attr("__ngf_gen__")){a.$on("$destroy",function(){e.$$ngfRefElem&&e.$$ngfRefElem.remove()});var q=!1;-1===f.ngfSelect.search(/\W+$files\W+/)&&a.$watch(f.ngfSelect,function(a){q=a===!1});var r=!1;window.FileAPI&&window.FileAPI.ngfFixIE?window.FileAPI.ngfFixIE(e,n,m,l):p()}}function b(a){var b=a.match(/Android[^\d]*(\d+)\.(\d+)/);return b&&b.length>2?parseInt(b[1])<4||4===parseInt(b[1])&&parseInt(b[2])<4:/.*Windows.*Safari.*/.test(a)}ngFileUpload.directive("ngfSelect",["$parse","$timeout","$compile",function(b,c,d){return{restrict:"AEC",require:"?ngModel",link:function(e,f,g,h){a(e,f,g,h,b,c,d)}}}]),ngFileUpload.validate=function(a,b,c,d,e){function f(a){if(a.length>2&&"/"===a[0]&&"/"===a[a.length-1])return a.substring(1,a.length-1);var b=a.split(","),c="";if(b.length>1)for(var d=0;d<b.length;d++)c+="("+f(b[d])+")",d<b.length-1&&(c+="|");else 0===a.indexOf(".")&&(a="*"+a),c="^"+a.replace(new RegExp("[.\\\\+*?\\[\\^\\]$(){}=!<>|:\\-]","g"),"\\$&")+"$",c=c.replace(/\\\*/g,".*").replace(/\\\?/g,".");return c}var g=b(c.ngfAccept)(a,{$file:d,$event:e}),h=b(c.ngfMaxSize)(a,{$file:d,$event:e})||9007199254740991,i=b(c.ngfMinSize)(a,{$file:d,$event:e})||-1;if(null!=g&&angular.isString(g)){var j=new RegExp(f(g),"gi");g=null!=d.type&&j.test(d.type.toLowerCase())||null!=d.name&&j.test(d.name.toLowerCase())}return(null==g||g)&&(null==d.size||d.size<h&&d.size>i)},ngFileUpload.updateModel=function(a,b,c,d,e,f,g,h,i,j){function k(){if(a(e.ngfKeep)(c)===!0){var j=(d.$modelValue||[]).slice(0);if(g&&g.length)if(a(e.ngfKeepDistinct)(c)===!0){for(var k=j.length,l=0;l<g.length;l++){for(var m=0;k>m&&g[l].name!==j[m].name;m++);m===k&&j.push(g[l])}g=j}else g=j.concat(g);else g=j}d&&(a(e.ngModel).assign(c,g),b(function(){d&&d.$setViewValue(null!=g&&0===g.length?null:g)})),e.ngModelRejected&&a(e.ngModelRejected).assign(c,h),f&&a(f)(c,{$files:g,$rejectedFiles:h,$event:i})}j?k():b(function(){k()})};var c=ngFileUpload.validate,d=ngFileUpload.updateModel}(),function(){function a(a,e,f,g,h,i,j){function k(a,b,d){var e=!0,f=d.dataTransfer.items;if(null!=f)for(var g=0;g<f.length&&e;g++)e=e&&("file"===f[g].kind||""===f[g].kind)&&c(a,h,b,f[g],d);var i=h(b.ngfDragOverClass)(a,{$event:d});return i&&(i.delay&&(r=i.delay),i.accept&&(i=e?i.accept:i.reject)),i||b.ngfDragOverClass||"dragover"}function l(b,d,e,g){function k(d){c(a,h,f,d,b)?m.push(d):n.push(d)}function l(a,b,c){if(null!=b)if(b.isDirectory){var d=(c||"")+b.name;k({name:b.name,type:"directory",path:d});var e=b.createReader(),f=[];p++;var g=function(){e.readEntries(function(d){try{if(d.length)f=f.concat(Array.prototype.slice.call(d||[],0)),g();else{for(var e=0;e<f.length;e++)l(a,f[e],(c?c:"")+b.name+"/");p--}}catch(h){p--,console.error(h)}},function(){p--})};g()}else p++,b.file(function(a){try{p--,a.path=(c?c:"")+a.name,k(a)}catch(b){p--,console.error(b)}},function(){p--})}var m=[],n=[],o=b.dataTransfer.items,p=0;if(o&&o.length>0&&"file"!==j.protocol())for(var q=0;q<o.length;q++){if(o[q].webkitGetAsEntry&&o[q].webkitGetAsEntry()&&o[q].webkitGetAsEntry().isDirectory){var r=o[q].webkitGetAsEntry();if(r.isDirectory&&!e)continue;null!=r&&l(m,r)}else{var s=o[q].getAsFile();null!=s&&k(s)}if(!g&&m.length>0)break}else{var t=b.dataTransfer.files;if(null!=t)for(var u=0;u<t.length&&(k(t.item(u)),g||!(m.length>0));u++);}var v=0;!function w(a){i(function(){if(p)10*v++<2e4&&w(10);else{if(!g&&m.length>1){for(q=0;"directory"===m[q].type;)q++;m=[m[q]]}d(m,n)}},a||0)}()}var m=b();if(f.dropAvailable&&i(function(){a[f.dropAvailable]?a[f.dropAvailable].value=m:a[f.dropAvailable]=m}),!m)return void(h(f.ngfHideOnDropNotAvailable)(a)===!0&&e.css("display","none"));var n=!1;-1===f.ngfDrop.search(/\W+$files\W+/)&&a.$watch(f.ngfDrop,function(a){n=a===!1});var o,p=null,q=h(f.ngfStopPropagation),r=1;e[0].addEventListener("dragover",function(b){if(!e.attr("disabled")&&!n){if(b.preventDefault(),q(a)&&b.stopPropagation(),navigator.userAgent.indexOf("Chrome")>-1){var c=b.dataTransfer.effectAllowed;b.dataTransfer.dropEffect="move"===c||"linkMove"===c?"move":"copy"}i.cancel(p),a.actualDragOverClass||(o=k(a,f,b)),e.addClass(o)}},!1),e[0].addEventListener("dragenter",function(b){e.attr("disabled")||n||(b.preventDefault(),q(a)&&b.stopPropagation())},!1),e[0].addEventListener("dragleave",function(){e.attr("disabled")||n||(p=i(function(){e.removeClass(o),o=null},r||1))},!1),e[0].addEventListener("drop",function(b){e.attr("disabled")||n||(b.preventDefault(),q(a)&&b.stopPropagation(),e.removeClass(o),o=null,l(b,function(c,e){d(h,i,a,g,f,f.ngfChange||f.ngfDrop,c,e,b)},h(f.ngfAllowDir)(a)!==!1,f.multiple||h(f.ngfMultiple)(a)))},!1)}function b(){var a=document.createElement("div");return"draggable"in a&&"ondrop"in a}var c=ngFileUpload.validate,d=ngFileUpload.updateModel;ngFileUpload.directive("ngfDrop",["$parse","$timeout","$location",function(b,c,d){return{restrict:"AEC",require:"?ngModel",link:function(e,f,g,h){a(e,f,g,h,b,c,d)}}}]),ngFileUpload.directive("ngfNoFileDrop",function(){return function(a,c){b()&&c.css("display","none")}}),ngFileUpload.directive("ngfDropAvailable",["$parse","$timeout",function(a,c){return function(d,e,f){if(b()){var g=a(f.ngfDropAvailable);c(function(){g(d),g.assign&&g.assign(d,!0)})}}}]),ngFileUpload.directive("ngfSrc",["$parse","$timeout",function(a,b){return{restrict:"AE",link:function(d,e,f){window.FileReader&&d.$watch(f.ngfSrc,function(g){g&&c(d,a,f,g,null)&&(!window.FileAPI||-1===navigator.userAgent.indexOf("MSIE 8")||g.size<2e4)&&(!window.FileAPI||-1===navigator.userAgent.indexOf("MSIE 9")||g.size<4e6)?b(function(){var a=window.URL||window.webkitURL;if(a&&a.createObjectURL)e.attr("src",a.createObjectURL(g));else{var c=new FileReader;c.readAsDataURL(g),c.onload=function(a){b(function(){e.attr("src",a.target.result)})}}}):e.attr("src",f.ngfDefaultSrc||"")})}}}])}();
+/**
+ * AngularJS Directive to allow autocomplete and dropdown suggestions
+ * on textareas.
+ *
+ * Homepage: https://github.com/aurbano/smart-area
+ *
+ * @author Alejandro U. Alvarez (http://urbanoalvarez.es)
+ * @license AGPLv3 (See LICENSE)
+ */
+
+angular.module('smartArea', [])
+    .directive('smartArea', ['$compile', function($compile) {
+    return {
+        restrict: 'A',
+        scope: {
+            areaConfig: '=smartArea',
+            areaData: '=ngModel'
+        },
+        replace: true,
+        link: function(scope, textArea){
+            if(textArea[0].tagName.toLowerCase() !== 'textarea'){
+                console.warn("smartArea can only be used on textareas");
+                return false;
+            }
+
+            // Caret tracking inspired by
+            // https://github.com/component/textarea-caret-position
+            // Properties to be copied over from the textarea
+            var properties = [
+                'direction',  // RTL support
+                'boxSizing',
+                'width',  // on Chrome and IE, exclude the scrollbar, so the mirror div wraps exactly as the textarea does
+                'overflowX',
+                'overflowY',  // copy the scrollbar for IE
+                'color',
+                'height',
+
+                'borderTopWidth',
+                'borderRightWidth',
+                'borderBottomWidth',
+                'borderLeftWidth',
+
+                'borderTopColor',
+                'borderRightColor',
+                'borderBottomColor',
+                'borderLeftColor',
+
+                'borderTopStyle',
+                'borderRightStyle',
+                'borderBottomStyle',
+                'borderLeftStyle',
+                'borderRadius',
+
+                'backgroundColor',
+
+                'paddingTop',
+                'paddingRight',
+                'paddingBottom',
+                'paddingLeft',
+
+                // https://developer.mozilla.org/en-US/docs/Web/CSS/font
+                'fontStyle',
+                'fontVariant',
+                'fontWeight',
+                'fontStretch',
+                'fontSize',
+                'fontSizeAdjust',
+                'lineHeight',
+                'fontFamily',
+
+                'textAlign',
+                'textTransform',
+                'textIndent',
+                'textDecoration',  // might not make a difference, but better be safe
+
+                'letterSpacing',
+                'wordSpacing',
+                'whiteSpace',
+                'wordBreak',
+                'wordWrap'
+            ];
+
+            // Build the HTML structure
+            var mainWrap = angular.element('<div class="sa-wrapper"></div>'),
+                isFirefox = !(window.mozInnerScreenX === null);
+
+            scope.fakeAreaElement = angular.element($compile('<div class="sa-fakeArea" ng-trim="false" ng-bind-html="fakeArea"></div>')(scope))
+                .appendTo(mainWrap);
+
+            scope.dropdown.element = angular.element($compile('<div class="sa-dropdown" ng-show="dropdown.content.length > 0"><input type="text" class="form-control" ng-show="dropdown.showFilter"/><ul class="dropdown-menu" role="menu" style="position:static"><li ng-repeat="element in dropdown.content" role="presentation"><a href="" role="menuitem" ng-click="dropdown.selected(element)" ng-class="{active: $index == dropdown.current}" ng-bind-html="element.display"></a></li></ul></div>')(scope))
+                .appendTo(mainWrap);
+
+            scope.dropdown.filterElement = scope.dropdown.element.find('input');
+            scope.dropdown.filterElement.bind('keydown', scope.keyboardEvents);
+
+            // Default textarea css for the div
+            scope.fakeAreaElement.css('whiteSpace', 'pre-wrap');
+            scope.fakeAreaElement.css('wordWrap', 'break-word');
+
+            // Transfer the element's properties to the div
+            properties.forEach(function (prop) {
+                scope.fakeAreaElement.css(prop, textArea.css(prop));
+            });
+
+            scope.fakeAreaElement.css('width',(parseInt(textArea.outerWidth()) + 1) + 'px');
+
+            // Special considerations for Firefox
+//            if (isFirefox) {
+//                scope.fakeAreaElement.css('width',parseInt(textArea.width()) - 2 + 'px');  // Firefox adds 2 pixels to the padding - https://bugzilla.mozilla.org/show_bug.cgi?id=753662
+//                // Firefox lies about the overflow property for textareas: https://bugzilla.mozilla.org/show_bug.cgi?id=984275
+//                if (textArea.scrollHeight > parseInt(textArea.height)){
+//                    scope.fakeAreaElement.css('overflowY', 'scroll');
+//                }
+//            }
+
+            // Insert the HTML elements
+            mainWrap.insertBefore(textArea);
+            textArea.appendTo(mainWrap).addClass('sa-realArea').attr('ng-trim',false);
+            $compile(textArea);
+
+            // Dirty hack to maintain the height
+            textArea.on('keyup', function(){
+                scope.fakeAreaElement.height(textArea.height());
+            });
+
+            return mainWrap;
+        },
+        controller: ['$scope', '$element', '$timeout', '$sce', function($scope, $element, $timeout, $sce){
+            /* +----------------------------------------------------+
+             * +                     Scope Data                     +
+             * +----------------------------------------------------+ */
+
+            $scope.fakeArea = $scope.areaData;
+            $scope.dropdownContent = 'Dropdown';
+            $scope.dropdown = {
+                content: [],
+                element: null,
+                current: 0,
+                select: null,
+                customSelect: null,
+                filter: '',
+                match: '',
+                mode: 'append',
+                showFilter: false,
+                filterElement: null
+            };
+
+            /* +----------------------------------------------------+
+             * +                   Scope Watches                    +
+             * +----------------------------------------------------+ */
+            $scope.$watch('areaData', function(){
+                $scope.trackCaret();
+
+                // TODO Track caret on another fake area, so I don't have to recalculate autocomplete triggers every time the cursor moves.
+                checkTriggers();
+            });
+
+            /* +----------------------------------------------------+
+             * +                  Scope Functions                   +
+             * +----------------------------------------------------+ */
+
+            /**
+             * Update the Dropdown position according to the current caret position
+             * on the textarea
+             */
+            $scope.trackCaret = function(){
+                var text = $scope.areaData,
+                    position = getCharacterPosition();
+
+                $scope.fakeArea = $sce.trustAsHtml(text.substring(0, position) + '<span class="sa-tracking"></span>' + text.substring(position));
+
+                // Tracking span
+                $timeout(function(){
+                    var span = $scope.fakeAreaElement.find('span.sa-tracking');
+                    if(span.length > 0){
+                        var spanOffset = span.position();
+                        // Move the dropdown
+                        $scope.dropdown.element.css({
+                            top: (spanOffset.top + parseInt($element.css('fontSize')) + 2)+'px',
+                            left: (spanOffset.left)+'px'
+                        });
+                    }
+                    highlightText();
+                }, 0);
+            };
+
+            /**
+             * Keyboard event reacting. This function is triggered by
+             * keydown events in the dropdown filter and the main textarea
+             *
+             * @param event JavaScript event
+             */
+            $scope.keyboardEvents = function(event){
+                if($scope.dropdown.content.length > 0) {
+                    var code = event.keyCode || event.which;
+                    if (code === 13) { // Enter
+                        event.preventDefault();
+                        event.stopPropagation();
+                        // Add the selected word from the Dropdown
+                        // to the areaData in the current position
+                        $timeout(function(){
+                            $scope.dropdown.selected($scope.dropdown.content[$scope.dropdown.current]);
+                        },0);
+                    }else if(code === 38){ // Up
+                        event.preventDefault();
+                        event.stopPropagation();
+                        $timeout(function(){
+                            $scope.dropdown.current--;
+                            if($scope.dropdown.current < 0){
+                                $scope.dropdown.current = $scope.dropdown.content.length - 1; // Wrap around
+                            }
+                        },0);
+                    }else if(code === 40){ // Down
+                        event.preventDefault();
+                        event.stopPropagation();
+                        $timeout(function(){
+                            $scope.dropdown.current++;
+                            if($scope.dropdown.current >= $scope.dropdown.content.length){
+                                $scope.dropdown.current = 0; // Wrap around
+                            }
+                        },0);
+                    }else if(code === 27){ // Esc
+                        event.preventDefault();
+                        event.stopPropagation();
+                        $timeout(function(){
+                            $scope.dropdown.content = [];
+                            $element[0].focus();
+                        },0);
+                    }else{
+                        $scope.dropdown.filterElement.focus();
+                    }
+                }
+            };
+
+            /**
+             * Add an item to the textarea, this is called
+             * when selecting an element from the dropdown.
+             * @param item Selected object
+             */
+            $scope.dropdown.selected = function(item){
+                if($scope.dropdown.customSelect !== null){
+                    var append = $scope.dropdown.mode === 'append';
+                    addSelectedDropdownText($scope.dropdown.customSelect(item), append);
+                }else{
+                    addSelectedDropdownText(item.display);
+                }
+                $scope.dropdown.content = [];
+            };
+
+            /* +----------------------------------------------------+
+             * +                Internal Functions                  +
+             * +----------------------------------------------------+ */
+
+            /**
+             * Add text to the textarea, this handles positioning the text
+             * at the caret position, and also either replacing the last word
+             * or appending as new content.
+             *
+             * @param selectedWord Word to add to the textarea
+             * @param append Whether it should be appended or replace the last word
+             */
+            function addSelectedDropdownText(selectedWord, append){
+
+                $scope.dropdown.showFilter = false;
+
+                var text = $scope.areaData,
+                    position = getCharacterPosition(),
+                    lastWord = text.substr(0, position).split(/[\s\b{}]/),
+                    remove = lastWord[lastWord.length - 1].length;
+
+                if(!append && $scope.dropdown.match){
+                  remove = $scope.dropdown.match.length;
+                }
+
+                if(append || remove < 0){
+                    remove = 0;
+                }
+
+                // Now remove the last word, and replace with the dropped down one
+                $scope.areaData = text.substr(0, position - remove) +
+                    selectedWord +
+                    text.substr(position);
+
+                if(!append && $scope.dropdown.match){
+                  position = position - $scope.dropdown.match.length + selectedWord.toString().length;
+                }
+
+                // Now reset the caret position
+                if($element[0].selectionStart) {
+                    $timeout(function(){
+                        $element[0].focus();
+                        $element[0].setSelectionRange(position - remove + selectedWord.toString().length, position - remove + selectedWord.toString().length);
+                        checkTriggers();
+                    }, 100);
+                }
+
+            }
+
+            /**
+             * Perform the "syntax" highlighting of autocomplete words that have
+             * a cssClass specified.
+             */
+            function highlightText(){
+                var text = $scope.areaData;
+
+                if(typeof($scope.areaConfig.autocomplete) === 'undefined' || $scope.areaConfig.autocomplete.length === 0){
+                    return;
+                }
+
+                $scope.areaConfig.autocomplete.forEach(function(autoList){
+                    for(var i=0; i<autoList.words.length; i++){
+                        if(typeof(autoList.words[i]) === "string"){
+                            text = text.replace(new RegExp("([^\\w]|\\b)("+autoList.words[i]+")([^\\w]|\\b)", 'g'), '$1<span class="'+autoList.cssClass+'">$2</span>$3');
+                        }else{
+                            text = text.replace(autoList.words[i], function(match){
+                                return '<span class="'+autoList.cssClass+'">'+match+'</span>';
+                            });
+                        }
+                    }
+                });
+                // Add to the fakeArea
+                $scope.fakeArea = $sce.trustAsHtml(text);
+            }
+
+            /**
+             * Check all the triggers
+             */
+            function checkTriggers(){
+                triggerDropdownAutocomplete();
+                triggerDropdownAdvanced();
+            }
+
+            /**
+             * Trigger the advanced dropdown system, this will check
+             * all the specified triggers in the configuration object under dropdown,
+             * and if any of them match it will call it's list() function and add the
+             * elements returned from it to the dropdown.
+             */
+            function triggerDropdownAdvanced(){
+                $scope.dropdown.showFilter = false;
+                $scope.dropdown.match = false;
+
+                if(typeof($scope.areaConfig.dropdown) === 'undefined' || $scope.areaConfig.dropdown.length === 0){
+                    return;
+                }
+
+                $scope.areaConfig.dropdown.forEach(function(element){
+                    // Check if the trigger is under the cursor
+                    var text = $scope.areaData,
+                        position = getCharacterPosition();
+                    if(typeof(element.trigger) === 'string' && element.trigger === text.substr(position - element.trigger.length, element.trigger.length)){
+                        // The cursor is exactly at the end of the trigger
+
+                        element.list(function(data){
+                            $scope.dropdown.content = data.map(function(el){
+                              el.display = $sce.trustAsHtml(el.display);
+                              return el;
+                            });
+
+                            $scope.dropdown.customSelect = element.onSelect;
+                            $scope.dropdown.mode = element.mode || 'append';
+                            $scope.dropdown.match = '';
+                            $scope.dropdown.showFilter = element.filter || false;
+
+                            $timeout(function(){
+                                $scope.dropdown.filterElement.focus();
+                            }, 10);
+                        });
+                    }else if(typeof(element.trigger) === 'object'){
+                        // I need to get the index of the last match
+                        var searchable = text.substr(0, position),
+                            match, found = false, lastPosition = -1;
+			element.trigger.lastIndex = 0;
+                        while ((match = element.trigger.exec(searchable)) !== null){
+                            if(match.index === lastPosition){
+                                break;
+                            }
+                            lastPosition = match.index;
+                            if(match.index + match[0].length === position){
+                                found = true;
+                                break;
+                            }
+                        }
+                        if(found){
+                            element.list(match, function(data){
+                                $scope.dropdown.content = data.map(function(el){
+                                  el.display = $sce.trustAsHtml(el.display);
+                                  return el;
+                                });
+
+                                $scope.dropdown.customSelect = element.onSelect;
+                                $scope.dropdown.mode = element.mode || 'append';
+                                $scope.dropdown.match = match[1];
+                                $scope.dropdown.showFilter = element.filter || false;
+                            });
+
+                        }
+                    }
+                });
+            }
+
+            /**
+             * Set the scroll on the fake area
+             */
+            function resetScroll(){
+              $timeout(function(){
+                $scope.fakeAreaElement.scrollTop($element.scrollTop());
+              }, 5);
+            }
+
+            /**
+             * Trigger a simple autocomplete, this checks the last word and determines
+             * whether any word on the autocomplete lists matches it
+             */
+            function triggerDropdownAutocomplete(){
+                // First check with the autocomplete words (the ones that are not objects
+                var autocomplete = [],
+                    suggestions = [],
+                    text = $scope.areaData,
+                    position = getCharacterPosition(),
+                    lastWord = text.substr(0, position).split(/[\s\b{}]/);
+
+                // Get the last typed word
+                lastWord = lastWord[lastWord.length-1];
+
+                $scope.areaConfig.autocomplete.forEach(function(autoList){
+                    autoList.words.forEach(function(word){
+                        if(typeof(word) === 'string' && autocomplete.indexOf(word) < 0){
+                            if(lastWord.length > 0 || lastWord.length < 1 && autoList.autocompleteOnSpace){
+                                autocomplete.push(word);
+                            }
+                        }
+                    });
+                });
+
+                if ($scope.areaConfig.dropdown !== undefined){
+                    $scope.areaConfig.dropdown.forEach(function(element){
+                        if(typeof(element.trigger) === 'string' && autocomplete.indexOf(element.trigger) < 0){
+                            autocomplete.push(element.trigger);
+                        }
+                    });
+                }
+
+                // Now with the list, filter and return
+                autocomplete.forEach(function(word){
+                    if(lastWord.length < word.length && word.toLowerCase().substr(0, lastWord.length) === lastWord.toLowerCase()){
+                        suggestions.push({
+                            display: $sce.trustAsHtml(word),
+                            data: null
+                        });
+                    }
+                });
+
+                $scope.dropdown.customSelect = null;
+                $scope.dropdown.current = 0;
+                $scope.dropdown.content = suggestions;
+            }
+
+            /**
+             * Get Character count on an editable field
+             * http://stackoverflow.com/questions/4767848/get-caret-cursor-position-in-contenteditable-area-containing-html-content
+             */
+            function getCharacterPosition() {
+              var el = $element[0];
+              if (typeof(el.selectionEnd) == "number") {
+                return el.selectionEnd;
+              }
+          }
+
+            /* +----------------------------------------------------+
+             * +                   Event Binding                    +
+             * +----------------------------------------------------+ */
+
+            $element.bind('keyup click focus', function () {
+                $timeout(function(){
+                    $scope.trackCaret();
+                }, 0);
+            });
+
+            $element.bind('keydown', function(event){
+              resetScroll();
+              $scope.keyboardEvents(event);
+            });
+        }]
+    };
+}]);
+
 /*
  * angular-elastic v2.5.0
  * (c) 2014 Monospaced http://monospaced.com
@@ -6281,433 +6768,648 @@ function buildMap()
 angular.module("btford.socket-io",[]).provider("socketFactory",function(){"use strict";var n="socket:";this.$get=["$rootScope","$timeout",function(t,e){var r=function(n,t){return t?function(){var r=arguments;e(function(){t.apply(n,r)},0)}:angular.noop};return function(e){e=e||{};var o=e.ioSocket||io.connect(),c=void 0===e.prefix?n:e.prefix,u=e.scope||t,i=function(n,t){o.on(n,t.__ng=r(o,t))},a=function(n,t){o.once(n,t.__ng=r(o,t))},s={on:i,addListener:i,once:a,emit:function(n,t,e){var c=arguments.length-1,e=arguments[c];return"function"==typeof e&&(e=r(o,e),arguments[c]=e),o.emit.apply(o,arguments)},removeListener:function(n,t){return t&&t.__ng&&(arguments[1]=t.__ng),o.removeListener.apply(o,arguments)},removeAllListeners:function(){return o.removeAllListeners.apply(o,arguments)},disconnect:function(n){return o.disconnect(n)},connect:function(){return o.connect()},forward:function(n,t){n instanceof Array==!1&&(n=[n]),t||(t=u),n.forEach(function(n){var e=c+n,u=r(o,function(){Array.prototype.unshift.call(arguments,e),t.$broadcast.apply(t,arguments)});t.$on("$destroy",function(){o.removeListener(n,u)}),o.on(n,u)})}};return s}}]});
 "use strict";angular.module("puigcerber.countryPicker",[]).provider("pvpCountries",function a(){var a=[{name:"Afghanistan",alpha2:"AF",alpha3:"AFG",numeric:"004"},{name:"Åland Islands",alpha2:"AX",alpha3:"ALA",numeric:"248"},{name:"Albania",alpha2:"AL",alpha3:"ALB",numeric:"008"},{name:"Algeria",alpha2:"DZ",alpha3:"DZA",numeric:"012"},{name:"American Samoa",alpha2:"AS",alpha3:"ASM",numeric:"016"},{name:"Andorra",alpha2:"AD",alpha3:"AND",numeric:"020"},{name:"Angola",alpha2:"AO",alpha3:"AGO",numeric:"024"},{name:"Anguilla",alpha2:"AI",alpha3:"AIA",numeric:"660"},{name:"Antarctica",alpha2:"AQ",alpha3:"ATA",numeric:"010"},{name:"Antigua and Barbuda",alpha2:"AG",alpha3:"ATG",numeric:"028"},{name:"Argentina",alpha2:"AR",alpha3:"ARG",numeric:"032"},{name:"Armenia",alpha2:"AM",alpha3:"ARM",numeric:"051"},{name:"Aruba",alpha2:"AW",alpha3:"ABW",numeric:"533"},{name:"Australia",alpha2:"AU",alpha3:"AUS",numeric:"036"},{name:"Austria",alpha2:"AT",alpha3:"AUT",numeric:"040"},{name:"Azerbaijan",alpha2:"AZ",alpha3:"AZE",numeric:"031"},{name:"Bahamas (the)",alpha2:"BS",alpha3:"BHS",numeric:"044"},{name:"Bahrain",alpha2:"BH",alpha3:"BHR",numeric:"048"},{name:"Bangladesh",alpha2:"BD",alpha3:"BGD",numeric:"050"},{name:"Barbados",alpha2:"BB",alpha3:"BRB",numeric:"052"},{name:"Belarus",alpha2:"BY",alpha3:"BLR",numeric:"112"},{name:"Belgium",alpha2:"BE",alpha3:"BEL",numeric:"056"},{name:"Belize",alpha2:"BZ",alpha3:"BLZ",numeric:"084"},{name:"Benin",alpha2:"BJ",alpha3:"BEN",numeric:"204"},{name:"Bermuda",alpha2:"BM",alpha3:"BMU",numeric:"060"},{name:"Bhutan",alpha2:"BT",alpha3:"BTN",numeric:"064"},{name:"Bolivia (Plurinational State of)",alpha2:"BO",alpha3:"BOL",numeric:"068"},{name:"Bonaire, Sint Eustatius and Saba",alpha2:"BQ",alpha3:"BES",numeric:"535"},{name:"Bosnia and Herzegovina",alpha2:"BA",alpha3:"BIH",numeric:"070"},{name:"Botswana",alpha2:"BW",alpha3:"BWA",numeric:"072"},{name:"Bouvet Island",alpha2:"BV",alpha3:"BVT",numeric:"074"},{name:"Brazil",alpha2:"BR",alpha3:"BRA",numeric:"076"},{name:"British Indian Ocean Territory (the)",alpha2:"IO",alpha3:"IOT",numeric:"086"},{name:"Brunei Darussalam",alpha2:"BN",alpha3:"BRN",numeric:"096"},{name:"Bulgaria",alpha2:"BG",alpha3:"BGR",numeric:"100"},{name:"Burkina Faso",alpha2:"BF",alpha3:"BFA",numeric:"854"},{name:"Burundi",alpha2:"BI",alpha3:"BDI",numeric:"108"},{name:"Cabo Verde",alpha2:"CV",alpha3:"CPV",numeric:"132"},{name:"Cambodia",alpha2:"KH",alpha3:"KHM",numeric:"116"},{name:"Cameroon",alpha2:"CM",alpha3:"CMR",numeric:"120"},{name:"Canada",alpha2:"CA",alpha3:"CAN",numeric:"124"},{name:"Cayman Islands (the)",alpha2:"KY",alpha3:"CYM",numeric:"136"},{name:"Central African Republic (the)",alpha2:"CF",alpha3:"CAF",numeric:"140"},{name:"Chad",alpha2:"TD",alpha3:"TCD",numeric:"148"},{name:"Chile",alpha2:"CL",alpha3:"CHL",numeric:"152"},{name:"China",alpha2:"CN",alpha3:"CHN",numeric:"156"},{name:"Christmas Island",alpha2:"CX",alpha3:"CXR",numeric:"162"},{name:"Cocos (Keeling) Islands (the)",alpha2:"CC",alpha3:"CCK",numeric:"166"},{name:"Colombia",alpha2:"CO",alpha3:"COL",numeric:"170"},{name:"Comoros (the)",alpha2:"KM",alpha3:"COM",numeric:"174"},{name:"Congo (the)",alpha2:"CG",alpha3:"COG",numeric:"178"},{name:"Congo (the Democratic Republic of the)",alpha2:"CD",alpha3:"COD",numeric:"180"},{name:"Cook Islands (the)",alpha2:"CK",alpha3:"COK",numeric:"184"},{name:"Costa Rica",alpha2:"CR",alpha3:"CRI",numeric:"188"},{name:"Côte d'Ivoire",alpha2:"CI",alpha3:"CIV",numeric:"384"},{name:"Croatia",alpha2:"HR",alpha3:"HRV",numeric:"191"},{name:"Cuba",alpha2:"CU",alpha3:"CUB",numeric:"192"},{name:"Curaçao",alpha2:"CW",alpha3:"CUW",numeric:"531"},{name:"Cyprus",alpha2:"CY",alpha3:"CYP",numeric:"196"},{name:"Czech Republic (the)",alpha2:"CZ",alpha3:"CZE",numeric:"203"},{name:"Denmark",alpha2:"DK",alpha3:"DNK",numeric:"208"},{name:"Djibouti",alpha2:"DJ",alpha3:"DJI",numeric:"262"},{name:"Dominica",alpha2:"DM",alpha3:"DMA",numeric:"212"},{name:"Dominican Republic (the)",alpha2:"DO",alpha3:"DOM",numeric:"214"},{name:"Ecuador",alpha2:"EC",alpha3:"ECU",numeric:"218"},{name:"Egypt",alpha2:"EG",alpha3:"EGY",numeric:"818"},{name:"El Salvador",alpha2:"SV",alpha3:"SLV",numeric:"222"},{name:"Equatorial Guinea",alpha2:"GQ",alpha3:"GNQ",numeric:"226"},{name:"Eritrea",alpha2:"ER",alpha3:"ERI",numeric:"232"},{name:"Estonia",alpha2:"EE",alpha3:"EST",numeric:"233"},{name:"Ethiopia",alpha2:"ET",alpha3:"ETH",numeric:"231"},{name:"Falkland Islands (the) [Malvinas]",alpha2:"FK",alpha3:"FLK",numeric:"238"},{name:"Faroe Islands (the)",alpha2:"FO",alpha3:"FRO",numeric:"234"},{name:"Fiji",alpha2:"FJ",alpha3:"FJI",numeric:"242"},{name:"Finland",alpha2:"FI",alpha3:"FIN",numeric:"246"},{name:"France",alpha2:"FR",alpha3:"FRA",numeric:"250"},{name:"French Guiana",alpha2:"GF",alpha3:"GUF",numeric:"254"},{name:"French Polynesia",alpha2:"PF",alpha3:"PYF",numeric:"258"},{name:"French Southern Territories (the)",alpha2:"TF",alpha3:"ATF",numeric:"260"},{name:"Gabon",alpha2:"GA",alpha3:"GAB",numeric:"266"},{name:"Gambia (the)",alpha2:"GM",alpha3:"GMB",numeric:"270"},{name:"Georgia",alpha2:"GE",alpha3:"GEO",numeric:"268"},{name:"Germany",alpha2:"DE",alpha3:"DEU",numeric:"276"},{name:"Ghana",alpha2:"GH",alpha3:"GHA",numeric:"288"},{name:"Gibraltar",alpha2:"GI",alpha3:"GIB",numeric:"292"},{name:"Greece",alpha2:"GR",alpha3:"GRC",numeric:"300"},{name:"Greenland",alpha2:"GL",alpha3:"GRL",numeric:"304"},{name:"Grenada",alpha2:"GD",alpha3:"GRD",numeric:"308"},{name:"Guadeloupe",alpha2:"GP",alpha3:"GLP",numeric:"312"},{name:"Guam",alpha2:"GU",alpha3:"GUM",numeric:"316"},{name:"Guatemala",alpha2:"GT",alpha3:"GTM",numeric:"320"},{name:"Guernsey",alpha2:"GG",alpha3:"GGY",numeric:"831"},{name:"Guinea",alpha2:"GN",alpha3:"GIN",numeric:"324"},{name:"Guinea-Bissau",alpha2:"GW",alpha3:"GNB",numeric:"624"},{name:"Guyana",alpha2:"GY",alpha3:"GUY",numeric:"328"},{name:"Haiti",alpha2:"HT",alpha3:"HTI",numeric:"332"},{name:"Heard Island and McDonald Islands",alpha2:"HM",alpha3:"HMD",numeric:"334"},{name:"Holy See (the)",alpha2:"VA",alpha3:"VAT",numeric:"336"},{name:"Honduras",alpha2:"HN",alpha3:"HND",numeric:"340"},{name:"Hong Kong",alpha2:"HK",alpha3:"HKG",numeric:"344"},{name:"Hungary",alpha2:"HU",alpha3:"HUN",numeric:"348"},{name:"Iceland",alpha2:"IS",alpha3:"ISL",numeric:"352"},{name:"India",alpha2:"IN",alpha3:"IND",numeric:"356"},{name:"Indonesia",alpha2:"ID",alpha3:"IDN",numeric:"360"},{name:"Iran (Islamic Republic of)",alpha2:"IR",alpha3:"IRN",numeric:"364"},{name:"Iraq",alpha2:"IQ",alpha3:"IRQ",numeric:"368"},{name:"Ireland",alpha2:"IE",alpha3:"IRL",numeric:"372"},{name:"Isle of Man",alpha2:"IM",alpha3:"IMN",numeric:"833"},{name:"Israel",alpha2:"IL",alpha3:"ISR",numeric:"376"},{name:"Italy",alpha2:"IT",alpha3:"ITA",numeric:"380"},{name:"Jamaica",alpha2:"JM",alpha3:"JAM",numeric:"388"},{name:"Japan",alpha2:"JP",alpha3:"JPN",numeric:"392"},{name:"Jersey",alpha2:"JE",alpha3:"JEY",numeric:"832"},{name:"Jordan",alpha2:"JO",alpha3:"JOR",numeric:"400"},{name:"Kazakhstan",alpha2:"KZ",alpha3:"KAZ",numeric:"398"},{name:"Kenya",alpha2:"KE",alpha3:"KEN",numeric:"404"},{name:"Kiribati",alpha2:"KI",alpha3:"KIR",numeric:"296"},{name:"Korea (the Democratic People's Republic of)",alpha2:"KP",alpha3:"PRK",numeric:"408"},{name:"Korea (the Republic of)",alpha2:"KR",alpha3:"KOR",numeric:"410"},{name:"Kuwait",alpha2:"KW",alpha3:"KWT",numeric:"414"},{name:"Kyrgyzstan",alpha2:"KG",alpha3:"KGZ",numeric:"417"},{name:"Lao People's Democratic Republic (the)",alpha2:"LA",alpha3:"LAO",numeric:"418"},{name:"Latvia",alpha2:"LV",alpha3:"LVA",numeric:"428"},{name:"Lebanon",alpha2:"LB",alpha3:"LBN",numeric:"422"},{name:"Lesotho",alpha2:"LS",alpha3:"LSO",numeric:"426"},{name:"Liberia",alpha2:"LR",alpha3:"LBR",numeric:"430"},{name:"Libya",alpha2:"LY",alpha3:"LBY",numeric:"434"},{name:"Liechtenstein",alpha2:"LI",alpha3:"LIE",numeric:"438"},{name:"Lithuania",alpha2:"LT",alpha3:"LTU",numeric:"440"},{name:"Luxembourg",alpha2:"LU",alpha3:"LUX",numeric:"442"},{name:"Macao",alpha2:"MO",alpha3:"MAC",numeric:"446"},{name:"Macedonia (the former Yugoslav Republic of)",alpha2:"MK",alpha3:"MKD",numeric:"807"},{name:"Madagascar",alpha2:"MG",alpha3:"MDG",numeric:"450"},{name:"Malawi",alpha2:"MW",alpha3:"MWI",numeric:"454"},{name:"Malaysia",alpha2:"MY",alpha3:"MYS",numeric:"458"},{name:"Maldives",alpha2:"MV",alpha3:"MDV",numeric:"462"},{name:"Mali",alpha2:"ML",alpha3:"MLI",numeric:"466"},{name:"Malta",alpha2:"MT",alpha3:"MLT",numeric:"470"},{name:"Marshall Islands (the)",alpha2:"MH",alpha3:"MHL",numeric:"584"},{name:"Martinique",alpha2:"MQ",alpha3:"MTQ",numeric:"474"},{name:"Mauritania",alpha2:"MR",alpha3:"MRT",numeric:"478"},{name:"Mauritius",alpha2:"MU",alpha3:"MUS",numeric:"480"},{name:"Mayotte",alpha2:"YT",alpha3:"MYT",numeric:"175"},{name:"Mexico",alpha2:"MX",alpha3:"MEX",numeric:"484"},{name:"Micronesia (Federated States of)",alpha2:"FM",alpha3:"FSM",numeric:"583"},{name:"Moldova (the Republic of)",alpha2:"MD",alpha3:"MDA",numeric:"498"},{name:"Monaco",alpha2:"MC",alpha3:"MCO",numeric:"492"},{name:"Mongolia",alpha2:"MN",alpha3:"MNG",numeric:"496"},{name:"Montenegro",alpha2:"ME",alpha3:"MNE",numeric:"499"},{name:"Montserrat",alpha2:"MS",alpha3:"MSR",numeric:"500"},{name:"Morocco",alpha2:"MA",alpha3:"MAR",numeric:"504"},{name:"Mozambique",alpha2:"MZ",alpha3:"MOZ",numeric:"508"},{name:"Myanmar",alpha2:"MM",alpha3:"MMR",numeric:"104"},{name:"Namibia",alpha2:"NA",alpha3:"NAM",numeric:"516"},{name:"Nauru",alpha2:"NR",alpha3:"NRU",numeric:"520"},{name:"Nepal",alpha2:"NP",alpha3:"NPL",numeric:"524"},{name:"Netherlands (the)",alpha2:"NL",alpha3:"NLD",numeric:"528"},{name:"New Caledonia",alpha2:"NC",alpha3:"NCL",numeric:"540"},{name:"New Zealand",alpha2:"NZ",alpha3:"NZL",numeric:"554"},{name:"Nicaragua",alpha2:"NI",alpha3:"NIC",numeric:"558"},{name:"Niger (the)",alpha2:"NE",alpha3:"NER",numeric:"562"},{name:"Nigeria",alpha2:"NG",alpha3:"NGA",numeric:"566"},{name:"Niue",alpha2:"NU",alpha3:"NIU",numeric:"570"},{name:"Norfolk Island",alpha2:"NF",alpha3:"NFK",numeric:"574"},{name:"Northern Mariana Islands (the)",alpha2:"MP",alpha3:"MNP",numeric:"580"},{name:"Norway",alpha2:"NO",alpha3:"NOR",numeric:"578"},{name:"Oman",alpha2:"OM",alpha3:"OMN",numeric:"512"},{name:"Pakistan",alpha2:"PK",alpha3:"PAK",numeric:"586"},{name:"Palau",alpha2:"PW",alpha3:"PLW",numeric:"585"},{name:"Palestine, State of",alpha2:"PS",alpha3:"PSE",numeric:"275"},{name:"Panama",alpha2:"PA",alpha3:"PAN",numeric:"591"},{name:"Papua New Guinea",alpha2:"PG",alpha3:"PNG",numeric:"598"},{name:"Paraguay",alpha2:"PY",alpha3:"PRY",numeric:"600"},{name:"Peru",alpha2:"PE",alpha3:"PER",numeric:"604"},{name:"Philippines (the)",alpha2:"PH",alpha3:"PHL",numeric:"608"},{name:"Pitcairn",alpha2:"PN",alpha3:"PCN",numeric:"612"},{name:"Poland",alpha2:"PL",alpha3:"POL",numeric:"616"},{name:"Portugal",alpha2:"PT",alpha3:"PRT",numeric:"620"},{name:"Puerto Rico",alpha2:"PR",alpha3:"PRI",numeric:"630"},{name:"Qatar",alpha2:"QA",alpha3:"QAT",numeric:"634"},{name:"Réunion",alpha2:"RE",alpha3:"REU",numeric:"638"},{name:"Romania",alpha2:"RO",alpha3:"ROU",numeric:"642"},{name:"Russian Federation (the)",alpha2:"RU",alpha3:"RUS",numeric:"643"},{name:"Rwanda",alpha2:"RW",alpha3:"RWA",numeric:"646"},{name:"Saint Barthélemy",alpha2:"BL",alpha3:"BLM",numeric:"652"},{name:"Saint Helena, Ascension and Tristan da Cunha",alpha2:"SH",alpha3:"SHN",numeric:"654"},{name:"Saint Kitts and Nevis",alpha2:"KN",alpha3:"KNA",numeric:"659"},{name:"Saint Lucia",alpha2:"LC",alpha3:"LCA",numeric:"662"},{name:"Saint Martin (French part)",alpha2:"MF",alpha3:"MAF",numeric:"663"},{name:"Saint Pierre and Miquelon",alpha2:"PM",alpha3:"SPM",numeric:"666"},{name:"Saint Vincent and the Grenadines",alpha2:"VC",alpha3:"VCT",numeric:"670"},{name:"Samoa",alpha2:"WS",alpha3:"WSM",numeric:"882"},{name:"San Marino",alpha2:"SM",alpha3:"SMR",numeric:"674"},{name:"Sao Tome and Principe",alpha2:"ST",alpha3:"STP",numeric:"678"},{name:"Saudi Arabia",alpha2:"SA",alpha3:"SAU",numeric:"682"},{name:"Senegal",alpha2:"SN",alpha3:"SEN",numeric:"686"},{name:"Serbia",alpha2:"RS",alpha3:"SRB",numeric:"688"},{name:"Seychelles",alpha2:"SC",alpha3:"SYC",numeric:"690"},{name:"Sierra Leone",alpha2:"SL",alpha3:"SLE",numeric:"694"},{name:"Singapore",alpha2:"SG",alpha3:"SGP",numeric:"702"},{name:"Sint Maarten (Dutch part)",alpha2:"SX",alpha3:"SXM",numeric:"534"},{name:"Slovakia",alpha2:"SK",alpha3:"SVK",numeric:"703"},{name:"Slovenia",alpha2:"SI",alpha3:"SVN",numeric:"705"},{name:"Solomon Islands",alpha2:"SB",alpha3:"SLB",numeric:"090"},{name:"Somalia",alpha2:"SO",alpha3:"SOM",numeric:"706"},{name:"South Africa",alpha2:"ZA",alpha3:"ZAF",numeric:"710"},{name:"South Georgia and the South Sandwich Islands",alpha2:"GS",alpha3:"SGS",numeric:"239"},{name:"South Sudan ",alpha2:"SS",alpha3:"SSD",numeric:"728"},{name:"Spain",alpha2:"ES",alpha3:"ESP",numeric:"724"},{name:"Sri Lanka",alpha2:"LK",alpha3:"LKA",numeric:"144"},{name:"Sudan (the)",alpha2:"SD",alpha3:"SDN",numeric:"729"},{name:"Suriname",alpha2:"SR",alpha3:"SUR",numeric:"740"},{name:"Svalbard and Jan Mayen",alpha2:"SJ",alpha3:"SJM",numeric:"744"},{name:"Swaziland",alpha2:"SZ",alpha3:"SWZ",numeric:"748"},{name:"Sweden",alpha2:"SE",alpha3:"SWE",numeric:"752"},{name:"Switzerland",alpha2:"CH",alpha3:"CHE",numeric:"756"},{name:"Syrian Arab Republic",alpha2:"SY",alpha3:"SYR",numeric:"760"},{name:"Taiwan (Province of China)",alpha2:"TW",alpha3:"TWN",numeric:"158"},{name:"Tajikistan",alpha2:"TJ",alpha3:"TJK",numeric:"762"},{name:"Tanzania, United Republic of",alpha2:"TZ",alpha3:"TZA",numeric:"834"},{name:"Thailand",alpha2:"TH",alpha3:"THA",numeric:"764"},{name:"Timor-Leste",alpha2:"TL",alpha3:"TLS",numeric:"626"},{name:"Togo",alpha2:"TG",alpha3:"TGO",numeric:"768"},{name:"Tokelau",alpha2:"TK",alpha3:"TKL",numeric:"772"},{name:"Tonga",alpha2:"TO",alpha3:"TON",numeric:"776"},{name:"Trinidad and Tobago",alpha2:"TT",alpha3:"TTO",numeric:"780"},{name:"Tunisia",alpha2:"TN",alpha3:"TUN",numeric:"788"},{name:"Turkey",alpha2:"TR",alpha3:"TUR",numeric:"792"},{name:"Turkmenistan",alpha2:"TM",alpha3:"TKM",numeric:"795"},{name:"Turks and Caicos Islands (the)",alpha2:"TC",alpha3:"TCA",numeric:"796"},{name:"Tuvalu",alpha2:"TV",alpha3:"TUV",numeric:"798"},{name:"Uganda",alpha2:"UG",alpha3:"UGA",numeric:"800"},{name:"Ukraine",alpha2:"UA",alpha3:"UKR",numeric:"804"},{name:"United Arab Emirates (the)",alpha2:"AE",alpha3:"ARE",numeric:"784"},{name:"United Kingdom of Great Britain and Northern Ireland (the)",alpha2:"GB",alpha3:"GBR",numeric:"826"},{name:"United States Minor Outlying Islands (the)",alpha2:"UM",alpha3:"UMI",numeric:"581"},{name:"United States of America (the)",alpha2:"US",alpha3:"USA",numeric:"840"},{name:"Uruguay",alpha2:"UY",alpha3:"URY",numeric:"858"},{name:"Uzbekistan",alpha2:"UZ",alpha3:"UZB",numeric:"860"},{name:"Vanuatu",alpha2:"VU",alpha3:"VUT",numeric:"548"},{name:"Venezuela (Bolivarian Republic of)",alpha2:"VE",alpha3:"VEN",numeric:"862"},{name:"Vietnam",alpha2:"VN",alpha3:"VNM",numeric:"704"},{name:"Virgin Islands (British)",alpha2:"VG",alpha3:"VGB",numeric:"092"},{name:"Virgin Islands (U.S.)",alpha2:"VI",alpha3:"VIR",numeric:"850"},{name:"Wallis and Futuna",alpha2:"WF",alpha3:"WLF",numeric:"876"},{name:"Western Sahara",alpha2:"EH",alpha3:"ESH",numeric:"732"},{name:"Yemen",alpha2:"YE",alpha3:"YEM",numeric:"887"},{name:"Zambia",alpha2:"ZM",alpha3:"ZMB",numeric:"894"},{name:"Zimbabwe",alpha2:"ZW",alpha3:"ZWE",numeric:"716"}];return{setCountries:function(n){a=n},$get:function(){return{getCountries:function(){return a}}}}}).directive("pvpCountryPicker",["$compile",function(a){var n=1;return{priority:n,terminal:true,controller:["$scope","pvpCountries",function(a,n){a.countries=n.getCountries()}],compile:function(e,l){if(!l.pvpCountryPicker){l.pvpCountryPicker="alpha2"}var h="country."+l.pvpCountryPicker+" as country.name for country in countries";l.$set("ngOptions",h);return function m(e,l){a(l,null,n)(e)}},restrict:"A"}}]);
 
+
 var directives = angular.module('directivesModule', []);
+
+
 
 
 
 directives.directive('adjustHeight', function($window, $document, $timeout) {
 
+
 	return {
+
 
 		restrict: 'A',
 
+
 		link: function(scope, element, attrs) {
+
 
 			scope.calculate = function() {
 
+
         var top = $(element).offset().top;
+
 
         var height = $(window).height();
 
+
         var neededHeight = height - top;
+
 
         //console.log(top, height, neededHeight, element);
 
 
 
+
+
         $(element).css('height', neededHeight);
+
 
       };
 
+
       $timeout(function(){
 
+
         scope.calculate();
+
 
       }, 100);
 
 
 
+
+
       $window.addEventListener('resize', function() {
+
 
         scope.calculate();
 
+
       });
+
+
 
 
 
       // Listen for possible container size changes
 
+
       scope.$on('changedContainers', function() {
+
 
         scope.calculate();
 
+
       });
+
 
 		}
 
+
 	};
 
+
 });
+
+
 
 
 
 directives.directive('adjustHeightChat', function($window, $document, $timeout) {
 
+
   return {
+
 
     restrict: 'A',
 
+
     link: function(scope, element, attrs) {
+
 
       scope.calculate = function() {
 
+
         var top = $(element).offset().top;
+
 
         var height = $(window).height();
 
+
         var footer = $('div.footer').outerHeight();
 
+
         var neededHeight = height - top - footer;
+
 
         //console.log(top, height, footer, neededHeight);
 
 
 
+
+
         $(element).css('height', neededHeight);
+
 
       };
 
+
       $timeout(function(){
 
+
         scope.calculate();
+
 
       }, 100);
 
 
 
+
+
       $window.addEventListener('resize', function() {
+
 
         scope.calculate();
 
+
       });
+
+
 
 
 
       // Listen for possible container size changes
 
+
       scope.$on('changedContainers', function() {
+
 
         scope.calculate();
 
+
       });
+
 
     }
 
+
   };
 
+
 });
+
+
 
 
 
 directives.directive('scrollMe', function() {
 
+
   return {
+
 
     restrict: 'A',
 
+
     scope: {
+
 
       trigger: '&scrollMe'
 
+
     },
+
 
     link: function(scope, element, attrs) {
 
+
       // If space is bigger, load more items
+
 
       element.on('scroll', function() {
 
+
         if($(this).scrollTop() + $(this).innerHeight() >= this.scrollHeight) {
+
 
           scope.$apply(function() {
 
+
             // Trigger scroll
+
 
             scope.trigger();
 
+
           });
+
 
         }
 
+
       });
+
 
     }
 
+
   }
 
+
 });
+
+
 
 
 
 directives.directive('myRefresh', ['$location', function($location) {
 
+
   return {
+
 
     restrict: 'A',
 
+
     scope: {
+
 
       trigger: '&myRefresh'
 
+
     },
+
 
     link: function(scope, element, attrs) {
 
+
       element.bind('click', function() {
+
 
         if(element[0] && element[0].href && element[0].href === $location.absUrl()){
 
+
           //console.log("Recarga!");
+
 
           scope.trigger();
 
+
         }
+
 
       });
 
+
     }
 
+
   };
+
 
 }]);
 
 
 
+
+
 directives.directive('markedsg', function () {
+
 
   return {
 
+
     restrict: 'AE',
+
 
     replace: true,
 
+
     scope: {
+
 
       markedsg: '='
 
+
     },
 
+
     link: function (scope, element, attrs) {
+
 
       set(scope.markedsg || element.text() || '');
 
 
 
+
+
       if (attrs.markedsg) {
+
 
         scope.$watch('markedsg', set);
 
+
       }
+
+
 
 
 
       function unindent(text) {
 
+
         if (!text) return text;
+
+
 
 
 
         var lines = text
 
+
           .replace(/\t/g, '  ')
+
 
           .split(/\r?\n/);
 
 
 
+
+
         var i, l, min = null, line, len = lines.length;
+
 
         for (i = 0; i < len; i++) {
 
+
           line = lines[i];
+
 
           l = line.match(/^(\s*)/)[0].length;
 
+
           if (l === line.length) { continue; }
+
 
           min = (l < min || min === null) ? l : min;
 
+
         }
+
+
 
 
 
         if (min !== null && min > 0) {
 
+
           for (i = 0; i < len; i++) {
+
 
             lines[i] = lines[i].substr(min);
 
+
           }
+
 
         }
 
+
         return lines.join('\n');
 
+
       }
+
+
 
 
 
       function set(text) {
 
+
         text = unindent(text || '');
+
 
         // Parse mentions links
 
+
         var links = $('<div>' + text + '</div>');
+
 
         links.find('a.user-mention').each(function( index ) {
 
+
           $(this).attr("href", "/u/"+ $(this).data('username') +"/"+ $(this).data('id'));
+
 
           if($(this).data('comment') != undefined) {
 
+
             $(this).before('<i class="fa fa-reply comment-response"></i>')
+
 
           }
 
+
         });
+
 
         text = links.html();
 
+
         element.html(marked(text, scope.opts || null));
+
 
       }
 
 
 
+
+
     }
+
 
   };
 
+
 });
+
+
 
 
 
 directives.directive('populometro', function() {
 
+
   return {
+
 
     restrict: 'EACM',
 
+
     template: function(elem, attrs) {
+
 
       return '<div style="display:block;width:100px;height:80px;margin: 0 auto"><svg style="position:absolute" width="100" height="100"><g><polygon points="50 20 54 50 46 50" fill="#E6E9EE" transform="rotate({{ (knob*2.4) - 120 }} 50 50)"></polygon><circle class="ring" cx="50" cy="50" r="10" fill="#E6E9EE"></circle><circle class="ring" cx="51" cy="51" r="8" fill="#d0d7dd"></circle><circle class="ring" cx="50" cy="50" r="7" fill="#F1F1F1"></circle></g></svg><div style="display: none; position:absolute;top:50%;width:100px;text-align:center;font-weight:bold;font-size: 1.1em;">{{ knob | number : 0 }}</div><input value="{{ knob }}"></div>';
 
+
     },
+
 
     replace: true,
 
+
     scope: true,
+
 
     link: function(scope, elem, attrs) {
 
+
       scope.opts = {
+
 
         'width':100,
 
+
         'height':80,
+
 
         'bgColor':'#E6E9EE',
 
+
         'fgColor':'#386db8',
+
 
         'readOnly':true,
 
+
         'displayInput':false,
+
 
         'max': 100,
 
+
         'angleArc':240,
+
 
         'angleOffset':-120,
 
+
         'thickness':'.25'
 
+
       };
+
 
       var renderKnob = function(){
 
+
         scope.knob = scope.$eval(attrs.knobData);
+
 
         $elem = $(elem).find('input');
 
+
         $elem.val(scope.knob);
+
 
         $elem.change();
 
+
         $elem.knob(scope.opts);
+
 
       };
 
+
       scope.$watch(attrs.knobData, function () {
+
 
         renderKnob();
 
+
       });
+
 
     },
 
+
   }
+
 
 });
 
 
 
+
+
 /**
+
 
  * ng-flags module
 
+
  * Turns country ISO code to flag thumbnail.
+
 
  *
 
+
  * Author: asafdav - https://github.com/asafdav
+
 
  */
 
+
 directives.directive('flag', function() {
+
 
   return {
 
+
     restrict: 'E',
+
 
     replace: true,
 
+
     template: '<span class="f{{ size }}"><span class="flag {{ country }}"></span></span>',
+
 
     scope: {
 
+
       country: '@',
+
 
       size: '@'
 
+
     },
+
 
     link: function(scope, elm, attrs) {
 
+
       // Default flag size
+
 
       scope.size = 16;
 
 
 
+
+
       scope.$watch('country', function(value) {
+
 
         scope.country = angular.lowercase(value);
 
+
       });
+
+
 
 
 
       scope.$watch('size', function(value) {
 
+
         scope.size = value;
+
 
       });
 
+
     }
 
+
   };
+
 
 });
 var filters = angular.module('filtersModule', []);
@@ -9187,10 +9889,12 @@ var ChatController = [
   '$location',
   '$route',
   '$routeParams',
-  function($scope, $firebaseArray, $firebaseObject, $timeout, $location, $route, $routeParams) {
+  '$http',
+  function($scope, $firebaseArray, $firebaseObject, $timeout, $location, $route, $routeParams, $http) {
 
     $scope.people = [];
 
+    $scope.membersRef_global = [];
     $scope.emojiMessage = {};
 
     var firebaseRef = new Firebase(firebase_url);
@@ -9253,7 +9957,43 @@ var ChatController = [
       loaded: false,
       blocked: false
     };
-
+    $scope.text = '';
+    
+    $scope.config = {
+      autocomplete: [
+        {
+          words: [/@([A-Za-z0-9]+[_A-Za-z0-9]+)/gi],
+          cssClass: 'user'
+        }
+      ],
+      dropdown: [
+        {
+          trigger: /@([A-Za-z0-9]+[_A-Za-z0-9]+)/gi,
+          list: function(match, callback){
+              data=[];
+              $scope.members.forEach(function (member) {
+                var nombre_mem=member.username;
+                data.push({username: nombre_mem});
+              });
+              var listData = data.filter(function(element){
+                return element.username.substr(0,match[1].length).toLowerCase() === match[1].toLowerCase()
+                && element.username.length > match[1].length;
+              }).map(function(element){
+                return {
+                  display: element.username, // This gets displayed in the dropdown
+                  item: element // This will get passed to onSelect
+                };
+              });
+              callback(listData);
+          },
+          onSelect: function(item){
+            enter=true;
+            return item.display;
+          },
+          mode: 'replace'
+        }
+      ]
+    };
     $scope.getMentionable = function() {
       var new_people = [];
 
@@ -9323,7 +10063,6 @@ var ChatController = [
 
       var membersRef = new Firebase(firebase_url + 'members/' + channel.$id);
       $scope.members = $firebaseArray(membersRef);
-
       membersRef.on('value', function(snapshot) {
         var new_people = [];
         snapshot.forEach(function(childSnapshot) {
@@ -9580,20 +10319,23 @@ var ChatController = [
   }
 ];
 
+var enter=false;
 var chatModule = angular.module('chatModule', ['firebase', 'ngSanitize']);
 
 chatModule.controller('ChatController', ChatController);
 
 chatModule.directive('sgEnter', function() {
   return {
-    link: function(scope, element, attrs) {
+    link: function(scope, element, attrs){
       //console.log(scope.message.send_on_enter);
-      element.bind("keydown keypress", function(event) {
-        if(event.which === 13 && scope.message.send_on_enter) {
+      element.bind("keyup", function(event) {
+        if(enter==false && event.which === 13 && scope.message.send_on_enter) {
           scope.$apply(function(){
             scope.$eval(attrs.sgEnter, {'event': event});
           });
           event.preventDefault();
+        }else if(enter==true){
+          enter=false;
         }
       });
     }
@@ -11675,6 +12417,7 @@ var boardApplication = angular.module('board', [
   'angular-jwt',
   'firebase',
   'ngFileUpload',
+  'smartArea',
   'monospaced.elastic',
   'mentio',
   'uiSwitch',

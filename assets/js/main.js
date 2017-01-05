@@ -5,6 +5,7 @@
 // @codekit-prepend vendor/angular-facebook.js
 // @codekit-prepend vendor/angular-jwt.min.js
 // @codekit-prepend vendor/ng-file-upload-all.min.js
+// @codekit-prepend vendor/smart-area.js
 // @codekit-prepend vendor/elastic.js
 // @codekit-prepend vendor/mentio.min.js
 // @codekit-prepend vendor/angular-ui-switch.min.js
@@ -16,6 +17,7 @@
 // @codekit-prepend vendor/jquery.knob.min.js
 // @codekit-prepend vendor/socket.min.js
 // @codekit-prepend vendor/country-picker.min.js
+
 
 // @codekit-prepend common/directives.js
 // @codekit-prepend common/filters.js
@@ -69,6 +71,7 @@ var boardApplication = angular.module('board', [
   'angular-jwt',
   'firebase',
   'ngFileUpload',
+  'smartArea',
   'monospaced.elastic',
   'mentio',
   'uiSwitch',
