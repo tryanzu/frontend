@@ -9,12 +9,12 @@
         </a>
       </li>
       <li class="sidebar-title" ng-if="user.isLogged">Rifa</li>
-      <li ng-if="!can('board-config') && show_details">  
+      <li ng-if="can('board-config') && show_details">  
         <button class="btn btn-success btn-xs" ng-hide="rifa.create" type="button" ng-click="createRifa()">Crear Rifa</button>
         <button class="btn btn-danger btn-xs" ng-hide="!rifa.create" type="button" ng-click="deleteRifa()">Borrar Rifa</button>
       </li>
       <!-- for users -->
-      <li ng-if="can('board-config') && rifa.active && user.isLogged">
+      <li ng-if="!can('board-config') && rifa.active && user.isLogged">
         <div ng-if="rifa.rifa">
           <div class="row text-center">
             <div class="col-sm-11">
@@ -59,7 +59,7 @@
         </div>
       </li>
       <!-- for admins -->
-      <li ng-if="!can('board-config') && rifa.active">
+      <li ng-if="can('board-config') && rifa.active">
         <button class="btn btn-danger btn-xs" ng-if="rifa.create && !rifa.art.stop" type="button" ng-click="stopRifa()">Detener Rifa</button>
         <button class="btn btn-success btn-xs" ng-if="rifa.create && rifa.art.stop" type="button" ng-click="startRifa()">Activar Rifa</button>
         <button class="btn btn-primary btn-xs" ng-if="rifa.create && rifa.art.stop" type="button" ng-click="ganadorRifa()">Obtener Ganador</button>
@@ -106,7 +106,7 @@
                 <div class="col-md-6 col-xs-7">
                   <h3 style="margin-top: 0">{{ channel.selected.name || "#" }}</h3>
                 </div>
-                <div class="col-md-6 col-xs-5 text-right" ng-if="!can('board-config')">
+                <div class="col-md-6 col-xs-5 text-right" ng-if="can('board-config')">
                   <a title="Configurar este canal" class="btn btn-default btn-icon btn-round" ng-click="toggle_details()" ng-class="{'active': show_details}">
                     <i class="fa fa-fw fa-info-circle icon"></i>
                     <span class="label hidden-xs">Configurar este canal</span>
