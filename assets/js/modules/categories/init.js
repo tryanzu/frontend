@@ -1,5 +1,5 @@
-// @codekit-prepend "category_service"
-// @codekit-prepend "category_list_controller"
+// @codekit-prepend category_service.js
+// @codekit-prepend category_list_controller.js
 
 var CategoryModule = angular.module('categoryModule', ['ngResource']);
 

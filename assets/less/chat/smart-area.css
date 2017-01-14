@@ -1,0 +1,49 @@
+.sa-wrapper{
+    width:100%;
+    position:relative;
+}
+.sa-realArea, .sa-fakeArea{
+    color: inherit;
+    resize: none;
+    overflow: hidden;
+    z-index:0;
+    width:100%;
+}
+
+textarea.sa-realArea{
+    -webkit-text-fill-color: transparent;
+    position:absolute;
+    top:0;
+    left:0;
+    background: transparent;
+    border-color: transparent;
+}
+textarea.sa-realArea:hover, textarea.sa-realArea:focus{
+    border-color: transparent;
+}
+
+.sa-fakeArea{
+    color:#000;
+    height:100%;
+    width:100% !important;
+}
+
+.sa-dropdown{
+    position: absolute;
+    min-width: 100px;
+    text-align: left;
+    z-index:1;
+}
+.sa-dropdown .dropdown-menu{
+    display:block;
+}
+
+.sa-dropdown a{
+    padding: 2px 6px;
+    font-size: 0.9em;
+}
+
+.sa-dropdown a.active{
+    background-color:#4497de;
+    color:#fff;
+}

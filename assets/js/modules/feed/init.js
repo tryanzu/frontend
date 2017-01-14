@@ -1,4 +1,4 @@
-// @codekit-prepend "feed_service"
+// @codekit-prepend feed_service.js
 
 var FeedModule = angular.module('feedModule', ['ngResource']);
 
