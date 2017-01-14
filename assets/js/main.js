@@ -5,6 +5,7 @@
 // @codekit-prepend vendor/angular-facebook.js
 // @codekit-prepend vendor/angular-jwt.min.js
 // @codekit-prepend vendor/ng-file-upload-all.min.js
+// @codekit-prepend vendor/smart-area.js
 // @codekit-prepend vendor/elastic.js
 // @codekit-prepend vendor/mentio.min.js
 // @codekit-prepend vendor/angular-ui-switch.min.js
@@ -69,6 +70,7 @@ var boardApplication = angular.module('board', [
   'angular-jwt',
   'firebase',
   'ngFileUpload',
+  'smartArea',
   'monospaced.elastic',
   'mentio',
   'uiSwitch',
@@ -288,6 +290,7 @@ boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http'
         var data = response.data;
         localStorage.setItem('id_token', data.token);
         localStorage.setItem('firebase_token', data.firebase);
+        //localStorage.setItem('firebase_token', 'AIzaSyCBR1iyAv25IG2T8WMMtRSZzabfJ_4KBNs');
         localStorage.setItem('signed_in', true);
 
         $uibModalInstance.dismiss('logged');

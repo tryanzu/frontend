@@ -147,7 +147,7 @@
               </li>
               <li><a href="/reglamento"><i class="fa fa-hand-peace-o"></i> Reglamento</a></li>
               <li><a href="/terminos-y-condiciones"><i class="fa fa-file-text"></i> Términos y Condiciones</a></li>
-              <li><a href="/about"><i class="fa fa-fw fa-question icon"></i> Acerca de...</a></li>
+              <li><a href="/about"><i class="fa fa-fw fa-question"></i> Acerca de...</a></li>
             </ul>
           </li>
         </ul>
@@ -158,10 +158,10 @@
               <span class="label visible-lg-inline">Notificaciones</span>
               <span class="notification-badge" ng-if="total_notifications() + (user.info.validated?0:1) + (cart.hasMassdrop()?1:0) > 0">{{ total_notifications() + (user.info.validated?0:1) + (cart.hasMassdrop()?1:0) }}</span>
             </a>
-            <ul class="dropdown-menu" role="menu">
+            <ul class="dropdown-menu dropdown-sections" role="menu">
               <div class="notifications-header">
                 <a class="btn btn-icon btn-link btn-sm" title="Marcar como leídas" href="" ng-if="total_notifications() > 0" ng-click="toggle_notifications()">
-                  <i class="fa fa-fw fa-check icon"></i> <span class="label">Marcar como leídas</span>
+                  <i class="fa fa-fw fa-check"></i> <span class="label">Marcar como leídas</span>
                 </a>
                 <h4>Notificaciones</h4>
               </div>
@@ -217,20 +217,20 @@
               </span>
               <span class="caret"></span>
             </a>
-            <ul class="dropdown-menu" role="menu">
+            <ul class="dropdown-menu dropdown-sections" role="menu">
               <li>
                 <a href="/u/{{ user.info.username }}/{{ user.info.id }}">
-                  <i class="fa fa-fw fa-user icon"></i> Ver mi perfil
+                  <i class="fa fa-fw fa-user"></i> Ver mi perfil
                 </a>
               </li>
               <li>
                 <a href="/medallas">
-                  <i class="fa fa-fw fa-dot-circle-o icon"></i> Medallas
+                  <i class="fa fa-fw fa-dot-circle-o"></i> Medallas
                 </a>
               </li>
               <li>
                 <a href="/top-ranking">
-                  <i class="fa fa-fw fa-line-chart icon"></i> Ranking de usuarios
+                  <i class="fa fa-fw fa-line-chart"></i> Ranking de usuarios
                 </a>
               </li>
               <li class="divider"></li>
@@ -249,9 +249,9 @@
                   <i class="sgi gray shit"></i> Mierda: <span class="badge badge-important pull-right">{{ (user.gaming.shit || 0) | number:0 }}</span>
                 </a>
               </li>
-              <li class="hidden"><a href="/config"><i class="fa fa-fw fa-cog icon"></i> Configuración</a></li>
+              <li class="hidden"><a href="/config"><i class="fa fa-fw fa-cog"></i> Configuración</a></li>
               <li class="divider"></li>
-              <li><a href="" ng-click="signOut()"><i class="fa fa-fw fa-sign-out icon"></i> Salir</a></li>
+              <li><a href="" ng-click="signOut()"><i class="fa fa-fw fa-sign-out"></i> Salir</a></li>
             </ul>
           </li>
         </ul>

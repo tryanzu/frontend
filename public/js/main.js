@@ -2322,6 +2322,493 @@ return a>v||p>a&&u>a},a.noDecrementHours=function(){var a=n(p,60*-s);return u>a|
 !function(){angular.module("angular-jwt",["angular-jwt.interceptor","angular-jwt.jwt"]),angular.module("angular-jwt.interceptor",[]).provider("jwtInterceptor",function(){this.urlParam=null,this.authHeader="Authorization",this.authPrefix="Bearer ",this.tokenGetter=function(){return null};var e=this;this.$get=["$q","$injector","$rootScope",function(r,t,a){return{request:function(a){if(a.skipAuthorization)return a;if(e.urlParam){if(a.params=a.params||{},a.params[e.urlParam])return a}else if(a.headers=a.headers||{},a.headers[e.authHeader])return a;var n=r.when(t.invoke(e.tokenGetter,this,{config:a}));return n.then(function(r){return r&&(e.urlParam?a.params[e.urlParam]=r:a.headers[e.authHeader]=e.authPrefix+r),a})},responseError:function(e){return 401===e.status&&a.$broadcast("unauthenticated",e),r.reject(e)}}}]}),angular.module("angular-jwt.jwt",[]).service("jwtHelper",function(){this.urlBase64Decode=function(e){var r=e.replace(/-/g,"+").replace(/_/g,"/");switch(r.length%4){case 0:break;case 2:r+="==";break;case 3:r+="=";break;default:throw"Illegal base64url string!"}return decodeURIComponent(escape(window.atob(r)))},this.decodeToken=function(e){var r=e.split(".");if(3!==r.length)throw new Error("JWT must have 3 parts");var t=this.urlBase64Decode(r[1]);if(!t)throw new Error("Cannot decode the token");return JSON.parse(t)},this.getTokenExpirationDate=function(e){var r;if(r=this.decodeToken(e),"undefined"==typeof r.exp)return null;var t=new Date(0);return t.setUTCSeconds(r.exp),t},this.isTokenExpired=function(e,r){var t=this.getTokenExpirationDate(e);return r=r||0,null===t?!1:!(t.valueOf()>(new Date).valueOf()+1e3*r)}})}();
 /*! 5.0.9 */
 !function(){function a(a,b){window.XMLHttpRequest.prototype[a]=b(window.XMLHttpRequest.prototype[a])}function b(a,b,c){try{Object.defineProperty(a,b,{get:c})}catch(d){}}if(window.FileAPI||(window.FileAPI={}),FileAPI.shouldLoad=window.XMLHttpRequest&&!window.FormData||FileAPI.forceLoad,FileAPI.shouldLoad){var c=function(a){if(!a.__listeners){a.upload||(a.upload={}),a.__listeners=[];var b=a.upload.addEventListener;a.upload.addEventListener=function(c,d){a.__listeners[c]=d,b&&b.apply(this,arguments)}}};a("open",function(a){return function(b,d,e){c(this),this.__url=d;try{a.apply(this,[b,d,e])}catch(f){f.message.indexOf("Access is denied")>-1&&(this.__origError=f,a.apply(this,[b,"_fix_for_ie_crossdomain__",e]))}}}),a("getResponseHeader",function(a){return function(b){return this.__fileApiXHR&&this.__fileApiXHR.getResponseHeader?this.__fileApiXHR.getResponseHeader(b):null==a?null:a.apply(this,[b])}}),a("getAllResponseHeaders",function(a){return function(){return this.__fileApiXHR&&this.__fileApiXHR.getAllResponseHeaders?this.__fileApiXHR.getAllResponseHeaders():null==a?null:a.apply(this)}}),a("abort",function(a){return function(){return this.__fileApiXHR&&this.__fileApiXHR.abort?this.__fileApiXHR.abort():null==a?null:a.apply(this)}}),a("setRequestHeader",function(a){return function(b,d){if("__setXHR_"===b){c(this);var e=d(this);e instanceof Function&&e(this)}else this.__requestHeaders=this.__requestHeaders||{},this.__requestHeaders[b]=d,a.apply(this,arguments)}}),a("send",function(a){return function(){var c=this;if(arguments[0]&&arguments[0].__isFileAPIShim){var d=arguments[0],e={url:c.__url,jsonp:!1,cache:!0,complete:function(a,d){c.__completed=!0,!a&&c.__listeners.load&&c.__listeners.load({type:"load",loaded:c.__loaded,total:c.__total,target:c,lengthComputable:!0}),!a&&c.__listeners.loadend&&c.__listeners.loadend({type:"loadend",loaded:c.__loaded,total:c.__total,target:c,lengthComputable:!0}),"abort"===a&&c.__listeners.abort&&c.__listeners.abort({type:"abort",loaded:c.__loaded,total:c.__total,target:c,lengthComputable:!0}),void 0!==d.status&&b(c,"status",function(){return 0===d.status&&a&&"abort"!==a?500:d.status}),void 0!==d.statusText&&b(c,"statusText",function(){return d.statusText}),b(c,"readyState",function(){return 4}),void 0!==d.response&&b(c,"response",function(){return d.response});var e=d.responseText||(a&&0===d.status&&"abort"!==a?a:void 0);b(c,"responseText",function(){return e}),b(c,"response",function(){return e}),a&&b(c,"err",function(){return a}),c.__fileApiXHR=d,c.onreadystatechange&&c.onreadystatechange(),c.onload&&c.onload()},progress:function(a){if(a.target=c,c.__listeners.progress&&c.__listeners.progress(a),c.__total=a.total,c.__loaded=a.loaded,a.total===a.loaded){var b=this;setTimeout(function(){c.__completed||(c.getAllResponseHeaders=function(){},b.complete(null,{status:204,statusText:"No Content"}))},FileAPI.noContentTimeout||1e4)}},headers:c.__requestHeaders};e.data={},e.files={};for(var f=0;f<d.data.length;f++){var g=d.data[f];null!=g.val&&null!=g.val.name&&null!=g.val.size&&null!=g.val.type?e.files[g.key]=g.val:e.data[g.key]=g.val}setTimeout(function(){if(!FileAPI.hasFlash)throw'Adode Flash Player need to be installed. To check ahead use "FileAPI.hasFlash"';c.__fileApiXHR=FileAPI.upload(e)},1)}else{if(this.__origError)throw this.__origError;a.apply(c,arguments)}}}),window.XMLHttpRequest.__isFileAPIShim=!0,window.FormData=FormData=function(){return{append:function(a,b,c){b.__isFileAPIBlobShim&&(b=b.data[0]),this.data.push({key:a,val:b,name:c})},data:[],__isFileAPIShim:!0}},window.Blob=Blob=function(a){return{data:a,__isFileAPIBlobShim:!0}}}}(),function(){function a(a){return"input"===a[0].tagName.toLowerCase()&&a.attr("type")&&"file"===a.attr("type").toLowerCase()}function b(){try{var a=new ActiveXObject("ShockwaveFlash.ShockwaveFlash");if(a)return!0}catch(b){if(void 0!==navigator.mimeTypes["application/x-shockwave-flash"])return!0}return!1}function c(a){var b=0,c=0;if(window.jQuery)return jQuery(a).offset();if(a.offsetParent)do b+=a.offsetLeft-a.scrollLeft,c+=a.offsetTop-a.scrollTop,a=a.offsetParent;while(a);return{left:b,top:c}}if(FileAPI.shouldLoad){if(FileAPI.forceLoad&&(FileAPI.html5=!1),!FileAPI.upload){var d,e,f,g,h,i=document.createElement("script"),j=document.getElementsByTagName("script");if(window.FileAPI.jsUrl)d=window.FileAPI.jsUrl;else if(window.FileAPI.jsPath)e=window.FileAPI.jsPath;else for(f=0;f<j.length;f++)if(h=j[f].src,g=h.search(/\/ng\-file\-upload[\-a-zA-z0-9\.]*\.js/),g>-1){e=h.substring(0,g+1);break}null==FileAPI.staticPath&&(FileAPI.staticPath=e),i.setAttribute("src",d||e+"FileAPI.min.js"),document.getElementsByTagName("head")[0].appendChild(i),FileAPI.hasFlash=b()}FileAPI.ngfFixIE=function(d,e,f,g){if(!b())throw'Adode Flash Player need to be installed. To check ahead use "FileAPI.hasFlash"';var h=function(){if(d.attr("disabled"))d.$$ngfRefElem.removeClass("js-fileapi-wrapper");else{var b=d.$$ngfRefElem;b?f(d.$$ngfRefElem):(b=d.$$ngfRefElem=e(),b.addClass("js-fileapi-wrapper"),!a(d),setTimeout(function(){b.bind("mouseenter",h)},10),b.bind("change",function(a){i.apply(this,[a]),g.apply(this,[a])})),a(d)||b.css("position","absolute").css("top",c(d[0]).top+"px").css("left",c(d[0]).left+"px").css("width",d[0].offsetWidth+"px").css("height",d[0].offsetHeight+"px").css("filter","alpha(opacity=0)").css("display",d.css("display")).css("overflow","hidden").css("z-index","900000").css("visibility","visible")}};d.bind("mouseenter",h);var i=function(a){for(var b=FileAPI.getFiles(a),c=0;c<b.length;c++)void 0===b[c].size&&(b[c].size=0),void 0===b[c].name&&(b[c].name="file"),void 0===b[c].type&&(b[c].type="undefined");a.target||(a.target={}),a.target.files=b,a.target.files!==b&&(a.__files_=b),(a.__files_||a.target.files).item=function(b){return(a.__files_||a.target.files)[b]||null}}},FileAPI.disableFileInput=function(a,b){b?a.removeClass("js-fileapi-wrapper"):a.addClass("js-fileapi-wrapper")}}}(),window.FileReader||(window.FileReader=function(){var a=this,b=!1;this.listeners={},this.addEventListener=function(b,c){a.listeners[b]=a.listeners[b]||[],a.listeners[b].push(c)},this.removeEventListener=function(b,c){a.listeners[b]&&a.listeners[b].splice(a.listeners[b].indexOf(c),1)},this.dispatchEvent=function(b){var c=a.listeners[b.type];if(c)for(var d=0;d<c.length;d++)c[d].call(a,b)},this.onabort=this.onerror=this.onload=this.onloadstart=this.onloadend=this.onprogress=null;var c=function(b,c){var d={type:b,target:a,loaded:c.loaded,total:c.total,error:c.error};return null!=c.result&&(d.target.result=c.result),d},d=function(d){b||(b=!0,a.onloadstart&&a.onloadstart(c("loadstart",d)));var e;"load"===d.type?(a.onloadend&&a.onloadend(c("loadend",d)),e=c("load",d),a.onload&&a.onload(e),a.dispatchEvent(e)):"progress"===d.type?(e=c("progress",d),a.onprogress&&a.onprogress(e),a.dispatchEvent(e)):(e=c("error",d),a.onerror&&a.onerror(e),a.dispatchEvent(e))};this.readAsArrayBuffer=function(a){FileAPI.readAsBinaryString(a,d)},this.readAsBinaryString=function(a){FileAPI.readAsBinaryString(a,d)},this.readAsDataURL=function(a){FileAPI.readAsDataURL(a,d)},this.readAsText=function(a){FileAPI.readAsText(a,d)}}),!window.XMLHttpRequest||window.FileAPI&&FileAPI.shouldLoad||(window.XMLHttpRequest.prototype.setRequestHeader=function(a){return function(b,c){if("__setXHR_"===b){var d=c(this);d instanceof Function&&d(this)}else a.apply(this,arguments)}}(window.XMLHttpRequest.prototype.setRequestHeader));var ngFileUpload=angular.module("ngFileUpload",[]);ngFileUpload.version="5.0.9",ngFileUpload.service("Upload",["$http","$q","$timeout",function(a,b,c){function d(d){d.method=d.method||"POST",d.headers=d.headers||{};var e=b.defer(),f=e.promise;return d.headers.__setXHR_=function(){return function(a){a&&(d.__XHR=a,d.xhrFn&&d.xhrFn(a),a.upload.addEventListener("progress",function(a){a.config=d,e.notify?e.notify(a):f.progressFunc&&c(function(){f.progressFunc(a)})},!1),a.upload.addEventListener("load",function(a){a.lengthComputable&&(a.config=d,e.notify?e.notify(a):f.progressFunc&&c(function(){f.progressFunc(a)}))},!1))}},a(d).then(function(a){e.resolve(a)},function(a){e.reject(a)},function(a){e.notify(a)}),f.success=function(a){return f.then(function(b){a(b.data,b.status,b.headers,d)}),f},f.error=function(a){return f.then(null,function(b){a(b.data,b.status,b.headers,d)}),f},f.progress=function(a){return f.progressFunc=a,f.then(null,null,function(b){a(b)}),f},f.abort=function(){return d.__XHR&&c(function(){d.__XHR.abort()}),f},f.xhr=function(a){return d.xhrFn=function(b){return function(){b&&b.apply(f,arguments),a.apply(f,arguments)}}(d.xhrFn),f},f}this.upload=function(a){function b(c,d,e){if(void 0!==d)if(angular.isDate(d)&&(d=d.toISOString()),angular.isString(d))c.append(e,d);else if("form"===a.sendFieldsAs)if(angular.isObject(d))for(var f in d)d.hasOwnProperty(f)&&b(c,d[f],e+"["+f+"]");else c.append(e,d);else d=angular.isString(d)?d:JSON.stringify(d),"json-blob"===a.sendFieldsAs?c.append(e,new Blob([d],{type:"application/json"})):c.append(e,d)}return a.headers=a.headers||{},a.headers["Content-Type"]=void 0,a.transformRequest=a.transformRequest?angular.isArray(a.transformRequest)?a.transformRequest:[a.transformRequest]:[],a.transformRequest.push(function(c){var d,e=new FormData,f={};for(d in a.fields)a.fields.hasOwnProperty(d)&&(f[d]=a.fields[d]);c&&(f.data=c);for(d in f)if(f.hasOwnProperty(d)){var g=f[d];a.formDataAppender?a.formDataAppender(e,d,g):b(e,g,d)}if(null!=a.file){var h=a.fileFormDataName||"file";if(angular.isArray(a.file))for(var i=angular.isString(h),j=0;j<a.file.length;j++)e.append(i?h:h[j],a.file[j],a.fileName&&a.fileName[j]||a.file[j].name);else e.append(h,a.file,a.fileName||a.file.name)}return e}),d(a)},this.http=function(b){return b.transformRequest=b.transformRequest||function(b){return window.ArrayBuffer&&b instanceof window.ArrayBuffer||b instanceof Blob?b:a.defaults.transformRequest[0](arguments)},d(b)}}]),function(){function a(a,e,f,g,h,i,j){function k(){return"input"===e[0].tagName.toLowerCase()&&f.type&&"file"===f.type.toLowerCase()}function l(b){if(!r){r=!0;try{for(var e=b.__files_||b.target&&b.target.files,j=[],k=[],l=0;l<e.length;l++){var m=e.item(l);c(a,h,f,m,b)?j.push(m):k.push(m)}d(h,i,a,g,f,f.ngfChange||f.ngfSelect,j,k,b),0===j.length&&(b.target.value=j)}finally{r=!1}}}function m(b){f.ngfMultiple&&b.attr("multiple",h(f.ngfMultiple)(a)),f.ngfCapture&&b.attr("capture",h(f.ngfCapture)(a)),f.accept&&b.attr("accept",f.accept);for(var c=0;c<e[0].attributes.length;c++){var d=e[0].attributes[c];(k()&&"type"!==d.name||"type"!==d.name&&"class"!==d.name&&"id"!==d.name&&"style"!==d.name)&&b.attr(d.name,d.value)}}function n(b,c){if(!c&&(b||k()))return e.$$ngfRefElem||e;var d=angular.element('<input type="file">');return m(d),k()?(e.replaceWith(d),e=d,d.attr("__ngf_gen__",!0),j(e)(a)):(d.css("visibility","hidden").css("position","absolute").css("overflow","hidden").css("width","0px").css("height","0px").css("z-index","-100000").css("border","none").css("margin","0px").css("padding","0px").attr("tabindex","-1"),e.$$ngfRefElem&&e.$$ngfRefElem.remove(),e.$$ngfRefElem=d,document.body.appendChild(d[0])),d}function o(b){d(h,i,a,g,f,f.ngfChange||f.ngfSelect,[],[],b,!0)}function p(c){function d(a){a&&i[0].click(),(k()||!a)&&e.bind("click touchend",p)}if(e.attr("disabled")||q)return!1;null!=c&&(c.preventDefault(),c.stopPropagation());var g=h(f.ngfResetOnClick)(a)!==!1,i=n(c,g);return i&&((!c||g)&&i.bind("change",l),c&&g&&h(f.ngfResetModelOnClick)(a)!==!1&&o(c),b(navigator.userAgent)?setTimeout(function(){d(c)},0):d(c)),!1}if(!e.attr("__ngf_gen__")){a.$on("$destroy",function(){e.$$ngfRefElem&&e.$$ngfRefElem.remove()});var q=!1;-1===f.ngfSelect.search(/\W+$files\W+/)&&a.$watch(f.ngfSelect,function(a){q=a===!1});var r=!1;window.FileAPI&&window.FileAPI.ngfFixIE?window.FileAPI.ngfFixIE(e,n,m,l):p()}}function b(a){var b=a.match(/Android[^\d]*(\d+)\.(\d+)/);return b&&b.length>2?parseInt(b[1])<4||4===parseInt(b[1])&&parseInt(b[2])<4:/.*Windows.*Safari.*/.test(a)}ngFileUpload.directive("ngfSelect",["$parse","$timeout","$compile",function(b,c,d){return{restrict:"AEC",require:"?ngModel",link:function(e,f,g,h){a(e,f,g,h,b,c,d)}}}]),ngFileUpload.validate=function(a,b,c,d,e){function f(a){if(a.length>2&&"/"===a[0]&&"/"===a[a.length-1])return a.substring(1,a.length-1);var b=a.split(","),c="";if(b.length>1)for(var d=0;d<b.length;d++)c+="("+f(b[d])+")",d<b.length-1&&(c+="|");else 0===a.indexOf(".")&&(a="*"+a),c="^"+a.replace(new RegExp("[.\\\\+*?\\[\\^\\]$(){}=!<>|:\\-]","g"),"\\$&")+"$",c=c.replace(/\\\*/g,".*").replace(/\\\?/g,".");return c}var g=b(c.ngfAccept)(a,{$file:d,$event:e}),h=b(c.ngfMaxSize)(a,{$file:d,$event:e})||9007199254740991,i=b(c.ngfMinSize)(a,{$file:d,$event:e})||-1;if(null!=g&&angular.isString(g)){var j=new RegExp(f(g),"gi");g=null!=d.type&&j.test(d.type.toLowerCase())||null!=d.name&&j.test(d.name.toLowerCase())}return(null==g||g)&&(null==d.size||d.size<h&&d.size>i)},ngFileUpload.updateModel=function(a,b,c,d,e,f,g,h,i,j){function k(){if(a(e.ngfKeep)(c)===!0){var j=(d.$modelValue||[]).slice(0);if(g&&g.length)if(a(e.ngfKeepDistinct)(c)===!0){for(var k=j.length,l=0;l<g.length;l++){for(var m=0;k>m&&g[l].name!==j[m].name;m++);m===k&&j.push(g[l])}g=j}else g=j.concat(g);else g=j}d&&(a(e.ngModel).assign(c,g),b(function(){d&&d.$setViewValue(null!=g&&0===g.length?null:g)})),e.ngModelRejected&&a(e.ngModelRejected).assign(c,h),f&&a(f)(c,{$files:g,$rejectedFiles:h,$event:i})}j?k():b(function(){k()})};var c=ngFileUpload.validate,d=ngFileUpload.updateModel}(),function(){function a(a,e,f,g,h,i,j){function k(a,b,d){var e=!0,f=d.dataTransfer.items;if(null!=f)for(var g=0;g<f.length&&e;g++)e=e&&("file"===f[g].kind||""===f[g].kind)&&c(a,h,b,f[g],d);var i=h(b.ngfDragOverClass)(a,{$event:d});return i&&(i.delay&&(r=i.delay),i.accept&&(i=e?i.accept:i.reject)),i||b.ngfDragOverClass||"dragover"}function l(b,d,e,g){function k(d){c(a,h,f,d,b)?m.push(d):n.push(d)}function l(a,b,c){if(null!=b)if(b.isDirectory){var d=(c||"")+b.name;k({name:b.name,type:"directory",path:d});var e=b.createReader(),f=[];p++;var g=function(){e.readEntries(function(d){try{if(d.length)f=f.concat(Array.prototype.slice.call(d||[],0)),g();else{for(var e=0;e<f.length;e++)l(a,f[e],(c?c:"")+b.name+"/");p--}}catch(h){p--,console.error(h)}},function(){p--})};g()}else p++,b.file(function(a){try{p--,a.path=(c?c:"")+a.name,k(a)}catch(b){p--,console.error(b)}},function(){p--})}var m=[],n=[],o=b.dataTransfer.items,p=0;if(o&&o.length>0&&"file"!==j.protocol())for(var q=0;q<o.length;q++){if(o[q].webkitGetAsEntry&&o[q].webkitGetAsEntry()&&o[q].webkitGetAsEntry().isDirectory){var r=o[q].webkitGetAsEntry();if(r.isDirectory&&!e)continue;null!=r&&l(m,r)}else{var s=o[q].getAsFile();null!=s&&k(s)}if(!g&&m.length>0)break}else{var t=b.dataTransfer.files;if(null!=t)for(var u=0;u<t.length&&(k(t.item(u)),g||!(m.length>0));u++);}var v=0;!function w(a){i(function(){if(p)10*v++<2e4&&w(10);else{if(!g&&m.length>1){for(q=0;"directory"===m[q].type;)q++;m=[m[q]]}d(m,n)}},a||0)}()}var m=b();if(f.dropAvailable&&i(function(){a[f.dropAvailable]?a[f.dropAvailable].value=m:a[f.dropAvailable]=m}),!m)return void(h(f.ngfHideOnDropNotAvailable)(a)===!0&&e.css("display","none"));var n=!1;-1===f.ngfDrop.search(/\W+$files\W+/)&&a.$watch(f.ngfDrop,function(a){n=a===!1});var o,p=null,q=h(f.ngfStopPropagation),r=1;e[0].addEventListener("dragover",function(b){if(!e.attr("disabled")&&!n){if(b.preventDefault(),q(a)&&b.stopPropagation(),navigator.userAgent.indexOf("Chrome")>-1){var c=b.dataTransfer.effectAllowed;b.dataTransfer.dropEffect="move"===c||"linkMove"===c?"move":"copy"}i.cancel(p),a.actualDragOverClass||(o=k(a,f,b)),e.addClass(o)}},!1),e[0].addEventListener("dragenter",function(b){e.attr("disabled")||n||(b.preventDefault(),q(a)&&b.stopPropagation())},!1),e[0].addEventListener("dragleave",function(){e.attr("disabled")||n||(p=i(function(){e.removeClass(o),o=null},r||1))},!1),e[0].addEventListener("drop",function(b){e.attr("disabled")||n||(b.preventDefault(),q(a)&&b.stopPropagation(),e.removeClass(o),o=null,l(b,function(c,e){d(h,i,a,g,f,f.ngfChange||f.ngfDrop,c,e,b)},h(f.ngfAllowDir)(a)!==!1,f.multiple||h(f.ngfMultiple)(a)))},!1)}function b(){var a=document.createElement("div");return"draggable"in a&&"ondrop"in a}var c=ngFileUpload.validate,d=ngFileUpload.updateModel;ngFileUpload.directive("ngfDrop",["$parse","$timeout","$location",function(b,c,d){return{restrict:"AEC",require:"?ngModel",link:function(e,f,g,h){a(e,f,g,h,b,c,d)}}}]),ngFileUpload.directive("ngfNoFileDrop",function(){return function(a,c){b()&&c.css("display","none")}}),ngFileUpload.directive("ngfDropAvailable",["$parse","$timeout",function(a,c){return function(d,e,f){if(b()){var g=a(f.ngfDropAvailable);c(function(){g(d),g.assign&&g.assign(d,!0)})}}}]),ngFileUpload.directive("ngfSrc",["$parse","$timeout",function(a,b){return{restrict:"AE",link:function(d,e,f){window.FileReader&&d.$watch(f.ngfSrc,function(g){g&&c(d,a,f,g,null)&&(!window.FileAPI||-1===navigator.userAgent.indexOf("MSIE 8")||g.size<2e4)&&(!window.FileAPI||-1===navigator.userAgent.indexOf("MSIE 9")||g.size<4e6)?b(function(){var a=window.URL||window.webkitURL;if(a&&a.createObjectURL)e.attr("src",a.createObjectURL(g));else{var c=new FileReader;c.readAsDataURL(g),c.onload=function(a){b(function(){e.attr("src",a.target.result)})}}}):e.attr("src",f.ngfDefaultSrc||"")})}}}])}();
+/**
+ * AngularJS Directive to allow autocomplete and dropdown suggestions
+ * on textareas.
+ *
+ * Homepage: https://github.com/aurbano/smart-area
+ *
+ * @author Alejandro U. Alvarez (http://urbanoalvarez.es)
+ * @license AGPLv3 (See LICENSE)
+ */
+
+angular.module('smartArea', [])
+    .directive('smartArea', ['$compile', function($compile) {
+    return {
+        restrict: 'A',
+        scope: {
+            areaConfig: '=smartArea',
+            areaData: '=ngModel'
+        },
+        replace: true,
+        link: function(scope, textArea){
+            if(textArea[0].tagName.toLowerCase() !== 'textarea'){
+                console.warn("smartArea can only be used on textareas");
+                return false;
+            }
+
+            // Caret tracking inspired by
+            // https://github.com/component/textarea-caret-position
+            // Properties to be copied over from the textarea
+            var properties = [
+                'direction',  // RTL support
+                'boxSizing',
+                'width',  // on Chrome and IE, exclude the scrollbar, so the mirror div wraps exactly as the textarea does
+                'overflowX',
+                'overflowY',  // copy the scrollbar for IE
+                'color',
+                'height',
+
+                'borderTopWidth',
+                'borderRightWidth',
+                'borderBottomWidth',
+                'borderLeftWidth',
+
+                'borderTopColor',
+                'borderRightColor',
+                'borderBottomColor',
+                'borderLeftColor',
+
+                'borderTopStyle',
+                'borderRightStyle',
+                'borderBottomStyle',
+                'borderLeftStyle',
+                'borderRadius',
+
+                'backgroundColor',
+
+                'paddingTop',
+                'paddingRight',
+                'paddingBottom',
+                'paddingLeft',
+
+                // https://developer.mozilla.org/en-US/docs/Web/CSS/font
+                'fontStyle',
+                'fontVariant',
+                'fontWeight',
+                'fontStretch',
+                'fontSize',
+                'fontSizeAdjust',
+                'lineHeight',
+                'fontFamily',
+
+                'textAlign',
+                'textTransform',
+                'textIndent',
+                'textDecoration',  // might not make a difference, but better be safe
+
+                'letterSpacing',
+                'wordSpacing',
+                'whiteSpace',
+                'wordBreak',
+                'wordWrap'
+            ];
+
+            // Build the HTML structure
+            var mainWrap = angular.element('<div class="sa-wrapper"></div>'),
+                isFirefox = !(window.mozInnerScreenX === null);
+
+            scope.fakeAreaElement = angular.element($compile('<div class="sa-fakeArea" ng-trim="false" ng-bind-html="fakeArea"></div>')(scope))
+                .appendTo(mainWrap);
+
+            scope.dropdown.element = angular.element($compile('<div class="sa-dropdown" ng-show="dropdown.content.length > 0"><input type="text" class="form-control" ng-show="dropdown.showFilter"/><ul class="dropdown-menu" role="menu" style="position:static"><li ng-repeat="element in dropdown.content" role="presentation"><a href="" role="menuitem" ng-click="dropdown.selected(element)" ng-class="{active: $index == dropdown.current}" ng-bind-html="element.display"></a></li></ul></div>')(scope))
+                .appendTo(mainWrap);
+
+            scope.dropdown.filterElement = scope.dropdown.element.find('input');
+            scope.dropdown.filterElement.bind('keydown', scope.keyboardEvents);
+
+            // Default textarea css for the div
+            scope.fakeAreaElement.css('whiteSpace', 'pre-wrap');
+            scope.fakeAreaElement.css('wordWrap', 'break-word');
+
+            // Transfer the element's properties to the div
+            properties.forEach(function (prop) {
+                scope.fakeAreaElement.css(prop, textArea.css(prop));
+            });
+
+            scope.fakeAreaElement.css('width',(parseInt(textArea.outerWidth()) + 1) + 'px');
+
+            // Special considerations for Firefox
+//            if (isFirefox) {
+//                scope.fakeAreaElement.css('width',parseInt(textArea.width()) - 2 + 'px');  // Firefox adds 2 pixels to the padding - https://bugzilla.mozilla.org/show_bug.cgi?id=753662
+//                // Firefox lies about the overflow property for textareas: https://bugzilla.mozilla.org/show_bug.cgi?id=984275
+//                if (textArea.scrollHeight > parseInt(textArea.height)){
+//                    scope.fakeAreaElement.css('overflowY', 'scroll');
+//                }
+//            }
+
+            // Insert the HTML elements
+            mainWrap.insertBefore(textArea);
+            textArea.appendTo(mainWrap).addClass('sa-realArea').attr('ng-trim',false);
+            $compile(textArea);
+
+            // Dirty hack to maintain the height
+            textArea.on('keyup', function(){
+                scope.fakeAreaElement.height(textArea.height());
+            });
+
+            return mainWrap;
+        },
+        controller: ['$scope', '$element', '$timeout', '$sce', function($scope, $element, $timeout, $sce){
+            /* +----------------------------------------------------+
+             * +                     Scope Data                     +
+             * +----------------------------------------------------+ */
+
+            $scope.fakeArea = $scope.areaData;
+            $scope.dropdownContent = 'Dropdown';
+            $scope.dropdown = {
+                content: [],
+                element: null,
+                current: 0,
+                select: null,
+                customSelect: null,
+                filter: '',
+                match: '',
+                mode: 'append',
+                showFilter: false,
+                filterElement: null
+            };
+
+            /* +----------------------------------------------------+
+             * +                   Scope Watches                    +
+             * +----------------------------------------------------+ */
+            $scope.$watch('areaData', function(){
+                $scope.trackCaret();
+
+                // TODO Track caret on another fake area, so I don't have to recalculate autocomplete triggers every time the cursor moves.
+                checkTriggers();
+            });
+
+            /* +----------------------------------------------------+
+             * +                  Scope Functions                   +
+             * +----------------------------------------------------+ */
+
+            /**
+             * Update the Dropdown position according to the current caret position
+             * on the textarea
+             */
+            $scope.trackCaret = function(){
+                var text = $scope.areaData,
+                    position = getCharacterPosition();
+
+                $scope.fakeArea = $sce.trustAsHtml(text.substring(0, position) + '<span class="sa-tracking"></span>' + text.substring(position));
+
+                // Tracking span
+                $timeout(function(){
+                    var span = $scope.fakeAreaElement.find('span.sa-tracking');
+                    if(span.length > 0){
+                        var spanOffset = span.position();
+                        // Move the dropdown
+                        $scope.dropdown.element.css({
+                            top: (spanOffset.top + parseInt($element.css('fontSize')) + 2)+'px',
+                            left: (spanOffset.left)+'px'
+                        });
+                    }
+                    highlightText();
+                }, 0);
+            };
+
+            /**
+             * Keyboard event reacting. This function is triggered by
+             * keydown events in the dropdown filter and the main textarea
+             *
+             * @param event JavaScript event
+             */
+            $scope.keyboardEvents = function(event){
+                if($scope.dropdown.content.length > 0) {
+                    var code = event.keyCode || event.which;
+                    if (code === 13) { // Enter
+                        event.preventDefault();
+                        event.stopPropagation();
+                        // Add the selected word from the Dropdown
+                        // to the areaData in the current position
+                        $timeout(function(){
+                            $scope.dropdown.selected($scope.dropdown.content[$scope.dropdown.current]);
+                        },0);
+                    }else if(code === 38){ // Up
+                        event.preventDefault();
+                        event.stopPropagation();
+                        $timeout(function(){
+                            $scope.dropdown.current--;
+                            if($scope.dropdown.current < 0){
+                                $scope.dropdown.current = $scope.dropdown.content.length - 1; // Wrap around
+                            }
+                        },0);
+                    }else if(code === 40){ // Down
+                        event.preventDefault();
+                        event.stopPropagation();
+                        $timeout(function(){
+                            $scope.dropdown.current++;
+                            if($scope.dropdown.current >= $scope.dropdown.content.length){
+                                $scope.dropdown.current = 0; // Wrap around
+                            }
+                        },0);
+                    }else if(code === 27){ // Esc
+                        event.preventDefault();
+                        event.stopPropagation();
+                        $timeout(function(){
+                            $scope.dropdown.content = [];
+                            $element[0].focus();
+                        },0);
+                    }else{
+                        $scope.dropdown.filterElement.focus();
+                    }
+                }
+            };
+
+            /**
+             * Add an item to the textarea, this is called
+             * when selecting an element from the dropdown.
+             * @param item Selected object
+             */
+            $scope.dropdown.selected = function(item){
+                if($scope.dropdown.customSelect !== null){
+                    var append = $scope.dropdown.mode === 'append';
+                    addSelectedDropdownText($scope.dropdown.customSelect(item), append);
+                }else{
+                    addSelectedDropdownText(item.display);
+                }
+                $scope.dropdown.content = [];
+            };
+
+            /* +----------------------------------------------------+
+             * +                Internal Functions                  +
+             * +----------------------------------------------------+ */
+
+            /**
+             * Add text to the textarea, this handles positioning the text
+             * at the caret position, and also either replacing the last word
+             * or appending as new content.
+             *
+             * @param selectedWord Word to add to the textarea
+             * @param append Whether it should be appended or replace the last word
+             */
+            function addSelectedDropdownText(selectedWord, append){
+
+                $scope.dropdown.showFilter = false;
+
+                var text = $scope.areaData,
+                    position = getCharacterPosition(),
+                    lastWord = text.substr(0, position).split(/[\s\b{}]/),
+                    remove = lastWord[lastWord.length - 1].length;
+
+                if(!append && $scope.dropdown.match){
+                  remove = $scope.dropdown.match.length;
+                }
+
+                if(append || remove < 0){
+                    remove = 0;
+                }
+
+                // Now remove the last word, and replace with the dropped down one
+                $scope.areaData = text.substr(0, position - remove) +
+                    selectedWord +
+                    text.substr(position);
+
+                if(!append && $scope.dropdown.match){
+                  position = position - $scope.dropdown.match.length + selectedWord.toString().length;
+                }
+
+                // Now reset the caret position
+                if($element[0].selectionStart) {
+                    $timeout(function(){
+                        $element[0].focus();
+                        $element[0].setSelectionRange(position - remove + selectedWord.toString().length, position - remove + selectedWord.toString().length);
+                        checkTriggers();
+                    }, 100);
+                }
+
+            }
+
+            /**
+             * Perform the "syntax" highlighting of autocomplete words that have
+             * a cssClass specified.
+             */
+            function highlightText(){
+                var text = $scope.areaData;
+
+                if(typeof($scope.areaConfig.autocomplete) === 'undefined' || $scope.areaConfig.autocomplete.length === 0){
+                    return;
+                }
+
+                $scope.areaConfig.autocomplete.forEach(function(autoList){
+                    for(var i=0; i<autoList.words.length; i++){
+                        if(typeof(autoList.words[i]) === "string"){
+                            text = text.replace(new RegExp("([^\\w]|\\b)("+autoList.words[i]+")([^\\w]|\\b)", 'g'), '$1<span class="'+autoList.cssClass+'">$2</span>$3');
+                        }else{
+                            text = text.replace(autoList.words[i], function(match){
+                                return '<span class="'+autoList.cssClass+'">'+match+'</span>';
+                            });
+                        }
+                    }
+                });
+                // Add to the fakeArea
+                $scope.fakeArea = $sce.trustAsHtml(text);
+            }
+
+            /**
+             * Check all the triggers
+             */
+            function checkTriggers(){
+                triggerDropdownAutocomplete();
+                triggerDropdownAdvanced();
+            }
+
+            /**
+             * Trigger the advanced dropdown system, this will check
+             * all the specified triggers in the configuration object under dropdown,
+             * and if any of them match it will call it's list() function and add the
+             * elements returned from it to the dropdown.
+             */
+            function triggerDropdownAdvanced(){
+                $scope.dropdown.showFilter = false;
+                $scope.dropdown.match = false;
+
+                if(typeof($scope.areaConfig.dropdown) === 'undefined' || $scope.areaConfig.dropdown.length === 0){
+                    return;
+                }
+
+                $scope.areaConfig.dropdown.forEach(function(element){
+                    // Check if the trigger is under the cursor
+                    var text = $scope.areaData,
+                        position = getCharacterPosition();
+                    if(typeof(element.trigger) === 'string' && element.trigger === text.substr(position - element.trigger.length, element.trigger.length)){
+                        // The cursor is exactly at the end of the trigger
+
+                        element.list(function(data){
+                            $scope.dropdown.content = data.map(function(el){
+                              el.display = $sce.trustAsHtml(el.display);
+                              return el;
+                            });
+
+                            $scope.dropdown.customSelect = element.onSelect;
+                            $scope.dropdown.mode = element.mode || 'append';
+                            $scope.dropdown.match = '';
+                            $scope.dropdown.showFilter = element.filter || false;
+
+                            $timeout(function(){
+                                $scope.dropdown.filterElement.focus();
+                            }, 10);
+                        });
+                    }else if(typeof(element.trigger) === 'object'){
+                        // I need to get the index of the last match
+                        var searchable = text.substr(0, position),
+                            match, found = false, lastPosition = -1;
+			element.trigger.lastIndex = 0;
+                        while ((match = element.trigger.exec(searchable)) !== null){
+                            if(match.index === lastPosition){
+                                break;
+                            }
+                            lastPosition = match.index;
+                            if(match.index + match[0].length === position){
+                                found = true;
+                                break;
+                            }
+                        }
+                        if(found){
+                            element.list(match, function(data){
+                                $scope.dropdown.content = data.map(function(el){
+                                  el.display = $sce.trustAsHtml(el.display);
+                                  return el;
+                                });
+
+                                $scope.dropdown.customSelect = element.onSelect;
+                                $scope.dropdown.mode = element.mode || 'append';
+                                $scope.dropdown.match = match[1];
+                                $scope.dropdown.showFilter = element.filter || false;
+                            });
+
+                        }
+                    }
+                });
+            }
+
+            /**
+             * Set the scroll on the fake area
+             */
+            function resetScroll(){
+              $timeout(function(){
+                $scope.fakeAreaElement.scrollTop($element.scrollTop());
+              }, 5);
+            }
+
+            /**
+             * Trigger a simple autocomplete, this checks the last word and determines
+             * whether any word on the autocomplete lists matches it
+             */
+            function triggerDropdownAutocomplete(){
+                // First check with the autocomplete words (the ones that are not objects
+                var autocomplete = [],
+                    suggestions = [],
+                    text = $scope.areaData,
+                    position = getCharacterPosition(),
+                    lastWord = text.substr(0, position).split(/[\s\b{}]/);
+
+                // Get the last typed word
+                lastWord = lastWord[lastWord.length-1];
+
+                $scope.areaConfig.autocomplete.forEach(function(autoList){
+                    autoList.words.forEach(function(word){
+                        if(typeof(word) === 'string' && autocomplete.indexOf(word) < 0){
+                            if(lastWord.length > 0 || lastWord.length < 1 && autoList.autocompleteOnSpace){
+                                autocomplete.push(word);
+                            }
+                        }
+                    });
+                });
+
+                if ($scope.areaConfig.dropdown !== undefined){
+                    $scope.areaConfig.dropdown.forEach(function(element){
+                        if(typeof(element.trigger) === 'string' && autocomplete.indexOf(element.trigger) < 0){
+                            autocomplete.push(element.trigger);
+                        }
+                    });
+                }
+
+                // Now with the list, filter and return
+                autocomplete.forEach(function(word){
+                    if(lastWord.length < word.length && word.toLowerCase().substr(0, lastWord.length) === lastWord.toLowerCase()){
+                        suggestions.push({
+                            display: $sce.trustAsHtml(word),
+                            data: null
+                        });
+                    }
+                });
+
+                $scope.dropdown.customSelect = null;
+                $scope.dropdown.current = 0;
+                $scope.dropdown.content = suggestions;
+            }
+
+            /**
+             * Get Character count on an editable field
+             * http://stackoverflow.com/questions/4767848/get-caret-cursor-position-in-contenteditable-area-containing-html-content
+             */
+            function getCharacterPosition() {
+              var el = $element[0];
+              if (typeof(el.selectionEnd) == "number") {
+                return el.selectionEnd;
+              }
+          }
+
+            /* +----------------------------------------------------+
+             * +                   Event Binding                    +
+             * +----------------------------------------------------+ */
+
+            $element.bind('keyup click focus', function () {
+                $timeout(function(){
+                    $scope.trackCaret();
+                }, 0);
+            });
+
+            $element.bind('keydown', function(event){
+              resetScroll();
+              $scope.keyboardEvents(event);
+            });
+        }]
+    };
+}]);
+
 /*
  * angular-elastic v2.5.0
  * (c) 2014 Monospaced http://monospaced.com
@@ -6283,218 +6770,432 @@ angular.module("btford.socket-io",[]).provider("socketFactory",function(){"use s
 
 var directives = angular.module('directivesModule', []);
 
+
+
 directives.directive('adjustHeight', function($window, $document, $timeout) {
+
 	return {
+
 		restrict: 'A',
+
 		link: function(scope, element, attrs) {
+
 			scope.calculate = function() {
+
         var top = $(element).offset().top;
+
         var height = $(window).height();
+
         var neededHeight = height - top;
+
         //console.log(top, height, neededHeight, element);
 
+
+
         $(element).css('height', neededHeight);
+
       };
+
       $timeout(function(){
+
         scope.calculate();
+
       }, 100);
 
+
+
       $window.addEventListener('resize', function() {
+
         scope.calculate();
+
       });
 
+
+
       // Listen for possible container size changes
+
       scope.$on('changedContainers', function() {
+
         scope.calculate();
+
       });
+
 		}
+
 	};
+
 });
+
+
 
 directives.directive('adjustHeightChat', function($window, $document, $timeout) {
+
   return {
+
     restrict: 'A',
+
     link: function(scope, element, attrs) {
+
       scope.calculate = function() {
+
         var top = $(element).offset().top;
+
         var height = $(window).height();
+
         var footer = $('div.footer').outerHeight();
+
         var neededHeight = height - top - footer;
+
         //console.log(top, height, footer, neededHeight);
 
+
+
         $(element).css('height', neededHeight);
+
       };
+
       $timeout(function(){
+
         scope.calculate();
+
       }, 100);
 
+
+
       $window.addEventListener('resize', function() {
+
         scope.calculate();
+
       });
+
+
 
       // Listen for possible container size changes
+
       scope.$on('changedContainers', function() {
+
         scope.calculate();
+
       });
+
     }
+
   };
+
 });
+
+
 
 directives.directive('scrollMe', function() {
+
   return {
+
     restrict: 'A',
+
     scope: {
+
       trigger: '&scrollMe'
+
     },
+
     link: function(scope, element, attrs) {
+
       // If space is bigger, load more items
+
       element.on('scroll', function() {
+
         if($(this).scrollTop() + $(this).innerHeight() >= this.scrollHeight) {
+
           scope.$apply(function() {
+
             // Trigger scroll
+
             scope.trigger();
+
           });
+
         }
+
       });
+
     }
+
   }
+
 });
+
+
 
 directives.directive('myRefresh', ['$location', function($location) {
+
   return {
+
     restrict: 'A',
+
     scope: {
+
       trigger: '&myRefresh'
+
     },
+
     link: function(scope, element, attrs) {
+
       element.bind('click', function() {
+
         if(element[0] && element[0].href && element[0].href === $location.absUrl()){
+
           //console.log("Recarga!");
+
           scope.trigger();
+
         }
+
       });
+
     }
+
   };
+
 }]);
 
+
+
 directives.directive('markedsg', function () {
+
   return {
+
     restrict: 'AE',
+
     replace: true,
+
     scope: {
+
       markedsg: '='
+
     },
+
     link: function (scope, element, attrs) {
+
       set(scope.markedsg || element.text() || '');
 
+
+
       if (attrs.markedsg) {
+
         scope.$watch('markedsg', set);
+
       }
+
+
 
       function unindent(text) {
+
         if (!text) return text;
 
+
+
         var lines = text
+
           .replace(/\t/g, '  ')
+
           .split(/\r?\n/);
 
+
+
         var i, l, min = null, line, len = lines.length;
+
         for (i = 0; i < len; i++) {
+
           line = lines[i];
+
           l = line.match(/^(\s*)/)[0].length;
+
           if (l === line.length) { continue; }
+
           min = (l < min || min === null) ? l : min;
+
         }
+
+
 
         if (min !== null && min > 0) {
+
           for (i = 0; i < len; i++) {
+
             lines[i] = lines[i].substr(min);
+
           }
+
         }
+
         return lines.join('\n');
+
       }
+
+
 
       function set(text) {
+
         text = unindent(text || '');
+
         // Parse mentions links
+
         var links = $('<div>' + text + '</div>');
+
         links.find('a.user-mention').each(function( index ) {
+
           $(this).attr("href", "/u/"+ $(this).data('username') +"/"+ $(this).data('id'));
+
           if($(this).data('comment') != undefined) {
+
             $(this).before('<i class="fa fa-reply comment-response"></i>')
+
           }
+
         });
+
         text = links.html();
+
         element.html(marked(text, scope.opts || null));
+
       }
 
+
+
     }
+
   };
+
 });
+
+
 
 directives.directive('populometro', function() {
+
   return {
+
     restrict: 'EACM',
+
     template: function(elem, attrs) {
+
       return '<div style="display:block;width:100px;height:80px;margin: 0 auto"><svg style="position:absolute" width="100" height="100"><g><polygon points="50 20 54 50 46 50" fill="#E6E9EE" transform="rotate({{ (knob*2.4) - 120 }} 50 50)"></polygon><circle class="ring" cx="50" cy="50" r="10" fill="#E6E9EE"></circle><circle class="ring" cx="51" cy="51" r="8" fill="#d0d7dd"></circle><circle class="ring" cx="50" cy="50" r="7" fill="#F1F1F1"></circle></g></svg><div style="display: none; position:absolute;top:50%;width:100px;text-align:center;font-weight:bold;font-size: 1.1em;">{{ knob | number : 0 }}</div><input value="{{ knob }}"></div>';
+
     },
+
     replace: true,
+
     scope: true,
+
     link: function(scope, elem, attrs) {
+
       scope.opts = {
+
         'width':100,
+
         'height':80,
+
         'bgColor':'#E6E9EE',
+
         'fgColor':'#386db8',
+
         'readOnly':true,
+
         'displayInput':false,
+
         'max': 100,
+
         'angleArc':240,
+
         'angleOffset':-120,
+
         'thickness':'.25'
+
       };
+
       var renderKnob = function(){
+
         scope.knob = scope.$eval(attrs.knobData);
+
         $elem = $(elem).find('input');
+
         $elem.val(scope.knob);
+
         $elem.change();
+
         $elem.knob(scope.opts);
+
       };
+
       scope.$watch(attrs.knobData, function () {
+
         renderKnob();
+
       });
+
     },
+
   }
+
 });
 
+
+
 /**
+
  * ng-flags module
+
  * Turns country ISO code to flag thumbnail.
+
  *
+
  * Author: asafdav - https://github.com/asafdav
+
  */
+
 directives.directive('flag', function() {
+
   return {
+
     restrict: 'E',
+
     replace: true,
+
     template: '<span class="f{{ size }}"><span class="flag {{ country }}"></span></span>',
+
     scope: {
+
       country: '@',
+
       size: '@'
+
     },
+
     link: function(scope, elm, attrs) {
+
       // Default flag size
+
       scope.size = 16;
 
+
+
       scope.$watch('country', function(value) {
+
         scope.country = angular.lowercase(value);
+
       });
 
+
+
       scope.$watch('size', function(value) {
+
         scope.size = value;
+
       });
+
     }
+
   };
+
 });
 var filters = angular.module('filtersModule', []);
 
@@ -6629,12 +7330,19 @@ services.factory('socket', function (socketFactory) {
 })
 
 var FeedService = ['$resource', function($resource) {
+
   return $resource(layer_path + 'feed');
+
 }];
+
+
 
 var FeedModule = angular.module('feedModule', ['ngResource']);
 
+
+
 // Service of the feed module
+
 FeedModule.factory('Feed', FeedService);
 var CategoryService = ['$resource', function($resource) {
   return $resource(layer_path + 'category/:categoryId',
@@ -8966,10 +9674,62 @@ var ChatController = [
   '$location',
   '$route',
   '$routeParams',
-  function($scope, $firebaseArray, $firebaseObject, $timeout, $location, $route, $routeParams) {
+  '$http',
+  '$uibModal',
+  function($scope, $firebaseArray, $firebaseObject, $timeout, $location, $route, $routeParams, $http, $uibModal) {
+    $scope.rifaID=null;
+    $scope.tiempo=false;
+    $scope.rifa = {
+      create: false,
+      active: false,
+      pregunta: false,
+      rifa: false,
+      art:{
+        cant:0,
+        cantComprados:0,
+        cantUser:0,
+        imgUrl:null,
+        nomArt:null,
+        precioBole:0,
+        userIdG: null,
+        userIdGname: null,
+        userIdGname_slug: null,
+        userIdGemail:null,
+        stop:false,
+        go:false
+      },
+      user:{
+        cant:1,
+        userid:null,
+        username:null
+      }
+    };
+    $scope.dynamicPopover = {
+      content: 'Hello, World!',
+      templateUrl: 'myPopoverTemplate.html',
+      title: 'Title'
+    };
 
+    $scope.placement = {
+      options: [
+        'top',
+        'top-left',
+        'top-right',
+        'bottom',
+        'bottom-left',
+        'bottom-right',
+        'left',
+        'left-top',
+        'left-bottom',
+        'right',
+        'right-top',
+        'right-bottom'
+      ],
+      selected: 'top'
+    };
     $scope.people = [];
 
+    $scope.membersRef_global = [];
     $scope.emojiMessage = {};
 
     var firebaseRef = new Firebase(firebase_url);
@@ -8994,6 +9754,8 @@ var ChatController = [
     $scope._statusRef      = null;
     $scope._messageRef     = $scope._firebase.child('messages');
     $scope._channelRef     = $scope._firebase.child('channels');
+    $scope._rifasRef       = $scope._firebase.child('rifas');
+    $scope._participantsRef= $scope._firebase.child('participants');
     //$scope._privateRoomRef = $scope._firebase.child('room-private-metadata');
     //$scope._moderatorsRef  = $scope._firebase.child('moderators');
     $scope._suspensionsRef = $scope._firebase.child('suspensions');
@@ -9032,7 +9794,208 @@ var ChatController = [
       loaded: false,
       blocked: false
     };
+    $scope.text = '';
+    
+    $scope.config = {
+      autocomplete: [
+        {
+          words: [/@([A-Za-z0-9]+[_A-Za-z0-9]+)/gi],
+          cssClass: 'user'
+        }
+      ],
+      dropdown: [
+        {
+          trigger: /@([A-Za-z0-9]+[_A-Za-z0-9]+)/gi,
+          list: function(match, callback){
+              data=[];
+              $scope.members.forEach(function (member) {
+                var nombre_mem=member.username;
+                data.push({username: nombre_mem});
+              });
+              var listData = data.filter(function(element){
+                return element.username.substr(0,match[1].length).toLowerCase() === match[1].toLowerCase()
+                && element.username.length > match[1].length;
+              }).map(function(element){
+                return {
+                  display: element.username, // This gets displayed in the dropdown
+                  item: element // This will get passed to onSelect
+                };
+              });
+              callback(listData);
+          },
+          onSelect: function(item){
+            enter=true;
+            return item.display;
+          },
+          mode: 'replace'
+        }
+      ]
+    };
+    $scope.safeApply = function(fn) {
+      var phase = this.$root.$$phase;
+      if(phase == '$apply' || phase == '$digest') {
+        if(fn && (typeof(fn) === 'function')) {
+          fn();
+        }
+      } else {
+        this.$apply(fn);
+      }
+    };
+    $scope.getRandomInt = function(min, max) {
+      return Math.floor(Math.random() * (max - min)) + min;
+    }
+    $scope.ganadorRifa = function(){
+      $scope._participantsRef.child($scope.channel.selected.$id)
+      .once("value", function(snapshot) {
+        var data = snapshot.val();
+        //console.log(data);
+        var participants = [];
+        for(var i in data) {
+          var cant=data[i].cant;
+          for (var x = 0; x < cant; x++) {
+            participants.push([
+              data[i].cant,
+              data[i].email,
+              data[i].userid,
+              data[i].username,
+              data[i].username_slug
+            ]);
+          }
+        }
+        //console.log(participants);
+        var max=participants.length;
+        var min=0;
+        if(max>0){
+          var y=0;
+          for(var x=1; x<=10 ; x++){
+            y = $scope.getRandomInt(min,max);
+          }
+          $scope._rifasRef.child($scope.channel.selected.$id)
+          .update({
+            userIdG: participants[y][2],
+            userIdGname: participants[y][3],
+            userIdGname_slug: participants[y][4],
+            userIdGemail: participants[y][1]
+          });
+        }else{
+          alert('No hay participantes');
+        }
+      }, function (errorObject) {
+        console.log("The read failed: " + errorObject.code);
+      });
+    }
+    $scope.stopRifa = function(){
+      $scope._rifasRef.child($scope.channel.selected.$id)
+      .update({
+        stop: true
+      });
+    }
+    $scope.startRifa = function(){
+      $scope._rifasRef.child($scope.channel.selected.$id)
+      .update({
+        stop: false
+      });
+    }
+    $scope.updateRifa = function(){
+      $scope._participantsRef.child($scope.channel.selected.$id)
+      .once("value", function(snapshot) {
+        var data = snapshot.val();
+        //console.log(snapshot.val());
+        var cont = 0;
+        for(var i in data) {
+          //console.log(data[i].cant);
+          cont = cont + data[i].cant;
+        }
+        var stop = false;
+        if(cont>=$scope.rifa.art.cant){
+          stop = true;
+        }
+        $scope._rifasRef.child($scope.channel.selected.$id)
+          .update({
+            cantComprados: cont,
+            stop: stop
+          });
+      }, function (errorObject) {
+        console.log("The read failed: " + errorObject.code);
+      });
+    }
+    $scope.dejarBoletos = function(){
+      if(confirm("Desea dejar la rifa?")){
+        var firebaseRefR = $scope._participantsRef.child($scope.channel.selected.$id).child($scope.user.info.id);
+        var obj = $firebaseObject(firebaseRefR);
+        obj.$remove().then(function(ref){
+          // data has been deleted locally and in the database
+          $scope.pregunta=true;
+          $scope.updateRifa();
+        }, function(error) {
+          console.log("Error:", error);
+          $scope.pregunta=false;
+        });
+      }
+    };
+    $scope.comprarBoletos = function(){
+      if(($scope.rifa.user.cant%1)==0 && $scope.rifa.user.cant>0 && $scope.rifa.user.cant<=$scope.rifa.art.cantUser && $scope.rifa.user.cant<=($scope.rifa.art.cant-$scope.rifa.art.cantComprados)){
+        $scope._participantsRef.child($scope.channel.selected.$id).child($scope.user.info.id)
+        .set($scope.rifa.user, function(error) {
+          if(error){
+            $scope.pregunta=true;
+          }else{
+            $scope.pregunta=false;
+            $scope.updateRifa();
+          }
+        });
+      }else if(!($scope.rifa.user.cant%1)==0){
+        alert("Deben ser numero enteros sin fracción");
+      }else if($scope.rifa.user.cant<=0 || $scope.rifa.user.cant>$scope.rifa.art.cantUser || $scope.rifa.user.cant===undefined){
+        alert("Sobrepasas los limite de boletos debe ser minimo 1 y menos o igual que "+$scope.rifa.art.cantUser+" Ó Deben ser numero enteros sin fracción");
+      }else if($scope.rifa.user.cant<=($scope.rifa.art.cant-$scope.rifa.art.cantComprados)){
+        alert("Lo siento boletos agotados mas rapido la proxima vez");
+      }else{
+        alert("Fallo");
+      }
+    };
+    $scope.deleteRifa = function(){
+      //console.log($scope.channel.selected.$id);
+      if(confirm("Desea continuar con la eliminación de la rifa?")){
+        $scope._rifasRef.child($scope.channel.selected.$id).set(null);
+        $scope._participantsRef.child($scope.channel.selected.$id).set(null);
+        $scope.rifa.create=false;
+        $scope.rifa.active=false;
+        $scope.rifa.pregunta=false;
+        $scope.rifa.rifa=false;
+        $scope.rifa.art.cant=0;
+        $scope.rifa.art.cantComprados=0;
+        $scope.rifa.art.cantUser=0;
+        $scope.rifa.art.imgUrl=null;
+        $scope.rifa.art.nomArt=null;
+        $scope.rifa.art.precioBole=0;
+        $scope.rifa.art.userIdG=null;
+        $scope.rifa.art.userIdGname=null;
+        $scope.rifa.art.userIdGname_slug=null;
+        $scope.rifa.art.userIdGemail=null;
+        $scope.rifa.art.stop=false;
+        $scope.rifa.art.go=false;
+        $scope.rifa.user.cant=1;
+      }
 
+    };
+    $scope.createRifa = function() {
+      var modalInstance = $uibModal.open({
+        templateUrl: '/js/partials/create-rifa.html',
+        controller: 'RifaController',
+        size: 'lg',
+        resolve: {
+          Items: function() //scope del modal
+            {
+                return $scope;
+            }
+        }
+      });
+
+      modalInstance.result.then(function() {}, function() {
+        //$log.info('Modal dismissed at: ' + new Date());
+      });
+    };
     $scope.getMentionable = function() {
       var new_people = [];
 
@@ -9102,7 +10065,6 @@ var ChatController = [
 
       var membersRef = new Firebase(firebase_url + 'members/' + channel.$id);
       $scope.members = $firebaseArray(membersRef);
-
       membersRef.on('value', function(snapshot) {
         var new_people = [];
         snapshot.forEach(function(childSnapshot) {
@@ -9136,6 +10098,87 @@ var ChatController = [
           });
         });
       }
+      var firebaseRefR = $scope._rifasRef.child(channel.$id);
+      var firebaseRefRPart = $scope._participantsRef.child(channel.$id).child($scope.user.info.id);
+      firebaseRefR.on("value", function(snapshot) {
+        //console.log(snapshot.val());
+        if(snapshot.val()==null){
+          //$scope.safeApply(function(){
+          $timeout(function(){
+            $scope.rifa.create=false;
+            $scope.rifa.active=false;
+            $scope.rifa.pregunta=false;
+            $scope.rifa.rifa=false;
+            $scope.rifa.art.cant=0;
+            $scope.rifa.art.cantComprados=0;
+            $scope.rifa.art.cantUser=0;
+            $scope.rifa.art.imgUrl=null;
+            $scope.rifa.art.nomArt=null;
+            $scope.rifa.art.precioBole=0;
+            $scope.rifa.art.userIdG=null;
+            $scope.rifa.art.userIdGname=null;
+            $scope.rifa.art.userIdGname_slug=null;
+            $scope.rifa.art.userIdGemail=null;
+            $scope.rifa.art.stop=false;
+            $scope.rifa.art.go=false;
+            $scope.rifa.user.cant=1;
+          });
+          //});
+        }else{
+          //$scope.safeApply(function(){
+          $timeout(function(){
+            $scope.rifa.create=true;
+            $scope.rifa.active=true;
+            $scope.rifa.rifa=true;
+            $scope._participantsRef.child($scope.channel.selected.$id).child($scope.user.info.id)
+            .once('value', function(snapshott) {
+              if(snapshott.val()==null){
+                $scope.rifa.pregunta=true;
+              }else{
+                $scope.rifa.pregunta=false;
+              }
+            }, function (errorObject) {
+              console.log("The read failed: " + errorObject.code);
+            });
+            $scope.rifa.art.cant=snapshot.val().cant;
+            $scope.rifa.art.cantUser=snapshot.val().cantUser;
+            $scope.rifa.art.imgUrl=snapshot.val().imgUrl;
+            $scope.rifa.art.nomArt=snapshot.val().nomArt;
+            $scope.rifa.art.precioBole=snapshot.val().precioBole;
+            $scope.rifa.art.cantComprados=snapshot.val().cantComprados;
+            $scope.rifa.art.userIdG=snapshot.val().userIdG;
+            $scope.rifa.art.userIdGname=snapshot.val().userIdGname;
+            $scope.rifa.art.userIdGname_slug=snapshot.val().userIdGname_slug;
+            $scope.rifa.art.userIdGemail=snapshot.val().userIdGemail;
+            $scope.rifa.art.stop=snapshot.val().stop;
+            $scope.rifa.art.go=snapshot.val().go;
+          });
+        }
+      }, function (errorObject) {
+        console.log("The read failed: " + errorObject.code);
+      });
+      firebaseRefRPart.on("value", function(snapshot) {
+        //console.log(snapshot.val());
+        if(snapshot.val()==null){
+          $scope.rifa.pregunta=true;
+          $scope.rifa.user.cant=1;
+          $scope.rifa.user.userid=$scope.user.info.id;
+          $scope.rifa.user.username=$scope.user.info.username;
+          $scope.rifa.user.username_slug=$scope.user.info.username_slug;
+          $scope.rifa.user.email=$scope.user.info.email;
+        }else{
+          $scope.rifa.pregunta=false;
+          $scope.rifa.user={
+            cant:snapshot.val().cant,
+            userid:snapshot.val().userid,
+            username:snapshot.val().username,
+            username_slug:snapshot.val().username_slug,
+            email:snapshot.val().email
+          };
+        }
+      }, function (errorObject) {
+        console.log("The read failed: " + errorObject.code);
+      });
     };
 
     $scope.exitChannel = function() {
@@ -9358,21 +10401,146 @@ var ChatController = [
     });
   }
 ];
+var RifaController = [
+  '$scope',
+  '$firebaseArray',
+  '$firebaseObject',
+  '$modalInstance',
+  'Items',
+  '$http',
+  'Upload',
+  function($scope, $firebaseArray, $firebaseObject, $modalInstance, Items, $http ,Upload) {
+    $scope.items = Items;
+    $scope.rifa = {
+      chatId: $scope.items.channel.selected.$id,
+      userId: $scope.items.user.info.id,
+      cant: 0,
+      cantUser: 0,
+      cantComprados: 0,
+      precioBole: 0.00,
+      nomArt: "",
+      imgUrl: "",
+      userIdG: null,
+      userIdGname: null,
+      userIdGname_slug: null,
+      userIdGemail: null,
+      stop: false,
+      go: false
+    };
+    $scope.alert={
+      msg:"",
+      type:"success"
+    };
+    $scope.adding_img = false;
+    var firebaseRef = new Firebase(firebase_url+'/rifas/'+$scope.items.channel.selected.$id);
+    //var firebaseRefPart = new Firebase(firebase_url+'/participants');
+    $scope.safeApply = function(fn) {
+      var phase = this.$root.$$phase;
+      if(phase == '$apply' || phase == '$digest') {
+        if(fn && (typeof(fn) === 'function')) {
+          fn();
+        }
+      } else {
+        this.$apply(fn);
+      }
+    };
+    $scope.save = function (){
+      if($scope.rifa.cant===undefined || $scope.rifa.cant==null || $scope.rifa.cant<=0 || isNaN($scope.rifa.cantUser) || $scope.rifa.cant % 1 != 0){
+        $scope.alert.msg="El campo Cantidad de boletos no puede estar vacio, menor o igual a cero y no numeros con fraccion";
+        $scope.alert.type='warning';
+        $scope.safeApply(function(){});
+      }else if($scope.rifa.cantUser===undefined || $scope.rifa.cantUser==null || $scope.rifa.cantUser<=0 || isNaN($scope.rifa.cantUser) || $scope.rifa.cantUser % 1 != 0){
+        $scope.alert.msg="El campo Cantidad de boletos por Usuario no puede estar vacio, menor o igual a cero y no numeros con fraccion";
+        $scope.alert.type='warning';
+        $scope.safeApply(function(){});
+      }else if($scope.rifa.precioBole===undefined || $scope.rifa.precioBole==null || $scope.rifa.precioBole<0 || isNaN($scope.rifa.precioBole)){
+        $scope.alert.msg="El campo Precio por boleto no puede estar vacio, recuerde solo 2 numeros despues del punto decimal";
+        $scope.alert.type='warning';
+        $scope.safeApply(function(){});
+      }else if($scope.rifa.nomArt===undefined || $scope.rifa.nomArt==""){
+        $scope.alert.msg="El campo Nombre del articulo no puede estar vacio";
+        $scope.alert.type='warning';
+        $scope.safeApply(function(){});
+      }else if($scope.rifa.imgUrl===undefined || $scope.rifa.imgUrl==""){
+        $scope.alert.msg="Aun no carga una imagen";
+        $scope.alert.type='warning';
+        $scope.safeApply(function(){});
+      }else{
+        var rifaChat = {
+          userId: $scope.items.user.info.id,
+          cant: $scope.rifa.cant,
+          cantUser: $scope.rifa.cantUser,
+          cantComprados: $scope.rifa.cantComprados,
+          precioBole: $scope.rifa.precioBole,
+          nomArt: $scope.rifa.nomArt,
+          imgUrl: $scope.rifa.imgUrl,
+          userIdG: null,
+          userIdGname: null,
+          userIdGname_slug: null,
+          userIdGemail: null,
+          stop: false,
+          go: false
+        }
+        firebaseRef.set(rifaChat, function(error) {
+          if(error){
+            $scope.items.rifa.create=false;
+            $scope.$apply(function(){
+              $scope.alert.msg=error;
+              $scope.alert.type='danger';
+            });
+          }else{
+            $scope.items.rifa.create=true;
+            $scope.$apply(function(){
+              $scope.alert.msg='Creado correctamente';
+              $scope.alert.type='success';
+            });
+          }
+        });
+      }
+    };
+    $scope.cancel = function (){
+      $modalInstance.dismiss('cancel');
+    };
+    $scope.uploadPicture = function(files) {
+      if(files.length == 1) {
+        var file = files[0];
+        $scope.adding_img = true;
+        Upload.upload({
+          url: layer_path + "post/image",
+          file: file
+        }).success(function (data) {
+          if($scope.rifa.imgUrl.length > 0) {
+            $scope.rifa.imgUrl += data.url;
+          } else {
+            $scope.rifa.imgUrl = data.url;
+          }
+          $scope.adding_img = false;
+        }).error(function(data) {
+          $scope.adding_img = false;
+        });
+      }
+    };
+  }
+];
 
+var enter=false;
 var chatModule = angular.module('chatModule', ['firebase', 'ngSanitize']);
 
 chatModule.controller('ChatController', ChatController);
+chatModule.controller('RifaController', RifaController);
 
 chatModule.directive('sgEnter', function() {
   return {
-    link: function(scope, element, attrs) {
+    link: function(scope, element, attrs){
       //console.log(scope.message.send_on_enter);
-      element.bind("keydown keypress", function(event) {
-        if(event.which === 13 && scope.message.send_on_enter) {
+      element.bind("keyup", function(event) {
+        if(enter==false && event.which === 13 && scope.message.send_on_enter) {
           scope.$apply(function(){
             scope.$eval(attrs.sgEnter, {'event': event});
           });
           event.preventDefault();
+        }else if(enter==true){
+          enter=false;
         }
       });
     }
@@ -11454,6 +12622,7 @@ var boardApplication = angular.module('board', [
   'angular-jwt',
   'firebase',
   'ngFileUpload',
+  'smartArea',
   'monospaced.elastic',
   'mentio',
   'uiSwitch',
@@ -11673,6 +12842,7 @@ boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http'
         var data = response.data;
         localStorage.setItem('id_token', data.token);
         localStorage.setItem('firebase_token', data.firebase);
+        //localStorage.setItem('firebase_token', 'AIzaSyCBR1iyAv25IG2T8WMMtRSZzabfJ_4KBNs');
         localStorage.setItem('signed_in', true);
 
         $uibModalInstance.dismiss('logged');

@@ -6,10 +6,62 @@ var ChatController = [
   '$location',
   '$route',
   '$routeParams',
-  function($scope, $firebaseArray, $firebaseObject, $timeout, $location, $route, $routeParams) {
+  '$http',
+  '$uibModal',
+  function($scope, $firebaseArray, $firebaseObject, $timeout, $location, $route, $routeParams, $http, $uibModal) {
+    $scope.rifaID=null;
+    $scope.tiempo=false;
+    $scope.rifa = {
+      create: false,
+      active: false,
+      pregunta: false,
+      rifa: false,
+      art:{
+        cant:0,
+        cantComprados:0,
+        cantUser:0,
+        imgUrl:null,
+        nomArt:null,
+        precioBole:0,
+        userIdG: null,
+        userIdGname: null,
+        userIdGname_slug: null,
+        userIdGemail:null,
+        stop:false,
+        go:false
+      },
+      user:{
+        cant:1,
+        userid:null,
+        username:null
+      }
+    };
+    $scope.dynamicPopover = {
+      content: 'Hello, World!',
+      templateUrl: 'myPopoverTemplate.html',
+      title: 'Title'
+    };
 
+    $scope.placement = {
+      options: [
+        'top',
+        'top-left',
+        'top-right',
+        'bottom',
+        'bottom-left',
+        'bottom-right',
+        'left',
+        'left-top',
+        'left-bottom',
+        'right',
+        'right-top',
+        'right-bottom'
+      ],
+      selected: 'top'
+    };
     $scope.people = [];
 
+    $scope.membersRef_global = [];
     $scope.emojiMessage = {};
 
     var firebaseRef = new Firebase(firebase_url);
@@ -34,6 +86,8 @@ var ChatController = [
     $scope._statusRef      = null;
     $scope._messageRef     = $scope._firebase.child('messages');
     $scope._channelRef     = $scope._firebase.child('channels');
+    $scope._rifasRef       = $scope._firebase.child('rifas');
+    $scope._participantsRef= $scope._firebase.child('participants');
     //$scope._privateRoomRef = $scope._firebase.child('room-private-metadata');
     //$scope._moderatorsRef  = $scope._firebase.child('moderators');
     $scope._suspensionsRef = $scope._firebase.child('suspensions');
@@ -72,7 +126,208 @@ var ChatController = [
       loaded: false,
       blocked: false
     };
+    $scope.text = '';
+    
+    $scope.config = {
+      autocomplete: [
+        {
+          words: [/@([A-Za-z0-9]+[_A-Za-z0-9]+)/gi],
+          cssClass: 'user'
+        }
+      ],
+      dropdown: [
+        {
+          trigger: /@([A-Za-z0-9]+[_A-Za-z0-9]+)/gi,
+          list: function(match, callback){
+              data=[];
+              $scope.members.forEach(function (member) {
+                var nombre_mem=member.username;
+                data.push({username: nombre_mem});
+              });
+              var listData = data.filter(function(element){
+                return element.username.substr(0,match[1].length).toLowerCase() === match[1].toLowerCase()
+                && element.username.length > match[1].length;
+              }).map(function(element){
+                return {
+                  display: element.username, // This gets displayed in the dropdown
+                  item: element // This will get passed to onSelect
+                };
+              });
+              callback(listData);
+          },
+          onSelect: function(item){
+            enter=true;
+            return item.display;
+          },
+          mode: 'replace'
+        }
+      ]
+    };
+    $scope.safeApply = function(fn) {
+      var phase = this.$root.$$phase;
+      if(phase == '$apply' || phase == '$digest') {
+        if(fn && (typeof(fn) === 'function')) {
+          fn();
+        }
+      } else {
+        this.$apply(fn);
+      }
+    };
+    $scope.getRandomInt = function(min, max) {
+      return Math.floor(Math.random() * (max - min)) + min;
+    }
+    $scope.ganadorRifa = function(){
+      $scope._participantsRef.child($scope.channel.selected.$id)
+      .once("value", function(snapshot) {
+        var data = snapshot.val();
+        //console.log(data);
+        var participants = [];
+        for(var i in data) {
+          var cant=data[i].cant;
+          for (var x = 0; x < cant; x++) {
+            participants.push([
+              data[i].cant,
+              data[i].email,
+              data[i].userid,
+              data[i].username,
+              data[i].username_slug
+            ]);
+          }
+        }
+        //console.log(participants);
+        var max=participants.length;
+        var min=0;
+        if(max>0){
+          var y=0;
+          for(var x=1; x<=10 ; x++){
+            y = $scope.getRandomInt(min,max);
+          }
+          $scope._rifasRef.child($scope.channel.selected.$id)
+          .update({
+            userIdG: participants[y][2],
+            userIdGname: participants[y][3],
+            userIdGname_slug: participants[y][4],
+            userIdGemail: participants[y][1]
+          });
+        }else{
+          alert('No hay participantes');
+        }
+      }, function (errorObject) {
+        console.log("The read failed: " + errorObject.code);
+      });
+    }
+    $scope.stopRifa = function(){
+      $scope._rifasRef.child($scope.channel.selected.$id)
+      .update({
+        stop: true
+      });
+    }
+    $scope.startRifa = function(){
+      $scope._rifasRef.child($scope.channel.selected.$id)
+      .update({
+        stop: false
+      });
+    }
+    $scope.updateRifa = function(){
+      $scope._participantsRef.child($scope.channel.selected.$id)
+      .once("value", function(snapshot) {
+        var data = snapshot.val();
+        //console.log(snapshot.val());
+        var cont = 0;
+        for(var i in data) {
+          //console.log(data[i].cant);
+          cont = cont + data[i].cant;
+        }
+        var stop = false;
+        if(cont>=$scope.rifa.art.cant){
+          stop = true;
+        }
+        $scope._rifasRef.child($scope.channel.selected.$id)
+          .update({
+            cantComprados: cont,
+            stop: stop
+          });
+      }, function (errorObject) {
+        console.log("The read failed: " + errorObject.code);
+      });
+    }
+    $scope.dejarBoletos = function(){
+      if(confirm("Desea dejar la rifa?")){
+        var firebaseRefR = $scope._participantsRef.child($scope.channel.selected.$id).child($scope.user.info.id);
+        var obj = $firebaseObject(firebaseRefR);
+        obj.$remove().then(function(ref){
+          // data has been deleted locally and in the database
+          $scope.pregunta=true;
+          $scope.updateRifa();
+        }, function(error) {
+          console.log("Error:", error);
+          $scope.pregunta=false;
+        });
+      }
+    };
+    $scope.comprarBoletos = function(){
+      if(($scope.rifa.user.cant%1)==0 && $scope.rifa.user.cant>0 && $scope.rifa.user.cant<=$scope.rifa.art.cantUser && $scope.rifa.user.cant<=($scope.rifa.art.cant-$scope.rifa.art.cantComprados)){
+        $scope._participantsRef.child($scope.channel.selected.$id).child($scope.user.info.id)
+        .set($scope.rifa.user, function(error) {
+          if(error){
+            $scope.pregunta=true;
+          }else{
+            $scope.pregunta=false;
+            $scope.updateRifa();
+          }
+        });
+      }else if(!($scope.rifa.user.cant%1)==0){
+        alert("Deben ser numero enteros sin fracción");
+      }else if($scope.rifa.user.cant<=0 || $scope.rifa.user.cant>$scope.rifa.art.cantUser || $scope.rifa.user.cant===undefined){
+        alert("Sobrepasas los limite de boletos debe ser minimo 1 y menos o igual que "+$scope.rifa.art.cantUser+" Ó Deben ser numero enteros sin fracción");
+      }else if($scope.rifa.user.cant<=($scope.rifa.art.cant-$scope.rifa.art.cantComprados)){
+        alert("Lo siento boletos agotados mas rapido la proxima vez");
+      }else{
+        alert("Fallo");
+      }
+    };
+    $scope.deleteRifa = function(){
+      //console.log($scope.channel.selected.$id);
+      if(confirm("Desea continuar con la eliminación de la rifa?")){
+        $scope._rifasRef.child($scope.channel.selected.$id).set(null);
+        $scope._participantsRef.child($scope.channel.selected.$id).set(null);
+        $scope.rifa.create=false;
+        $scope.rifa.active=false;
+        $scope.rifa.pregunta=false;
+        $scope.rifa.rifa=false;
+        $scope.rifa.art.cant=0;
+        $scope.rifa.art.cantComprados=0;
+        $scope.rifa.art.cantUser=0;
+        $scope.rifa.art.imgUrl=null;
+        $scope.rifa.art.nomArt=null;
+        $scope.rifa.art.precioBole=0;
+        $scope.rifa.art.userIdG=null;
+        $scope.rifa.art.userIdGname=null;
+        $scope.rifa.art.userIdGname_slug=null;
+        $scope.rifa.art.userIdGemail=null;
+        $scope.rifa.art.stop=false;
+        $scope.rifa.art.go=false;
+        $scope.rifa.user.cant=1;
+      }
 
+    };
+    $scope.createRifa = function() {
+      var modalInstance = $uibModal.open({
+        templateUrl: '/js/partials/create-rifa.html',
+        controller: 'RifaController',
+        size: 'lg',
+        resolve: {
+          Items: function() //scope del modal
+            {
+                return $scope;
+            }
+        }
+      });
+
+      modalInstance.result.then(function() {}, function() {
+        //$log.info('Modal dismissed at: ' + new Date());
+      });
+    };
     $scope.getMentionable = function() {
       var new_people = [];
 
@@ -142,7 +397,6 @@ var ChatController = [
 
       var membersRef = new Firebase(firebase_url + 'members/' + channel.$id);
       $scope.members = $firebaseArray(membersRef);
-
       membersRef.on('value', function(snapshot) {
         var new_people = [];
         snapshot.forEach(function(childSnapshot) {
@@ -176,6 +430,87 @@ var ChatController = [
           });
         });
       }
+      var firebaseRefR = $scope._rifasRef.child(channel.$id);
+      var firebaseRefRPart = $scope._participantsRef.child(channel.$id).child($scope.user.info.id);
+      firebaseRefR.on("value", function(snapshot) {
+        //console.log(snapshot.val());
+        if(snapshot.val()==null){
+          //$scope.safeApply(function(){
+          $timeout(function(){
+            $scope.rifa.create=false;
+            $scope.rifa.active=false;
+            $scope.rifa.pregunta=false;
+            $scope.rifa.rifa=false;
+            $scope.rifa.art.cant=0;
+            $scope.rifa.art.cantComprados=0;
+            $scope.rifa.art.cantUser=0;
+            $scope.rifa.art.imgUrl=null;
+            $scope.rifa.art.nomArt=null;
+            $scope.rifa.art.precioBole=0;
+            $scope.rifa.art.userIdG=null;
+            $scope.rifa.art.userIdGname=null;
+            $scope.rifa.art.userIdGname_slug=null;
+            $scope.rifa.art.userIdGemail=null;
+            $scope.rifa.art.stop=false;
+            $scope.rifa.art.go=false;
+            $scope.rifa.user.cant=1;
+          });
+          //});
+        }else{
+          //$scope.safeApply(function(){
+          $timeout(function(){
+            $scope.rifa.create=true;
+            $scope.rifa.active=true;
+            $scope.rifa.rifa=true;
+            $scope._participantsRef.child($scope.channel.selected.$id).child($scope.user.info.id)
+            .once('value', function(snapshott) {
+              if(snapshott.val()==null){
+                $scope.rifa.pregunta=true;
+              }else{
+                $scope.rifa.pregunta=false;
+              }
+            }, function (errorObject) {
+              console.log("The read failed: " + errorObject.code);
+            });
+            $scope.rifa.art.cant=snapshot.val().cant;
+            $scope.rifa.art.cantUser=snapshot.val().cantUser;
+            $scope.rifa.art.imgUrl=snapshot.val().imgUrl;
+            $scope.rifa.art.nomArt=snapshot.val().nomArt;
+            $scope.rifa.art.precioBole=snapshot.val().precioBole;
+            $scope.rifa.art.cantComprados=snapshot.val().cantComprados;
+            $scope.rifa.art.userIdG=snapshot.val().userIdG;
+            $scope.rifa.art.userIdGname=snapshot.val().userIdGname;
+            $scope.rifa.art.userIdGname_slug=snapshot.val().userIdGname_slug;
+            $scope.rifa.art.userIdGemail=snapshot.val().userIdGemail;
+            $scope.rifa.art.stop=snapshot.val().stop;
+            $scope.rifa.art.go=snapshot.val().go;
+          });
+        }
+      }, function (errorObject) {
+        console.log("The read failed: " + errorObject.code);
+      });
+      firebaseRefRPart.on("value", function(snapshot) {
+        //console.log(snapshot.val());
+        if(snapshot.val()==null){
+          $scope.rifa.pregunta=true;
+          $scope.rifa.user.cant=1;
+          $scope.rifa.user.userid=$scope.user.info.id;
+          $scope.rifa.user.username=$scope.user.info.username;
+          $scope.rifa.user.username_slug=$scope.user.info.username_slug;
+          $scope.rifa.user.email=$scope.user.info.email;
+        }else{
+          $scope.rifa.pregunta=false;
+          $scope.rifa.user={
+            cant:snapshot.val().cant,
+            userid:snapshot.val().userid,
+            username:snapshot.val().username,
+            username_slug:snapshot.val().username_slug,
+            email:snapshot.val().email
+          };
+        }
+      }, function (errorObject) {
+        console.log("The read failed: " + errorObject.code);
+      });
     };
 
     $scope.exitChannel = function() {
@@ -398,21 +733,146 @@ var ChatController = [
     });
   }
 ];
+var RifaController = [
+  '$scope',
+  '$firebaseArray',
+  '$firebaseObject',
+  '$modalInstance',
+  'Items',
+  '$http',
+  'Upload',
+  function($scope, $firebaseArray, $firebaseObject, $modalInstance, Items, $http ,Upload) {
+    $scope.items = Items;
+    $scope.rifa = {
+      chatId: $scope.items.channel.selected.$id,
+      userId: $scope.items.user.info.id,
+      cant: 0,
+      cantUser: 0,
+      cantComprados: 0,
+      precioBole: 0.00,
+      nomArt: "",
+      imgUrl: "",
+      userIdG: null,
+      userIdGname: null,
+      userIdGname_slug: null,
+      userIdGemail: null,
+      stop: false,
+      go: false
+    };
+    $scope.alert={
+      msg:"",
+      type:"success"
+    };
+    $scope.adding_img = false;
+    var firebaseRef = new Firebase(firebase_url+'/rifas/'+$scope.items.channel.selected.$id);
+    //var firebaseRefPart = new Firebase(firebase_url+'/participants');
+    $scope.safeApply = function(fn) {
+      var phase = this.$root.$$phase;
+      if(phase == '$apply' || phase == '$digest') {
+        if(fn && (typeof(fn) === 'function')) {
+          fn();
+        }
+      } else {
+        this.$apply(fn);
+      }
+    };
+    $scope.save = function (){
+      if($scope.rifa.cant===undefined || $scope.rifa.cant==null || $scope.rifa.cant<=0 || isNaN($scope.rifa.cantUser) || $scope.rifa.cant % 1 != 0){
+        $scope.alert.msg="El campo Cantidad de boletos no puede estar vacio, menor o igual a cero y no numeros con fraccion";
+        $scope.alert.type='warning';
+        $scope.safeApply(function(){});
+      }else if($scope.rifa.cantUser===undefined || $scope.rifa.cantUser==null || $scope.rifa.cantUser<=0 || isNaN($scope.rifa.cantUser) || $scope.rifa.cantUser % 1 != 0){
+        $scope.alert.msg="El campo Cantidad de boletos por Usuario no puede estar vacio, menor o igual a cero y no numeros con fraccion";
+        $scope.alert.type='warning';
+        $scope.safeApply(function(){});
+      }else if($scope.rifa.precioBole===undefined || $scope.rifa.precioBole==null || $scope.rifa.precioBole<0 || isNaN($scope.rifa.precioBole)){
+        $scope.alert.msg="El campo Precio por boleto no puede estar vacio, recuerde solo 2 numeros despues del punto decimal";
+        $scope.alert.type='warning';
+        $scope.safeApply(function(){});
+      }else if($scope.rifa.nomArt===undefined || $scope.rifa.nomArt==""){
+        $scope.alert.msg="El campo Nombre del articulo no puede estar vacio";
+        $scope.alert.type='warning';
+        $scope.safeApply(function(){});
+      }else if($scope.rifa.imgUrl===undefined || $scope.rifa.imgUrl==""){
+        $scope.alert.msg="Aun no carga una imagen";
+        $scope.alert.type='warning';
+        $scope.safeApply(function(){});
+      }else{
+        var rifaChat = {
+          userId: $scope.items.user.info.id,
+          cant: $scope.rifa.cant,
+          cantUser: $scope.rifa.cantUser,
+          cantComprados: $scope.rifa.cantComprados,
+          precioBole: $scope.rifa.precioBole,
+          nomArt: $scope.rifa.nomArt,
+          imgUrl: $scope.rifa.imgUrl,
+          userIdG: null,
+          userIdGname: null,
+          userIdGname_slug: null,
+          userIdGemail: null,
+          stop: false,
+          go: false
+        }
+        firebaseRef.set(rifaChat, function(error) {
+          if(error){
+            $scope.items.rifa.create=false;
+            $scope.$apply(function(){
+              $scope.alert.msg=error;
+              $scope.alert.type='danger';
+            });
+          }else{
+            $scope.items.rifa.create=true;
+            $scope.$apply(function(){
+              $scope.alert.msg='Creado correctamente';
+              $scope.alert.type='success';
+            });
+          }
+        });
+      }
+    };
+    $scope.cancel = function (){
+      $modalInstance.dismiss('cancel');
+    };
+    $scope.uploadPicture = function(files) {
+      if(files.length == 1) {
+        var file = files[0];
+        $scope.adding_img = true;
+        Upload.upload({
+          url: layer_path + "post/image",
+          file: file
+        }).success(function (data) {
+          if($scope.rifa.imgUrl.length > 0) {
+            $scope.rifa.imgUrl += data.url;
+          } else {
+            $scope.rifa.imgUrl = data.url;
+          }
+          $scope.adding_img = false;
+        }).error(function(data) {
+          $scope.adding_img = false;
+        });
+      }
+    };
+  }
+];
 
+var enter=false;
 var chatModule = angular.module('chatModule', ['firebase', 'ngSanitize']);
 
 chatModule.controller('ChatController', ChatController);
+chatModule.controller('RifaController', RifaController);
 
 chatModule.directive('sgEnter', function() {
   return {
-    link: function(scope, element, attrs) {
+    link: function(scope, element, attrs){
       //console.log(scope.message.send_on_enter);
-      element.bind("keydown keypress", function(event) {
-        if(event.which === 13 && scope.message.send_on_enter) {
+      element.bind("keyup", function(event) {
+        if(enter==false && event.which === 13 && scope.message.send_on_enter) {
           scope.$apply(function(){
             scope.$eval(attrs.sgEnter, {'event': event});
           });
           event.preventDefault();
+        }else if(enter==true){
+          enter=false;
         }
       });
     }
