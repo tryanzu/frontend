@@ -8,7 +8,90 @@
           <span class="icon category-icon" ng-class="{'uncategorized': !c.color}" ng-style="{background: c.color}"></span> {{ c.name }}
         </a>
       </li>
+      <li class="sidebar-title" ng-if="user.isLogged">Rifa</li>
+      <li ng-if="!can('board-config') && show_details">  
+        <button class="btn btn-success btn-xs" ng-hide="rifa.create" type="button" ng-click="createRifa()">Crear Rifa</button>
+        <button class="btn btn-danger btn-xs" ng-hide="!rifa.create" type="button" ng-click="deleteRifa()">Borrar Rifa</button>
+      </li>
+      <!-- for users -->
+      <li ng-if="can('board-config') && rifa.active && user.isLogged">
+        <div ng-if="rifa.rifa">
+          <div class="row text-center">
+            <div class="col-sm-11">
+              <p style="margin: 0;line-height: 1.3em;"><strong>{{rifa.art.nomArt}}</strong></p>
+              <div>
+                <img ng-src="{{rifa.art.imgUrl}}" class="img-thumbnail" style="width: 100px;">
+              </div>
+              <div>
+                <p class="text-left" style="margin: 0;line-height: 1.3em;">Boletos: {{rifa.art.cant}}</p>
+                <p class="text-left" style="margin: 0;line-height: 1.3em;">Boletos comprados: {{rifa.art.cantComprados}}</p>
+                <p class="text-left" style="margin: 0;line-height: 1.3em;">Boletos por usuario: {{rifa.art.cantUser}}</p>
+                <p class="text-left" style="margin: 0;line-height: 1.3em;">Precio por boleto: {{rifa.art.precioBole | currency}}</p>
+              </div>
+            </div>
+            <div class="col-sm-1"></div>
+          </div>
+        </div>
+        <div ng-show="rifa.pregunta && !rifa.art.userIdG && !rifa.art.stop">
+          <div class="text-center">
+          <button uib-popover-template="dynamicPopover.templateUrl" popover-title="Participar" type="button" class="btn btn-default btn-sm">Participar</button>
+          <script type="text/ng-template" id="myPopoverTemplate.html">
+              <div></div>
+              <div class="form-group">
+                <label>N° de boletos:</label>
+                <input type="number" ng-model="rifa.user.cant" class="form-control" min="1" max="{{rifa.art.cantUser}}">
+                <br>
+                <button class="btn btn-success btn-sm" ng-click="comprarBoletos()">Comprar</button>
+              </div>
+          </script>
+          </div>
+        </div>
+        <div ng-show="rifa.art.stop">
+          <p class="text-center"><strong>Rifa cerrada</strong></p>
+        </div>
+        <div ng-show="rifa.art.userIdG">
+          <div class="text-left">
+            <p style="margin: 0;line-height: 1.3em;margin-top: 5px;"><strong>Ganador: {{rifa.art.userIdGname}}</strong></p>
+          </div>
+        </div>
+        <div ng-show="!rifa.pregunta && !rifa.art.stop" class="text-center">
+          <button type="button" class="btn btn-danger btn-sm" ng-if="!rifa.art.userIdG" ng-click="dejarBoletos()">Dejar rifa</button>
+        </div>
+      </li>
+      <!-- for admins -->
+      <li ng-if="!can('board-config') && rifa.active">
+        <button class="btn btn-danger btn-xs" ng-if="rifa.create && !rifa.art.stop" type="button" ng-click="stopRifa()">Detener Rifa</button>
+        <button class="btn btn-success btn-xs" ng-if="rifa.create && rifa.art.stop" type="button" ng-click="startRifa()">Activar Rifa</button>
+        <button class="btn btn-primary btn-xs" ng-if="rifa.create && rifa.art.stop" type="button" ng-click="ganadorRifa()">Obtener Ganador</button>
+        <div class="row text-center">
+          <div class="col-sm-11">
+            <p style="margin: 0;line-height: 1.3em;"><strong>{{rifa.art.nomArt}}</strong></p>
+            <div>
+              <img ng-src="{{rifa.art.imgUrl}}" class="img-thumbnail" style="width: 100px;">
+            </div>
+            <div>
+              <p class="text-left" style="margin: 0;line-height: 1.3em;">Boletos: {{rifa.art.cant}}</p>
+              <p class="text-left" style="margin: 0;line-height: 1.3em;">Boletos comprados: {{rifa.art.cantComprados}}</p>
+              <p class="text-left" style="margin: 0;line-height: 1.3em;">Boletos por usuario: {{rifa.art.cantUser}}</p>
+              <p class="text-left" style="margin: 0;line-height: 1.3em;">Precio por boleto: {{rifa.art.precioBole | currency}}</p>
+            </div>
+            <div ng-show="rifa.art.userIdG">
+              <div>
+                <p class="text-left" style="margin: 0;line-height: 1.3em;margin-top: 10px;"><strong>Ganador: {{rifa.art.userIdGname}}</strong></p>
+                <p class="text-left" style="margin: 0;line-height: 1.3em;">email: {{rifa.art.userIdGemail}}</p>
+              </div>
+            </div>
+            <div ng-show="rifa.art.go">
+              <div id="number"></div>
+              <div id="name"></div>
+            </div>
+          </div>
+          <div class="col-sm-1"></div>
+        </div>
+      </li>
+      <li></li>
     </ul>
+    
   </div>
   <!-- /#sidebar-wrapper -->
 
@@ -23,7 +106,7 @@
                 <div class="col-md-6 col-xs-7">
                   <h3 style="margin-top: 0">{{ channel.selected.name || "#" }}</h3>
                 </div>
-                <div class="col-md-6 col-xs-5 text-right" ng-if="can('board-config')">
+                <div class="col-md-6 col-xs-5 text-right" ng-if="!can('board-config')">
                   <a title="Configurar este canal" class="btn btn-default btn-icon btn-round" ng-click="toggle_details()" ng-class="{'active': show_details}">
                     <i class="fa fa-fw fa-info-circle icon"></i>
                     <span class="label hidden-xs">Configurar este canal</span>
@@ -33,7 +116,7 @@
             </div>
           </div>
           <!-- index-toolbar -->
-
+          
           <div adjust-height-chat>
             <div class="message-history">
               <div class="message" ng-repeat="m in old_messages" ng-class="::{'compact':old_messages[$index-1].author.username == old_messages[$index].author.username}">
@@ -74,8 +157,8 @@
 
             <div class="footer">
               <div class="input-box" ng-if="user.isLogged">
-                <div class="input-group" style="width: 98%;">
-                  <textarea rows="1" ng-trim="false" smart-area="config" ng-model="message.content" class="input-box_text" placeholder="Escribe..." sg-enter="addMessage()" sg-send="message.send_on_enter" ng-readonly="helpers.spam_count > 2"></textarea>
+                <div class="input-group" style="width: 100%;">
+                  <textarea placeholder="Escribe..." rows="1" ng-trim="false" smart-area="config" ng-model="message.content" class="input-box_text" sg-enter="addMessage()" sg-send="message.send_on_enter" ng-readonly="helpers.spam_count > 2"></textarea>
                 </div>
                 <div class="row">
                   <div class="col-md-8">

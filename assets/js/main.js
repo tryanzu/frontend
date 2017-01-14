@@ -18,7 +18,6 @@
 // @codekit-prepend vendor/socket.min.js
 // @codekit-prepend vendor/country-picker.min.js
 
-
 // @codekit-prepend common/directives.js
 // @codekit-prepend common/filters.js
 // @codekit-prepend common/active_reader.js
@@ -291,6 +290,7 @@ boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http'
         var data = response.data;
         localStorage.setItem('id_token', data.token);
         localStorage.setItem('firebase_token', data.firebase);
+        //localStorage.setItem('firebase_token', 'AIzaSyCBR1iyAv25IG2T8WMMtRSZzabfJ_4KBNs');
         localStorage.setItem('signed_in', true);
 
         $uibModalInstance.dismiss('logged');
