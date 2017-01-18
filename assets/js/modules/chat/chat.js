@@ -8,7 +8,36 @@ var ChatController = [
   '$routeParams',
   '$http',
   '$uibModal',
-  function($scope, $firebaseArray, $firebaseObject, $timeout, $location, $route, $routeParams, $http, $uibModal) {
+  '$geolocation',
+  function($scope, $firebaseArray, $firebaseObject, $timeout, $location, $route, $routeParams, $http, $uibModal, $geolocation) {
+    $scope.formatted_address=null;
+    $scope.$geolocation = $geolocation;
+    // basic usage
+    $geolocation.getCurrentPosition().then(function(location) {
+      $scope.location = location;
+      //init geolocation
+      if($scope.formatted_address==null){
+        var dir = "";
+        var lat=$scope.location.coords.latitude;
+        var lon=$scope.location.coords.longitude;
+        var latlng = new google.maps.LatLng(lat, lon);
+        geocoder = new google.maps.Geocoder();
+        geocoder.geocode({"latLng": latlng}, function(results, status)
+        {
+          if(status == google.maps.GeocoderStatus.OK){
+            if(results[0]){
+              $scope.formatted_address=results[0].formatted_address;
+              dir = "Dirección:" + results[0].formatted_address;
+            }else{
+              dir = "No se ha podido obtener ninguna dirección en esas coordenadas";
+            }
+          }else{
+            dir = "El Servicio de Codificación Geográfica ha fallado con el siguiente error: " + status;
+          }
+        });
+      }//End, init geolocation
+    });
+
     $scope.rifaID=null;
     $scope.tiempo=false;
     $scope.rifa = {
@@ -28,12 +57,17 @@ var ChatController = [
         userIdGname_slug: null,
         userIdGemail:null,
         stop:false,
+        countrys:null,
+        citys:null,
         go:false
       },
       user:{
         cant:1,
         userid:null,
-        username:null
+        username:null,
+        username_slug:null,
+        email:null,
+        ticketskey:null
       }
     };
     $scope.dynamicPopover = {
@@ -86,8 +120,9 @@ var ChatController = [
     $scope._statusRef      = null;
     $scope._messageRef     = $scope._firebase.child('messages');
     $scope._channelRef     = $scope._firebase.child('channels');
-    $scope._rifasRef       = $scope._firebase.child('rifas');
+    $scope._rifasRef       = $scope._firebase.child('raffles');
     $scope._participantsRef= $scope._firebase.child('participants');
+    $scope._ticketsRef     = $scope._firebase.child('tickets');
     //$scope._privateRoomRef = $scope._firebase.child('room-private-metadata');
     //$scope._moderatorsRef  = $scope._firebase.child('moderators');
     $scope._suspensionsRef = $scope._firebase.child('suspensions');
@@ -229,61 +264,181 @@ var ChatController = [
       });
     }
     $scope.updateRifa = function(){
-      $scope._participantsRef.child($scope.channel.selected.$id)
-      .once("value", function(snapshot) {
-        var data = snapshot.val();
-        //console.log(snapshot.val());
-        var cont = 0;
-        for(var i in data) {
-          //console.log(data[i].cant);
-          cont = cont + data[i].cant;
-        }
-        var stop = false;
-        if(cont>=$scope.rifa.art.cant){
-          stop = true;
-        }
-        $scope._rifasRef.child($scope.channel.selected.$id)
+      $scope._ticketsRef.child($scope.channel.selected.$id).once("value", function(snapshot){
+        if(snapshot.val()==null){
+          var stop=false;
+          $scope._rifasRef.child($scope.channel.selected.$id).once("value",function(snapshot2){
+            if(snapshot2.val()!=null){
+              stop=snapshot2.val().stop;
+            }
+          });
+          $scope._rifasRef.child($scope.channel.selected.$id)
           .update({
-            cantComprados: cont,
+            cantComprados: 0,
             stop: stop
           });
-      }, function (errorObject) {
-        console.log("The read failed: " + errorObject.code);
+        }else{
+          var countT=0;
+          var stop=false;
+          $scope._rifasRef.child($scope.channel.selected.$id).once("value",function(snapshot2){
+            if(snapshot2.val()!=null){
+              stop=snapshot2.val().stop;
+              countT=snapshot2.val().cant;
+            }
+          });
+          var count = Object.keys(snapshot.val()).length;
+          if(count>=countT){
+            stop = true;
+          }
+          $scope._rifasRef.child($scope.channel.selected.$id)
+          .update({
+            /*cantComprados: count,*/
+            stop: stop
+          });
+        }
       });
     }
     $scope.dejarBoletos = function(){
       if(confirm("Desea dejar la rifa?")){
+        var arrTK=$scope.rifa.user.ticketskey;
+        for (var i = 0; i < arrTK.length; i++) {
+          $scope._ticketsRef.child($scope.channel.selected.$id).child(arrTK[i]).set(null);
+          $scope.ticketsUPDATE($scope._rifasRef.child($scope.channel.selected.$id),false);
+        }        
         var firebaseRefR = $scope._participantsRef.child($scope.channel.selected.$id).child($scope.user.info.id);
         var obj = $firebaseObject(firebaseRefR);
         obj.$remove().then(function(ref){
           // data has been deleted locally and in the database
           $scope.pregunta=true;
-          $scope.updateRifa();
+          //$scope.updateRifa();
         }, function(error) {
           console.log("Error:", error);
           $scope.pregunta=false;
         });
       }
     };
+    $scope.ticketsUPDATE = function (postRef, action) {
+      postRef.transaction(function(rifa) {
+        if (rifa) {
+          if (rifa.cantComprados<rifa.cant && action) {
+            rifa.cantComprados++;
+          }else if(!action) {
+            rifa.cantComprados--;
+          }
+        }
+        return rifa;
+      });
+    };
     $scope.comprarBoletos = function(){
-      if(($scope.rifa.user.cant%1)==0 && $scope.rifa.user.cant>0 && $scope.rifa.user.cant<=$scope.rifa.art.cantUser && $scope.rifa.user.cant<=($scope.rifa.art.cant-$scope.rifa.art.cantComprados)){
-        $scope._participantsRef.child($scope.channel.selected.$id).child($scope.user.info.id)
-        .set($scope.rifa.user, function(error) {
-          if(error){
-            $scope.pregunta=true;
+      //init geolocation
+      if($scope.formatted_address==null){
+        var dir = "";
+        var lat=$scope.location.coords.latitude;
+        var lon=$scope.location.coords.longitude;
+        var latlng = new google.maps.LatLng(lat, lon);
+        geocoder = new google.maps.Geocoder();
+        geocoder.geocode({"latLng": latlng}, function(results, status)
+        {
+          if(status == google.maps.GeocoderStatus.OK){
+            if(results[0]){
+              $scope.formatted_address=results[0].formatted_address;
+              dir = "Dirección:" + results[0].formatted_address;
+            }else{
+              dir = "No se ha podido obtener ninguna dirección en esas coordenadas";
+            }
           }else{
-            $scope.pregunta=false;
-            $scope.updateRifa();
+            dir = "El Servicio de Codificación Geográfica ha fallado con el siguiente error: " + status;
           }
         });
-      }else if(!($scope.rifa.user.cant%1)==0){
-        alert("Deben ser numero enteros sin fracción");
-      }else if($scope.rifa.user.cant<=0 || $scope.rifa.user.cant>$scope.rifa.art.cantUser || $scope.rifa.user.cant===undefined){
-        alert("Sobrepasas los limite de boletos debe ser minimo 1 y menos o igual que "+$scope.rifa.art.cantUser+" Ó Deben ser numero enteros sin fracción");
-      }else if($scope.rifa.user.cant<=($scope.rifa.art.cant-$scope.rifa.art.cantComprados)){
-        alert("Lo siento boletos agotados mas rapido la proxima vez");
+      }//End, init geolocation
+      if($scope.formatted_address!=null || ($scope.rifa.art.countrys===undefined && $scope.rifa.art.citys===undefined)){
+        var yes=false;
+        //console.log($scope.formatted_address);
+        if($scope.rifa.art.citys===undefined){
+        }else{
+          var ArrB=$scope.rifa.art.citys;
+          var contArr=ArrB.length;
+          for (var i = 0; i < contArr; i++) {
+            var temp = ArrB[i];
+            if ($scope.formatted_address.indexOf(''+temp)!=-1) {
+              yes=true;
+              break;
+            }
+          }
+        }
+        if($scope.rifa.art.countrys===undefined){
+        }else{
+          var ArrB=$scope.rifa.art.countrys;
+          var contArr=ArrB.length;
+          for (var i = 0; i < contArr; i++) {
+            var temp = ArrB[i];
+            if ($scope.formatted_address.indexOf(''+temp)!=-1) {
+              yes=true;
+              break;
+            }
+          }
+        }
+        if($scope.rifa.art.countrys===undefined && $scope.rifa.art.citys===undefined){
+          yes=true;
+        }
+        if(yes){
+          if(($scope.rifa.user.cant%1)==0 && $scope.rifa.user.cant>0 && $scope.rifa.user.cant<=$scope.rifa.art.cantUser && $scope.rifa.user.cant<=($scope.rifa.art.cant-$scope.rifa.art.cantComprados)){
+            var bolcomp = [];
+            for (var i = 0; i < $scope.rifa.user.cant; i++) {
+              var count=0;
+              $scope._ticketsRef.child($scope.channel.selected.$id).once("value", function(snapshot){
+                if(snapshot.val()==null){
+                  count = 0;
+                }else{
+                  count = Object.keys(snapshot.val()).length;
+                }
+                if(count<$scope.rifa.art.cant){
+                  var newticket=$scope._ticketsRef.child($scope.channel.selected.$id)
+                  .push($scope.rifa.user);
+                  var key = newticket.key();
+                  if(key==null){
+                  }else{
+                    $scope.ticketsUPDATE($scope._rifasRef.child($scope.channel.selected.$id),true);
+                    bolcomp.push(key);
+                  }
+                }
+              });
+            }
+            if(bolcomp.length>0){
+              $scope.rifa.user.ticketskey=bolcomp;
+              $scope.rifa.user.cant=bolcomp.length;
+              $scope._participantsRef.child($scope.channel.selected.$id).child($scope.user.info.id)
+              .set($scope.rifa.user, function(error) {
+                if(error){
+                  $scope.pregunta=true;
+                }else{
+                  $scope.pregunta=false;
+                  //$scope.updateRifa();
+                }
+              });
+            }
+            if(bolcomp.length>0 && bolcomp.length<$scope.rifa.user.cant){
+              alert("Por la alta demanda de boletos solo pudiste comprar "+bolcomp.length+" boletos");
+            }else if(bolcomp.length>0 && bolcomp.length==$scope.rifa.user.cant){
+            }else if(bolcomp.length==0){
+              alert("Por la alta demanda de boletos no alcanzaste boletos");
+            }
+          }else if(!($scope.rifa.user.cant%1)==0){
+            alert("Deben ser numero enteros sin fracción");
+          }else if($scope.rifa.user.cant<=0 || $scope.rifa.user.cant>$scope.rifa.art.cantUser || $scope.rifa.user.cant===undefined){
+            alert("Sobrepasas los limite de boletos debe ser minimo 1 y menos o igual que "+$scope.rifa.art.cantUser+" Ó Deben ser numero enteros sin fracción");
+          }else if($scope.rifa.user.cant<=($scope.rifa.art.cant-$scope.rifa.art.cantComprados)){
+            alert("Lo siento boletos agotados mas rapido la proxima vez");
+          }else if($scope.rifa.user.cant>($scope.rifa.art.cant-$scope.rifa.art.cantComprados)){
+            alert("Lo siento Intentaste comprar mas boletos de los existentes, esto paso por que alguien fue mas rapido que tu");
+          }else{
+            alert("Fallo");
+          }
+        }else{
+          alert('Esta Rifa no es para tu region');
+        }
       }else{
-        alert("Fallo");
+        alert('Para participar debes activar la geolocalización en tu navegador o ver si la soporta, si no cambia de navegador a uno mas reciente');
       }
     };
     $scope.deleteRifa = function(){
@@ -291,6 +446,7 @@ var ChatController = [
       if(confirm("Desea continuar con la eliminación de la rifa?")){
         $scope._rifasRef.child($scope.channel.selected.$id).set(null);
         $scope._participantsRef.child($scope.channel.selected.$id).set(null);
+        $scope._ticketsRef.child($scope.channel.selected.$id).set(null);
         $scope.rifa.create=false;
         $scope.rifa.active=false;
         $scope.rifa.pregunta=false;
@@ -306,6 +462,8 @@ var ChatController = [
         $scope.rifa.art.userIdGname_slug=null;
         $scope.rifa.art.userIdGemail=null;
         $scope.rifa.art.stop=false;
+        $scope.rifa.art.countrys=null;
+        $scope.rifa.art.citys=null;
         $scope.rifa.art.go=false;
         $scope.rifa.user.cant=1;
       }
@@ -429,88 +587,129 @@ var ChatController = [
             }
           });
         });
-      }
-      var firebaseRefR = $scope._rifasRef.child(channel.$id);
-      var firebaseRefRPart = $scope._participantsRef.child(channel.$id).child($scope.user.info.id);
-      firebaseRefR.on("value", function(snapshot) {
-        //console.log(snapshot.val());
-        if(snapshot.val()==null){
-          //$scope.safeApply(function(){
-          $timeout(function(){
-            $scope.rifa.create=false;
-            $scope.rifa.active=false;
-            $scope.rifa.pregunta=false;
-            $scope.rifa.rifa=false;
-            $scope.rifa.art.cant=0;
-            $scope.rifa.art.cantComprados=0;
-            $scope.rifa.art.cantUser=0;
-            $scope.rifa.art.imgUrl=null;
-            $scope.rifa.art.nomArt=null;
-            $scope.rifa.art.precioBole=0;
-            $scope.rifa.art.userIdG=null;
-            $scope.rifa.art.userIdGname=null;
-            $scope.rifa.art.userIdGname_slug=null;
-            $scope.rifa.art.userIdGemail=null;
-            $scope.rifa.art.stop=false;
-            $scope.rifa.art.go=false;
-            $scope.rifa.user.cant=1;
-          });
-          //});
-        }else{
-          //$scope.safeApply(function(){
-          $timeout(function(){
-            $scope.rifa.create=true;
-            $scope.rifa.active=true;
-            $scope.rifa.rifa=true;
-            $scope._participantsRef.child($scope.channel.selected.$id).child($scope.user.info.id)
-            .once('value', function(snapshott) {
-              if(snapshott.val()==null){
-                $scope.rifa.pregunta=true;
-              }else{
-                $scope.rifa.pregunta=false;
-              }
-            }, function (errorObject) {
-              console.log("The read failed: " + errorObject.code);
+        //updates for rifas
+        var firebaseRefR = $scope._rifasRef.child(channel.$id);
+        var firebaseRefRPart = $scope._participantsRef.child(channel.$id).child($scope.user.info.id);
+        var firebaseRefRTickets = $scope._ticketsRef.child(channel.$id);
+        var firebaseRefRPartAdmin = $scope._participantsRef.child(channel.$id);
+        firebaseRefR.on("value", function(snapshot) {
+          //console.log(snapshot.val());
+          if(snapshot.val()==null){
+            //$scope.safeApply(function(){
+            $timeout(function(){
+              $scope.rifa.create=false;
+              $scope.rifa.active=false;
+              $scope.rifa.pregunta=false;
+              $scope.rifa.rifa=false;
+              $scope.rifa.art.cant=0;
+              //$scope.rifa.art.cantComprados=0;
+              $scope.rifa.art.cantUser=0;
+              $scope.rifa.art.imgUrl=null;
+              $scope.rifa.art.nomArt=null;
+              $scope.rifa.art.precioBole=0;
+              $scope.rifa.art.userIdG=null;
+              $scope.rifa.art.userIdGname=null;
+              $scope.rifa.art.userIdGname_slug=null;
+              $scope.rifa.art.userIdGemail=null;
+              $scope.rifa.art.stop=false;
+              $scope.rifa.art.countrys=null;
+              $scope.rifa.art.citys=null;
+              $scope.rifa.art.go=false;
+              $scope.rifa.user.cant=1;
             });
-            $scope.rifa.art.cant=snapshot.val().cant;
-            $scope.rifa.art.cantUser=snapshot.val().cantUser;
-            $scope.rifa.art.imgUrl=snapshot.val().imgUrl;
-            $scope.rifa.art.nomArt=snapshot.val().nomArt;
-            $scope.rifa.art.precioBole=snapshot.val().precioBole;
-            $scope.rifa.art.cantComprados=snapshot.val().cantComprados;
-            $scope.rifa.art.userIdG=snapshot.val().userIdG;
-            $scope.rifa.art.userIdGname=snapshot.val().userIdGname;
-            $scope.rifa.art.userIdGname_slug=snapshot.val().userIdGname_slug;
-            $scope.rifa.art.userIdGemail=snapshot.val().userIdGemail;
-            $scope.rifa.art.stop=snapshot.val().stop;
-            $scope.rifa.art.go=snapshot.val().go;
+            //});
+          }else{
+            //$scope.safeApply(function(){
+            $timeout(function(){
+              $scope.rifa.create=true;
+              $scope.rifa.active=true;
+              $scope.rifa.rifa=true;
+              $scope._participantsRef.child($scope.channel.selected.$id).child($scope.user.info.id)
+              .once('value', function(snapshott) {
+                if(snapshott.val()==null){
+                  $scope.rifa.pregunta=true;
+                }else{
+                  $scope.rifa.pregunta=false;
+                }
+              }, function (errorObject) {
+                console.log("The read failed: " + errorObject.code);
+              });
+              $scope.rifa.art.cant=snapshot.val().cant;
+              $scope.rifa.art.cantUser=snapshot.val().cantUser;
+              $scope.rifa.art.imgUrl=snapshot.val().imgUrl;
+              $scope.rifa.art.nomArt=snapshot.val().nomArt;
+              $scope.rifa.art.precioBole=snapshot.val().precioBole;
+              //$scope.rifa.art.cantComprados=snapshot.val().cantComprados;
+              $scope.rifa.art.userIdG=snapshot.val().userIdG;
+              $scope.rifa.art.userIdGname=snapshot.val().userIdGname;
+              $scope.rifa.art.userIdGname_slug=snapshot.val().userIdGname_slug;
+              $scope.rifa.art.userIdGemail=snapshot.val().userIdGemail;
+              $scope.rifa.art.stop=snapshot.val().stop;
+              $scope.rifa.art.countrys=snapshot.val().countrys;
+              $scope.rifa.art.citys=snapshot.val().citys;
+              $scope.rifa.art.go=snapshot.val().go;
+            });
+          }
+        }, function (errorObject) {
+          console.log("The read failed: " + errorObject.code);
+        });
+        firebaseRefRPart.on("value", function(snapshot) {
+          //console.log(snapshot.val());
+          if(snapshot.val()==null){
+            $scope.rifa.pregunta=true;
+            $scope.rifa.user.cant=1;
+            $scope.rifa.user.userid=$scope.user.info.id;
+            $scope.rifa.user.username=$scope.user.info.username;
+            $scope.rifa.user.username_slug=$scope.user.info.username_slug;
+            $scope.rifa.user.email=$scope.user.info.email;
+            $scope.rifa.user.ticketskey=null;
+          }else{
+            $scope.rifa.pregunta=false;
+            $scope.rifa.user={
+              cant:snapshot.val().cant,
+              userid:snapshot.val().userid,
+              username:snapshot.val().username,
+              username_slug:snapshot.val().username_slug,
+              email:snapshot.val().email,
+              ticketskey:snapshot.val().ticketskey
+            };
+          }
+        }, function (errorObject) {
+          console.log("The read failed: " + errorObject.code);
+        });
+        firebaseRefRTickets.on("value", function(snapshot) {
+          //console.log(snapshot.val().length);
+          if(snapshot.val()==null){
+            $timeout(function(){
+              $scope.rifa.art.cantComprados=0;
+            });
+          }else{
+            var count = Object.keys(snapshot.val()).length;
+            $timeout(function(){
+              $scope.rifa.art.cantComprados=count;
+            });
+          }
+        }, function (errorObject) {
+          console.log("The read failed: " + errorObject.code);
+        });
+        if($scope.can('board-config')){
+          firebaseRefRTickets.on("value", function(snapshot) {
+            if(snapshot.val()==null){
+              firebaseRefR.once("value", function(snapshott){
+                if(snapshott.val()!=null){
+                  $scope.updateRifa();    
+                }
+              }, function(errorObjectt){
+                console.log("The read failed: " + errorObjectt.code);
+              });
+            }else{
+              $scope.updateRifa();
+            }
+          }, function (errorObject) {
+            console.log("The read failed: " + errorObject.code);
           });
         }
-      }, function (errorObject) {
-        console.log("The read failed: " + errorObject.code);
-      });
-      firebaseRefRPart.on("value", function(snapshot) {
-        //console.log(snapshot.val());
-        if(snapshot.val()==null){
-          $scope.rifa.pregunta=true;
-          $scope.rifa.user.cant=1;
-          $scope.rifa.user.userid=$scope.user.info.id;
-          $scope.rifa.user.username=$scope.user.info.username;
-          $scope.rifa.user.username_slug=$scope.user.info.username_slug;
-          $scope.rifa.user.email=$scope.user.info.email;
-        }else{
-          $scope.rifa.pregunta=false;
-          $scope.rifa.user={
-            cant:snapshot.val().cant,
-            userid:snapshot.val().userid,
-            username:snapshot.val().username,
-            username_slug:snapshot.val().username_slug,
-            email:snapshot.val().email
-          };
-        }
-      }, function (errorObject) {
-        console.log("The read failed: " + errorObject.code);
-      });
+      }
     };
 
     $scope.exitChannel = function() {
@@ -742,6 +941,136 @@ var RifaController = [
   '$http',
   'Upload',
   function($scope, $firebaseArray, $firebaseObject, $modalInstance, Items, $http ,Upload) {
+    $scope.countrysarr={
+      model: null,
+      availableOptions: [
+        {value: 'Argentina', name: 'Argentina'},
+        {value: 'Belice', name: 'Belice'},
+        {value: 'Bolivia', name: 'Bolivia'},
+        {value: 'Brasil', name: 'Brasil'},
+        {value: 'Canad\u00e1', name: 'Canad\u00e1'},
+        {value: 'Costa Rica', name: 'Costa Rica'},
+        {value: 'Colombia', name: 'Colombia'},
+        {value: 'Cuba', name: 'Cuba'},
+        {value: 'Ecuador', name: 'Ecuador'},        
+        {value: 'Estados Unidos', name: 'Estados Unidos'},
+        {value: 'El Salvador', name: 'El Salvador'},
+        {value: 'Guatemala', name: 'Guatemala'},
+        {value: 'Guyana', name: 'Guyana'},
+        {value: 'Honduras', name: 'Honduras'},
+        {value: 'M\u00e9xico', name: 'M\u00e9xico'},
+        {value: 'Nicaragua', name: 'Nicaragua'},
+        {value: 'Panam\u00e1', name: 'Panam\u00e1'},
+        {value: 'Per\u00fa', name: 'Per\u00fa'},
+        {value: 'Paraguay', name: 'Paraguay'},
+        {value: 'Surinam', name: 'Surinam'},
+        {value: 'Uruguay', name: 'Uruguay'},
+        {value: 'Venezuela', name: 'Venezuela'}        
+      ]
+    };
+    $scope.countrys={
+      "CA":"Canad\u00e1",
+      "MX":"M\u00e9xico",
+      "US":"Estados Unidos",
+      "BZ":"Belice",
+      "GT":"Guatemala",
+      "CR":"Costa Rica",
+      "HN":"Honduras",
+      "SV":"El Salvador",
+      "NI":"Nicaragua",
+      "PA":"Panam\u00e1",
+      "CU":"Cuba",
+      "AR":"Argentina",
+      "BO":"Bolivia",
+      "BR":"Brasil",
+      "CL":"Chile",
+      "CO":"Colombia",
+      "EC":"Ecuador",
+      "PE":"Per\u00fa",
+      "PY":"Paraguay",
+      "UY":"Uruguay",
+      "VE":"Venezuela",
+      "GY":"Guyana",
+      "SR":"Surinam"
+    };
+    $scope.citysarr={
+      model: null,
+      availableOptions: [
+        {value: 'Aguascalientes', name: 'Aguascalientes'},
+        {value: 'Baja California', name: 'Baja California'},
+        {value: 'Baja California Sur', name: 'Baja California Sur'},
+        {value: 'Campeche', name: 'Campeche'},
+        {value: 'Chiapas', name: 'Chiapas'},
+        {value: 'Chihuahua', name: 'Chihuahua'},
+        {value: 'Coahuila', name: 'Coahuila'},
+        {value: 'Colima', name: 'Colima'},
+        {value: 'Distrito Federal', name: 'Distrito Federal'},
+        {value: 'Estado de México', name: 'Estado de México'},
+        {value: 'Ciudad de México', name: 'Ciudad de México'},
+        {value: 'CDMX', name: 'CDMX'},
+        {value: 'Méx.', name: 'Méx.'},
+        {value: 'Durango', name: 'Durango'},
+        {value: 'Guanajuato', name: 'Guanajuato'},
+        {value: 'Guerrero', name: 'Guerrero'},
+        {value: 'Hidalgo', name: 'Hidalgo'},
+        {value: 'Jalisco', name: 'Jalisco'},
+        {value: 'México', name: 'México'},
+        {value: 'Michoacán', name: 'Michoacán'},
+        {value: 'Morelos', name: 'Morelos'},
+        {value: 'Nayarit', name: 'Nayarit'},
+        {value: 'Nuevo León', name: 'Nuevo León'},
+        {value: 'Puebla', name: 'Puebla'},
+        {value: 'Querétaro', name: 'Querétaro'},
+        {value: 'Quintana Roo', name: 'Quintana Roo'},
+        {value: 'San Luis Potosí', name: 'San Luis Potosí'},
+        {value: 'Sinaloa', name: 'Sinaloa'},
+        {value: 'Sonora', name: 'Sonora'},
+        {value: 'Tabasco', name: 'Tabasco'},
+        {value: 'Tamaulipas', name: 'Tamaulipas'},
+        {value: 'Tlaxcala', name: 'Tlaxcala'},
+        {value: 'Veracruz', name: 'Veracruz'},
+        {value: 'Yucatán', name: 'Yucatán'},
+        {value: 'Zacatecas', name: 'Zacatecas'}
+      ]
+    };
+    $scope.citys={
+      "ag":"Aguascalientes",
+      "bc": "Baja California",
+      "bs": "Baja California Sur",
+      "cm": "Campeche",
+      "cs": "Chiapas",
+      "ch": "Chihuahua",
+      "co": "Coahuila",
+      "cl": "Colima",
+      "df": "Distrito Federal",
+      "edm": "Estado de México",
+      "cme": "Ciudad de México",
+      "cmx": "CDMX",
+      "cm.": "Méx.",
+      "dg": "Durango",
+      "gt": "Guanajuato",
+      "gr": "Guerrero",
+      "hg": "Hidalgo",
+      "ja": "Jalisco",
+      "me": "México",
+      "mi": "Michoacán",
+      "mo": "Morelos",
+      "na": "Nayarit",
+      "nl": "Nuevo León",
+      "oa": "Oaxaca",
+      "pb": "Puebla",
+      "qe": "Querétaro",
+      "qr": "Quintana Roo",
+      "sl": "San Luis Potosí",
+      "si": "Sinaloa",
+      "so": "Sonora",
+      "tb": "Tabasco",
+      "tm": "Tamaulipas",
+      "tl": "Tlaxcala",
+      "ve": "Veracruz",
+      "yu": "Yucatán",
+      "za": "Zacatecas"
+    };
     $scope.items = Items;
     $scope.rifa = {
       chatId: $scope.items.channel.selected.$id,
@@ -757,6 +1086,8 @@ var RifaController = [
       userIdGname_slug: null,
       userIdGemail: null,
       stop: false,
+      countrys: null,
+      citys: null,
       go: false
     };
     $scope.alert={
@@ -764,7 +1095,7 @@ var RifaController = [
       type:"success"
     };
     $scope.adding_img = false;
-    var firebaseRef = new Firebase(firebase_url+'/rifas/'+$scope.items.channel.selected.$id);
+    var firebaseRef = new Firebase(firebase_url+'/raffles/'+$scope.items.channel.selected.$id);
     //var firebaseRefPart = new Firebase(firebase_url+'/participants');
     $scope.safeApply = function(fn) {
       var phase = this.$root.$$phase;
@@ -811,6 +1142,8 @@ var RifaController = [
           userIdGname_slug: null,
           userIdGemail: null,
           stop: false,
+          countrys: $scope.rifa.countrys,
+          citys: $scope.rifa.citys,
           go: false
         }
         firebaseRef.set(rifaChat, function(error) {

@@ -26,6 +26,7 @@ textarea.sa-realArea:hover, textarea.sa-realArea:focus{
     color:#000;
     height:100%;
     width:100% !important;
+    height: 42px !important;
 }
 
 .sa-dropdown{
