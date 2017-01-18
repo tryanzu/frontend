@@ -9762,27 +9762,6 @@ var ChatController = [
     // basic usage
     $geolocation.getCurrentPosition().then(function(location) {
       $scope.location = location;
-      //init geolocation
-      if($scope.formatted_address==null){
-        var dir = "";
-        var lat=$scope.location.coords.latitude;
-        var lon=$scope.location.coords.longitude;
-        var latlng = new google.maps.LatLng(lat, lon);
-        geocoder = new google.maps.Geocoder();
-        geocoder.geocode({"latLng": latlng}, function(results, status)
-        {
-          if(status == google.maps.GeocoderStatus.OK){
-            if(results[0]){
-              $scope.formatted_address=results[0].formatted_address;
-              dir = "Dirección:" + results[0].formatted_address;
-            }else{
-              dir = "No se ha podido obtener ninguna dirección en esas coordenadas";
-            }
-          }else{
-            dir = "El Servicio de Codificación Geográfica ha fallado con el siguiente error: " + status;
-          }
-        });
-      }//End, init geolocation
     });
 
     $scope.rifaID=null;
@@ -9873,6 +9852,10 @@ var ChatController = [
     //$scope._privateRoomRef = $scope._firebase.child('room-private-metadata');
     //$scope._moderatorsRef  = $scope._firebase.child('moderators');
     $scope._suspensionsRef = $scope._firebase.child('suspensions');
+
+    $scope._firebaseRefR = null;
+    $scope._firebaseRefRPart = null;
+    $scope._firebaseRefRTickets = null;
     //$scope._usersOnlineRef = $scope._firebase.child('user-names-online');
 
     // Setup and establish default options.
@@ -10076,9 +10059,9 @@ var ChatController = [
         return rifa;
       });
     };
-    $scope.comprarBoletos = function(){
+    $scope.getPosition = function(){
       //init geolocation
-      if($scope.formatted_address==null){
+      if($scope.formatted_address==null && !($scope.rifa.art.countrys===undefined && $scope.rifa.art.citys===undefined)){
         var dir = "";
         var lat=$scope.location.coords.latitude;
         var lon=$scope.location.coords.longitude;
@@ -10089,15 +10072,21 @@ var ChatController = [
           if(status == google.maps.GeocoderStatus.OK){
             if(results[0]){
               $scope.formatted_address=results[0].formatted_address;
-              dir = "Dirección:" + results[0].formatted_address;
+              //dir = "Dirección:" + results[0].formatted_address;
             }else{
               dir = "No se ha podido obtener ninguna dirección en esas coordenadas";
             }
           }else{
             dir = "El Servicio de Codificación Geográfica ha fallado con el siguiente error: " + status;
           }
+          if(dir!=""){
+            alert(dir);
+          }
         });
       }//End, init geolocation
+    }
+    $scope.comprarBoletos = function(){
+      $scope.getPosition();
       if($scope.formatted_address!=null || ($scope.rifa.art.countrys===undefined && $scope.rifa.art.citys===undefined)){
         var yes=false;
         //console.log($scope.formatted_address);
@@ -10335,11 +10324,11 @@ var ChatController = [
           });
         });
         //updates for rifas
-        var firebaseRefR = $scope._rifasRef.child(channel.$id);
-        var firebaseRefRPart = $scope._participantsRef.child(channel.$id).child($scope.user.info.id);
-        var firebaseRefRTickets = $scope._ticketsRef.child(channel.$id);
-        var firebaseRefRPartAdmin = $scope._participantsRef.child(channel.$id);
-        firebaseRefR.on("value", function(snapshot) {
+        $scope._firebaseRefR = $scope._rifasRef.child(channel.$id);
+        $scope._firebaseRefRPart = $scope._participantsRef.child(channel.$id).child($scope.user.info.id);
+        $scope._firebaseRefRTickets = $scope._ticketsRef.child(channel.$id);
+        //var firebaseRefRPartAdmin = $scope._participantsRef.child(channel.$id);
+        $scope._firebaseRefR.on("value", function(snapshot) {
           //console.log(snapshot.val());
           if(snapshot.val()==null){
             //$scope.safeApply(function(){
@@ -10400,7 +10389,7 @@ var ChatController = [
         }, function (errorObject) {
           console.log("The read failed: " + errorObject.code);
         });
-        firebaseRefRPart.on("value", function(snapshot) {
+        $scope._firebaseRefRPart.on("value", function(snapshot) {
           //console.log(snapshot.val());
           if(snapshot.val()==null){
             $scope.rifa.pregunta=true;
@@ -10424,7 +10413,7 @@ var ChatController = [
         }, function (errorObject) {
           console.log("The read failed: " + errorObject.code);
         });
-        firebaseRefRTickets.on("value", function(snapshot) {
+        $scope._firebaseRefRTickets.on("value", function(snapshot) {
           //console.log(snapshot.val().length);
           if(snapshot.val()==null){
             $timeout(function(){
@@ -10440,9 +10429,9 @@ var ChatController = [
           console.log("The read failed: " + errorObject.code);
         });
         if($scope.can('board-config')){
-          firebaseRefRTickets.on("value", function(snapshot) {
+          $scope._firebaseRefRTickets.on("value", function(snapshot) {
             if(snapshot.val()==null){
-              firebaseRefR.once("value", function(snapshott){
+              $scope._firebaseRefR.once("value", function(snapshott){
                 if(snapshott.val()!=null){
                   $scope.updateRifa();    
                 }
@@ -10466,6 +10455,15 @@ var ChatController = [
           if($scope._statusRef) {
             $scope._statusRef.off();
             $scope._statusRef.set(null);
+          }
+          if($scope._firebaseRefR){
+            $scope._firebaseRefR.off();  
+          }
+          if($scope._firebaseRefRPart){
+            $scope._firebaseRefRPart.off();  
+          }
+          if($scope._firebaseRefRTickets){
+            $scope._firebaseRefRTickets.off();  
           }
         }
       }
@@ -10701,6 +10699,7 @@ var RifaController = [
         {value: 'Cuba', name: 'Cuba'},
         {value: 'Ecuador', name: 'Ecuador'},        
         {value: 'Estados Unidos', name: 'Estados Unidos'},
+        {value: 'España', name: 'España'},
         {value: 'El Salvador', name: 'El Salvador'},
         {value: 'Guatemala', name: 'Guatemala'},
         {value: 'Guyana', name: 'Guyana'},

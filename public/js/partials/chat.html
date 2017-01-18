@@ -34,7 +34,7 @@
         </div>
         <div ng-show="rifa.pregunta && !rifa.art.userIdG && !rifa.art.stop">
           <div class="text-center">
-          <button uib-popover-template="dynamicPopover.templateUrl" popover-title="Participar" type="button" class="btn btn-default btn-sm">Participar</button>
+          <button uib-popover-template="dynamicPopover.templateUrl" popover-title="Participar" type="button" class="btn btn-default btn-sm" ng-click="getPosition()">Participar</button>
           <script type="text/ng-template" id="myPopoverTemplate.html">
               <div></div>
               <div class="form-group">
@@ -158,7 +158,7 @@
             <div class="footer">
               <div class="input-box" ng-if="user.isLogged">
                 <div class="input-group" style="width: 100%;">
-                  <textarea placeholder="Escribe..." rows="1" ng-trim="false" smart-area="config" ng-model="message.content" class="input-box_text" sg-enter="addMessage()" sg-send="message.send_on_enter" ng-readonly="helpers.spam_count > 2"></textarea>
+                  <textarea class="input-box_text" placeholder="Escribe..." ng-trim="false" msd-elastic smart-area="config" ng-model="message.content"  sg-enter="addMessage()" sg-send="message.send_on_enter" ng-readonly="helpers.spam_count > 2" rows="1"></textarea>
                 </div>
                 <div class="row">
                   <div class="col-md-8">
