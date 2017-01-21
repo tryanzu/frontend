@@ -26,7 +26,7 @@ browserSync.use(spa({
 gulp.task('styles', function() {
   var opts = {comments:true,spare:true};
 
-  return gulp.src('assets/less/app.less')
+  return gulp.src(['assets/less/app.less', 'assets/less/shop.less'])
     .pipe(sourcemaps.init({largeFile: true}))
     .pipe(less({compress: false}))
     .pipe(postcss([autoprefixer()]))
