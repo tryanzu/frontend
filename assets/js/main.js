@@ -18,6 +18,7 @@
 // @codekit-prepend vendor/jquery.knob.min.js
 // @codekit-prepend vendor/socket.min.js
 // @codekit-prepend vendor/country-picker.min.js
+// @codekit-prepend vendor/sidebar.js
 
 // @codekit-prepend common/directives.js
 // @codekit-prepend common/filters.js
@@ -79,7 +80,8 @@ var boardApplication = angular.module('board', [
   'yaru22.angular-timeago',
   'searchBar',
   'btford.socket-io',
-  'ngGeolocation'
+  'ngGeolocation',
+  'siderbar'
 ]);
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'markedProvider', 'AclServiceProvider', '$opbeatProvider',

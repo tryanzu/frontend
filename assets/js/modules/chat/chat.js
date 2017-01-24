@@ -49,6 +49,9 @@ var ChatController = [
         ticketskey:null
       }
     };
+
+    $scope.radioModel = 'chat';
+
     $scope.dynamicPopover = {
       content: 'Hello, World!',
       templateUrl: 'myPopoverTemplate.html',
@@ -191,6 +194,27 @@ var ChatController = [
         this.$apply(fn);
       }
     };
+    $scope.copy_to_clip = function(){
+      /*if($scope.rifa.art.userIdGemail!=null && window.clipboardData){
+        window.clipboardData.setData("Text", $scope.rifa.art.userIdGemail+""); 
+      }*/
+      // seleccionar el texto de la dirección de email
+      var email = document.querySelector('.email');
+      var range = document.createRange();
+      range.selectNode(email);
+      window.getSelection().addRange(range);
+     
+      try {
+        // intentar copiar el contenido seleccionado
+        var resultado = document.execCommand('copy');
+        console.log(resultado ? 'Email copiado' : 'No se pudo copiar el email');
+      } catch(err) {
+        console.log('ERROR al intentar copiar el email');
+      }
+     
+      // eliminar el texto seleccionado
+      window.getSelection().removeAllRanges();
+    }
     $scope.getRandomInt = function(min, max) {
       return Math.floor(Math.random() * (max - min)) + min;
     }
