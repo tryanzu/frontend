@@ -80,37 +80,82 @@
         <br>
         <br>
         <div class="text-center" style="padding: 8px;">
-            <p style="margin: 0;line-height: 1.3em;"><strong>{{rifa.art.nomArt}}</strong></p>
+          <p style="margin: 0;line-height: 1.3em;"><strong>{{rifa.art.nomArt}}</strong></p>
+          <div>
+            <img ng-src="{{rifa.art.imgUrl}}" class="img-thumbnail" style="width: 100px;">
+          </div>
+          <div>
+            <p class="text-left" style="margin: 0;line-height: 1.1em;">Boletos: {{rifa.art.cant}}</p>
+            <p class="text-left" style="margin: 0;line-height: 1.1em;">Boletos comprados: {{rifa.art.cantComprados}}</p>
+            <p class="text-left" style="margin: 0;line-height: 1.1em;">Boletos por usuario: {{rifa.art.cantUser}}</p>
+            <p class="text-left" style="margin: 0;line-height: 1.1em;">Precio por boleto: {{rifa.art.precioBole | currency}}</p>
+          </div>
+          <div ng-show="rifa.art.userIdG">
             <div>
-              <img ng-src="{{rifa.art.imgUrl}}" class="img-thumbnail" style="width: 100px;">
+              <p class="text-left" style="line-height: 1.3em;margin-top: 10px;"><strong>Ganador: {{rifa.art.userIdGname}}</strong></p>
+              <a style="opacity: 0;font-size: 0;" class="email" href="{{rifa.art.userIdGemail}}">{{rifa.art.userIdGemail}}</a>
+              <!--<p class="text-left" style="line-height: 1.3em;">email: {{rifa.art.userIdGemail}}</p>-->
+              <button title="{{rifa.art.userIdGemail}}" class="btn btn-default btn-sm" ng-click="copy_to_clip()"><i class="fa fa-clipboard" aria-hidden="true"></i> Copiar</button>
             </div>
-            <div>
-              <p class="text-left" style="margin: 0;line-height: 1.1em;">Boletos: {{rifa.art.cant}}</p>
-              <p class="text-left" style="margin: 0;line-height: 1.1em;">Boletos comprados: {{rifa.art.cantComprados}}</p>
-              <p class="text-left" style="margin: 0;line-height: 1.1em;">Boletos por usuario: {{rifa.art.cantUser}}</p>
-              <p class="text-left" style="margin: 0;line-height: 1.1em;">Precio por boleto: {{rifa.art.precioBole | currency}}</p>
-            </div>
-            <div ng-show="rifa.art.userIdG">
-              <div>
-                <p class="text-left" style="line-height: 1.3em;margin-top: 10px;"><strong>Ganador: {{rifa.art.userIdGname}}</strong></p>
-                <a style="opacity: 0;font-size: 0;" class="email" href="{{rifa.art.userIdGemail}}">{{rifa.art.userIdGemail}}</a>
-                <!--<p class="text-left" style="line-height: 1.3em;">email: {{rifa.art.userIdGemail}}</p>-->
-                <button title="{{rifa.art.userIdGemail}}" class="btn btn-default btn-sm" ng-click="copy_to_clip()"><i class="fa fa-clipboard" aria-hidden="true"></i> Copiar</button>
-              </div>
-            </div>
-            <div ng-show="rifa.art.go">
-              <div id="number"></div>
-              <div id="name"></div>
-            </div>
-         
-          
+          </div>
+          <div ng-show="rifa.art.go">
+            <div id="number"></div>
+            <div id="name"></div>
+          </div>
         </div>
       </div>
     </div>
-    <div ng-show="radioModel=='encuesta'" style="margin-top: 10px;">
+    <!-- Encuesta -->
+    <div ng-show="radioModel=='encuesta'" class="text-center" style="margin-top: 10px;">
       <h3 ng-if="user.isLogged">Encuesta</h3>
+      <div ng-if="can('board-config') && show_details">  
+        <button class="btn btn-success btn-xs" ng-hide="encuesta.encuesta" type="button" ng-click="createEncuesta()">Crear nueva Encuesta</button>
+        <button class="btn btn-danger btn-xs" ng-hide="!encuesta.encuesta" type="button" ng-click="deleteEncuesta()">Quitar Encuesta</button>
+        <br>
+      </div>
+      <!-- for users -->
+      <div ng-if="!can('board-config') && encuesta.active && user.isLogged">
+        <div ng-if="encuesta.encuesta">
+          <div class="text-center" style="padding: 8px;">
+            <h4 style="margin: 0;line-height: 1.3em;"><strong>{{encuesta.poll.pregunta}}</strong></h4>   
+          </div>
+        </div>
+        <div ng-show="encuesta.pregunta" style="padding: 8px;">
+          <div class="text-left" ng-repeat="item in encuesta.poll.items">
+            <p>{{item.nombre}} <button class="btn btn-success btn-xs" ng-click="votar(item.nombre)"><i class="fa fa-check" aria-hidden="true"></i></button></p>
+          </div>
+        </div>
+        <div ng-show="!encuesta.pregunta" style="padding: 8px;">
+          <div class="text-left" ng-repeat="item in encuesta.poll.items">
+            <p>{{item.nombre}}</p>
+            <div><uib-progressbar class="progress-striped active" max="encuesta.poll.cant" value="item.cant" type="info"><i>{{item.cant}} / {{encuesta.poll.cant}}</i></uib-progressbar></div>
+          </div>
+          <hr>
+          <div class="text-left">
+            <p>TOTAL DE VOTOS: {{encuesta.poll.cant}}</p>
+          </div>
+        </div>
+      </div>
+      <!-- for admin -->
+      <div ng-if="can('board-config') && encuesta.active && user.isLogged">
+        <div ng-if="encuesta.encuesta">
+          <div class="text-center" style="padding: 8px;">
+            <h4 style="margin: 0;line-height: 1.3em;"><strong>{{encuesta.poll.pregunta}}</strong></h4>   
+          </div>
+        </div>
+        <div style="padding: 8px;">
+          <div class="text-left" ng-repeat="item in encuesta.poll.items">
+            <p>{{item.nombre}}</p>
+            <div><uib-progressbar class="progress-striped active" max="encuesta.poll.cant" value="item.cant" type="info"><i>{{item.cant}} / {{encuesta.poll.cant}}</i></uib-progressbar></div>
+          </div>
+          <hr>
+          <div class="text-left">
+            <p>TOTAL DE VOTOS: {{encuesta.poll.cant}}</p>
+          </div>
+        </div>
+      </div>
     </div> 
-    <div ng-show="radioModel=='subasta'" style="margin-top: 10px;">
+    <div ng-show="radioModel=='subasta'" class="text-center" style="margin-top: 10px;">
       <h3 ng-if="user.isLogged">Subasta</h3>
     </div> 
   </div>
@@ -199,35 +244,80 @@
         <br>
         <br>
         <div class="text-center" style="padding: 8px;">
-            <p style="margin: 0;line-height: 1.3em;"><strong>{{rifa.art.nomArt}}</strong></p>
+          <p style="margin: 0;line-height: 1.3em;"><strong>{{rifa.art.nomArt}}</strong></p>
+          <div>
+            <img ng-src="{{rifa.art.imgUrl}}" class="img-thumbnail" style="width: 100px;">
+          </div>
+          <div>
+            <p class="text-left" style="margin: 0;line-height: 1.1em;">Boletos: {{rifa.art.cant}}</p>
+            <p class="text-left" style="margin: 0;line-height: 1.1em;">Boletos comprados: {{rifa.art.cantComprados}}</p>
+            <p class="text-left" style="margin: 0;line-height: 1.1em;">Boletos por usuario: {{rifa.art.cantUser}}</p>
+            <p class="text-left" style="margin: 0;line-height: 1.1em;">Precio por boleto: {{rifa.art.precioBole | currency}}</p>
+          </div>
+          <div ng-show="rifa.art.userIdG">
             <div>
-              <img ng-src="{{rifa.art.imgUrl}}" class="img-thumbnail" style="width: 100px;">
+              <p class="text-left" style="line-height: 1.3em;margin-top: 10px;"><strong>Ganador: {{rifa.art.userIdGname}}</strong></p>
+              <a style="opacity: 0;font-size: 0;" class="email" href="{{rifa.art.userIdGemail}}">{{rifa.art.userIdGemail}}</a>
+              <!--<p class="text-left" style="line-height: 1.3em;">email: {{rifa.art.userIdGemail}}</p>-->
+              <button title="{{rifa.art.userIdGemail}}" class="btn btn-default btn-sm" ng-click="copy_to_clip()"><i class="fa fa-clipboard" aria-hidden="true"></i> Copiar</button>
             </div>
-            <div>
-              <p class="text-left" style="margin: 0;line-height: 1.1em;">Boletos: {{rifa.art.cant}}</p>
-              <p class="text-left" style="margin: 0;line-height: 1.1em;">Boletos comprados: {{rifa.art.cantComprados}}</p>
-              <p class="text-left" style="margin: 0;line-height: 1.1em;">Boletos por usuario: {{rifa.art.cantUser}}</p>
-              <p class="text-left" style="margin: 0;line-height: 1.1em;">Precio por boleto: {{rifa.art.precioBole | currency}}</p>
-            </div>
-            <div ng-show="rifa.art.userIdG">
-              <div>
-                <p class="text-left" style="line-height: 1.3em;margin-top: 10px;"><strong>Ganador: {{rifa.art.userIdGname}}</strong></p>
-                <a style="opacity: 0;font-size: 0;" class="email" href="{{rifa.art.userIdGemail}}">{{rifa.art.userIdGemail}}</a>
-                <!--<p class="text-left" style="line-height: 1.3em;">email: {{rifa.art.userIdGemail}}</p>-->
-                <button title="{{rifa.art.userIdGemail}}" class="btn btn-default btn-sm" ng-click="copy_to_clip()"><i class="fa fa-clipboard" aria-hidden="true"></i> Copiar</button>
-              </div>
-            </div>
-            <div ng-show="rifa.art.go">
-              <div id="number"></div>
-              <div id="name"></div>
-            </div>
-         
-          
+          </div>
+          <div ng-show="rifa.art.go">
+            <div id="number"></div>
+            <div id="name"></div>
+          </div>
         </div>
       </div>
     </div>
+    <!-- Encuesta -->
     <div ng-show="radioModel=='encuesta'" class="text-center" style="margin-top: 10px;">
       <h3 ng-if="user.isLogged">Encuesta</h3>
+      <div ng-if="can('board-config') && show_details">  
+        <button class="btn btn-success btn-xs" ng-hide="encuesta.encuesta" type="button" ng-click="createEncuesta()">Crear nueva Encuesta</button>
+        <button class="btn btn-danger btn-xs" ng-hide="!encuesta.encuesta" type="button" ng-click="deleteEncuesta()">Quitar Encuesta</button>
+        <br>
+      </div>
+      <!-- for users -->
+      <div ng-if="!can('board-config') && encuesta.active && user.isLogged">
+        <div ng-if="encuesta.encuesta">
+          <div class="text-center" style="padding: 8px;">
+            <h4 style="margin: 0;line-height: 1.3em;"><strong>{{encuesta.poll.pregunta}}</strong></h4>   
+          </div>
+        </div>
+        <div ng-show="encuesta.pregunta" style="padding: 8px;">
+          <div class="text-left" ng-repeat="item in encuesta.poll.items">
+            <p>{{item.nombre}} <button class="btn btn-success btn-xs" ng-click="votar(item.nombre)"><i class="fa fa-check" aria-hidden="true"></i></button></p>
+          </div>
+        </div>
+        <div ng-show="!encuesta.pregunta" style="padding: 8px;">
+          <div class="text-left" ng-repeat="item in encuesta.poll.items">
+            <p>{{item.nombre}}</p>
+            <div><uib-progressbar class="progress-striped active" max="encuesta.poll.cant" value="item.cant" type="info"><i>{{item.cant}} / {{encuesta.poll.cant}}</i></uib-progressbar></div>
+          </div>
+          <hr>
+          <div class="text-left">
+            <p>TOTAL DE VOTOS: {{encuesta.poll.cant}}</p>
+          </div>
+        </div>
+      </div>
+      <!-- for admin -->
+      <div ng-if="can('board-config') && encuesta.active && user.isLogged">
+        <div ng-if="encuesta.encuesta">
+          <div class="text-center" style="padding: 8px;">
+            <h4 style="margin: 0;line-height: 1.3em;"><strong>{{encuesta.poll.pregunta}}</strong></h4>   
+          </div>
+        </div>
+        <div style="padding: 8px;">
+          <div class="text-left" ng-repeat="item in encuesta.poll.items">
+            <p>{{item.nombre}}</p>
+            <div><uib-progressbar class="progress-striped active" max="encuesta.poll.cant" value="item.cant" type="info"><i>{{item.cant}} / {{encuesta.poll.cant}}</i></uib-progressbar></div>
+          </div>
+          <hr>
+          <div class="text-left">
+            <p>TOTAL DE VOTOS: {{encuesta.poll.cant}}</p>
+          </div>
+        </div>
+      </div>
     </div> 
     <div ng-show="radioModel=='subasta'" class="text-center" style="margin-top: 10px;">
       <h3 ng-if="user.isLogged">Subasta</h3>

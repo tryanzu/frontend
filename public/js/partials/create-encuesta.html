@@ -1,0 +1,60 @@
+<button class="btn btn-icon btn-link close back-control" ng-click="cancel()">
+  <i class="fa fa-fw fa-times"></i>
+</button>
+<div class="modal-header">
+    <h3 class="modal-title" id="modal-title">Crear Encuesta para el chat: {{ items.channel.selected.name }}</h3>
+</div>
+<div class="modal-body" id="modal-body">
+    <!--{{ items.rifa.holamundo }} step='0.01'-->
+    <div class="row">
+    	<div class="col-sm-1"></div>
+    	<div class="col-sm-10">
+			<form class="form-horizontal">
+				<div class="form-group">
+					<label for="nomArt" class="col-sm-4 control-label">Pregunta</label>
+					<div class="col-sm-8">
+						<input ng-model="encuesta.pregunta" type="text" class="form-control" id="pregunta" placeholder="A que le damos?">
+					</div>
+				</div>
+				<hr>
+				<div class="form-group">
+					<label for="nomArt" class="col-sm-4 control-label">Nombre del item</label>
+					<div class="col-sm-8">
+						<input ng-model="item.nombre" type="text" class="form-control" id="nombreItem" placeholder="OverWatch">
+					</div>
+					<br>
+					<br>
+					<div class="text-center">
+						<button class="btn btn-success" type="button" ng-click="add_item()"><i class="fa fa-plus" aria-hidden="true"></i> Agregar item a lista</button>
+					</div>
+					<div ng-show="arrritem.length > 0">
+						<h3>Items de la encuesta</h3>
+						<table class="table table-striped">
+							<thead>
+								<tr>
+									<th>Nombre</th>
+									<th>Acción</th>
+								</tr>
+							</thead>
+							<tbody ng-repeat="item in arrritem">
+								<tr>
+									<td>{{item.nombre}}</td>
+									<td>
+										<button class="btn btn-danger btn-sm" ng-click="remove_item(item.nombre)"><i class="fa fa-times" aria-hidden="true"></i></button>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+
+				<p ng-if="alert.msg" ng-class="'bg-' + (alert.type || 'warning')" style="padding: 5px">{{alert.msg}}</p>
+			</form>
+		</div>
+		<div class="col-sm-1"></div>
+	</div>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-primary" type="button" ng-click="save()">Crear</button>
+    <button class="btn btn-warning" type="button" ng-click="cancel()">Cerrar</button>
+</div>
