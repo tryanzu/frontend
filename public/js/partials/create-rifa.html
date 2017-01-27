@@ -37,14 +37,11 @@
 				<div class="form-group">
 					<label for="imgArt" class="col-sm-4 control-label">Imagen</label>
 					<div class="col-sm-8">
-						<!--
-						<input type="file" class="form-control" id="imgArt" accept="image/png,image/jpg,image/jpeg">
-						-->
 						<a href="" ngf-select ngf-change="uploadPicture($files)" ngf-multiple="false" ngf-accept="'image/*'" ng-show="!adding_img">
 							<i class="fa fa-camera-retro fa-2x"></i>
 						</a>
             			<a href="" ng-show="adding_img">
-            				<i class="fa fa-camera-retro fa-2x"></i> Cargando
+            				<i class="fa fa-camera-retro fa-2x"></i> Cargando <i class="fa fa-spinner fa-pulse fa-2x fa-fw"></i>
             			</a>
             			<div ng-if="rifa.imgUrl" class="text-center">
             				<img ng-src="{{rifa.imgUrl}}" class="img-rounded" alt="URL" style="height: 150px">

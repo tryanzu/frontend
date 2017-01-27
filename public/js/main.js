@@ -9832,9 +9832,9 @@ var ChatController = [
     $scope.encuesta = {
       create: false,
       active: false,
-      pregunta: false,
+      pregunta: true,
       encuesta: false,
-      arts: null,
+      arts: [],
       poll: null
     };
     $scope.rifaID=null;
@@ -10082,6 +10082,18 @@ var ChatController = [
         console.log("The read failed: " + errorObject.code);
       });
     }
+    $scope.stopEncuesta = function(){
+      $scope._pollRef.child($scope.channel.selected.$id)
+      .update({
+        stop: true
+      });
+    }
+    $scope.startEncuesta = function(){
+      $scope._pollRef.child($scope.channel.selected.$id)
+      .update({
+        stop: false
+      });
+    }
     $scope.stopRifa = function(){
       $scope._rifasRef.child($scope.channel.selected.$id)
       .update({
@@ -10198,6 +10210,44 @@ var ChatController = [
         return encuesta_item;
       });
     };
+    $scope.pollbttn = function($nom){
+      var x = false;
+      for (var i = 0; i < $scope.encuesta.arts.length; i++) {
+        if($scope.encuesta.arts[i]==$nom){
+          x=true;
+        }
+      }
+      return x;
+    };
+    $scope.quitarvoto = function($nom){
+      var arrt = $scope.encuesta.poll.items;
+      var arrtemp = $scope.encuesta.arts;
+      var count=0;
+      for (var i = 0; i < arrt.length; i++) {
+        if(arrt[i].nombre==$nom){
+          count=i;
+          break;
+        }
+      }
+      var arrnvo = [];
+      for (var i = 0; i < arrtemp.length; i++) {
+        if(arrtemp[i]!=$nom){
+          arrnvo.push(arrtemp[i]);
+        }
+      }
+      $scope._ticketsPollRef.child($scope.channel.selected.$id).child($scope.user.info.id)
+      .set(arrnvo, function(error) {
+        if(error){
+          //$scope.encuesta.pregunta=true;
+        }else{
+          //$scope.encuesta.pregunta=false;
+          $scope.pollUPDATE($scope._pollRef.child($scope.channel.selected.$id).child("items").child(count),false);
+          $scope.pollUPDATE($scope._pollRef.child($scope.channel.selected.$id),false);
+          $timeout(function(){});
+          //$scope.updateRifa();
+        }
+      });
+    };
     $scope.votar = function($nom){
       var arrtemp = $scope.encuesta.poll.items;
       var count=0;
@@ -10207,24 +10257,20 @@ var ChatController = [
           break;
         }
       }
-      $scope._ticketsPollRef.child($scope.channel.selected.$id).child($scope.user.info.id)
-      .once('value', function(snapshott) {
-        if(snapshott.val()==null){
-          $scope._ticketsPollRef.child($scope.channel.selected.$id).child($scope.user.info.id)
-          .set({nombre:$nom}, function(error) {
-            if(error){
-              $scope.encuesta.pregunta=true;
-            }else{
-              $scope.encuesta.pregunta=false;
-              $scope.pollUPDATE($scope._pollRef.child($scope.channel.selected.$id).child("items").child(count),true);
-              $scope.pollUPDATE($scope._pollRef.child($scope.channel.selected.$id),true);
-              //$scope.updateRifa();
-            }
-          });
-        }
-      }, function (errorObject) {
-        console.log("The read failed: " + errorObject.code);
-      }); 
+      var x = $scope.encuesta.arts.length;
+      if(x<$scope.encuesta.poll.cantUser){
+        $scope.encuesta.arts.push($nom);
+        $scope._ticketsPollRef.child($scope.channel.selected.$id).child($scope.user.info.id)
+        .set($scope.encuesta.arts, function(error) {
+          if(error){
+            //$scope.encuesta.pregunta=true;
+          }else{
+            //$scope.encuesta.pregunta=false;
+            $scope.pollUPDATE($scope._pollRef.child($scope.channel.selected.$id).child("items").child(count),true);
+            $scope.pollUPDATE($scope._pollRef.child($scope.channel.selected.$id),true);
+          }
+        });
+      }
     };
     $scope.comprarBoletos = function(){
       $scope.getPosition();
@@ -10325,9 +10371,9 @@ var ChatController = [
         $scope.encuesta = {
           create: false,
           active: false,
-          pregunta: false,
+          pregunta: true,
           encuesta: false,
-          arts: null,
+          arts: [],
           poll: null
         };
       }
@@ -10505,9 +10551,10 @@ var ChatController = [
             $timeout(function(){
               $scope.encuesta.create=false;
               $scope.encuesta.active=false;
-              $scope.encuesta.pregunta=false;
+              //$scope.encuesta.pregunta=true;
               $scope.encuesta.encuesta=false;
-              $scope.encuesta.arts=null;
+              $scope.encuesta.arts=[];
+              $scope.encuesta.poll=null;
             });
             //});
           }else{
@@ -10516,11 +10563,13 @@ var ChatController = [
               $scope.encuesta.active=true;
               $scope.encuesta.encuesta=true;
               $scope._firebaseRefTicketsPoll
-              .once('value', function(snapshott) {
+              .on('value', function(snapshott) {
                 if(snapshott.val()==null){
-                  $scope.encuesta.pregunta=true;
+                  $scope.encuesta.arts=[];
+                  //$scope.encuesta.pregunta=true;
                 }else{
-                  $scope.encuesta.pregunta=false;
+                  $scope.encuesta.arts=snapshott.val();
+                  //$scope.encuesta.pregunta=false;
                 }
               }, function (errorObject) {
                 console.log("The read failed: " + errorObject.code);
@@ -10929,31 +10978,6 @@ var RifaController = [
         {value: 'Venezuela', name: 'Venezuela'}        
       ]
     };
-    $scope.countrys={
-      "CA":"Canad\u00e1",
-      "MX":"M\u00e9xico",
-      "US":"Estados Unidos",
-      "BZ":"Belice",
-      "GT":"Guatemala",
-      "CR":"Costa Rica",
-      "HN":"Honduras",
-      "SV":"El Salvador",
-      "NI":"Nicaragua",
-      "PA":"Panam\u00e1",
-      "CU":"Cuba",
-      "AR":"Argentina",
-      "BO":"Bolivia",
-      "BR":"Brasil",
-      "CL":"Chile",
-      "CO":"Colombia",
-      "EC":"Ecuador",
-      "PE":"Per\u00fa",
-      "PY":"Paraguay",
-      "UY":"Uruguay",
-      "VE":"Venezuela",
-      "GY":"Guyana",
-      "SR":"Surinam"
-    };
     $scope.citysarr={
       model: null,
       availableOptions: [
@@ -10994,44 +11018,6 @@ var RifaController = [
         {value: 'Zacatecas', name: 'Zacatecas'}
       ]
     };
-    $scope.citys={
-      "ag":"Aguascalientes",
-      "bc": "Baja California",
-      "bs": "Baja California Sur",
-      "cm": "Campeche",
-      "cs": "Chiapas",
-      "ch": "Chihuahua",
-      "co": "Coahuila",
-      "cl": "Colima",
-      "df": "Distrito Federal",
-      "edm": "Estado de México",
-      "cme": "Ciudad de México",
-      "cmx": "CDMX",
-      "cm.": "Méx.",
-      "dg": "Durango",
-      "gt": "Guanajuato",
-      "gr": "Guerrero",
-      "hg": "Hidalgo",
-      "ja": "Jalisco",
-      "me": "México",
-      "mi": "Michoacán",
-      "mo": "Morelos",
-      "na": "Nayarit",
-      "nl": "Nuevo León",
-      "oa": "Oaxaca",
-      "pb": "Puebla",
-      "qe": "Querétaro",
-      "qr": "Quintana Roo",
-      "sl": "San Luis Potosí",
-      "si": "Sinaloa",
-      "so": "Sonora",
-      "tb": "Tabasco",
-      "tm": "Tamaulipas",
-      "tl": "Tlaxcala",
-      "ve": "Veracruz",
-      "yu": "Yucatán",
-      "za": "Zacatecas"
-    };
     $scope.items = Items;
     $scope.rifa = {
       chatId: $scope.items.channel.selected.$id,
@@ -11069,7 +11055,7 @@ var RifaController = [
       }
     };
     $scope.save = function (){
-      if($scope.rifa.cant===undefined || $scope.rifa.cant==null || $scope.rifa.cant<=0 || isNaN($scope.rifa.cantUser) || $scope.rifa.cant % 1 != 0){
+      if($scope.rifa.cant===undefined || $scope.rifa.cant==null || $scope.rifa.cant<=0 || isNaN($scope.rifa.cant) || $scope.rifa.cant % 1 != 0){
         $scope.alert.msg="El campo Cantidad de boletos no puede estar vacio, menor o igual a cero y no numeros con fraccion";
         $scope.alert.type='warning';
         $scope.safeApply(function(){});
@@ -11135,7 +11121,7 @@ var RifaController = [
           url: layer_path + "post/image",
           file: file
         }).success(function (data) {
-          if($scope.rifa.imgUrl.length > 0) {
+          if(!$scope.rifa.imgUrl.length > 0) {
             $scope.rifa.imgUrl += data.url;
           } else {
             $scope.rifa.imgUrl = data.url;
@@ -11155,11 +11141,17 @@ var EncuestaController = [
   '$modalInstance',
   'Items',
   '$http',
-  function($scope, $firebaseArray, $firebaseObject, $modalInstance, Items, $http) {
+  'Upload',
+  function($scope, $firebaseArray, $firebaseObject, $modalInstance, Items, $http, Upload) {
     $scope.items = Items;
     $scope.item = {
       nombre:"",
-      cant:0
+      cant:0,
+      imgUrl:""
+    };
+    $scope.data = {
+      model: null,
+      availableOptions: []
     };
     $scope.arrritem=[];
     $scope.encuesta = {
@@ -11169,14 +11161,20 @@ var EncuestaController = [
       stop: false,
       go: false,
       items: null,
-      cant: 0
+      cant: 0,
+      cantUser: 1
     };
     $scope.alert={
       msg:"",
       type:"success"
     };
+    $scope.alert2={
+      msg:"",
+      type:"success"
+    };
     $scope.adding_img = false;
     var firebaseRef = new Firebase(firebase_url+'/poll/'+$scope.items.channel.selected.$id);
+    var firebaseRef2 = new Firebase(firebase_url+'/polls/'+$scope.items.channel.selected.$id);
     //var firebaseRefPart = new Firebase(firebase_url+'/participants');
     $scope.safeApply = function(fn) {
       var phase = this.$root.$$phase;
@@ -11186,6 +11184,94 @@ var EncuestaController = [
         }
       } else {
         this.$apply(fn);
+      }
+    };
+    $scope.select_poll = function(){
+      firebaseRef2.once("value", function(snapshot) {
+        var data = snapshot.val();
+        if(data==null){
+          $scope.alert2.msg="No hay Encuestas creadas";
+          $scope.alert2.type='warning';
+          $scope.safeApply(function(){});
+        }else{
+          for(var i in data) {
+            if($scope.data.model!=null && i+""==$scope.data.model+""){
+              $scope.encuesta=data[i];
+              $scope.arrritem=data[i].items;
+              $scope.alert2.msg="Encuesta  cargada correctamente";
+              $scope.alert2.type='success';
+              $scope.safeApply(function(){});
+            }else if($scope.data.model==null || $scope.data.model===undefined){
+              $scope.alert2.msg="Seleccione un opcion para cargar";
+              $scope.alert2.type='warning';
+              $scope.safeApply(function(){});
+            }
+          }
+          $scope.safeApply(function(){});
+        }
+      }, function (errorObject) {
+        console.log("The read failed: " + errorObject.code);
+      });
+    };
+    $scope.buscar_poll = function(){
+      firebaseRef2.once("value", function(snapshot) {
+        var data = snapshot.val();
+        if(data==null){
+          $scope.alert2.msg="No hay Encuestas creadas";
+          $scope.alert2.type='warning';
+          $scope.safeApply(function(){});
+        }else{
+          for(var i in data) {
+            $scope.data.availableOptions.push(
+              {id: i, name: data[i].pregunta}
+            );
+          }
+          $scope.safeApply(function(){});
+        }
+      }, function (errorObject) {
+        console.log("The read failed: " + errorObject.code);
+      });
+    };
+    $scope.save_poll = function(){
+      if($scope.encuesta.cantUser===undefined || $scope.encuesta.cantUser==null || $scope.encuesta.cantUser<=0 || isNaN($scope.encuesta.cantUser) || $scope.encuesta.cantUser % 1 != 0){
+        $scope.alert.msg="El campo Votos por usuario no puede estar vacio, menor o igual a cero y no numeros con fraccion";
+        $scope.alert.type='warning';
+        $scope.safeApply(function(){});
+      }else if($scope.arrritem.length <= 1 && $scope.encuesta.pregunta != ""){
+        $scope.alert.msg="Debe agregar por lo menos 2 items a la encuesta";
+        $scope.alert.type='warning';
+        $scope.safeApply(function(){});
+      }else if($scope.arrritem.length > 1 && $scope.encuesta.pregunta == ""){
+        $scope.alert.msg="No debes dejar el campo Pregunta Vacio";
+        $scope.alert.type='warning';
+        $scope.safeApply(function(){});
+      }else if($scope.arrritem.length <= 1 && $scope.encuesta.pregunta == ""){
+        $scope.alert.msg="Debe agregar por lo menos 2 items a la encuesta, No debes dejar el campo Pregunta Vacio";
+        $scope.alert.type='warning';
+        $scope.safeApply(function(){});
+      }else{
+        var arrtemp=[];
+        for (var i = 0; i < $scope.arrritem.length; i++) {
+          arrtemp.push({
+            nombre: $scope.arrritem[i].nombre,
+            cant: $scope.arrritem[i].cant,
+            imgUrl: $scope.arrritem[i].imgUrl
+          });     
+        }
+        $scope.encuesta.items=arrtemp;
+        var data = $scope.encuesta;
+        var newticket=firebaseRef2
+        .push(data);
+        var key = newticket.key();
+        if(key==null){
+          $scope.alert.msg='Problemas al guardar la Encuesta, intente otravez pueden ser problemas de conexión';
+          $scope.alert.type='warning';
+          $scope.safeApply(function(){});
+        }else{
+          $scope.alert.msg='Encuesta Guardada correctamente';
+          $scope.alert.type='success';
+          $scope.safeApply(function(){});       
+        }
       }
     };
     $scope.remove_item = function($nombre){
@@ -11216,15 +11302,21 @@ var EncuestaController = [
         }else{
           $scope.arrritem.push({
             nombre: $scope.item.nombre,
-            cant: $scope.item.cant
+            cant: $scope.item.cant,
+            imgUrl: $scope.item.imgUrl
           });
           $scope.item.nombre="";
           $scope.item.cant=0;
+          $scope.item.imgUrl="";
         }
       }
     };
     $scope.save = function (){
-      if($scope.arrritem.length <= 1 && $scope.encuesta.pregunta != ""){
+      if($scope.encuesta.cantUser===undefined || $scope.encuesta.cantUser==null || $scope.encuesta.cantUser<=0 || isNaN($scope.encuesta.cantUser) || $scope.encuesta.cantUser % 1 != 0){
+        $scope.alert.msg="El campo Votos por usuario no puede estar vacio, menor o igual a cero y no numeros con fraccion";
+        $scope.alert.type='warning';
+        $scope.safeApply(function(){});
+      }else if($scope.arrritem.length <= 1 && $scope.encuesta.pregunta != ""){
         $scope.alert.msg="Debe agregar por lo menos 2 items a la encuesta";
         $scope.alert.type='warning';
         $scope.safeApply(function(){});
@@ -11241,7 +11333,8 @@ var EncuestaController = [
         for (var i = 0; i < $scope.arrritem.length; i++) {
           arrtemp.push({
             nombre: $scope.arrritem[i].nombre,
-            cant: $scope.arrritem[i].cant
+            cant: $scope.arrritem[i].cant,
+            imgUrl: $scope.arrritem[i].imgUrl
           });     
         }
         $scope.encuesta.items=arrtemp;
@@ -11261,6 +11354,25 @@ var EncuestaController = [
               $scope.alert.type='success';
             });
           }
+        });
+      }
+    };
+    $scope.uploadPicture = function(files) {
+      if(files.length == 1) {
+        var file = files[0];
+        $scope.adding_img = true;
+        Upload.upload({
+          url: layer_path + "post/image",
+          file: file
+        }).success(function (data) {
+          if(!$scope.item.imgUrl.length > 0) {
+            $scope.item.imgUrl += data.url;
+          } else {
+            $scope.item.imgUrl = data.url;
+          }
+          $scope.adding_img = false;
+        }).error(function(data) {
+          $scope.adding_img = false;
         });
       }
     };

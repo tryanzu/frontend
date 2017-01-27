@@ -9,7 +9,7 @@
           <i class="fa fa-archive" aria-hidden="true"></i>
         </label>
         <label class="btn btn-default" ng-model="radioModel" uib-btn-radio="'encuesta'" class="text-center" title="Encuestas">
-          <i class="fa fa-line-chart" aria-hidden="true"></i>
+          <i class="fa fa-pie-chart" aria-hidden="true"></i>
         </label>
         <label class="btn btn-default" ng-model="radioModel" uib-btn-radio="'subasta'" class="text-center" title="Subastas">
           <i class="fa fa-money" aria-hidden="true"></i>
@@ -111,47 +111,31 @@
       <div ng-if="can('board-config') && show_details">  
         <button class="btn btn-success btn-xs" ng-hide="encuesta.encuesta" type="button" ng-click="createEncuesta()">Crear nueva Encuesta</button>
         <button class="btn btn-danger btn-xs" ng-hide="!encuesta.encuesta" type="button" ng-click="deleteEncuesta()">Quitar Encuesta</button>
-        <br>
+        <br><br>
       </div>
-      <!-- for users -->
-      <div ng-if="!can('board-config') && encuesta.active && user.isLogged">
-        <div ng-if="encuesta.encuesta">
-          <div class="text-center" style="padding: 8px;">
-            <h4 style="margin: 0;line-height: 1.3em;"><strong>{{encuesta.poll.pregunta}}</strong></h4>   
-          </div>
-        </div>
-        <div ng-show="encuesta.pregunta" style="padding: 8px;">
-          <div class="text-left" ng-repeat="item in encuesta.poll.items">
-            <p>{{item.nombre}} <button class="btn btn-success btn-xs" ng-click="votar(item.nombre)"><i class="fa fa-check" aria-hidden="true"></i></button></p>
-          </div>
-        </div>
-        <div ng-show="!encuesta.pregunta" style="padding: 8px;">
-          <div class="text-left" ng-repeat="item in encuesta.poll.items">
-            <p>{{item.nombre}}</p>
-            <div><uib-progressbar class="progress-striped active" max="encuesta.poll.cant" value="item.cant" type="info"><i>{{item.cant}} / {{encuesta.poll.cant}}</i></uib-progressbar></div>
-          </div>
-          <hr>
-          <div class="text-left">
-            <p>TOTAL DE VOTOS: {{encuesta.poll.cant}}</p>
-          </div>
-        </div>
-      </div>
-      <!-- for admin -->
-      <div ng-if="can('board-config') && encuesta.active && user.isLogged">
+      <button class="btn btn-danger btn-xs" ng-if="can('board-config') && encuesta.encuesta && !encuesta.poll.stop" type="button" ng-click="stopEncuesta()">Detener Encuesta</button>
+      <button class="btn btn-success btn-xs" ng-if="can('board-config') && encuesta.encuesta && encuesta.poll.stop" type="button" ng-click="startEncuesta()">Activar Encuesta</button>
+      <div ng-if="encuesta.active && user.isLogged">
         <div ng-if="encuesta.encuesta">
           <div class="text-center" style="padding: 8px;">
             <h4 style="margin: 0;line-height: 1.3em;"><strong>{{encuesta.poll.pregunta}}</strong></h4>   
           </div>
         </div>
         <div style="padding: 8px;">
-          <div class="text-left" ng-repeat="item in encuesta.poll.items">
-            <p>{{item.nombre}}</p>
-            <div><uib-progressbar class="progress-striped active" max="encuesta.poll.cant" value="item.cant" type="info"><i>{{item.cant}} / {{encuesta.poll.cant}}</i></uib-progressbar></div>
+          <div class="row">
+            <div class="col-xs-6 col-xs-offset-0" ng-repeat="item in encuesta.poll.items">
+              <img ng-if="item.imgUrl" ng-src="{{item.imgUrl}}" class="img-rounded" alt="URL" style="height: 50px">  
+              <h6 title="{{item.nombre}}" tooltip-placement="top" uib-tooltip="{{item.nombre | limitTo:8}}">{{item.nombre | limitTo:8}}</h6>
+              <div><uib-progressbar class="progress-striped active" max="encuesta.poll.cant" value="item.cant" type="info"><i>{{item.cant}} / {{encuesta.poll.cant}}</i></uib-progressbar></div>
+              <button ng-show="pollbttn(item.nombre)==false && !encuesta.poll.stop && !can('board-config')" tooltip-placement="top" uib-tooltip="{{item.nombre | limitTo:8}}" class="btn btn-primary btn-xs" ng-click="votar(item.nombre)">Votar</button>
+              <button ng-show="pollbttn(item.nombre)==true && !encuesta.poll.stop && !can('board-config')" tooltip-placement="top" uib-tooltip="{{item.nombre | limitTo:8}}" class="btn btn-default btn-xs" ng-click="quitarvoto(item.nombre)">Quitar Voto</button>
+              <br ng-hide="can('board-config') || encuesta.poll.stop">
+              <br ng-hide="can('board-config') || encuesta.poll.stop">
+            </div>
           </div>
-          <hr>
-          <div class="text-left">
-            <p>TOTAL DE VOTOS: {{encuesta.poll.cant}}</p>
-          </div>
+          <p ng-show="encuesta.poll.stop"><strong>Encuesta Cerrada</strong></p>
+          <p class="text-left">TOTAL DE VOTOS: <strong>{{encuesta.poll.cant}}</strong></p>
+          <br><br><br><br>
         </div>
       </div>
     </div> 
@@ -173,7 +157,7 @@
           <i class="fa fa-archive" aria-hidden="true"></i>
         </label>
         <label class="btn btn-default" ng-model="radioModel" uib-btn-radio="'encuesta'" class="text-center" title="Encuestas">
-          <i class="fa fa-line-chart" aria-hidden="true"></i>
+          <i class="fa fa-pie-chart" aria-hidden="true"></i>
         </label>
         <label class="btn btn-default" ng-model="radioModel" uib-btn-radio="'subasta'" class="text-center" title="Subastas">
           <i class="fa fa-money" aria-hidden="true"></i>
@@ -275,47 +259,31 @@
       <div ng-if="can('board-config') && show_details">  
         <button class="btn btn-success btn-xs" ng-hide="encuesta.encuesta" type="button" ng-click="createEncuesta()">Crear nueva Encuesta</button>
         <button class="btn btn-danger btn-xs" ng-hide="!encuesta.encuesta" type="button" ng-click="deleteEncuesta()">Quitar Encuesta</button>
-        <br>
+        <br><br>
       </div>
-      <!-- for users -->
-      <div ng-if="!can('board-config') && encuesta.active && user.isLogged">
-        <div ng-if="encuesta.encuesta">
-          <div class="text-center" style="padding: 8px;">
-            <h4 style="margin: 0;line-height: 1.3em;"><strong>{{encuesta.poll.pregunta}}</strong></h4>   
-          </div>
-        </div>
-        <div ng-show="encuesta.pregunta" style="padding: 8px;">
-          <div class="text-left" ng-repeat="item in encuesta.poll.items">
-            <p>{{item.nombre}} <button class="btn btn-success btn-xs" ng-click="votar(item.nombre)"><i class="fa fa-check" aria-hidden="true"></i></button></p>
-          </div>
-        </div>
-        <div ng-show="!encuesta.pregunta" style="padding: 8px;">
-          <div class="text-left" ng-repeat="item in encuesta.poll.items">
-            <p>{{item.nombre}}</p>
-            <div><uib-progressbar class="progress-striped active" max="encuesta.poll.cant" value="item.cant" type="info"><i>{{item.cant}} / {{encuesta.poll.cant}}</i></uib-progressbar></div>
-          </div>
-          <hr>
-          <div class="text-left">
-            <p>TOTAL DE VOTOS: {{encuesta.poll.cant}}</p>
-          </div>
-        </div>
-      </div>
-      <!-- for admin -->
-      <div ng-if="can('board-config') && encuesta.active && user.isLogged">
+      <button class="btn btn-danger btn-xs" ng-if="can('board-config') && encuesta.encuesta && !encuesta.poll.stop" type="button" ng-click="stopEncuesta()">Detener Encuesta</button>
+      <button class="btn btn-success btn-xs" ng-if="can('board-config') && encuesta.encuesta && encuesta.poll.stop" type="button" ng-click="startEncuesta()">Activar Encuesta</button>
+      <div ng-if="encuesta.active && user.isLogged">
         <div ng-if="encuesta.encuesta">
           <div class="text-center" style="padding: 8px;">
             <h4 style="margin: 0;line-height: 1.3em;"><strong>{{encuesta.poll.pregunta}}</strong></h4>   
           </div>
         </div>
         <div style="padding: 8px;">
-          <div class="text-left" ng-repeat="item in encuesta.poll.items">
-            <p>{{item.nombre}}</p>
-            <div><uib-progressbar class="progress-striped active" max="encuesta.poll.cant" value="item.cant" type="info"><i>{{item.cant}} / {{encuesta.poll.cant}}</i></uib-progressbar></div>
+          <div class="row">
+            <div class="col-xs-6 col-xs-offset-0" ng-repeat="item in encuesta.poll.items">
+              <img ng-if="item.imgUrl" ng-src="{{item.imgUrl}}" class="img-rounded" alt="URL" style="height: 50px">  
+              <h6 title="{{item.nombre}}" tooltip-placement="top" uib-tooltip="{{item.nombre | limitTo:8}}">{{item.nombre | limitTo:8}}</h6>
+              <div><uib-progressbar class="progress-striped active" max="encuesta.poll.cant" value="item.cant" type="info"><i>{{item.cant}} / {{encuesta.poll.cant}}</i></uib-progressbar></div>
+              <button ng-show="pollbttn(item.nombre)==false && !encuesta.poll.stop && !can('board-config')" tooltip-placement="top" uib-tooltip="{{item.nombre | limitTo:8}}" class="btn btn-primary btn-xs" ng-click="votar(item.nombre)">Votar</button>
+              <button ng-show="pollbttn(item.nombre)==true && !encuesta.poll.stop && !can('board-config')" tooltip-placement="top" uib-tooltip="{{item.nombre | limitTo:8}}" class="btn btn-default btn-xs" ng-click="quitarvoto(item.nombre)">Quitar Voto</button>
+              <br ng-hide="can('board-config') || encuesta.poll.stop">
+              <br ng-hide="can('board-config') || encuesta.poll.stop">
+            </div>
           </div>
-          <hr>
-          <div class="text-left">
-            <p>TOTAL DE VOTOS: {{encuesta.poll.cant}}</p>
-          </div>
+          <p ng-show="encuesta.poll.stop"><strong>Encuesta Cerrada</strong></p>
+          <p class="text-left">TOTAL DE VOTOS: <strong>{{encuesta.poll.cant}}</strong></p>
+          <br><br><br><br>
         </div>
       </div>
     </div> 

@@ -11,9 +11,32 @@
     	<div class="col-sm-10">
 			<form class="form-horizontal">
 				<div class="form-group">
+					<label class="col-sm-4 control-label">Encuestas Guardadas</label>
+					<div class="col-sm-8">
+						<button class="btn btn-default btn-xs" ng-click="buscar_poll()">Buscar</button>
+						<br>
+						<br>
+						<select class="form-control" name="poll" id="poll" ng-model="data.model">
+					      	<option ng-repeat="option in data.availableOptions" value="{{option.id}}">
+					      		{{option.name}}
+					      	</option>
+					    </select>
+						<br>
+						<button class="btn btn-default btn-xs" ng-click="select_poll()">Seleccionar</button>
+					</div>
+				</div>
+				<p ng-if="alert2.msg" ng-class="'bg-' + (alert2.type || 'warning')" style="padding: 5px">{{alert2.msg}}</p>
+				<hr>
+				<div class="form-group">
 					<label for="nomArt" class="col-sm-4 control-label">Pregunta</label>
 					<div class="col-sm-8">
 						<input ng-model="encuesta.pregunta" type="text" class="form-control" id="pregunta" placeholder="A que le damos?">
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="nomArt" class="col-sm-4 control-label">Votos por usuario</label>
+					<div class="col-sm-8">
+						<input ng-model="encuesta.cantUser" type="number" class="form-control" id="pregunta" placeholder="1" nim="1" max="999999999">
 					</div>
 				</div>
 				<hr>
@@ -22,32 +45,48 @@
 					<div class="col-sm-8">
 						<input ng-model="item.nombre" type="text" class="form-control" id="nombreItem" placeholder="OverWatch">
 					</div>
-					<br>
-					<br>
-					<div class="text-center">
-						<button class="btn btn-success" type="button" ng-click="add_item()"><i class="fa fa-plus" aria-hidden="true"></i> Agregar item a lista</button>
-					</div>
-					<div ng-show="arrritem.length > 0">
-						<h3>Items de la encuesta</h3>
-						<table class="table table-striped">
-							<thead>
-								<tr>
-									<th>Nombre</th>
-									<th>Acción</th>
-								</tr>
-							</thead>
-							<tbody ng-repeat="item in arrritem">
-								<tr>
-									<td>{{item.nombre}}</td>
-									<td>
-										<button class="btn btn-danger btn-sm" ng-click="remove_item(item.nombre)"><i class="fa fa-times" aria-hidden="true"></i></button>
-									</td>
-								</tr>
-							</tbody>
-						</table>
+				</div>
+				<div class="form-group">
+					<label for="imgArt" class="col-sm-4 control-label">Imagen</label>
+					<div class="col-sm-8">
+						<a href="" ngf-select ngf-change="uploadPicture($files)" ngf-multiple="false" ngf-accept="'image/*'" ng-show="!adding_img">
+							<i class="fa fa-camera-retro fa-2x"></i>
+						</a>
+            			<a href="" ng-show="adding_img">
+            				<i class="fa fa-camera-retro fa-2x"></i> Cargando <i class="fa fa-spinner fa-pulse fa-2x fa-fw"></i>
+            			</a>
+            			<div ng-if="item.imgUrl" class="text-center">
+            				<img ng-src="{{item.imgUrl}}" class="img-rounded" alt="URL" style="height: 100px">
+            			</div>
 					</div>
 				</div>
-
+				<br>
+				<br>
+				<div class="text-center">
+					<button class="btn btn-success" type="button" ng-click="add_item()"><i class="fa fa-plus" aria-hidden="true"></i> Agregar item a lista</button>
+				</div>
+				<div ng-show="arrritem.length > 0">
+					<h3>Items de la encuesta</h3>
+					<table class="table table-striped">
+						<thead>
+							<tr>
+								<th>Nombre</th>
+								<th>Imagen</th>
+								<th>Acción</th>
+							</tr>
+						</thead>
+						<tbody ng-repeat="item in arrritem">
+							<tr>
+								<td>{{item.nombre}}</td>
+								<td><img ng-src="{{item.imgUrl}}" class="img-rounded" alt="URL" style="height: 50px"></td>
+								<td>
+									<button class="btn btn-danger btn-sm" ng-click="remove_item(item.nombre)"><i class="fa fa-times" aria-hidden="true"></i></button>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<br>
 				<p ng-if="alert.msg" ng-class="'bg-' + (alert.type || 'warning')" style="padding: 5px">{{alert.msg}}</p>
 			</form>
 		</div>
@@ -57,4 +96,5 @@
 <div class="modal-footer">
     <button class="btn btn-primary" type="button" ng-click="save()">Crear</button>
     <button class="btn btn-warning" type="button" ng-click="cancel()">Cerrar</button>
+    <button class="btn btn-success right" type="button" ng-click="save_poll()">Guardar Encuesta</button>
 </div>
