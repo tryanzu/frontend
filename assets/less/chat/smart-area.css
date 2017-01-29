@@ -1,6 +1,7 @@
 .sa-wrapper{
     width:100%;
     position:relative;
+    /*height: 100%;*/
 }
 .sa-realArea, .sa-fakeArea{
     color: inherit;
@@ -20,12 +21,33 @@ textarea.sa-realArea{
 }
 textarea.sa-realArea:hover, textarea.sa-realArea:focus{
     border-color: transparent;
+    /*border: 2px solid #e0e0e0;*/
+    display: inline-block;
+    width: 100%;
+    line-height: 1.2em;
+    min-height: 42px;
+    border: 2px solid #e0e0e0;
+    border-radius: 5px;
+    background-clip: padding-box;
+    box-shadow: none;
+    outline: 0;
+    bottom: 0;
+    padding: 8px 6px;
+    font-size: inherit;
+    margin-bottom: 0;
+    /*left:-2px;
+    top:-2px;
+    border-radius: 1px;*/
 }
 
 .sa-fakeArea{
     color:#000;
-    height:100%;
     width:100% !important;
+    border-style: none !important;
+    border: 0 !important;
+}
+.sa-fakeArea.ng-binding.ng-scope{
+    /*height: 42px !important;*/
 }
 
 .sa-dropdown{

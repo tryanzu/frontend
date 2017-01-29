@@ -11,19 +11,10 @@
             //subdomainName: 'spartangeek',
             persistNotification: false, // Automatically dismiss the notification after ~20 seconds in Chrome Deskop v47+
             notifyButton: {
-                enable: true /* Set to false to hide */
+                enable: false /* Set to false to hide */
             },
             safari_web_id: 'web.onesignal.auto.6a76584b-4903-4cb9-b550-82d6a06974fc'
         }]);
-        /*OneSignal.push(function() {
-        OneSignal.registerForPushNotifications({
-        modalPrompt: true
-        });
-        });
-        OneSignal.push(["getNotificationPermission", function(permission) {
-        console.log("Site Notification Permission:", permission);
-        // (Output) Site Notification Permission: default
-        }]);*/
     </script>
 
   <title ng-bind="page.title">SpartanGeek.com | Comunidad de tecnología, geeks y más</title>
@@ -53,17 +44,16 @@
   <meta name="msapplication-TileImage" content="/favicon/ms-icon-144x144.png">
   <meta name="theme-color" content="#ffffff">
   <!-- /Favicon -->
-
   <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-  <link type="text/css" rel="stylesheet" href="/css/app.css?v=080">
-
+  <link type="text/css" rel="stylesheet" href="/css/app.css?v=081">
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyARHDveGvdCsoE981eULSFkBtKU-ua4XoQ" async defer></script>
   <script type="text/javascript" src="js/offline.js"></script>
   <script src="https://d3tvtfb6518e3e.cloudfront.net/2/angular-opbeat.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.6/socket.io.min.js"></script>
   <script src='https://cdn.firebase.com/js/client/2.2.1/firebase.js'></script>
   <script src="https://cdn.firebase.com/libs/angularfire/1.1.1/angularfire.min.js"></script>
   <script type="text/javascript" src="js/config.js"></script>
-  <script type="text/javascript" src="js/main.js?v=080"></script>
+  <script type="text/javascript" src="js/main.js?v=081"></script>
 
 </head>
 <body ng-controller="MainController">
