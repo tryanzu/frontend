@@ -13229,7 +13229,7 @@ EventModule.controller('EventController', ['$scope', '$timeout', '$http', 'Uploa
 
 }]);
 
-var version = '080';
+var version = '081';
 
 var boardApplication = angular.module('board', [
   'ngOpbeat',
