@@ -3216,6 +3216,85 @@ angular.module('yaru22.angular-timeago', []).directive('timeAgo', [
 !function(e){var t;"undefined"!=typeof window?t=window:"undefined"!=typeof self&&(t=self),t.ALGOLIA_MIGRATION_LAYER=e()}(function(){return function e(t,n,r){function o(s,a){if(!n[s]){if(!t[s]){var u="function"==typeof require&&require;if(!a&&u)return u(s,!0);if(i)return i(s,!0);var c=new Error("Cannot find module '"+s+"'");throw c.code="MODULE_NOT_FOUND",c}var l=n[s]={exports:{}};t[s][0].call(l.exports,function(e){var n=t[s][1][e];return o(n?n:e)},l,l.exports,e,t,n,r)}return n[s].exports}for(var i="function"==typeof require&&require,s=0;s<r.length;s++)o(r[s]);return o}({1:[function(e,t,n){function r(e,t){for(var n in t)e.setAttribute(n,t[n])}function o(e,t){e.onload=function(){this.onerror=this.onload=null,t(null,e)},e.onerror=function(){this.onerror=this.onload=null,t(new Error("Failed to load "+this.src),e)}}function i(e,t){e.onreadystatechange=function(){("complete"==this.readyState||"loaded"==this.readyState)&&(this.onreadystatechange=null,t(null,e))}}t.exports=function(e,t,n){var s=document.head||document.getElementsByTagName("head")[0],a=document.createElement("script");"function"==typeof t&&(n=t,t={}),t=t||{},n=n||function(){},a.type=t.type||"text/javascript",a.charset=t.charset||"utf8",a.async="async"in t?!!t.async:!0,a.src=e,t.attrs&&r(a,t.attrs),t.text&&(a.text=""+t.text);var u="onload"in a?o:i;u(a,n),a.onload||o(a,n),s.appendChild(a)}},{}],2:[function(e,t,n){"use strict";function r(e){for(var t=new RegExp("cdn\\.jsdelivr\\.net/algoliasearch/latest/"+e.replace(".","\\.")+"(?:\\.min)?\\.js$"),n=document.getElementsByTagName("script"),r=!1,o=0,i=n.length;i>o;o++)if(n[o].src&&t.test(n[o].src)){r=!0;break}return r}t.exports=r},{}],3:[function(e,t,n){"use strict";function r(t){var n=e(1),r="//cdn.jsdelivr.net/algoliasearch/2/"+t+".min.js",i="-- AlgoliaSearch `latest` warning --\nWarning, you are using the `latest` version string from jsDelivr to load the AlgoliaSearch library.\nUsing `latest` is no more recommended, you should load //cdn.jsdelivr.net/algoliasearch/2/algoliasearch.min.js\n\nAlso, we updated the AlgoliaSearch JavaScript client to V3. If you want to upgrade,\nplease read our migration guide at https://github.com/algolia/algoliasearch-client-js/wiki/Migration-guide-from-2.x.x-to-3.x.x\n-- /AlgoliaSearch  `latest` warning --";window.console&&(window.console.warn?window.console.warn(i):window.console.log&&window.console.log(i));try{document.write("<script>window.ALGOLIA_SUPPORTS_DOCWRITE = true</script>"),window.ALGOLIA_SUPPORTS_DOCWRITE===!0?(document.write('<script src="'+r+'"></script>'),o("document.write")()):n(r,o("DOMElement"))}catch(s){n(r,o("DOMElement"))}}function o(e){return function(){var t="AlgoliaSearch: loaded V2 script using "+e;window.console&&window.console.log&&window.console.log(t)}}t.exports=r},{1:1}],4:[function(e,t,n){"use strict";function r(){var e="-- AlgoliaSearch V2 => V3 error --\nYou are trying to use a new version of the AlgoliaSearch JavaScript client with an old notation.\nPlease read our migration guide at https://github.com/algolia/algoliasearch-client-js/wiki/Migration-guide-from-2.x.x-to-3.x.x\n-- /AlgoliaSearch V2 => V3 error --";window.AlgoliaSearch=function(){throw new Error(e)},window.AlgoliaSearchHelper=function(){throw new Error(e)},window.AlgoliaExplainResults=function(){throw new Error(e)}}t.exports=r},{}],5:[function(e,t,n){"use strict";function r(t){var n=e(2),r=e(3),o=e(4);n(t)?r(t):o()}r("algoliasearch.angular")},{2:2,3:3,4:4}]},{},[5])(5)}),function e(t,n,r){function o(s,a){if(!n[s]){if(!t[s]){var u="function"==typeof require&&require;if(!a&&u)return u(s,!0);if(i)return i(s,!0);var c=new Error("Cannot find module '"+s+"'");throw c.code="MODULE_NOT_FOUND",c}var l=n[s]={exports:{}};t[s][0].call(l.exports,function(e){var n=t[s][1][e];return o(n?n:e)},l,l.exports,e,t,n,r)}return n[s].exports}for(var i="function"==typeof require&&require,s=0;s<r.length;s++)o(r[s]);return o}({1:[function(e,t,n){function r(){this._events=this._events||{},this._maxListeners=this._maxListeners||void 0}function o(e){return"function"==typeof e}function i(e){return"number"==typeof e}function s(e){return"object"==typeof e&&null!==e}function a(e){return void 0===e}t.exports=r,r.EventEmitter=r,r.prototype._events=void 0,r.prototype._maxListeners=void 0,r.defaultMaxListeners=10,r.prototype.setMaxListeners=function(e){if(!i(e)||0>e||isNaN(e))throw TypeError("n must be a positive number");return this._maxListeners=e,this},r.prototype.emit=function(e){var t,n,r,i,u,c;if(this._events||(this._events={}),"error"===e&&(!this._events.error||s(this._events.error)&&!this._events.error.length)){if(t=arguments[1],t instanceof Error)throw t;throw TypeError('Uncaught, unspecified "error" event.')}if(n=this._events[e],a(n))return!1;if(o(n))switch(arguments.length){case 1:n.call(this);break;case 2:n.call(this,arguments[1]);break;case 3:n.call(this,arguments[1],arguments[2]);break;default:for(r=arguments.length,i=new Array(r-1),u=1;r>u;u++)i[u-1]=arguments[u];n.apply(this,i)}else if(s(n)){for(r=arguments.length,i=new Array(r-1),u=1;r>u;u++)i[u-1]=arguments[u];for(c=n.slice(),r=c.length,u=0;r>u;u++)c[u].apply(this,i)}return!0},r.prototype.addListener=function(e,t){var n;if(!o(t))throw TypeError("listener must be a function");if(this._events||(this._events={}),this._events.newListener&&this.emit("newListener",e,o(t.listener)?t.listener:t),this._events[e]?s(this._events[e])?this._events[e].push(t):this._events[e]=[this._events[e],t]:this._events[e]=t,s(this._events[e])&&!this._events[e].warned){var n;n=a(this._maxListeners)?r.defaultMaxListeners:this._maxListeners,n&&n>0&&this._events[e].length>n&&(this._events[e].warned=!0,console.error("(node) warning: possible EventEmitter memory leak detected. %d listeners added. Use emitter.setMaxListeners() to increase limit.",this._events[e].length),"function"==typeof console.trace&&console.trace())}return this},r.prototype.on=r.prototype.addListener,r.prototype.once=function(e,t){function n(){this.removeListener(e,n),r||(r=!0,t.apply(this,arguments))}if(!o(t))throw TypeError("listener must be a function");var r=!1;return n.listener=t,this.on(e,n),this},r.prototype.removeListener=function(e,t){var n,r,i,a;if(!o(t))throw TypeError("listener must be a function");if(!this._events||!this._events[e])return this;if(n=this._events[e],i=n.length,r=-1,n===t||o(n.listener)&&n.listener===t)delete this._events[e],this._events.removeListener&&this.emit("removeListener",e,t);else if(s(n)){for(a=i;a-->0;)if(n[a]===t||n[a].listener&&n[a].listener===t){r=a;break}if(0>r)return this;1===n.length?(n.length=0,delete this._events[e]):n.splice(r,1),this._events.removeListener&&this.emit("removeListener",e,t)}return this},r.prototype.removeAllListeners=function(e){var t,n;if(!this._events)return this;if(!this._events.removeListener)return 0===arguments.length?this._events={}:this._events[e]&&delete this._events[e],this;if(0===arguments.length){for(t in this._events)"removeListener"!==t&&this.removeAllListeners(t);return this.removeAllListeners("removeListener"),this._events={},this}if(n=this._events[e],o(n))this.removeListener(e,n);else for(;n.length;)this.removeListener(e,n[n.length-1]);return delete this._events[e],this},r.prototype.listeners=function(e){var t;return t=this._events&&this._events[e]?o(this._events[e])?[this._events[e]]:this._events[e].slice():[]},r.listenerCount=function(e,t){var n;return n=e._events&&e._events[t]?o(e._events[t])?1:e._events[t].length:0}},{}],2:[function(e,t,n){function r(){l=!1,a.length?c=a.concat(c):f=-1,c.length&&o()}function o(){if(!l){var e=setTimeout(r);l=!0;for(var t=c.length;t;){for(a=c,c=[];++f<t;)a&&a[f].run();f=-1,t=c.length}a=null,l=!1,clearTimeout(e)}}function i(e,t){this.fun=e,this.array=t}function s(){}var a,u=t.exports={},c=[],l=!1,f=-1;u.nextTick=function(e){var t=new Array(arguments.length-1);if(arguments.length>1)for(var n=1;n<arguments.length;n++)t[n-1]=arguments[n];c.push(new i(e,t)),1!==c.length||l||setTimeout(o,0)},i.prototype.run=function(){this.fun.apply(null,this.array)},u.title="browser",u.browser=!0,u.env={},u.argv=[],u.version="",u.versions={},u.on=s,u.addListener=s,u.once=s,u.off=s,u.removeListener=s,u.removeAllListeners=s,u.emit=s,u.binding=function(e){throw new Error("process.binding is not supported")},u.cwd=function(){return"/"},u.chdir=function(e){throw new Error("process.chdir is not supported")},u.umask=function(){return 0}},{}],3:[function(e,t,n){"use strict";function r(e,t){return Object.prototype.hasOwnProperty.call(e,t)}t.exports=function(e,t,n,i){t=t||"&",n=n||"=";var s={};if("string"!=typeof e||0===e.length)return s;var a=/\+/g;e=e.split(t);var u=1e3;i&&"number"==typeof i.maxKeys&&(u=i.maxKeys);var c=e.length;u>0&&c>u&&(c=u);for(var l=0;c>l;++l){var f,d,h,p,y=e[l].replace(a,"%20"),m=y.indexOf(n);m>=0?(f=y.substr(0,m),d=y.substr(m+1)):(f=y,d=""),h=decodeURIComponent(f),p=decodeURIComponent(d),r(s,h)?o(s[h])?s[h].push(p):s[h]=[s[h],p]:s[h]=p}return s};var o=Array.isArray||function(e){return"[object Array]"===Object.prototype.toString.call(e)}},{}],4:[function(e,t,n){"use strict";function r(e,t){if(e.map)return e.map(t);for(var n=[],r=0;r<e.length;r++)n.push(t(e[r],r));return n}var o=function(e){switch(typeof e){case"string":return e;case"boolean":return e?"true":"false";case"number":return isFinite(e)?e:"";default:return""}};t.exports=function(e,t,n,a){return t=t||"&",n=n||"=",null===e&&(e=void 0),"object"==typeof e?r(s(e),function(s){var a=encodeURIComponent(o(s))+n;return i(e[s])?r(e[s],function(e){return a+encodeURIComponent(o(e))}).join(t):a+encodeURIComponent(o(e[s]))}).join(t):a?encodeURIComponent(o(a))+n+encodeURIComponent(o(e)):""};var i=Array.isArray||function(e){return"[object Array]"===Object.prototype.toString.call(e)},s=Object.keys||function(e){var t=[];for(var n in e)Object.prototype.hasOwnProperty.call(e,n)&&t.push(n);return t}},{}],5:[function(e,t,n){"use strict";n.decode=n.parse=e(3),n.encode=n.stringify=e(4)},{3:3,4:4}],6:[function(e,t,n){function r(){return"WebkitAppearance"in document.documentElement.style||window.console&&(console.firebug||console.exception&&console.table)||navigator.userAgent.toLowerCase().match(/firefox\/(\d+)/)&&parseInt(RegExp.$1,10)>=31}function o(){var e=arguments,t=this.useColors;if(e[0]=(t?"%c":"")+this.namespace+(t?" %c":" ")+e[0]+(t?"%c ":" ")+"+"+n.humanize(this.diff),!t)return e;var r="color: "+this.color;e=[e[0],r,"color: inherit"].concat(Array.prototype.slice.call(e,1));var o=0,i=0;return e[0].replace(/%[a-z%]/g,function(e){"%%"!==e&&(o++,"%c"===e&&(i=o))}),e.splice(i,0,r),e}function i(){return"object"==typeof console&&console.log&&Function.prototype.apply.call(console.log,console,arguments)}function s(e){try{null==e?n.storage.removeItem("debug"):n.storage.debug=e}catch(t){}}function a(){var e;try{e=n.storage.debug}catch(t){}return e}function u(){try{return window.localStorage}catch(e){}}n=t.exports=e(7),n.log=i,n.formatArgs=o,n.save=s,n.load=a,n.useColors=r,n.storage="undefined"!=typeof chrome&&"undefined"!=typeof chrome.storage?chrome.storage.local:u(),n.colors=["lightseagreen","forestgreen","goldenrod","dodgerblue","darkorchid","crimson"],n.formatters.j=function(e){return JSON.stringify(e)},n.enable(a())},{7:7}],7:[function(e,t,n){function r(){return n.colors[l++%n.colors.length]}function o(e){function t(){}function o(){var e=o,t=+new Date,i=t-(c||t);e.diff=i,e.prev=c,e.curr=t,c=t,null==e.useColors&&(e.useColors=n.useColors()),null==e.color&&e.useColors&&(e.color=r());var s=Array.prototype.slice.call(arguments);s[0]=n.coerce(s[0]),"string"!=typeof s[0]&&(s=["%o"].concat(s));var a=0;s[0]=s[0].replace(/%([a-z%])/g,function(t,r){if("%%"===t)return t;a++;var o=n.formatters[r];if("function"==typeof o){var i=s[a];t=o.call(e,i),s.splice(a,1),a--}return t}),"function"==typeof n.formatArgs&&(s=n.formatArgs.apply(e,s));var u=o.log||n.log||console.log.bind(console);u.apply(e,s)}t.enabled=!1,o.enabled=!0;var i=n.enabled(e)?o:t;return i.namespace=e,i}function i(e){n.save(e);for(var t=(e||"").split(/[\s,]+/),r=t.length,o=0;r>o;o++)t[o]&&(e=t[o].replace(/\*/g,".*?"),"-"===e[0]?n.skips.push(new RegExp("^"+e.substr(1)+"$")):n.names.push(new RegExp("^"+e+"$")))}function s(){n.enable("")}function a(e){var t,r;for(t=0,r=n.skips.length;r>t;t++)if(n.skips[t].test(e))return!1;for(t=0,r=n.names.length;r>t;t++)if(n.names[t].test(e))return!0;return!1}function u(e){return e instanceof Error?e.stack||e.message:e}n=t.exports=o,n.coerce=u,n.disable=s,n.enable=i,n.enabled=a,n.humanize=e(8),n.names=[],n.skips=[],n.formatters={};var c,l=0},{8:8}],8:[function(e,t,n){function r(e){if(e=""+e,!(e.length>1e4)){var t=/^((?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|years?|yrs?|y)?$/i.exec(e);if(t){var n=parseFloat(t[1]),r=(t[2]||"ms").toLowerCase();switch(r){case"years":case"year":case"yrs":case"yr":case"y":return n*f;case"days":case"day":case"d":return n*l;case"hours":case"hour":case"hrs":case"hr":case"h":return n*c;case"minutes":case"minute":case"mins":case"min":case"m":return n*u;case"seconds":case"second":case"secs":case"sec":case"s":return n*a;case"milliseconds":case"millisecond":case"msecs":case"msec":case"ms":return n}}}}function o(e){return e>=l?Math.round(e/l)+"d":e>=c?Math.round(e/c)+"h":e>=u?Math.round(e/u)+"m":e>=a?Math.round(e/a)+"s":e+"ms"}function i(e){return s(e,l,"day")||s(e,c,"hour")||s(e,u,"minute")||s(e,a,"second")||e+" ms"}function s(e,t,n){return t>e?void 0:1.5*t>e?Math.floor(e/t)+" "+n:Math.ceil(e/t)+" "+n+"s"}var a=1e3,u=60*a,c=60*u,l=24*c,f=365.25*l;t.exports=function(e,t){return t=t||{},"string"==typeof e?r(e):t["long"]?i(e):o(e)}},{}],9:[function(e,t,n){(function(n,r){(function(){"use strict";function o(e){return"function"==typeof e||"object"==typeof e&&null!==e}function i(e){return"function"==typeof e}function s(e){return"object"==typeof e&&null!==e}function a(e){Q=e}function u(e){W=e}function c(){return function(){n.nextTick(p)}}function l(){return function(){K(p)}}function f(){var e=0,t=new z(p),n=document.createTextNode("");return t.observe(n,{characterData:!0}),function(){n.data=e=++e%2}}function d(){var e=new MessageChannel;return e.port1.onmessage=p,function(){e.port2.postMessage(0)}}function h(){return function(){setTimeout(p,1)}}function p(){for(var e=0;V>e;e+=2){var t=te[e],n=te[e+1];t(n),te[e]=void 0,te[e+1]=void 0}V=0}function y(){try{var t=e,n=t("vertx");return K=n.runOnLoop||n.runOnContext,l()}catch(r){return h()}}function m(){}function v(){return new TypeError("You cannot resolve a promise with itself")}function g(){return new TypeError("A promises callback cannot return that same promise.")}function b(e){try{return e.then}catch(t){return ie.error=t,ie}}function w(e,t,n,r){try{e.call(t,n,r)}catch(o){return o}}function _(e,t,n){W(function(e){var r=!1,o=w(n,t,function(n){r||(r=!0,t!==n?T(e,n):S(e,n))},function(t){r||(r=!0,k(e,t))},"Settle: "+(e._label||" unknown promise"));!r&&o&&(r=!0,k(e,o))},e)}function x(e,t){t._state===re?S(e,t._result):t._state===oe?k(e,t._result):R(t,void 0,function(t){T(e,t)},function(t){k(e,t)})}function j(e,t){if(t.constructor===e.constructor)x(e,t);else{var n=b(t);n===ie?k(e,ie.error):void 0===n?S(e,t):i(n)?_(e,t,n):S(e,t)}}function T(e,t){e===t?k(e,v()):o(t)?j(e,t):S(e,t)}function A(e){e._onerror&&e._onerror(e._result),O(e)}function S(e,t){e._state===ne&&(e._result=t,e._state=re,0!==e._subscribers.length&&W(O,e))}function k(e,t){e._state===ne&&(e._state=oe,e._result=t,W(A,e))}function R(e,t,n,r){var o=e._subscribers,i=o.length;e._onerror=null,o[i]=t,o[i+re]=n,o[i+oe]=r,0===i&&e._state&&W(O,e)}function O(e){var t=e._subscribers,n=e._state;if(0!==t.length){for(var r,o,i=e._result,s=0;s<t.length;s+=3)r=t[s],o=t[s+n],r?q(n,r,o,i):o(i);e._subscribers.length=0}}function I(){this.error=null}function P(e,t){try{return e(t)}catch(n){return se.error=n,se}}function q(e,t,n,r){var o,s,a,u,c=i(n);if(c){if(o=P(n,r),o===se?(u=!0,s=o.error,o=null):a=!0,t===o)return void k(t,g())}else o=r,a=!0;t._state!==ne||(c&&a?T(t,o):u?k(t,s):e===re?S(t,o):e===oe&&k(t,o))}function U(e,t){try{t(function(t){T(e,t)},function(t){k(e,t)})}catch(n){k(e,n)}}function E(e,t){var n=this;n._instanceConstructor=e,n.promise=new e(m),n._validateInput(t)?(n._input=t,n.length=t.length,n._remaining=t.length,n._init(),0===n.length?S(n.promise,n._result):(n.length=n.length||0,n._enumerate(),0===n._remaining&&S(n.promise,n._result))):k(n.promise,n._validationError())}function C(e){return new ae(this,e).promise}function N(e){function t(e){T(o,e)}function n(e){k(o,e)}var r=this,o=new r(m);if(!$(e))return k(o,new TypeError("You must pass an array to race.")),o;for(var i=e.length,s=0;o._state===ne&&i>s;s++)R(r.resolve(e[s]),void 0,t,n);return o}function L(e){var t=this;if(e&&"object"==typeof e&&e.constructor===t)return e;var n=new t(m);return T(n,e),n}function D(e){var t=this,n=new t(m);return k(n,e),n}function M(){throw new TypeError("You must pass a resolver function as the first argument to the promise constructor")}function H(){throw new TypeError("Failed to construct 'Promise': Please use the 'new' operator, this object constructor cannot be called as a function.")}function J(e){this._id=de++,this._state=void 0,this._result=void 0,this._subscribers=[],m!==e&&(i(e)||M(),this instanceof J||H(),U(this,e))}function B(){var e;if("undefined"!=typeof r)e=r;else if("undefined"!=typeof self)e=self;else try{e=Function("return this")()}catch(t){throw new Error("polyfill failed because global object is unavailable in this environment")}var n=e.Promise;(!n||"[object Promise]"!==Object.prototype.toString.call(n.resolve())||n.cast)&&(e.Promise=he)}var F;F=Array.isArray?Array.isArray:function(e){return"[object Array]"===Object.prototype.toString.call(e)};var K,Q,G,$=F,V=0,W=({}.toString,function(e,t){te[V]=e,te[V+1]=t,V+=2,2===V&&(Q?Q(p):G())}),X="undefined"!=typeof window?window:void 0,Y=X||{},z=Y.MutationObserver||Y.WebKitMutationObserver,Z="undefined"!=typeof n&&"[object process]"==={}.toString.call(n),ee="undefined"!=typeof Uint8ClampedArray&&"undefined"!=typeof importScripts&&"undefined"!=typeof MessageChannel,te=new Array(1e3);G=Z?c():z?f():ee?d():void 0===X&&"function"==typeof e?y():h();var ne=void 0,re=1,oe=2,ie=new I,se=new I;E.prototype._validateInput=function(e){return $(e)},E.prototype._validationError=function(){return new Error("Array Methods must be provided an Array")},E.prototype._init=function(){this._result=new Array(this.length)};var ae=E;E.prototype._enumerate=function(){for(var e=this,t=e.length,n=e.promise,r=e._input,o=0;n._state===ne&&t>o;o++)e._eachEntry(r[o],o)},E.prototype._eachEntry=function(e,t){var n=this,r=n._instanceConstructor;s(e)?e.constructor===r&&e._state!==ne?(e._onerror=null,n._settledAt(e._state,t,e._result)):n._willSettleAt(r.resolve(e),t):(n._remaining--,n._result[t]=e)},E.prototype._settledAt=function(e,t,n){var r=this,o=r.promise;o._state===ne&&(r._remaining--,e===oe?k(o,n):r._result[t]=n),0===r._remaining&&S(o,r._result)},E.prototype._willSettleAt=function(e,t){var n=this;R(e,void 0,function(e){n._settledAt(re,t,e)},function(e){n._settledAt(oe,t,e)})};var ue=C,ce=N,le=L,fe=D,de=0,he=J;J.all=ue,J.race=ce,J.resolve=le,J.reject=fe,J._setScheduler=a,J._setAsap=u,J._asap=W,J.prototype={constructor:J,then:function(e,t){var n=this,r=n._state;if(r===re&&!e||r===oe&&!t)return this;var o=new this.constructor(m),i=n._result;if(r){var s=arguments[r-1];W(function(){q(r,o,s,i)})}else R(n,o,e,t);return o},"catch":function(e){return this.then(null,e)}};var pe=B,ye={Promise:he,polyfill:pe};"function"==typeof define&&define.amd?define(function(){return ye}):"undefined"!=typeof t&&t.exports?t.exports=ye:"undefined"!=typeof this&&(this.ES6Promise=ye),pe()}).call(this)}).call(this,e(2),"undefined"!=typeof global?global:"undefined"!=typeof self?self:"undefined"!=typeof window?window:{})},{2:2}],10:[function(e,t,n){"function"==typeof Object.create?t.exports=function(e,t){e.super_=t,e.prototype=Object.create(t.prototype,{constructor:{value:e,enumerable:!1,writable:!0,configurable:!0}})}:t.exports=function(e,t){e.super_=t;var n=function(){};n.prototype=t.prototype,e.prototype=new n,e.prototype.constructor=e}},{}],11:[function(e,t,n){var r=e(14),o=e(18),i=e(30),s=i(r,o);t.exports=s},{14:14,18:18,30:30}],12:[function(e,t,n){function r(e,t){if("function"!=typeof e)throw new TypeError(o);return t=i(void 0===t?e.length-1:+t||0,0),function(){for(var n=arguments,r=-1,o=i(n.length-t,0),s=Array(o);++r<o;)s[r]=n[t+r];switch(t){case 0:return e.call(this,s);case 1:return e.call(this,n[0],s);case 2:return e.call(this,n[0],n[1],s)}var a=Array(t+1);for(r=-1;++r<t;)a[r]=n[r];return a[t]=s,e.apply(this,a)}}var o="Expected a function",i=Math.max;t.exports=r},{}],13:[function(e,t,n){function r(e,t){var n=-1,r=e.length;for(t||(t=Array(r));++n<r;)t[n]=e[n];return t}t.exports=r},{}],14:[function(e,t,n){function r(e,t){for(var n=-1,r=e.length;++n<r&&t(e[n],n,e)!==!1;);return e}t.exports=r},{}],15:[function(e,t,n){function r(e,t){return null==t?e:o(t,i(t),e)}var o=e(17),i=e(53);t.exports=r},{17:17,53:53}],16:[function(e,t,n){function r(e,t,n,p,y,m,v){var b;if(n&&(b=y?n(e,p,y):n(e)),void 0!==b)return b;if(!d(e))return e;var w=f(e);if(w){if(b=u(e),!t)return o(e,b)}else{var x=D.call(e),j=x==g;if(x!=_&&x!=h&&(!j||y))return N[x]?c(e,x,t):y?e:{};if(b=l(j?{}:e),!t)return s(b,e)}m||(m=[]),v||(v=[]);for(var T=m.length;T--;)if(m[T]==e)return v[T];return m.push(e),v.push(b),(w?i:a)(e,function(o,i){b[i]=r(o,t,n,i,e,m,v)}),b}var o=e(13),i=e(14),s=e(15),a=e(21),u=e(33),c=e(34),l=e(35),f=e(46),d=e(49),h="[object Arguments]",p="[object Array]",y="[object Boolean]",m="[object Date]",v="[object Error]",g="[object Function]",b="[object Map]",w="[object Number]",_="[object Object]",x="[object RegExp]",j="[object Set]",T="[object String]",A="[object WeakMap]",S="[object ArrayBuffer]",k="[object Float32Array]",R="[object Float64Array]",O="[object Int8Array]",I="[object Int16Array]",P="[object Int32Array]",q="[object Uint8Array]",U="[object Uint8ClampedArray]",E="[object Uint16Array]",C="[object Uint32Array]",N={};N[h]=N[p]=N[S]=N[y]=N[m]=N[k]=N[R]=N[O]=N[I]=N[P]=N[w]=N[_]=N[x]=N[T]=N[q]=N[U]=N[E]=N[C]=!0,N[v]=N[g]=N[b]=N[j]=N[A]=!1;var L=Object.prototype,D=L.toString;t.exports=r},{13:13,14:14,15:15,21:21,33:33,34:34,35:35,46:46,49:49}],17:[function(e,t,n){function r(e,t,n){n||(n={});for(var r=-1,o=t.length;++r<o;){var i=t[r];n[i]=e[i]}return n}t.exports=r},{}],18:[function(e,t,n){var r=e(21),o=e(28),i=o(r);t.exports=i},{21:21,28:28}],19:[function(e,t,n){var r=e(29),o=r();t.exports=o},{29:29}],20:[function(e,t,n){function r(e,t){return o(e,t,i)}var o=e(19),i=e(54);t.exports=r},{19:19,54:54}],21:[function(e,t,n){function r(e,t){return o(e,t,i)}var o=e(19),i=e(53);t.exports=r},{19:19,53:53}],22:[function(e,t,n){function r(e,t,n,d,h){if(!u(e))return e;var p=a(t)&&(s(t)||l(t)),y=p?void 0:f(t);return o(y||t,function(o,s){if(y&&(s=o,o=t[s]),c(o))d||(d=[]),h||(h=[]),i(e,t,s,r,n,d,h);else{var a=e[s],u=n?n(a,o,s,e,t):void 0,l=void 0===u;l&&(u=o),void 0===u&&(!p||s in e)||!l&&(u===u?u===a:a!==a)||(e[s]=u)}}),e}var o=e(14),i=e(23),s=e(46),a=e(36),u=e(49),c=e(40),l=e(51),f=e(53);t.exports=r},{14:14,23:23,36:36,40:40,46:46,49:49,51:51,53:53}],23:[function(e,t,n){function r(e,t,n,r,f,d,h){for(var p=d.length,y=t[n];p--;)if(d[p]==y)return void(e[n]=h[p]);var m=e[n],v=f?f(m,y,n,e,t):void 0,g=void 0===v;g&&(v=y,a(y)&&(s(y)||c(y))?v=s(m)?m:a(m)?o(m):[]:u(y)||i(y)?v=i(m)?l(m):u(m)?m:{}:g=!1),d.push(y),h.push(v),g?e[n]=r(v,y,f,d,h):(v===v?v!==m:m===m)&&(e[n]=v)}var o=e(13),i=e(45),s=e(46),a=e(36),u=e(50),c=e(51),l=e(52);t.exports=r},{13:13,36:36,45:45,46:46,50:50,51:51,52:52}],24:[function(e,t,n){function r(e){return function(t){return null==t?void 0:t[e]}}t.exports=r},{}],25:[function(e,t,n){function r(e,t,n){if("function"!=typeof e)return o;if(void 0===t)return e;switch(n){case 1:return function(n){return e.call(t,n)};case 3:return function(n,r,o){return e.call(t,n,r,o)};case 4:return function(n,r,o,i){return e.call(t,n,r,o,i)};case 5:return function(n,r,o,i,s){return e.call(t,n,r,o,i,s)}}return function(){return e.apply(t,arguments)}}var o=e(56);t.exports=r},{56:56}],26:[function(e,t,n){(function(e){function n(e){var t=new r(e.byteLength),n=new o(t);return n.set(new o(e)),t}var r=e.ArrayBuffer,o=e.Uint8Array;t.exports=n}).call(this,"undefined"!=typeof global?global:"undefined"!=typeof self?self:"undefined"!=typeof window?window:{})},{}],27:[function(e,t,n){function r(e){return s(function(t,n){var r=-1,s=null==t?0:n.length,a=s>2?n[s-2]:void 0,u=s>2?n[2]:void 0,c=s>1?n[s-1]:void 0;for("function"==typeof a?(a=o(a,c,5),s-=2):(a="function"==typeof c?c:void 0,s-=a?1:0),u&&i(n[0],n[1],u)&&(a=3>s?void 0:a,s=1);++r<s;){var l=n[r];l&&e(t,l,a)}return t})}var o=e(25),i=e(38),s=e(12);t.exports=r},{12:12,25:25,38:38}],28:[function(e,t,n){function r(e,t){return function(n,r){var a=n?o(n):0;if(!i(a))return e(n,r);for(var u=t?a:-1,c=s(n);(t?u--:++u<a)&&r(c[u],u,c)!==!1;);return n}}var o=e(31),i=e(39),s=e(42);t.exports=r},{31:31,39:39,42:42}],29:[function(e,t,n){function r(e){return function(t,n,r){for(var i=o(t),s=r(t),a=s.length,u=e?a:-1;e?u--:++u<a;){var c=s[u];if(n(i[c],c,i)===!1)break}return t}}var o=e(42);t.exports=r},{42:42}],30:[function(e,t,n){function r(e,t){return function(n,r,s){return"function"==typeof r&&void 0===s&&i(n)?e(n,r):t(n,o(r,s,3))}}var o=e(25),i=e(46);t.exports=r},{25:25,46:46}],31:[function(e,t,n){var r=e(24),o=r("length");t.exports=o},{24:24}],32:[function(e,t,n){function r(e,t){var n=null==e?void 0:e[t];return o(n)?n:void 0}var o=e(48);t.exports=r},{48:48}],33:[function(e,t,n){function r(e){var t=e.length,n=new e.constructor(t);return t&&"string"==typeof e[0]&&i.call(e,"index")&&(n.index=e.index,n.input=e.input),n}var o=Object.prototype,i=o.hasOwnProperty;t.exports=r},{}],34:[function(e,t,n){function r(e,t,n){var r=e.constructor;switch(t){case l:return o(e);case i:case s:return new r(+e);case f:case d:case h:case p:case y:case m:case v:case g:case b:var _=e.buffer;return new r(n?o(_):_,e.byteOffset,e.length);case a:case c:return new r(e);case u:var x=new r(e.source,w.exec(e));x.lastIndex=e.lastIndex}return x}var o=e(26),i="[object Boolean]",s="[object Date]",a="[object Number]",u="[object RegExp]",c="[object String]",l="[object ArrayBuffer]",f="[object Float32Array]",d="[object Float64Array]",h="[object Int8Array]",p="[object Int16Array]",y="[object Int32Array]",m="[object Uint8Array]",v="[object Uint8ClampedArray]",g="[object Uint16Array]",b="[object Uint32Array]",w=/\w*$/;t.exports=r},{26:26}],35:[function(e,t,n){function r(e){var t=e.constructor;return"function"==typeof t&&t instanceof t||(t=Object),new t}t.exports=r},{}],36:[function(e,t,n){function r(e){return null!=e&&i(o(e))}var o=e(31),i=e(39);t.exports=r},{31:31,39:39}],37:[function(e,t,n){function r(e,t){return e="number"==typeof e||o.test(e)?+e:-1,t=null==t?i:t,e>-1&&e%1==0&&t>e}var o=/^\d+$/,i=9007199254740991;t.exports=r},{}],38:[function(e,t,n){function r(e,t,n){if(!s(n))return!1;var r=typeof t;if("number"==r?o(n)&&i(t,n.length):"string"==r&&t in n){var a=n[t];return e===e?e===a:a!==a}return!1}var o=e(36),i=e(37),s=e(49);t.exports=r},{36:36,37:37,49:49}],39:[function(e,t,n){function r(e){return"number"==typeof e&&e>-1&&e%1==0&&o>=e}var o=9007199254740991;t.exports=r},{}],40:[function(e,t,n){function r(e){return!!e&&"object"==typeof e}t.exports=r},{}],41:[function(e,t,n){function r(e){for(var t=u(e),n=t.length,r=n&&e.length,c=!!r&&a(r)&&(i(e)||o(e)),f=-1,d=[];++f<n;){var h=t[f];(c&&s(h,r)||l.call(e,h))&&d.push(h)}return d}var o=e(45),i=e(46),s=e(37),a=e(39),u=e(54),c=Object.prototype,l=c.hasOwnProperty;t.exports=r},{37:37,39:39,45:45,46:46,54:54}],42:[function(e,t,n){function r(e){return o(e)?e:Object(e)}var o=e(49);t.exports=r},{49:49}],43:[function(e,t,n){function r(e,t,n,r){return t&&"boolean"!=typeof t&&s(e,t,n)?t=!1:"function"==typeof t&&(r=n,n=t,t=!1),"function"==typeof n?o(e,t,i(n,r,3)):o(e,t)}var o=e(16),i=e(25),s=e(38);t.exports=r},{16:16,25:25,38:38}],44:[function(e,t,n){function r(e,t,n){return"function"==typeof t?o(e,!0,i(t,n,3)):o(e,!0)}var o=e(16),i=e(25);t.exports=r},{16:16,25:25}],45:[function(e,t,n){function r(e){return i(e)&&o(e)&&a.call(e,"callee")&&!u.call(e,"callee")}var o=e(36),i=e(40),s=Object.prototype,a=s.hasOwnProperty,u=s.propertyIsEnumerable;t.exports=r},{36:36,40:40}],46:[function(e,t,n){var r=e(32),o=e(39),i=e(40),s="[object Array]",a=Object.prototype,u=a.toString,c=r(Array,"isArray"),l=c||function(e){return i(e)&&o(e.length)&&u.call(e)==s};t.exports=l},{32:32,39:39,40:40}],47:[function(e,t,n){function r(e){return o(e)&&a.call(e)==i}var o=e(49),i="[object Function]",s=Object.prototype,a=s.toString;t.exports=r},{49:49}],48:[function(e,t,n){function r(e){return null==e?!1:o(e)?l.test(u.call(e)):i(e)&&s.test(e)}var o=e(47),i=e(40),s=/^\[object .+?Constructor\]$/,a=Object.prototype,u=Function.prototype.toString,c=a.hasOwnProperty,l=RegExp("^"+u.call(c).replace(/[\\^$.*+?()[\]{}|]/g,"\\$&").replace(/hasOwnProperty|(function).*?(?=\\\()| for .+?(?=\\\])/g,"$1.*?")+"$");t.exports=r},{40:40,47:47}],49:[function(e,t,n){function r(e){var t=typeof e;return!!e&&("object"==t||"function"==t)}t.exports=r},{}],50:[function(e,t,n){function r(e){var t;if(!s(e)||l.call(e)!=a||i(e)||!c.call(e,"constructor")&&(t=e.constructor,"function"==typeof t&&!(t instanceof t)))return!1;var n;return o(e,function(e,t){n=t}),void 0===n||c.call(e,n)}var o=e(20),i=e(45),s=e(40),a="[object Object]",u=Object.prototype,c=u.hasOwnProperty,l=u.toString;t.exports=r},{20:20,40:40,45:45}],51:[function(e,t,n){function r(e){return i(e)&&o(e.length)&&!!O[P.call(e)]}var o=e(39),i=e(40),s="[object Arguments]",a="[object Array]",u="[object Boolean]",c="[object Date]",l="[object Error]",f="[object Function]",d="[object Map]",h="[object Number]",p="[object Object]",y="[object RegExp]",m="[object Set]",v="[object String]",g="[object WeakMap]",b="[object ArrayBuffer]",w="[object Float32Array]",_="[object Float64Array]",x="[object Int8Array]",j="[object Int16Array]",T="[object Int32Array]",A="[object Uint8Array]",S="[object Uint8ClampedArray]",k="[object Uint16Array]",R="[object Uint32Array]",O={};O[w]=O[_]=O[x]=O[j]=O[T]=O[A]=O[S]=O[k]=O[R]=!0,O[s]=O[a]=O[b]=O[u]=O[c]=O[l]=O[f]=O[d]=O[h]=O[p]=O[y]=O[m]=O[v]=O[g]=!1;var I=Object.prototype,P=I.toString;t.exports=r},{39:39,40:40}],52:[function(e,t,n){function r(e){return o(e,i(e))}var o=e(17),i=e(54);t.exports=r},{17:17,54:54}],53:[function(e,t,n){var r=e(32),o=e(36),i=e(49),s=e(41),a=r(Object,"keys"),u=a?function(e){var t=null==e?void 0:e.constructor;return"function"==typeof t&&t.prototype===e||"function"!=typeof e&&o(e)?s(e):i(e)?a(e):[]}:s;t.exports=u},{32:32,36:36,41:41,49:49}],54:[function(e,t,n){function r(e){if(null==e)return[];u(e)||(e=Object(e));var t=e.length;t=t&&a(t)&&(i(e)||o(e))&&t||0;for(var n=e.constructor,r=-1,c="function"==typeof n&&n.prototype===e,f=Array(t),d=t>0;++r<t;)f[r]=r+"";for(var h in e)d&&s(h,t)||"constructor"==h&&(c||!l.call(e,h))||f.push(h);return f}var o=e(45),i=e(46),s=e(37),a=e(39),u=e(49),c=Object.prototype,l=c.hasOwnProperty;t.exports=r},{37:37,39:39,45:45,46:46,49:49}],55:[function(e,t,n){var r=e(22),o=e(27),i=o(r);t.exports=i},{22:22,27:27}],56:[function(e,t,n){function r(e){return e}t.exports=r},{}],57:[function(e,t,n){(function(n){"use strict";function r(t,n,r){var s=e(6)("algoliasearch"),a=e(43),u=e(46),c="Usage: algoliasearch(applicationID, apiKey, opts)";if(!t)throw new f.AlgoliaSearchError("Please provide an application ID. "+c);if(!n)throw new f.AlgoliaSearchError("Please provide an API key. "+c);this.applicationID=t,this.apiKey=n;var l=[this.applicationID+"-1.algolianet.com",this.applicationID+"-2.algolianet.com",this.applicationID+"-3.algolianet.com"];this.hosts={read:[],write:[]},this.hostIndex={read:0,write:0},r=r||{};var d=r.protocol||"https:",h=void 0===r.timeout?2e3:r.timeout;if(/:$/.test(d)||(d+=":"),"http:"!==r.protocol&&"https:"!==r.protocol)throw new f.AlgoliaSearchError("protocol must be `http:` or `https:` (was `"+r.protocol+"`)");r.hosts?u(r.hosts)?(this.hosts.read=a(r.hosts),this.hosts.write=a(r.hosts)):(this.hosts.read=a(r.hosts.read),
 this.hosts.write=a(r.hosts.write)):(this.hosts.read=[this.applicationID+"-dsn.algolia.net"].concat(l),this.hosts.write=[this.applicationID+".algolia.net"].concat(l)),this.hosts.read=o(this.hosts.read,i(d)),this.hosts.write=o(this.hosts.write,i(d)),this.requestTimeout=h,this.extraHeaders=[],this.cache={},this._ua=r._ua,this._useCache=void 0===r._useCache?!0:r._useCache,this._setTimeout=r._setTimeout,s("init done, %j",this)}function o(e,t){for(var n=[],r=0;r<e.length;++r)n.push(t(e[r],r));return n}function i(e){return function(t){return e+"//"+t.toLowerCase()}}function s(){var e="Not implemented in this environment.\nIf you feel this is a mistake, write to support@algolia.com";throw new f.AlgoliaSearchError(e)}function a(e,t){var n=e.toLowerCase().replace(".","").replace("()","");return"algoliasearch: `"+e+"` was replaced by `"+t+"`. Please see https://github.com/algolia/algoliasearch-client-js/wiki/Deprecated#"+n}function u(e,t){t(e,0)}function c(e,t){function n(){return r||(console.log(t),r=!0),e.apply(this,arguments)}var r=!1;return n}function l(e){if(void 0===Array.prototype.toJSON)return JSON.stringify(e);var t=Array.prototype.toJSON;delete Array.prototype.toJSON;var n=JSON.stringify(e);return Array.prototype.toJSON=t,n}t.exports=r;var f=e(64);r.prototype={deleteIndex:function(e,t){return this._jsonRequest({method:"DELETE",url:"/1/indexes/"+encodeURIComponent(e),hostType:"write",callback:t})},moveIndex:function(e,t,n){var r={operation:"move",destination:t};return this._jsonRequest({method:"POST",url:"/1/indexes/"+encodeURIComponent(e)+"/operation",body:r,hostType:"write",callback:n})},copyIndex:function(e,t,n){var r={operation:"copy",destination:t};return this._jsonRequest({method:"POST",url:"/1/indexes/"+encodeURIComponent(e)+"/operation",body:r,hostType:"write",callback:n})},getLogs:function(e,t,n){return 0===arguments.length||"function"==typeof e?(n=e,e=0,t=10):(1===arguments.length||"function"==typeof t)&&(n=t,t=10),this._jsonRequest({method:"GET",url:"/1/logs?offset="+e+"&length="+t,hostType:"read",callback:n})},listIndexes:function(e,t){var n="";return void 0===e||"function"==typeof e?t=e:n="?page="+e,this._jsonRequest({method:"GET",url:"/1/indexes"+n,hostType:"read",callback:t})},initIndex:function(e){return new this.Index(this,e)},listUserKeys:function(e){return this._jsonRequest({method:"GET",url:"/1/keys",hostType:"read",callback:e})},getUserKeyACL:function(e,t){return this._jsonRequest({method:"GET",url:"/1/keys/"+e,hostType:"read",callback:t})},deleteUserKey:function(e,t){return this._jsonRequest({method:"DELETE",url:"/1/keys/"+e,hostType:"write",callback:t})},addUserKey:function(e,t,n){(1===arguments.length||"function"==typeof t)&&(n=t,t=null);var r={acl:e};return t&&(r.validity=t.validity,r.maxQueriesPerIPPerHour=t.maxQueriesPerIPPerHour,r.maxHitsPerQuery=t.maxHitsPerQuery,r.indexes=t.indexes,r.description=t.description,t.queryParameters&&(r.queryParameters=this._getSearchParams(t.queryParameters,"")),r.referers=t.referers),this._jsonRequest({method:"POST",url:"/1/keys",body:r,hostType:"write",callback:n})},addUserKeyWithValidity:c(function(e,t,n){return this.addUserKey(e,t,n)},a("client.addUserKeyWithValidity()","client.addUserKey()")),updateUserKey:function(e,t,n,r){(2===arguments.length||"function"==typeof n)&&(r=n,n=null);var o={acl:t};return n&&(o.validity=n.validity,o.maxQueriesPerIPPerHour=n.maxQueriesPerIPPerHour,o.maxHitsPerQuery=n.maxHitsPerQuery,o.indexes=n.indexes,o.description=n.description,n.queryParameters&&(o.queryParameters=this._getSearchParams(n.queryParameters,"")),o.referers=n.referers),this._jsonRequest({method:"PUT",url:"/1/keys/"+e,body:o,hostType:"write",callback:r})},setSecurityTags:function(e){if("[object Array]"===Object.prototype.toString.call(e)){for(var t=[],n=0;n<e.length;++n)if("[object Array]"===Object.prototype.toString.call(e[n])){for(var r=[],o=0;o<e[n].length;++o)r.push(e[n][o]);t.push("("+r.join(",")+")")}else t.push(e[n]);e=t.join(",")}this.securityTags=e},setUserToken:function(e){this.userToken=e},startQueriesBatch:c(function(){this._batch=[]},a("client.startQueriesBatch()","client.search()")),addQueryInBatch:c(function(e,t,n){this._batch.push({indexName:e,query:t,params:n})},a("client.addQueryInBatch()","client.search()")),clearCache:function(){this.cache={}},sendQueriesBatch:c(function(e){return this.search(this._batch,e)},a("client.sendQueriesBatch()","client.search()")),setRequestTimeout:function(e){e&&(this.requestTimeout=parseInt(e,10))},search:function(e,t){var n=this,r={requests:o(e,function(e){var t="";return void 0!==e.query&&(t+="query="+encodeURIComponent(e.query)),{indexName:e.indexName,params:n._getSearchParams(e.params,t)}})};return this._jsonRequest({cache:this.cache,method:"POST",url:"/1/indexes/*/queries",body:r,hostType:"read",callback:t})},batch:function(e,t){return this._jsonRequest({method:"POST",url:"/1/indexes/*/batch",body:{requests:e},hostType:"write",callback:t})},destroy:s,enableRateLimitForward:s,disableRateLimitForward:s,useSecuredAPIKey:s,disableSecuredAPIKey:s,generateSecuredApiKey:s,Index:function(e,t){this.indexName=t,this.as=e,this.typeAheadArgs=null,this.typeAheadValueOption=null,this.cache={}},setExtraHeader:function(e,t){this.extraHeaders.push({name:e.toLowerCase(),value:t})},addAlgoliaAgent:function(e){this._ua+=";"+e},_sendQueriesBatch:function(e,t){function n(){for(var t="",n=0;n<e.requests.length;++n){var r="/1/indexes/"+encodeURIComponent(e.requests[n].indexName)+"?"+e.requests[n].params;t+=n+"="+encodeURIComponent(r)+"&"}return t}return this._jsonRequest({cache:this.cache,method:"POST",url:"/1/indexes/*/queries",body:e,hostType:"read",fallback:{method:"GET",url:"/1/indexes/*",body:{params:n()}},callback:t})},_jsonRequest:function(t){function r(e,u){function h(e){var t=e&&e.body&&e.body.message&&e.body.status||e.statusCode||e&&e.body&&200;i("received response: statusCode: %s, computed statusCode: %d, headers: %j",e.statusCode,t,e.headers),n.env.DEBUG&&-1!==n.env.DEBUG.indexOf("debugBody")&&i("body: %j",e.body);var r=200===t||201===t,o=!r&&4!==Math.floor(t/100)&&1!==Math.floor(t/100);if(a._useCache&&r&&s&&(s[m]=e.responseText),r)return e.body;if(o)return c+=1,y();var u=new f.AlgoliaSearchError(e.body&&e.body.message);return a._promise.reject(u)}function p(n){return i("error: %s, stack: %s",n.message,n.stack),n instanceof f.AlgoliaSearchError||(n=new f.Unknown(n&&n.message,n)),c+=1,n instanceof f.Unknown||n instanceof f.UnparsableJSON||c>=a.hosts[t.hostType].length&&(d||!t.fallback||!a._request.fallback)?a._promise.reject(n):(a.hostIndex[t.hostType]=++a.hostIndex[t.hostType]%a.hosts[t.hostType].length,n instanceof f.RequestTimeout?y():(a._request.fallback&&!a.useFallback&&(a.useFallback=!0),r(e,u)))}function y(){return a.hostIndex[t.hostType]=++a.hostIndex[t.hostType]%a.hosts[t.hostType].length,u.timeout=a.requestTimeout*(c+1),r(e,u)}var m;if(a._useCache&&(m=t.url),a._useCache&&o&&(m+="_body_"+u.body),a._useCache&&s&&void 0!==s[m])return i("serving response from cache"),a._promise.resolve(JSON.parse(s[m]));if(c>=a.hosts[t.hostType].length||a.useFallback&&!d)return t.fallback&&a._request.fallback&&!d?(i("switching to fallback"),c=0,u.method=t.fallback.method,u.url=t.fallback.url,u.jsonBody=t.fallback.body,u.jsonBody&&(u.body=l(u.jsonBody)),u.timeout=a.requestTimeout*(c+1),a.hostIndex[t.hostType]=0,d=!0,r(a._request.fallback,u)):(i("could not get any response"),a._promise.reject(new f.AlgoliaSearchError("Cannot connect to the AlgoliaSearch API. Send an email to support@algolia.com to report and resolve the issue. Application id was: "+a.applicationID)));var v=a.hosts[t.hostType][a.hostIndex[t.hostType]]+u.url,g={body:o,jsonBody:t.body,method:u.method,headers:a._computeRequestHeaders(),timeout:u.timeout,debug:i};return i("method: %s, url: %s, headers: %j, timeout: %d",g.method,v,g.headers,g.timeout),e===a._request.fallback&&i("using fallback"),e.call(a,v,g).then(h,p)}var o,i=e(6)("algoliasearch:"+t.url),s=t.cache,a=this,c=0,d=!1;void 0!==t.body&&(o=l(t.body)),i("request start");var h=a.useFallback&&t.fallback,p=h?t.fallback:t,y=r(h?a._request.fallback:a._request,{url:p.url,method:p.method,body:o,jsonBody:t.body,timeout:a.requestTimeout*(c+1)});return t.callback?void y.then(function(e){u(function(){t.callback(null,e)},a._setTimeout||setTimeout)},function(e){u(function(){t.callback(e)},a._setTimeout||setTimeout)}):y},_getSearchParams:function(e,t){if(this._isUndefined(e)||null===e)return t;for(var n in e)null!==n&&void 0!==e[n]&&e.hasOwnProperty(n)&&(t+=""===t?"":"&",t+=n+"="+encodeURIComponent("[object Array]"===Object.prototype.toString.call(e[n])?l(e[n]):e[n]));return t},_isUndefined:function(e){return void 0===e},_computeRequestHeaders:function(){var t=e(11),n={"x-algolia-api-key":this.apiKey,"x-algolia-application-id":this.applicationID,"x-algolia-agent":this._ua};return this.userToken&&(n["x-algolia-usertoken"]=this.userToken),this.securityTags&&(n["x-algolia-tagfilters"]=this.securityTags),this.extraHeaders&&t(this.extraHeaders,function(e){n[e.name]=e.value}),n}},r.prototype.Index.prototype={clearCache:function(){this.cache={}},addObject:function(e,t,n){var r=this;return(1===arguments.length||"function"==typeof t)&&(n=t,t=void 0),this.as._jsonRequest({method:void 0!==t?"PUT":"POST",url:"/1/indexes/"+encodeURIComponent(r.indexName)+(void 0!==t?"/"+encodeURIComponent(t):""),body:e,hostType:"write",callback:n})},addObjects:function(e,t){for(var n=this,r={requests:[]},o=0;o<e.length;++o){var i={action:"addObject",body:e[o]};r.requests.push(i)}return this.as._jsonRequest({method:"POST",url:"/1/indexes/"+encodeURIComponent(n.indexName)+"/batch",body:r,hostType:"write",callback:t})},getObject:function(e,t,n){var r=this;(1===arguments.length||"function"==typeof t)&&(n=t,t=void 0);var o="";if(void 0!==t){o="?attributes=";for(var i=0;i<t.length;++i)0!==i&&(o+=","),o+=t[i]}return this.as._jsonRequest({method:"GET",url:"/1/indexes/"+encodeURIComponent(r.indexName)+"/"+encodeURIComponent(e)+o,hostType:"read",callback:n})},getObjects:function(e,t,n){var r=this;(1===arguments.length||"function"==typeof t)&&(n=t,t=void 0);var i={requests:o(e,function(e){var n={indexName:r.indexName,objectID:e};return t&&(n.attributesToRetrieve=t.join(",")),n})};return this.as._jsonRequest({method:"POST",url:"/1/indexes/*/objects",hostType:"read",body:i,callback:n})},partialUpdateObject:function(e,t){var n=this;return this.as._jsonRequest({method:"POST",url:"/1/indexes/"+encodeURIComponent(n.indexName)+"/"+encodeURIComponent(e.objectID)+"/partial",body:e,hostType:"write",callback:t})},partialUpdateObjects:function(e,t){for(var n=this,r={requests:[]},o=0;o<e.length;++o){var i={action:"partialUpdateObject",objectID:e[o].objectID,body:e[o]};r.requests.push(i)}return this.as._jsonRequest({method:"POST",url:"/1/indexes/"+encodeURIComponent(n.indexName)+"/batch",body:r,hostType:"write",callback:t})},saveObject:function(e,t){var n=this;return this.as._jsonRequest({method:"PUT",url:"/1/indexes/"+encodeURIComponent(n.indexName)+"/"+encodeURIComponent(e.objectID),body:e,hostType:"write",callback:t})},saveObjects:function(e,t){for(var n=this,r={requests:[]},o=0;o<e.length;++o){var i={action:"updateObject",objectID:e[o].objectID,body:e[o]};r.requests.push(i)}return this.as._jsonRequest({method:"POST",url:"/1/indexes/"+encodeURIComponent(n.indexName)+"/batch",body:r,hostType:"write",callback:t})},deleteObject:function(e,t){if("function"==typeof e||"string"!=typeof e&&"number"!=typeof e){var n=new f.AlgoliaSearchError("Cannot delete an object without an objectID");return t=e,"function"==typeof t?t(n):this.as._promise.reject(n)}var r=this;return this.as._jsonRequest({method:"DELETE",url:"/1/indexes/"+encodeURIComponent(r.indexName)+"/"+encodeURIComponent(e),hostType:"write",callback:t})},deleteObjects:function(e,t){var n=this,r={requests:o(e,function(e){return{action:"deleteObject",objectID:e,body:{objectID:e}}})};return this.as._jsonRequest({method:"POST",url:"/1/indexes/"+encodeURIComponent(n.indexName)+"/batch",body:r,hostType:"write",callback:t})},deleteByQuery:function(t,n,r){function i(e){if(0===e.nbHits)return e;var t=o(e.hits,function(e){return e.objectID});return d.deleteObjects(t).then(s).then(a)}function s(e){return d.waitTask(e.taskID)}function a(){return d.deleteByQuery(t,n)}function c(){u(function(){r(null)},h._setTimeout||setTimeout)}function l(e){u(function(){r(e)},h._setTimeout||setTimeout)}var f=e(43),d=this,h=d.as;1===arguments.length||"function"==typeof n?(r=n,n={}):n=f(n),n.attributesToRetrieve="objectID",n.hitsPerPage=1e3,n.distinct=!1,this.clearCache();var p=this.search(t,n).then(i);return r?void p.then(c,l):p},search:function(e,t,n){if("function"==typeof e&&"object"==typeof t||"object"==typeof n)throw new f.AlgoliaSearchError("index.search usage is index.search(query, params, cb)");0===arguments.length||"function"==typeof e?(n=e,e=""):(1===arguments.length||"function"==typeof t)&&(n=t,t=void 0),"object"==typeof e&&null!==e?(t=e,e=void 0):(void 0===e||null===e)&&(e="");var r="";return void 0!==e&&(r+="query="+encodeURIComponent(e)),void 0!==t&&(r=this.as._getSearchParams(t,r)),this._search(r,n)},browse:function(t,n,r){var o,i,s=e(55),a=this;0===arguments.length||1===arguments.length&&"function"==typeof arguments[0]?(o=0,r=arguments[0],t=void 0):"number"==typeof arguments[0]?(o=arguments[0],"number"==typeof arguments[1]?i=arguments[1]:"function"==typeof arguments[1]&&(r=arguments[1],i=void 0),t=void 0,n=void 0):"object"==typeof arguments[0]?("function"==typeof arguments[1]&&(r=arguments[1]),n=arguments[0],t=void 0):"string"==typeof arguments[0]&&"function"==typeof arguments[1]&&(r=arguments[1],n=void 0),n=s({},n||{},{page:o,hitsPerPage:i,query:t});var u=this.as._getSearchParams(n,"");return this.as._jsonRequest({method:"GET",url:"/1/indexes/"+encodeURIComponent(a.indexName)+"/browse?"+u,hostType:"read",callback:r})},browseFrom:function(e,t){return this.as._jsonRequest({method:"GET",url:"/1/indexes/"+encodeURIComponent(this.indexName)+"/browse?cursor="+encodeURIComponent(e),hostType:"read",callback:t})},browseAll:function(t,n){function r(e){if(!a._stopped){var t;t=void 0!==e?"cursor="+encodeURIComponent(e):l,u._jsonRequest({method:"GET",url:"/1/indexes/"+encodeURIComponent(c.indexName)+"/browse?"+t,hostType:"read",callback:o})}}function o(e,t){return a._stopped?void 0:e?void a._error(e):(a._result(t),void 0===t.cursor?void a._end():void r(t.cursor))}"object"==typeof t&&(n=t,t=void 0);var i=e(55),s=e(58),a=new s,u=this.as,c=this,l=u._getSearchParams(i({},n||{},{query:t}),"");return r(),a},ttAdapter:function(e){var t=this;return function(n,r,o){var i;i="function"==typeof o?o:r,t.search(n,e,function(e,t){return e?void i(e):void i(t.hits)})}},waitTask:function(e,t){function n(){return l._jsonRequest({method:"GET",hostType:"read",url:"/1/indexes/"+encodeURIComponent(c.indexName)+"/task/"+e}).then(function(e){a++;var t=i*a*a;return t>s&&(t=s),"published"!==e.status?l._promise.delay(t).then(n):e})}function r(e){u(function(){t(null,e)},l._setTimeout||setTimeout)}function o(e){u(function(){t(e)},l._setTimeout||setTimeout)}var i=100,s=5e3,a=0,c=this,l=c.as,f=n();return t?void f.then(r,o):f},clearIndex:function(e){var t=this;return this.as._jsonRequest({method:"POST",url:"/1/indexes/"+encodeURIComponent(t.indexName)+"/clear",hostType:"write",callback:e})},getSettings:function(e){var t=this;return this.as._jsonRequest({method:"GET",url:"/1/indexes/"+encodeURIComponent(t.indexName)+"/settings",hostType:"read",callback:e})},setSettings:function(e,t){var n=this;return this.as._jsonRequest({method:"PUT",url:"/1/indexes/"+encodeURIComponent(n.indexName)+"/settings",hostType:"write",body:e,callback:t})},listUserKeys:function(e){var t=this;return this.as._jsonRequest({method:"GET",url:"/1/indexes/"+encodeURIComponent(t.indexName)+"/keys",hostType:"read",callback:e})},getUserKeyACL:function(e,t){var n=this;return this.as._jsonRequest({method:"GET",url:"/1/indexes/"+encodeURIComponent(n.indexName)+"/keys/"+e,hostType:"read",callback:t})},deleteUserKey:function(e,t){var n=this;return this.as._jsonRequest({method:"DELETE",url:"/1/indexes/"+encodeURIComponent(n.indexName)+"/keys/"+e,hostType:"write",callback:t})},addUserKey:function(e,t,n){(1===arguments.length||"function"==typeof t)&&(n=t,t=null);var r={acl:e};return t&&(r.validity=t.validity,r.maxQueriesPerIPPerHour=t.maxQueriesPerIPPerHour,r.maxHitsPerQuery=t.maxHitsPerQuery,r.description=t.description,t.queryParameters&&(r.queryParameters=this.as._getSearchParams(t.queryParameters,"")),r.referers=t.referers),this.as._jsonRequest({method:"POST",url:"/1/indexes/"+encodeURIComponent(this.indexName)+"/keys",body:r,hostType:"write",callback:n})},addUserKeyWithValidity:c(function(e,t,n){return this.addUserKey(e,t,n)},a("index.addUserKeyWithValidity()","index.addUserKey()")),updateUserKey:function(e,t,n,r){(2===arguments.length||"function"==typeof n)&&(r=n,n=null);var o={acl:t};return n&&(o.validity=n.validity,o.maxQueriesPerIPPerHour=n.maxQueriesPerIPPerHour,o.maxHitsPerQuery=n.maxHitsPerQuery,o.description=n.description,n.queryParameters&&(o.queryParameters=this.as._getSearchParams(n.queryParameters,"")),o.referers=n.referers),this.as._jsonRequest({method:"PUT",url:"/1/indexes/"+encodeURIComponent(this.indexName)+"/keys/"+e,body:o,hostType:"write",callback:r})},_search:function(e,t){return this.as._jsonRequest({cache:this.cache,method:"POST",url:"/1/indexes/"+encodeURIComponent(this.indexName)+"/query",body:{params:e},hostType:"read",fallback:{method:"GET",url:"/1/indexes/"+encodeURIComponent(this.indexName),body:{params:e}},callback:t})},as:null,indexName:null,typeAheadArgs:null,typeAheadValueOption:null}}).call(this,e(2))},{11:11,2:2,43:43,46:46,55:55,58:58,6:6,64:64}],58:[function(e,t,n){"use strict";function r(){}t.exports=r;var o=e(10),i=e(1).EventEmitter;o(r,i),r.prototype.stop=function(){this._stopped=!0,this._clean()},r.prototype._end=function(){this.emit("end"),this._clean()},r.prototype._error=function(e){this.emit("error",e),this._clean()},r.prototype._result=function(e){this.emit("result",e)},r.prototype._clean=function(){this.removeAllListeners("stop"),this.removeAllListeners("end"),this.removeAllListeners("error"),this.removeAllListeners("result")}},{1:1,10:10}],59:[function(e,t,n){"use strict";var r=e(10),o=e(11),i=e(57),s=e(64),a=e(62),u=e(63);window.algoliasearch=e(60),window.angular.module("algoliasearch",[]).service("algolia",["$http","$q","$timeout",function(t,n,c){function l(t,n,r){var o=e(44),i=e(61);return r=o(r||{}),void 0===r.protocol&&(r.protocol=i()),r._ua=r._ua||l.ua,new f(t,n,r)}function f(){i.apply(this,arguments)}return l.version=e(65),l.ua="Algolia for AngularJS "+l.version,window.__algolia={debug:e(6),algoliasearch:l},r(f,i),f.prototype._request=function(e,r){function i(e){d({statusCode:e.status,headers:e.headers,body:e.data,responseText:e.responseText})}function u(e){return l?void 0:0===e.status?void h(new s.Network({more:e})):void d({body:e.data,statusCode:e.status})}var l,f=n.defer(),d=f.resolve,h=f.reject,p=r.body;e=a(e,r.headers);var y=n.defer(),m=y.promise;c(function(){l=!0,y.resolve("test"),h(new s.RequestTimeout)},r.timeout);var v={};return o(t.defaults.headers.common,function(e,t){v[t]=void 0}),v.accept="application/json",p&&("POST"===r.method?v["content-type"]="application/x-www-form-urlencoded":v["content-type"]="application/json"),t({url:e,method:r.method,data:p,cache:!1,timeout:m,headers:v,withCredentials:!1}).then(i,u),f.promise},f.prototype._request.fallback=function(e,t){e=a(e,t.headers);var r=n.defer(),o=r.resolve,i=r.reject;return u(e,t,function(e,t){return e?void i(e):void o(t)}),r.promise},f.prototype._promise={reject:function(e){return n.reject(e)},resolve:function(e){return n.when(e)},delay:function(e){var t=n.defer(),r=t.resolve;return c(r,e),t.promise}},{Client:function(e,t,n){return l(e,t,n)},ua:l.ua,version:l.version}}])},{10:10,11:11,44:44,57:57,6:6,60:60,61:61,62:62,63:63,64:64,65:65}],60:[function(e,t,n){"use strict";function r(t,n,i){var s=e(44),a=e(61);return i=s(i||{}),void 0===i.protocol&&(i.protocol=a()),i._ua=i._ua||r.ua,new o(t,n,i)}function o(){a.apply(this,arguments)}t.exports=r;var i=e(10),s=window.Promise||e(9).Promise,a=e(57),u=e(64),c=e(62),l=e(63);r.version=e(65),r.ua="Algolia for vanilla JavaScript "+r.version,window.__algolia={debug:e(6),algoliasearch:r};var f={hasXMLHttpRequest:"XMLHttpRequest"in window,hasXDomainRequest:"XDomainRequest"in window,cors:"withCredentials"in new XMLHttpRequest,timeout:"timeout"in new XMLHttpRequest};i(o,a),o.prototype._request=function(e,t){return new s(function(n,r){function o(){if(!l){f.timeout||clearTimeout(a);var e;try{e={body:JSON.parse(h.responseText),responseText:h.responseText,statusCode:h.status,headers:h.getAllResponseHeaders&&h.getAllResponseHeaders()||{}}}catch(t){e=new u.UnparsableJSON({more:h.responseText})}e instanceof u.UnparsableJSON?r(e):n(e)}}function i(e){l||(f.timeout||clearTimeout(a),r(new u.Network({more:e})))}function s(){f.timeout||(l=!0,h.abort()),r(new u.RequestTimeout)}if(!f.cors&&!f.hasXDomainRequest)return void r(new u.Network("CORS not supported"));e=c(e,t.headers);var a,l,d=t.body,h=f.cors?new XMLHttpRequest:new XDomainRequest;h instanceof XMLHttpRequest?h.open(t.method,e,!0):h.open(t.method,e),f.cors&&(d&&("POST"===t.method?h.setRequestHeader("content-type","application/x-www-form-urlencoded"):h.setRequestHeader("content-type","application/json")),h.setRequestHeader("accept","application/json")),h.onprogress=function(){},h.onload=o,h.onerror=i,f.timeout?(h.timeout=t.timeout,h.ontimeout=s):a=setTimeout(s,t.timeout),h.send(d)})},o.prototype._request.fallback=function(e,t){return e=c(e,t.headers),new s(function(n,r){l(e,t,function(e,t){return e?void r(e):void n(t)})})},o.prototype._promise={reject:function(e){return s.reject(e)},resolve:function(e){return s.resolve(e)},delay:function(e){return new s(function(t){setTimeout(t,e)})}}},{10:10,44:44,57:57,6:6,61:61,62:62,63:63,64:64,65:65,9:9}],61:[function(e,t,n){"use strict";function r(){var e=window.document.location.protocol;return"http:"!==e&&"https:"!==e&&(e="http:"),e}t.exports=r},{}],62:[function(e,t,n){"use strict";function r(e,t){return e+=/\?/.test(e)?"&":"?",e+o.encode(t)}t.exports=r;var o=e(5)},{5:5}],63:[function(e,t,n){"use strict";function r(e,t,n){function r(){t.debug("JSONP: success"),y||f||(y=!0,l||(t.debug("JSONP: Fail. Script loaded but did not call the callback"),a(),n(new o.JSONPScriptFail)))}function s(){("loaded"===this.readyState||"complete"===this.readyState)&&r()}function a(){clearTimeout(m),h.onload=null,h.onreadystatechange=null,h.onerror=null,d.removeChild(h);try{delete window[p],delete window[p+"_loaded"]}catch(e){window[p]=null,window[p+"_loaded"]=null}}function u(){t.debug("JSONP: Script timeout"),f=!0,a(),n(new o.RequestTimeout)}function c(){t.debug("JSONP: Script error"),y||f||(a(),n(new o.JSONPScriptError))}if("GET"!==t.method)return void n(new Error("Method "+t.method+" "+e+" is not supported by JSONP."));t.debug("JSONP: start");var l=!1,f=!1;i+=1;var d=document.getElementsByTagName("head")[0],h=document.createElement("script"),p="algoliaJSONP_"+i,y=!1;window[p]=function(e){try{delete window[p]}catch(t){window[p]=void 0}f||(l=!0,a(),n(null,{body:e}))},e+="&callback="+p,t.jsonBody&&t.jsonBody.params&&(e+="&"+t.jsonBody.params);var m=setTimeout(u,t.timeout);h.onreadystatechange=s,h.onload=r,h.onerror=c,h.async=!0,h.defer=!0,h.src=e,d.appendChild(h)}t.exports=r;var o=e(64),i=0},{64:64}],64:[function(e,t,n){"use strict";function r(t,n){var r=e(11),o=this;"function"==typeof Error.captureStackTrace?Error.captureStackTrace(this,this.constructor):o.stack=(new Error).stack||"Cannot get a stacktrace, browser is too old",this.name=this.constructor.name,this.message=t||"Unknown error",n&&r(n,function(e,t){o[t]=e})}function o(e,t){function n(){var n=Array.prototype.slice.call(arguments,0);"string"!=typeof n[0]&&n.unshift(t),r.apply(this,n),this.name="AlgoliaSearch"+e+"Error"}return i(n,r),n}var i=e(10);i(r,Error),t.exports={AlgoliaSearchError:r,UnparsableJSON:o("UnparsableJSON","Could not parse the incoming response as JSON, see err.more for details"),RequestTimeout:o("RequestTimeout","Request timedout before getting a response"),Network:o("Network","Network issue, see err.more for details"),JSONPScriptFail:o("JSONPScriptFail","<script> was loaded but did not call our provided callback"),JSONPScriptError:o("JSONPScriptError","<script> unable to load due to an `error` event on it"),Unknown:o("Unknown","Unknown error occured")}},{10:10,11:11}],65:[function(e,t,n){"use strict";t.exports="3.8.1"},{}]},{},[59]);
 'use strict';
+
+angular
+    .module('ngGeolocation', [])
+    .factory('$geolocation', ['$rootScope', '$window', '$q', function($rootScope, $window, $q) {
+
+        function supported() {
+            return 'geolocation' in $window.navigator;
+        }
+
+        var retVal = {
+            getCurrentPosition: function(options) {
+                var deferred = $q.defer();
+                if(supported()) {
+                    $window.navigator.geolocation.getCurrentPosition(
+                        function(position) {
+                            $rootScope.$apply(function() {
+                                retVal.position.coords = position.coords;
+                                retVal.position.timestamp = position.timestamp;
+                                deferred.resolve(position);
+                            });
+                        },
+                        function(error) {
+                            $rootScope.$apply(function() {
+                                deferred.reject({error: error});
+                            });
+                        }, options);
+                } else {
+                    deferred.reject({error: {
+                        code: 2,
+                        message: 'This web browser does not support HTML5 Geolocation'
+                    }});
+                }
+                return deferred.promise;
+            },
+
+            watchPosition: function(options) {
+                if(supported()) {
+                    if(!this.watchId) {
+                        this.watchId = $window.navigator.geolocation.watchPosition(
+                            function(position) {
+                                $rootScope.$apply(function() {
+                                    retVal.position.coords = position.coords;
+                                    retVal.position.timestamp = position.timestamp;
+                                    delete retVal.position.error;
+                                    $rootScope.$broadcast('$geolocation.position.changed', position);
+                                });
+                            },
+                            function(error) {
+                                $rootScope.$apply(function() {
+                                    retVal.position.error = error;
+                                    delete retVal.position.coords;
+                                    delete retVal.position.timestamp;
+                                    $rootScope.$broadcast('$geolocation.position.error', error);
+                                });
+                            }, options);
+                    }
+                } else {
+                    retVal.position = {
+                        error: {
+                            code: 2,
+                            message: 'This web browser does not support HTML5 Geolocation'
+                        }
+                    };
+                }
+            },
+
+            clearWatch: function() {
+                if(this.watchId) {
+                    $window.navigator.geolocation.clearWatch(this.watchId);
+                    delete this.watchId;
+                }
+            },
+
+            position: {}
+        };
+
+        return retVal;
+    }]);
+'use strict';
 var Config = {};
 Config.Emoji = {
   "00a9": ["\u00A9", ["copyright"]],
@@ -6767,6 +6846,72 @@ function buildMap()
  */
 angular.module("btford.socket-io",[]).provider("socketFactory",function(){"use strict";var n="socket:";this.$get=["$rootScope","$timeout",function(t,e){var r=function(n,t){return t?function(){var r=arguments;e(function(){t.apply(n,r)},0)}:angular.noop};return function(e){e=e||{};var o=e.ioSocket||io.connect(),c=void 0===e.prefix?n:e.prefix,u=e.scope||t,i=function(n,t){o.on(n,t.__ng=r(o,t))},a=function(n,t){o.once(n,t.__ng=r(o,t))},s={on:i,addListener:i,once:a,emit:function(n,t,e){var c=arguments.length-1,e=arguments[c];return"function"==typeof e&&(e=r(o,e),arguments[c]=e),o.emit.apply(o,arguments)},removeListener:function(n,t){return t&&t.__ng&&(arguments[1]=t.__ng),o.removeListener.apply(o,arguments)},removeAllListeners:function(){return o.removeAllListeners.apply(o,arguments)},disconnect:function(n){return o.disconnect(n)},connect:function(){return o.connect()},forward:function(n,t){n instanceof Array==!1&&(n=[n]),t||(t=u),n.forEach(function(n){var e=c+n,u=r(o,function(){Array.prototype.unshift.call(arguments,e),t.$broadcast.apply(t,arguments)});t.$on("$destroy",function(){o.removeListener(n,u)}),o.on(n,u)})}};return s}}]});
 "use strict";angular.module("puigcerber.countryPicker",[]).provider("pvpCountries",function a(){var a=[{name:"Afghanistan",alpha2:"AF",alpha3:"AFG",numeric:"004"},{name:"Åland Islands",alpha2:"AX",alpha3:"ALA",numeric:"248"},{name:"Albania",alpha2:"AL",alpha3:"ALB",numeric:"008"},{name:"Algeria",alpha2:"DZ",alpha3:"DZA",numeric:"012"},{name:"American Samoa",alpha2:"AS",alpha3:"ASM",numeric:"016"},{name:"Andorra",alpha2:"AD",alpha3:"AND",numeric:"020"},{name:"Angola",alpha2:"AO",alpha3:"AGO",numeric:"024"},{name:"Anguilla",alpha2:"AI",alpha3:"AIA",numeric:"660"},{name:"Antarctica",alpha2:"AQ",alpha3:"ATA",numeric:"010"},{name:"Antigua and Barbuda",alpha2:"AG",alpha3:"ATG",numeric:"028"},{name:"Argentina",alpha2:"AR",alpha3:"ARG",numeric:"032"},{name:"Armenia",alpha2:"AM",alpha3:"ARM",numeric:"051"},{name:"Aruba",alpha2:"AW",alpha3:"ABW",numeric:"533"},{name:"Australia",alpha2:"AU",alpha3:"AUS",numeric:"036"},{name:"Austria",alpha2:"AT",alpha3:"AUT",numeric:"040"},{name:"Azerbaijan",alpha2:"AZ",alpha3:"AZE",numeric:"031"},{name:"Bahamas (the)",alpha2:"BS",alpha3:"BHS",numeric:"044"},{name:"Bahrain",alpha2:"BH",alpha3:"BHR",numeric:"048"},{name:"Bangladesh",alpha2:"BD",alpha3:"BGD",numeric:"050"},{name:"Barbados",alpha2:"BB",alpha3:"BRB",numeric:"052"},{name:"Belarus",alpha2:"BY",alpha3:"BLR",numeric:"112"},{name:"Belgium",alpha2:"BE",alpha3:"BEL",numeric:"056"},{name:"Belize",alpha2:"BZ",alpha3:"BLZ",numeric:"084"},{name:"Benin",alpha2:"BJ",alpha3:"BEN",numeric:"204"},{name:"Bermuda",alpha2:"BM",alpha3:"BMU",numeric:"060"},{name:"Bhutan",alpha2:"BT",alpha3:"BTN",numeric:"064"},{name:"Bolivia (Plurinational State of)",alpha2:"BO",alpha3:"BOL",numeric:"068"},{name:"Bonaire, Sint Eustatius and Saba",alpha2:"BQ",alpha3:"BES",numeric:"535"},{name:"Bosnia and Herzegovina",alpha2:"BA",alpha3:"BIH",numeric:"070"},{name:"Botswana",alpha2:"BW",alpha3:"BWA",numeric:"072"},{name:"Bouvet Island",alpha2:"BV",alpha3:"BVT",numeric:"074"},{name:"Brazil",alpha2:"BR",alpha3:"BRA",numeric:"076"},{name:"British Indian Ocean Territory (the)",alpha2:"IO",alpha3:"IOT",numeric:"086"},{name:"Brunei Darussalam",alpha2:"BN",alpha3:"BRN",numeric:"096"},{name:"Bulgaria",alpha2:"BG",alpha3:"BGR",numeric:"100"},{name:"Burkina Faso",alpha2:"BF",alpha3:"BFA",numeric:"854"},{name:"Burundi",alpha2:"BI",alpha3:"BDI",numeric:"108"},{name:"Cabo Verde",alpha2:"CV",alpha3:"CPV",numeric:"132"},{name:"Cambodia",alpha2:"KH",alpha3:"KHM",numeric:"116"},{name:"Cameroon",alpha2:"CM",alpha3:"CMR",numeric:"120"},{name:"Canada",alpha2:"CA",alpha3:"CAN",numeric:"124"},{name:"Cayman Islands (the)",alpha2:"KY",alpha3:"CYM",numeric:"136"},{name:"Central African Republic (the)",alpha2:"CF",alpha3:"CAF",numeric:"140"},{name:"Chad",alpha2:"TD",alpha3:"TCD",numeric:"148"},{name:"Chile",alpha2:"CL",alpha3:"CHL",numeric:"152"},{name:"China",alpha2:"CN",alpha3:"CHN",numeric:"156"},{name:"Christmas Island",alpha2:"CX",alpha3:"CXR",numeric:"162"},{name:"Cocos (Keeling) Islands (the)",alpha2:"CC",alpha3:"CCK",numeric:"166"},{name:"Colombia",alpha2:"CO",alpha3:"COL",numeric:"170"},{name:"Comoros (the)",alpha2:"KM",alpha3:"COM",numeric:"174"},{name:"Congo (the)",alpha2:"CG",alpha3:"COG",numeric:"178"},{name:"Congo (the Democratic Republic of the)",alpha2:"CD",alpha3:"COD",numeric:"180"},{name:"Cook Islands (the)",alpha2:"CK",alpha3:"COK",numeric:"184"},{name:"Costa Rica",alpha2:"CR",alpha3:"CRI",numeric:"188"},{name:"Côte d'Ivoire",alpha2:"CI",alpha3:"CIV",numeric:"384"},{name:"Croatia",alpha2:"HR",alpha3:"HRV",numeric:"191"},{name:"Cuba",alpha2:"CU",alpha3:"CUB",numeric:"192"},{name:"Curaçao",alpha2:"CW",alpha3:"CUW",numeric:"531"},{name:"Cyprus",alpha2:"CY",alpha3:"CYP",numeric:"196"},{name:"Czech Republic (the)",alpha2:"CZ",alpha3:"CZE",numeric:"203"},{name:"Denmark",alpha2:"DK",alpha3:"DNK",numeric:"208"},{name:"Djibouti",alpha2:"DJ",alpha3:"DJI",numeric:"262"},{name:"Dominica",alpha2:"DM",alpha3:"DMA",numeric:"212"},{name:"Dominican Republic (the)",alpha2:"DO",alpha3:"DOM",numeric:"214"},{name:"Ecuador",alpha2:"EC",alpha3:"ECU",numeric:"218"},{name:"Egypt",alpha2:"EG",alpha3:"EGY",numeric:"818"},{name:"El Salvador",alpha2:"SV",alpha3:"SLV",numeric:"222"},{name:"Equatorial Guinea",alpha2:"GQ",alpha3:"GNQ",numeric:"226"},{name:"Eritrea",alpha2:"ER",alpha3:"ERI",numeric:"232"},{name:"Estonia",alpha2:"EE",alpha3:"EST",numeric:"233"},{name:"Ethiopia",alpha2:"ET",alpha3:"ETH",numeric:"231"},{name:"Falkland Islands (the) [Malvinas]",alpha2:"FK",alpha3:"FLK",numeric:"238"},{name:"Faroe Islands (the)",alpha2:"FO",alpha3:"FRO",numeric:"234"},{name:"Fiji",alpha2:"FJ",alpha3:"FJI",numeric:"242"},{name:"Finland",alpha2:"FI",alpha3:"FIN",numeric:"246"},{name:"France",alpha2:"FR",alpha3:"FRA",numeric:"250"},{name:"French Guiana",alpha2:"GF",alpha3:"GUF",numeric:"254"},{name:"French Polynesia",alpha2:"PF",alpha3:"PYF",numeric:"258"},{name:"French Southern Territories (the)",alpha2:"TF",alpha3:"ATF",numeric:"260"},{name:"Gabon",alpha2:"GA",alpha3:"GAB",numeric:"266"},{name:"Gambia (the)",alpha2:"GM",alpha3:"GMB",numeric:"270"},{name:"Georgia",alpha2:"GE",alpha3:"GEO",numeric:"268"},{name:"Germany",alpha2:"DE",alpha3:"DEU",numeric:"276"},{name:"Ghana",alpha2:"GH",alpha3:"GHA",numeric:"288"},{name:"Gibraltar",alpha2:"GI",alpha3:"GIB",numeric:"292"},{name:"Greece",alpha2:"GR",alpha3:"GRC",numeric:"300"},{name:"Greenland",alpha2:"GL",alpha3:"GRL",numeric:"304"},{name:"Grenada",alpha2:"GD",alpha3:"GRD",numeric:"308"},{name:"Guadeloupe",alpha2:"GP",alpha3:"GLP",numeric:"312"},{name:"Guam",alpha2:"GU",alpha3:"GUM",numeric:"316"},{name:"Guatemala",alpha2:"GT",alpha3:"GTM",numeric:"320"},{name:"Guernsey",alpha2:"GG",alpha3:"GGY",numeric:"831"},{name:"Guinea",alpha2:"GN",alpha3:"GIN",numeric:"324"},{name:"Guinea-Bissau",alpha2:"GW",alpha3:"GNB",numeric:"624"},{name:"Guyana",alpha2:"GY",alpha3:"GUY",numeric:"328"},{name:"Haiti",alpha2:"HT",alpha3:"HTI",numeric:"332"},{name:"Heard Island and McDonald Islands",alpha2:"HM",alpha3:"HMD",numeric:"334"},{name:"Holy See (the)",alpha2:"VA",alpha3:"VAT",numeric:"336"},{name:"Honduras",alpha2:"HN",alpha3:"HND",numeric:"340"},{name:"Hong Kong",alpha2:"HK",alpha3:"HKG",numeric:"344"},{name:"Hungary",alpha2:"HU",alpha3:"HUN",numeric:"348"},{name:"Iceland",alpha2:"IS",alpha3:"ISL",numeric:"352"},{name:"India",alpha2:"IN",alpha3:"IND",numeric:"356"},{name:"Indonesia",alpha2:"ID",alpha3:"IDN",numeric:"360"},{name:"Iran (Islamic Republic of)",alpha2:"IR",alpha3:"IRN",numeric:"364"},{name:"Iraq",alpha2:"IQ",alpha3:"IRQ",numeric:"368"},{name:"Ireland",alpha2:"IE",alpha3:"IRL",numeric:"372"},{name:"Isle of Man",alpha2:"IM",alpha3:"IMN",numeric:"833"},{name:"Israel",alpha2:"IL",alpha3:"ISR",numeric:"376"},{name:"Italy",alpha2:"IT",alpha3:"ITA",numeric:"380"},{name:"Jamaica",alpha2:"JM",alpha3:"JAM",numeric:"388"},{name:"Japan",alpha2:"JP",alpha3:"JPN",numeric:"392"},{name:"Jersey",alpha2:"JE",alpha3:"JEY",numeric:"832"},{name:"Jordan",alpha2:"JO",alpha3:"JOR",numeric:"400"},{name:"Kazakhstan",alpha2:"KZ",alpha3:"KAZ",numeric:"398"},{name:"Kenya",alpha2:"KE",alpha3:"KEN",numeric:"404"},{name:"Kiribati",alpha2:"KI",alpha3:"KIR",numeric:"296"},{name:"Korea (the Democratic People's Republic of)",alpha2:"KP",alpha3:"PRK",numeric:"408"},{name:"Korea (the Republic of)",alpha2:"KR",alpha3:"KOR",numeric:"410"},{name:"Kuwait",alpha2:"KW",alpha3:"KWT",numeric:"414"},{name:"Kyrgyzstan",alpha2:"KG",alpha3:"KGZ",numeric:"417"},{name:"Lao People's Democratic Republic (the)",alpha2:"LA",alpha3:"LAO",numeric:"418"},{name:"Latvia",alpha2:"LV",alpha3:"LVA",numeric:"428"},{name:"Lebanon",alpha2:"LB",alpha3:"LBN",numeric:"422"},{name:"Lesotho",alpha2:"LS",alpha3:"LSO",numeric:"426"},{name:"Liberia",alpha2:"LR",alpha3:"LBR",numeric:"430"},{name:"Libya",alpha2:"LY",alpha3:"LBY",numeric:"434"},{name:"Liechtenstein",alpha2:"LI",alpha3:"LIE",numeric:"438"},{name:"Lithuania",alpha2:"LT",alpha3:"LTU",numeric:"440"},{name:"Luxembourg",alpha2:"LU",alpha3:"LUX",numeric:"442"},{name:"Macao",alpha2:"MO",alpha3:"MAC",numeric:"446"},{name:"Macedonia (the former Yugoslav Republic of)",alpha2:"MK",alpha3:"MKD",numeric:"807"},{name:"Madagascar",alpha2:"MG",alpha3:"MDG",numeric:"450"},{name:"Malawi",alpha2:"MW",alpha3:"MWI",numeric:"454"},{name:"Malaysia",alpha2:"MY",alpha3:"MYS",numeric:"458"},{name:"Maldives",alpha2:"MV",alpha3:"MDV",numeric:"462"},{name:"Mali",alpha2:"ML",alpha3:"MLI",numeric:"466"},{name:"Malta",alpha2:"MT",alpha3:"MLT",numeric:"470"},{name:"Marshall Islands (the)",alpha2:"MH",alpha3:"MHL",numeric:"584"},{name:"Martinique",alpha2:"MQ",alpha3:"MTQ",numeric:"474"},{name:"Mauritania",alpha2:"MR",alpha3:"MRT",numeric:"478"},{name:"Mauritius",alpha2:"MU",alpha3:"MUS",numeric:"480"},{name:"Mayotte",alpha2:"YT",alpha3:"MYT",numeric:"175"},{name:"Mexico",alpha2:"MX",alpha3:"MEX",numeric:"484"},{name:"Micronesia (Federated States of)",alpha2:"FM",alpha3:"FSM",numeric:"583"},{name:"Moldova (the Republic of)",alpha2:"MD",alpha3:"MDA",numeric:"498"},{name:"Monaco",alpha2:"MC",alpha3:"MCO",numeric:"492"},{name:"Mongolia",alpha2:"MN",alpha3:"MNG",numeric:"496"},{name:"Montenegro",alpha2:"ME",alpha3:"MNE",numeric:"499"},{name:"Montserrat",alpha2:"MS",alpha3:"MSR",numeric:"500"},{name:"Morocco",alpha2:"MA",alpha3:"MAR",numeric:"504"},{name:"Mozambique",alpha2:"MZ",alpha3:"MOZ",numeric:"508"},{name:"Myanmar",alpha2:"MM",alpha3:"MMR",numeric:"104"},{name:"Namibia",alpha2:"NA",alpha3:"NAM",numeric:"516"},{name:"Nauru",alpha2:"NR",alpha3:"NRU",numeric:"520"},{name:"Nepal",alpha2:"NP",alpha3:"NPL",numeric:"524"},{name:"Netherlands (the)",alpha2:"NL",alpha3:"NLD",numeric:"528"},{name:"New Caledonia",alpha2:"NC",alpha3:"NCL",numeric:"540"},{name:"New Zealand",alpha2:"NZ",alpha3:"NZL",numeric:"554"},{name:"Nicaragua",alpha2:"NI",alpha3:"NIC",numeric:"558"},{name:"Niger (the)",alpha2:"NE",alpha3:"NER",numeric:"562"},{name:"Nigeria",alpha2:"NG",alpha3:"NGA",numeric:"566"},{name:"Niue",alpha2:"NU",alpha3:"NIU",numeric:"570"},{name:"Norfolk Island",alpha2:"NF",alpha3:"NFK",numeric:"574"},{name:"Northern Mariana Islands (the)",alpha2:"MP",alpha3:"MNP",numeric:"580"},{name:"Norway",alpha2:"NO",alpha3:"NOR",numeric:"578"},{name:"Oman",alpha2:"OM",alpha3:"OMN",numeric:"512"},{name:"Pakistan",alpha2:"PK",alpha3:"PAK",numeric:"586"},{name:"Palau",alpha2:"PW",alpha3:"PLW",numeric:"585"},{name:"Palestine, State of",alpha2:"PS",alpha3:"PSE",numeric:"275"},{name:"Panama",alpha2:"PA",alpha3:"PAN",numeric:"591"},{name:"Papua New Guinea",alpha2:"PG",alpha3:"PNG",numeric:"598"},{name:"Paraguay",alpha2:"PY",alpha3:"PRY",numeric:"600"},{name:"Peru",alpha2:"PE",alpha3:"PER",numeric:"604"},{name:"Philippines (the)",alpha2:"PH",alpha3:"PHL",numeric:"608"},{name:"Pitcairn",alpha2:"PN",alpha3:"PCN",numeric:"612"},{name:"Poland",alpha2:"PL",alpha3:"POL",numeric:"616"},{name:"Portugal",alpha2:"PT",alpha3:"PRT",numeric:"620"},{name:"Puerto Rico",alpha2:"PR",alpha3:"PRI",numeric:"630"},{name:"Qatar",alpha2:"QA",alpha3:"QAT",numeric:"634"},{name:"Réunion",alpha2:"RE",alpha3:"REU",numeric:"638"},{name:"Romania",alpha2:"RO",alpha3:"ROU",numeric:"642"},{name:"Russian Federation (the)",alpha2:"RU",alpha3:"RUS",numeric:"643"},{name:"Rwanda",alpha2:"RW",alpha3:"RWA",numeric:"646"},{name:"Saint Barthélemy",alpha2:"BL",alpha3:"BLM",numeric:"652"},{name:"Saint Helena, Ascension and Tristan da Cunha",alpha2:"SH",alpha3:"SHN",numeric:"654"},{name:"Saint Kitts and Nevis",alpha2:"KN",alpha3:"KNA",numeric:"659"},{name:"Saint Lucia",alpha2:"LC",alpha3:"LCA",numeric:"662"},{name:"Saint Martin (French part)",alpha2:"MF",alpha3:"MAF",numeric:"663"},{name:"Saint Pierre and Miquelon",alpha2:"PM",alpha3:"SPM",numeric:"666"},{name:"Saint Vincent and the Grenadines",alpha2:"VC",alpha3:"VCT",numeric:"670"},{name:"Samoa",alpha2:"WS",alpha3:"WSM",numeric:"882"},{name:"San Marino",alpha2:"SM",alpha3:"SMR",numeric:"674"},{name:"Sao Tome and Principe",alpha2:"ST",alpha3:"STP",numeric:"678"},{name:"Saudi Arabia",alpha2:"SA",alpha3:"SAU",numeric:"682"},{name:"Senegal",alpha2:"SN",alpha3:"SEN",numeric:"686"},{name:"Serbia",alpha2:"RS",alpha3:"SRB",numeric:"688"},{name:"Seychelles",alpha2:"SC",alpha3:"SYC",numeric:"690"},{name:"Sierra Leone",alpha2:"SL",alpha3:"SLE",numeric:"694"},{name:"Singapore",alpha2:"SG",alpha3:"SGP",numeric:"702"},{name:"Sint Maarten (Dutch part)",alpha2:"SX",alpha3:"SXM",numeric:"534"},{name:"Slovakia",alpha2:"SK",alpha3:"SVK",numeric:"703"},{name:"Slovenia",alpha2:"SI",alpha3:"SVN",numeric:"705"},{name:"Solomon Islands",alpha2:"SB",alpha3:"SLB",numeric:"090"},{name:"Somalia",alpha2:"SO",alpha3:"SOM",numeric:"706"},{name:"South Africa",alpha2:"ZA",alpha3:"ZAF",numeric:"710"},{name:"South Georgia and the South Sandwich Islands",alpha2:"GS",alpha3:"SGS",numeric:"239"},{name:"South Sudan ",alpha2:"SS",alpha3:"SSD",numeric:"728"},{name:"Spain",alpha2:"ES",alpha3:"ESP",numeric:"724"},{name:"Sri Lanka",alpha2:"LK",alpha3:"LKA",numeric:"144"},{name:"Sudan (the)",alpha2:"SD",alpha3:"SDN",numeric:"729"},{name:"Suriname",alpha2:"SR",alpha3:"SUR",numeric:"740"},{name:"Svalbard and Jan Mayen",alpha2:"SJ",alpha3:"SJM",numeric:"744"},{name:"Swaziland",alpha2:"SZ",alpha3:"SWZ",numeric:"748"},{name:"Sweden",alpha2:"SE",alpha3:"SWE",numeric:"752"},{name:"Switzerland",alpha2:"CH",alpha3:"CHE",numeric:"756"},{name:"Syrian Arab Republic",alpha2:"SY",alpha3:"SYR",numeric:"760"},{name:"Taiwan (Province of China)",alpha2:"TW",alpha3:"TWN",numeric:"158"},{name:"Tajikistan",alpha2:"TJ",alpha3:"TJK",numeric:"762"},{name:"Tanzania, United Republic of",alpha2:"TZ",alpha3:"TZA",numeric:"834"},{name:"Thailand",alpha2:"TH",alpha3:"THA",numeric:"764"},{name:"Timor-Leste",alpha2:"TL",alpha3:"TLS",numeric:"626"},{name:"Togo",alpha2:"TG",alpha3:"TGO",numeric:"768"},{name:"Tokelau",alpha2:"TK",alpha3:"TKL",numeric:"772"},{name:"Tonga",alpha2:"TO",alpha3:"TON",numeric:"776"},{name:"Trinidad and Tobago",alpha2:"TT",alpha3:"TTO",numeric:"780"},{name:"Tunisia",alpha2:"TN",alpha3:"TUN",numeric:"788"},{name:"Turkey",alpha2:"TR",alpha3:"TUR",numeric:"792"},{name:"Turkmenistan",alpha2:"TM",alpha3:"TKM",numeric:"795"},{name:"Turks and Caicos Islands (the)",alpha2:"TC",alpha3:"TCA",numeric:"796"},{name:"Tuvalu",alpha2:"TV",alpha3:"TUV",numeric:"798"},{name:"Uganda",alpha2:"UG",alpha3:"UGA",numeric:"800"},{name:"Ukraine",alpha2:"UA",alpha3:"UKR",numeric:"804"},{name:"United Arab Emirates (the)",alpha2:"AE",alpha3:"ARE",numeric:"784"},{name:"United Kingdom of Great Britain and Northern Ireland (the)",alpha2:"GB",alpha3:"GBR",numeric:"826"},{name:"United States Minor Outlying Islands (the)",alpha2:"UM",alpha3:"UMI",numeric:"581"},{name:"United States of America (the)",alpha2:"US",alpha3:"USA",numeric:"840"},{name:"Uruguay",alpha2:"UY",alpha3:"URY",numeric:"858"},{name:"Uzbekistan",alpha2:"UZ",alpha3:"UZB",numeric:"860"},{name:"Vanuatu",alpha2:"VU",alpha3:"VUT",numeric:"548"},{name:"Venezuela (Bolivarian Republic of)",alpha2:"VE",alpha3:"VEN",numeric:"862"},{name:"Vietnam",alpha2:"VN",alpha3:"VNM",numeric:"704"},{name:"Virgin Islands (British)",alpha2:"VG",alpha3:"VGB",numeric:"092"},{name:"Virgin Islands (U.S.)",alpha2:"VI",alpha3:"VIR",numeric:"850"},{name:"Wallis and Futuna",alpha2:"WF",alpha3:"WLF",numeric:"876"},{name:"Western Sahara",alpha2:"EH",alpha3:"ESH",numeric:"732"},{name:"Yemen",alpha2:"YE",alpha3:"YEM",numeric:"887"},{name:"Zambia",alpha2:"ZM",alpha3:"ZMB",numeric:"894"},{name:"Zimbabwe",alpha2:"ZW",alpha3:"ZWE",numeric:"716"}];return{setCountries:function(n){a=n},$get:function(){return{getCountries:function(){return a}}}}}).directive("pvpCountryPicker",["$compile",function(a){var n=1;return{priority:n,terminal:true,controller:["$scope","pvpCountries",function(a,n){a.countries=n.getCountries()}],compile:function(e,l){if(!l.pvpCountryPicker){l.pvpCountryPicker="alpha2"}var h="country."+l.pvpCountryPicker+" as country.name for country in countries";l.$set("ngOptions",h);return function m(e,l){a(l,null,n)(e)}},restrict:"A"}}]);
+angular.module('siderbar', [])
+
+.directive('sidebarToggle', [function() {
+	return {
+		restrict: 'A',
+		link: function (scope, iElement, iAttrs) {
+
+			scope.element = iElement[0];
+			scope.body = document.body;
+
+			scope.element.addEventListener("click", function() {
+				var _element = document.getElementById(iAttrs.sidebarToggle);
+				_element.classList.toggle("sidebar--is-open");
+
+				var _bgSidebar = document.getElementById(iAttrs.sidebarToggle + "-bg");
+				_bgSidebar.classList.toggle("sidebar-bg--is-visible");
+
+				//control body
+				if (scope.body.style.overflowY == "auto") {
+					scope.body.style.overflowY = "hidden";
+				} else {
+					scope.body.style.overflowY = "auto";
+				}
+			});
+
+		}
+	};
+}])
+
+.directive('sidebar', ['$compile', function($compile) {
+	return {
+		restrict: 'E',
+		link: function (scope, iElement, iAttrs) {
+
+			scope.body = document.body;
+			scope.element = iElement[0];
+
+			//renderize sidebar
+			scope.element.style.display = "block";
+
+			//add width on sidebar
+			function isNumber(n) {
+				return !isNaN(parseFloat(n)) && isFinite(n);
+			}
+
+			if (isNumber(iAttrs.size)) {
+				scope.element.style.maxWidth = iAttrs.size + 'px';
+			} else {
+				scope.element.style.maxWidth = iAttrs.size;
+			}
+
+			//add class to position on sidebar
+			scope.element.classList.add("sidebar--" + iAttrs.position);
+
+			//renderize bg-sidebar
+			var bgSidebar = document.createElement("div");
+			bgSidebar.setAttribute("class", "sidebar-bg");
+			bgSidebar.setAttribute("id", iAttrs.id + "-bg");
+			bgSidebar.setAttribute("sidebar-toggle", iAttrs.id);
+			scope.body.appendChild(bgSidebar);
+
+			$compile(bgSidebar)(scope);
+
+		}
+	};
+}]);
 
 var directives = angular.module('directivesModule', []);
 
@@ -9455,7 +9600,22 @@ var ChatController = [
   '$routeParams',
   '$http',
   '$uibModal',
-  function($scope, $firebaseArray, $firebaseObject, $timeout, $location, $route, $routeParams, $http, $uibModal) {
+  '$geolocation',
+  function($scope, $firebaseArray, $firebaseObject, $timeout, $location, $route, $routeParams, $http, $uibModal, $geolocation) {
+    $scope.formatted_address=null;
+    $scope.$geolocation = $geolocation;
+    // basic usage
+    $geolocation.getCurrentPosition().then(function(location) {
+      $scope.location = location;
+    });
+    $scope.encuesta = {
+      create: false,
+      active: false,
+      pregunta: true,
+      encuesta: false,
+      arts: [],
+      poll: null
+    };
     $scope.rifaID=null;
     $scope.tiempo=false;
     $scope.rifa = {
@@ -9475,14 +9635,22 @@ var ChatController = [
         userIdGname_slug: null,
         userIdGemail:null,
         stop:false,
+        countrys:null,
+        citys:null,
         go:false
       },
       user:{
         cant:1,
         userid:null,
-        username:null
+        username:null,
+        username_slug:null,
+        email:null,
+        ticketskey:null
       }
     };
+
+    $scope.radioModel = 'chat';
+
     $scope.dynamicPopover = {
       content: 'Hello, World!',
       templateUrl: 'myPopoverTemplate.html',
@@ -9533,11 +9701,20 @@ var ChatController = [
     $scope._statusRef      = null;
     $scope._messageRef     = $scope._firebase.child('messages');
     $scope._channelRef     = $scope._firebase.child('channels');
-    $scope._rifasRef       = $scope._firebase.child('rifas');
+    $scope._pollRef        = $scope._firebase.child('poll');
+    $scope._ticketsPollRef = $scope._firebase.child('ticketsPoll');
+    $scope._rifasRef       = $scope._firebase.child('raffles');
     $scope._participantsRef= $scope._firebase.child('participants');
+    $scope._ticketsRef     = $scope._firebase.child('tickets');
     //$scope._privateRoomRef = $scope._firebase.child('room-private-metadata');
     //$scope._moderatorsRef  = $scope._firebase.child('moderators');
     $scope._suspensionsRef = $scope._firebase.child('suspensions');
+
+    $scope._firebaseRefR = null;
+    $scope._firebaseRefRPart = null;
+    $scope._firebaseRefRTickets = null;
+    $scope._firebaseRefPoll = null;
+    $scope._firebaseRefTicketsPoll = null;
     //$scope._usersOnlineRef = $scope._firebase.child('user-names-online');
 
     // Setup and establish default options.
@@ -9620,6 +9797,27 @@ var ChatController = [
         this.$apply(fn);
       }
     };
+    $scope.copy_to_clip = function(){
+      /*if($scope.rifa.art.userIdGemail!=null && window.clipboardData){
+        window.clipboardData.setData("Text", $scope.rifa.art.userIdGemail+""); 
+      }*/
+      // seleccionar el texto de la dirección de email
+      var email = document.querySelector('.email');
+      var range = document.createRange();
+      range.selectNode(email);
+      window.getSelection().addRange(range);
+     
+      try {
+        // intentar copiar el contenido seleccionado
+        var resultado = document.execCommand('copy');
+        console.log(resultado ? 'Email copiado' : 'No se pudo copiar el email');
+      } catch(err) {
+        console.log('ERROR al intentar copiar el email');
+      }
+     
+      // eliminar el texto seleccionado
+      window.getSelection().removeAllRanges();
+    }
     $scope.getRandomInt = function(min, max) {
       return Math.floor(Math.random() * (max - min)) + min;
     }
@@ -9663,6 +9861,18 @@ var ChatController = [
         console.log("The read failed: " + errorObject.code);
       });
     }
+    $scope.stopEncuesta = function(){
+      $scope._pollRef.child($scope.channel.selected.$id)
+      .update({
+        stop: true
+      });
+    }
+    $scope.startEncuesta = function(){
+      $scope._pollRef.child($scope.channel.selected.$id)
+      .update({
+        stop: false
+      });
+    }
     $scope.stopRifa = function(){
       $scope._rifasRef.child($scope.channel.selected.$id)
       .update({
@@ -9676,61 +9886,275 @@ var ChatController = [
       });
     }
     $scope.updateRifa = function(){
-      $scope._participantsRef.child($scope.channel.selected.$id)
-      .once("value", function(snapshot) {
-        var data = snapshot.val();
-        //console.log(snapshot.val());
-        var cont = 0;
-        for(var i in data) {
-          //console.log(data[i].cant);
-          cont = cont + data[i].cant;
-        }
-        var stop = false;
-        if(cont>=$scope.rifa.art.cant){
-          stop = true;
-        }
-        $scope._rifasRef.child($scope.channel.selected.$id)
+      $scope._ticketsRef.child($scope.channel.selected.$id).once("value", function(snapshot){
+        if(snapshot.val()==null){
+          var stop=false;
+          $scope._rifasRef.child($scope.channel.selected.$id).once("value",function(snapshot2){
+            if(snapshot2.val()!=null){
+              stop=snapshot2.val().stop;
+            }
+          });
+          $scope._rifasRef.child($scope.channel.selected.$id)
           .update({
-            cantComprados: cont,
+            cantComprados: 0,
             stop: stop
           });
-      }, function (errorObject) {
-        console.log("The read failed: " + errorObject.code);
+        }else{
+          var countT=0;
+          var stop=false;
+          $scope._rifasRef.child($scope.channel.selected.$id).once("value",function(snapshot2){
+            if(snapshot2.val()!=null){
+              stop=snapshot2.val().stop;
+              countT=snapshot2.val().cant;
+            }
+          });
+          var count = Object.keys(snapshot.val()).length;
+          if(count>=countT){
+            stop = true;
+          }
+          $scope._rifasRef.child($scope.channel.selected.$id)
+          .update({
+            /*cantComprados: count,*/
+            stop: stop
+          });
+        }
       });
     }
     $scope.dejarBoletos = function(){
       if(confirm("Desea dejar la rifa?")){
+        var arrTK=$scope.rifa.user.ticketskey;
+        for (var i = 0; i < arrTK.length; i++) {
+          $scope._ticketsRef.child($scope.channel.selected.$id).child(arrTK[i]).set(null);
+          $scope.ticketsUPDATE($scope._rifasRef.child($scope.channel.selected.$id),false);
+        }        
         var firebaseRefR = $scope._participantsRef.child($scope.channel.selected.$id).child($scope.user.info.id);
         var obj = $firebaseObject(firebaseRefR);
         obj.$remove().then(function(ref){
           // data has been deleted locally and in the database
           $scope.pregunta=true;
-          $scope.updateRifa();
+          //$scope.updateRifa();
         }, function(error) {
           console.log("Error:", error);
           $scope.pregunta=false;
         });
       }
     };
-    $scope.comprarBoletos = function(){
-      if(($scope.rifa.user.cant%1)==0 && $scope.rifa.user.cant>0 && $scope.rifa.user.cant<=$scope.rifa.art.cantUser && $scope.rifa.user.cant<=($scope.rifa.art.cant-$scope.rifa.art.cantComprados)){
-        $scope._participantsRef.child($scope.channel.selected.$id).child($scope.user.info.id)
-        .set($scope.rifa.user, function(error) {
-          if(error){
-            $scope.pregunta=true;
+    $scope.ticketsUPDATE = function (postRef, action) {
+      postRef.transaction(function(rifa) {
+        if (rifa) {
+          if (rifa.cantComprados<rifa.cant && action) {
+            rifa.cantComprados++;
+          }else if(!action) {
+            rifa.cantComprados--;
+          }
+        }
+        return rifa;
+      });
+    };
+    $scope.getPosition = function(){
+      //init geolocation
+      if($scope.formatted_address==null && !($scope.rifa.art.countrys===undefined && $scope.rifa.art.citys===undefined)){
+        var dir = "";
+        var lat=$scope.location.coords.latitude;
+        var lon=$scope.location.coords.longitude;
+        var latlng = new google.maps.LatLng(lat, lon);
+        geocoder = new google.maps.Geocoder();
+        geocoder.geocode({"latLng": latlng}, function(results, status)
+        {
+          if(status == google.maps.GeocoderStatus.OK){
+            if(results[0]){
+              $scope.formatted_address=results[0].formatted_address;
+              //dir = "Dirección:" + results[0].formatted_address;
+            }else{
+              dir = "No se ha podido obtener ninguna dirección en esas coordenadas";
+            }
           }else{
-            $scope.pregunta=false;
-            $scope.updateRifa();
+            dir = "El Servicio de Codificación Geográfica ha fallado con el siguiente error: " + status;
+          }
+          if(dir!=""){
+            alert(dir);
           }
         });
-      }else if(!($scope.rifa.user.cant%1)==0){
-        alert("Deben ser numero enteros sin fracción");
-      }else if($scope.rifa.user.cant<=0 || $scope.rifa.user.cant>$scope.rifa.art.cantUser || $scope.rifa.user.cant===undefined){
-        alert("Sobrepasas los limite de boletos debe ser minimo 1 y menos o igual que "+$scope.rifa.art.cantUser+" Ó Deben ser numero enteros sin fracción");
-      }else if($scope.rifa.user.cant<=($scope.rifa.art.cant-$scope.rifa.art.cantComprados)){
-        alert("Lo siento boletos agotados mas rapido la proxima vez");
+      }//End, init geolocation
+    };
+    $scope.pollUPDATE = function (postRef, action) {
+      postRef.transaction(function(encuesta_item) {
+        if (encuesta_item) {
+          if (action) {
+            encuesta_item.cant++;
+          }else if(!action) {
+            encuesta_item.cant--;
+          }
+        }
+        return encuesta_item;
+      });
+    };
+    $scope.pollbttn = function($nom){
+      var x = false;
+      for (var i = 0; i < $scope.encuesta.arts.length; i++) {
+        if($scope.encuesta.arts[i]==$nom){
+          x=true;
+        }
+      }
+      return x;
+    };
+    $scope.quitarvoto = function($nom){
+      var arrt = $scope.encuesta.poll.items;
+      var arrtemp = $scope.encuesta.arts;
+      var count=0;
+      for (var i = 0; i < arrt.length; i++) {
+        if(arrt[i].nombre==$nom){
+          count=i;
+          break;
+        }
+      }
+      var arrnvo = [];
+      for (var i = 0; i < arrtemp.length; i++) {
+        if(arrtemp[i]!=$nom){
+          arrnvo.push(arrtemp[i]);
+        }
+      }
+      $scope._ticketsPollRef.child($scope.channel.selected.$id).child($scope.user.info.id)
+      .set(arrnvo, function(error) {
+        if(error){
+          //$scope.encuesta.pregunta=true;
+        }else{
+          //$scope.encuesta.pregunta=false;
+          $scope.pollUPDATE($scope._pollRef.child($scope.channel.selected.$id).child("items").child(count),false);
+          $scope.pollUPDATE($scope._pollRef.child($scope.channel.selected.$id),false);
+          $timeout(function(){});
+          //$scope.updateRifa();
+        }
+      });
+    };
+    $scope.votar = function($nom){
+      var arrtemp = $scope.encuesta.poll.items;
+      var count=0;
+      for (var i = 0; i < arrtemp.length; i++) {
+        if(arrtemp[i].nombre==$nom){
+          count=i;
+          break;
+        }
+      }
+      var x = $scope.encuesta.arts.length;
+      if(x<$scope.encuesta.poll.cantUser){
+        $scope.encuesta.arts.push($nom);
+        $scope._ticketsPollRef.child($scope.channel.selected.$id).child($scope.user.info.id)
+        .set($scope.encuesta.arts, function(error) {
+          if(error){
+            //$scope.encuesta.pregunta=true;
+          }else{
+            //$scope.encuesta.pregunta=false;
+            $scope.pollUPDATE($scope._pollRef.child($scope.channel.selected.$id).child("items").child(count),true);
+            $scope.pollUPDATE($scope._pollRef.child($scope.channel.selected.$id),true);
+          }
+        });
+      }
+    };
+    $scope.comprarBoletos = function(){
+      $scope.getPosition();
+      if($scope.formatted_address!=null || ($scope.rifa.art.countrys===undefined && $scope.rifa.art.citys===undefined)){
+        var yes=false;
+        //console.log($scope.formatted_address);
+        if($scope.rifa.art.citys===undefined){
+        }else{
+          var ArrB=$scope.rifa.art.citys;
+          var contArr=ArrB.length;
+          for (var i = 0; i < contArr; i++) {
+            var temp = ArrB[i];
+            if ($scope.formatted_address.indexOf(''+temp)!=-1) {
+              yes=true;
+              break;
+            }
+          }
+        }
+        if($scope.rifa.art.countrys===undefined){
+        }else{
+          var ArrB=$scope.rifa.art.countrys;
+          var contArr=ArrB.length;
+          for (var i = 0; i < contArr; i++) {
+            var temp = ArrB[i];
+            if ($scope.formatted_address.indexOf(''+temp)!=-1) {
+              yes=true;
+              break;
+            }
+          }
+        }
+        if($scope.rifa.art.countrys===undefined && $scope.rifa.art.citys===undefined){
+          yes=true;
+        }
+        if(yes){
+          if(($scope.rifa.user.cant%1)==0 && $scope.rifa.user.cant>0 && $scope.rifa.user.cant<=$scope.rifa.art.cantUser && $scope.rifa.user.cant<=($scope.rifa.art.cant-$scope.rifa.art.cantComprados)){
+            var bolcomp = [];
+            for (var i = 0; i < $scope.rifa.user.cant; i++) {
+              var count=0;
+              $scope._ticketsRef.child($scope.channel.selected.$id).once("value", function(snapshot){
+                if(snapshot.val()==null){
+                  count = 0;
+                }else{
+                  count = Object.keys(snapshot.val()).length;
+                }
+                if(count<$scope.rifa.art.cant){
+                  var newticket=$scope._ticketsRef.child($scope.channel.selected.$id)
+                  .push($scope.rifa.user);
+                  var key = newticket.key();
+                  if(key==null){
+                  }else{
+                    $scope.ticketsUPDATE($scope._rifasRef.child($scope.channel.selected.$id),true);
+                    bolcomp.push(key);
+                  }
+                }
+              });
+            }
+            if(bolcomp.length>0){
+              $scope.rifa.user.ticketskey=bolcomp;
+              $scope.rifa.user.cant=bolcomp.length;
+              $scope._participantsRef.child($scope.channel.selected.$id).child($scope.user.info.id)
+              .set($scope.rifa.user, function(error) {
+                if(error){
+                  $scope.pregunta=true;
+                }else{
+                  $scope.pregunta=false;
+                  //$scope.updateRifa();
+                }
+              });
+            }
+            if(bolcomp.length>0 && bolcomp.length<$scope.rifa.user.cant){
+              alert("Por la alta demanda de boletos solo pudiste comprar "+bolcomp.length+" boletos");
+            }else if(bolcomp.length>0 && bolcomp.length==$scope.rifa.user.cant){
+            }else if(bolcomp.length==0){
+              alert("Por la alta demanda de boletos no alcanzaste boletos");
+            }
+          }else if(!($scope.rifa.user.cant%1)==0){
+            alert("Deben ser numero enteros sin fracción");
+          }else if($scope.rifa.user.cant<=0 || $scope.rifa.user.cant>$scope.rifa.art.cantUser || $scope.rifa.user.cant===undefined){
+            alert("Sobrepasas los limite de boletos debe ser minimo 1 y menos o igual que "+$scope.rifa.art.cantUser+" Ó Deben ser numero enteros sin fracción");
+          }else if($scope.rifa.user.cant<=($scope.rifa.art.cant-$scope.rifa.art.cantComprados)){
+            alert("Lo siento boletos agotados mas rapido la proxima vez");
+          }else if($scope.rifa.user.cant>($scope.rifa.art.cant-$scope.rifa.art.cantComprados)){
+            alert("Lo siento Intentaste comprar mas boletos de los existentes, esto paso por que alguien fue mas rapido que tu");
+          }else{
+            alert("Fallo");
+          }
+        }else{
+          alert('Esta Rifa no es para tu region');
+        }
       }else{
-        alert("Fallo");
+        alert('Para participar debes activar la geolocalización en tu navegador o ver si la soporta, si no cambia de navegador a uno mas reciente');
+      }
+    };
+    $scope.deleteEncuesta = function(){
+      if(confirm("Desea continuar con la eliminación de la Encuesta?")){
+        $scope._pollRef.child($scope.channel.selected.$id).set(null);
+        $scope._ticketsPollRef.child($scope.channel.selected.$id).set(null);
+        $scope.encuesta = {
+          create: false,
+          active: false,
+          pregunta: true,
+          encuesta: false,
+          arts: [],
+          poll: null
+        };
       }
     };
     $scope.deleteRifa = function(){
@@ -9738,6 +10162,7 @@ var ChatController = [
       if(confirm("Desea continuar con la eliminación de la rifa?")){
         $scope._rifasRef.child($scope.channel.selected.$id).set(null);
         $scope._participantsRef.child($scope.channel.selected.$id).set(null);
+        $scope._ticketsRef.child($scope.channel.selected.$id).set(null);
         $scope.rifa.create=false;
         $scope.rifa.active=false;
         $scope.rifa.pregunta=false;
@@ -9753,6 +10178,8 @@ var ChatController = [
         $scope.rifa.art.userIdGname_slug=null;
         $scope.rifa.art.userIdGemail=null;
         $scope.rifa.art.stop=false;
+        $scope.rifa.art.countrys=null;
+        $scope.rifa.art.citys=null;
         $scope.rifa.art.go=false;
         $scope.rifa.user.cant=1;
       }
@@ -9762,6 +10189,23 @@ var ChatController = [
       var modalInstance = $uibModal.open({
         templateUrl: '/js/partials/create-rifa.html',
         controller: 'RifaController',
+        size: 'lg',
+        resolve: {
+          Items: function() //scope del modal
+            {
+                return $scope;
+            }
+        }
+      });
+
+      modalInstance.result.then(function() {}, function() {
+        //$log.info('Modal dismissed at: ' + new Date());
+      });
+    };
+    $scope.createEncuesta = function() {
+      var modalInstance = $uibModal.open({
+        templateUrl: '/js/partials/create-encuesta.html',
+        controller: 'EncuestaController',
         size: 'lg',
         resolve: {
           Items: function() //scope del modal
@@ -9876,88 +10320,169 @@ var ChatController = [
             }
           });
         });
-      }
-      var firebaseRefR = $scope._rifasRef.child(channel.$id);
-      var firebaseRefRPart = $scope._participantsRef.child(channel.$id).child($scope.user.info.id);
-      firebaseRefR.on("value", function(snapshot) {
-        //console.log(snapshot.val());
-        if(snapshot.val()==null){
-          //$scope.safeApply(function(){
-          $timeout(function(){
-            $scope.rifa.create=false;
-            $scope.rifa.active=false;
-            $scope.rifa.pregunta=false;
-            $scope.rifa.rifa=false;
-            $scope.rifa.art.cant=0;
-            $scope.rifa.art.cantComprados=0;
-            $scope.rifa.art.cantUser=0;
-            $scope.rifa.art.imgUrl=null;
-            $scope.rifa.art.nomArt=null;
-            $scope.rifa.art.precioBole=0;
-            $scope.rifa.art.userIdG=null;
-            $scope.rifa.art.userIdGname=null;
-            $scope.rifa.art.userIdGname_slug=null;
-            $scope.rifa.art.userIdGemail=null;
-            $scope.rifa.art.stop=false;
-            $scope.rifa.art.go=false;
-            $scope.rifa.user.cant=1;
-          });
-          //});
-        }else{
-          //$scope.safeApply(function(){
-          $timeout(function(){
-            $scope.rifa.create=true;
-            $scope.rifa.active=true;
-            $scope.rifa.rifa=true;
-            $scope._participantsRef.child($scope.channel.selected.$id).child($scope.user.info.id)
-            .once('value', function(snapshott) {
-              if(snapshott.val()==null){
-                $scope.rifa.pregunta=true;
-              }else{
-                $scope.rifa.pregunta=false;
-              }
-            }, function (errorObject) {
-              console.log("The read failed: " + errorObject.code);
+        //poll
+        $scope._firebaseRefPoll = $scope._pollRef.child(channel.$id);
+        $scope._firebaseRefTicketsPoll = $scope._ticketsPollRef.child(channel.$id).child($scope.user.info.id);
+        $scope._firebaseRefPoll.on("value", function(snapshot) {
+          //console.log(snapshot.val());
+          if(snapshot.val()==null){
+            //$scope.safeApply(function(){
+            $timeout(function(){
+              $scope.encuesta.create=false;
+              $scope.encuesta.active=false;
+              //$scope.encuesta.pregunta=true;
+              $scope.encuesta.encuesta=false;
+              $scope.encuesta.arts=[];
+              $scope.encuesta.poll=null;
             });
-            $scope.rifa.art.cant=snapshot.val().cant;
-            $scope.rifa.art.cantUser=snapshot.val().cantUser;
-            $scope.rifa.art.imgUrl=snapshot.val().imgUrl;
-            $scope.rifa.art.nomArt=snapshot.val().nomArt;
-            $scope.rifa.art.precioBole=snapshot.val().precioBole;
-            $scope.rifa.art.cantComprados=snapshot.val().cantComprados;
-            $scope.rifa.art.userIdG=snapshot.val().userIdG;
-            $scope.rifa.art.userIdGname=snapshot.val().userIdGname;
-            $scope.rifa.art.userIdGname_slug=snapshot.val().userIdGname_slug;
-            $scope.rifa.art.userIdGemail=snapshot.val().userIdGemail;
-            $scope.rifa.art.stop=snapshot.val().stop;
-            $scope.rifa.art.go=snapshot.val().go;
+            //});
+          }else{
+            $timeout(function(){
+              $scope.encuesta.create=true;
+              $scope.encuesta.active=true;
+              $scope.encuesta.encuesta=true;
+              $scope._firebaseRefTicketsPoll
+              .on('value', function(snapshott) {
+                if(snapshott.val()==null){
+                  $scope.encuesta.arts=[];
+                  //$scope.encuesta.pregunta=true;
+                }else{
+                  $scope.encuesta.arts=snapshott.val();
+                  //$scope.encuesta.pregunta=false;
+                }
+              }, function (errorObject) {
+                console.log("The read failed: " + errorObject.code);
+              });
+              $scope.encuesta.poll=snapshot.val();
+            });
+          }
+        }, function (errorObject) {
+          console.log("The read failed: " + errorObject.code);
+        });
+
+        //updates for rifas
+        $scope._firebaseRefR = $scope._rifasRef.child(channel.$id);
+        $scope._firebaseRefRPart = $scope._participantsRef.child(channel.$id).child($scope.user.info.id);
+        $scope._firebaseRefRTickets = $scope._ticketsRef.child(channel.$id);
+        //var firebaseRefRPartAdmin = $scope._participantsRef.child(channel.$id);
+        $scope._firebaseRefR.on("value", function(snapshot) {
+          //console.log(snapshot.val());
+          if(snapshot.val()==null){
+            //$scope.safeApply(function(){
+            $timeout(function(){
+              $scope.rifa.create=false;
+              $scope.rifa.active=false;
+              $scope.rifa.pregunta=false;
+              $scope.rifa.rifa=false;
+              $scope.rifa.art.cant=0;
+              //$scope.rifa.art.cantComprados=0;
+              $scope.rifa.art.cantUser=0;
+              $scope.rifa.art.imgUrl=null;
+              $scope.rifa.art.nomArt=null;
+              $scope.rifa.art.precioBole=0;
+              $scope.rifa.art.userIdG=null;
+              $scope.rifa.art.userIdGname=null;
+              $scope.rifa.art.userIdGname_slug=null;
+              $scope.rifa.art.userIdGemail=null;
+              $scope.rifa.art.stop=false;
+              $scope.rifa.art.countrys=null;
+              $scope.rifa.art.citys=null;
+              $scope.rifa.art.go=false;
+              $scope.rifa.user.cant=1;
+            });
+            //});
+          }else{
+            //$scope.safeApply(function(){
+            $timeout(function(){
+              $scope.rifa.create=true;
+              $scope.rifa.active=true;
+              $scope.rifa.rifa=true;
+              $scope._participantsRef.child($scope.channel.selected.$id).child($scope.user.info.id)
+              .once('value', function(snapshott) {
+                if(snapshott.val()==null){
+                  $scope.rifa.pregunta=true;
+                }else{
+                  $scope.rifa.pregunta=false;
+                }
+              }, function (errorObject) {
+                console.log("The read failed: " + errorObject.code);
+              });
+              $scope.rifa.art.cant=snapshot.val().cant;
+              $scope.rifa.art.cantUser=snapshot.val().cantUser;
+              $scope.rifa.art.imgUrl=snapshot.val().imgUrl;
+              $scope.rifa.art.nomArt=snapshot.val().nomArt;
+              $scope.rifa.art.precioBole=snapshot.val().precioBole;
+              //$scope.rifa.art.cantComprados=snapshot.val().cantComprados;
+              $scope.rifa.art.userIdG=snapshot.val().userIdG;
+              $scope.rifa.art.userIdGname=snapshot.val().userIdGname;
+              $scope.rifa.art.userIdGname_slug=snapshot.val().userIdGname_slug;
+              $scope.rifa.art.userIdGemail=snapshot.val().userIdGemail;
+              $scope.rifa.art.stop=snapshot.val().stop;
+              $scope.rifa.art.countrys=snapshot.val().countrys;
+              $scope.rifa.art.citys=snapshot.val().citys;
+              $scope.rifa.art.go=snapshot.val().go;
+            });
+          }
+        }, function (errorObject) {
+          console.log("The read failed: " + errorObject.code);
+        });
+        $scope._firebaseRefRPart.on("value", function(snapshot) {
+          //console.log(snapshot.val());
+          if(snapshot.val()==null){
+            $scope.rifa.pregunta=true;
+            $scope.rifa.user.cant=1;
+            $scope.rifa.user.userid=$scope.user.info.id;
+            $scope.rifa.user.username=$scope.user.info.username;
+            $scope.rifa.user.username_slug=$scope.user.info.username_slug;
+            $scope.rifa.user.email=$scope.user.info.email;
+            $scope.rifa.user.ticketskey=null;
+          }else{
+            $scope.rifa.pregunta=false;
+            $scope.rifa.user={
+              cant:snapshot.val().cant,
+              userid:snapshot.val().userid,
+              username:snapshot.val().username,
+              username_slug:snapshot.val().username_slug,
+              email:snapshot.val().email,
+              ticketskey:snapshot.val().ticketskey
+            };
+          }
+        }, function (errorObject) {
+          console.log("The read failed: " + errorObject.code);
+        });
+        $scope._firebaseRefRTickets.on("value", function(snapshot) {
+          //console.log(snapshot.val().length);
+          if(snapshot.val()==null){
+            $timeout(function(){
+              $scope.rifa.art.cantComprados=0;
+            });
+          }else{
+            var count = Object.keys(snapshot.val()).length;
+            $timeout(function(){
+              $scope.rifa.art.cantComprados=count;
+            });
+          }
+        }, function (errorObject) {
+          console.log("The read failed: " + errorObject.code);
+        });
+        if($scope.can('board-config')){
+          $scope._firebaseRefRTickets.on("value", function(snapshot) {
+            if(snapshot.val()==null){
+              $scope._firebaseRefR.once("value", function(snapshott){
+                if(snapshott.val()!=null){
+                  $scope.updateRifa();    
+                }
+              }, function(errorObjectt){
+                console.log("The read failed: " + errorObjectt.code);
+              });
+            }else{
+              $scope.updateRifa();
+            }
+          }, function (errorObject) {
+            console.log("The read failed: " + errorObject.code);
           });
         }
-      }, function (errorObject) {
-        console.log("The read failed: " + errorObject.code);
-      });
-      firebaseRefRPart.on("value", function(snapshot) {
-        //console.log(snapshot.val());
-        if(snapshot.val()==null){
-          $scope.rifa.pregunta=true;
-          $scope.rifa.user.cant=1;
-          $scope.rifa.user.userid=$scope.user.info.id;
-          $scope.rifa.user.username=$scope.user.info.username;
-          $scope.rifa.user.username_slug=$scope.user.info.username_slug;
-          $scope.rifa.user.email=$scope.user.info.email;
-        }else{
-          $scope.rifa.pregunta=false;
-          $scope.rifa.user={
-            cant:snapshot.val().cant,
-            userid:snapshot.val().userid,
-            username:snapshot.val().username,
-            username_slug:snapshot.val().username_slug,
-            email:snapshot.val().email
-          };
-        }
-      }, function (errorObject) {
-        console.log("The read failed: " + errorObject.code);
-      });
+      }
     };
 
     $scope.exitChannel = function() {
@@ -9967,6 +10492,21 @@ var ChatController = [
           if($scope._statusRef) {
             $scope._statusRef.off();
             $scope._statusRef.set(null);
+          }
+          if($scope._firebaseRefR){
+            $scope._firebaseRefR.off();  
+          }
+          if($scope._firebaseRefRPart){
+            $scope._firebaseRefRPart.off();  
+          }
+          if($scope._firebaseRefRTickets){
+            $scope._firebaseRefRTickets.off();  
+          }
+          if($scope._firebaseRefTicketsPoll){
+            $scope._firebaseRefTicketsPoll.off();  
+          }
+          if($scope._firebaseRefPoll){
+            $scope._firebaseRefPoll.off();  
           }
         }
       }
@@ -10189,6 +10729,74 @@ var RifaController = [
   '$http',
   'Upload',
   function($scope, $firebaseArray, $firebaseObject, $modalInstance, Items, $http ,Upload) {
+    $scope.countrysarr={
+      model: null,
+      availableOptions: [
+        {value: 'Argentina', name: 'Argentina'},
+        {value: 'Belice', name: 'Belice'},
+        {value: 'Bolivia', name: 'Bolivia'},
+        {value: 'Brasil', name: 'Brasil'},
+        {value: 'Canad\u00e1', name: 'Canad\u00e1'},
+        {value: 'Costa Rica', name: 'Costa Rica'},
+        {value: 'Colombia', name: 'Colombia'},
+        {value: 'Cuba', name: 'Cuba'},
+        {value: 'Ecuador', name: 'Ecuador'},        
+        {value: 'Estados Unidos', name: 'Estados Unidos'},
+        {value: 'España', name: 'España'},
+        {value: 'El Salvador', name: 'El Salvador'},
+        {value: 'Guatemala', name: 'Guatemala'},
+        {value: 'Guyana', name: 'Guyana'},
+        {value: 'Honduras', name: 'Honduras'},
+        {value: 'M\u00e9xico', name: 'M\u00e9xico'},
+        {value: 'Nicaragua', name: 'Nicaragua'},
+        {value: 'Panam\u00e1', name: 'Panam\u00e1'},
+        {value: 'Per\u00fa', name: 'Per\u00fa'},
+        {value: 'Paraguay', name: 'Paraguay'},
+        {value: 'Surinam', name: 'Surinam'},
+        {value: 'Uruguay', name: 'Uruguay'},
+        {value: 'Venezuela', name: 'Venezuela'}        
+      ]
+    };
+    $scope.citysarr={
+      model: null,
+      availableOptions: [
+        {value: 'Aguascalientes', name: 'Aguascalientes'},
+        {value: 'Baja California', name: 'Baja California'},
+        {value: 'Baja California Sur', name: 'Baja California Sur'},
+        {value: 'Campeche', name: 'Campeche'},
+        {value: 'Chiapas', name: 'Chiapas'},
+        {value: 'Chihuahua', name: 'Chihuahua'},
+        {value: 'Coahuila', name: 'Coahuila'},
+        {value: 'Colima', name: 'Colima'},
+        {value: 'Distrito Federal', name: 'Distrito Federal'},
+        {value: 'Estado de México', name: 'Estado de México'},
+        {value: 'Ciudad de México', name: 'Ciudad de México'},
+        {value: 'CDMX', name: 'CDMX'},
+        {value: 'Méx.', name: 'Méx.'},
+        {value: 'Durango', name: 'Durango'},
+        {value: 'Guanajuato', name: 'Guanajuato'},
+        {value: 'Guerrero', name: 'Guerrero'},
+        {value: 'Hidalgo', name: 'Hidalgo'},
+        {value: 'Jalisco', name: 'Jalisco'},
+        {value: 'México', name: 'México'},
+        {value: 'Michoacán', name: 'Michoacán'},
+        {value: 'Morelos', name: 'Morelos'},
+        {value: 'Nayarit', name: 'Nayarit'},
+        {value: 'Nuevo León', name: 'Nuevo León'},
+        {value: 'Puebla', name: 'Puebla'},
+        {value: 'Querétaro', name: 'Querétaro'},
+        {value: 'Quintana Roo', name: 'Quintana Roo'},
+        {value: 'San Luis Potosí', name: 'San Luis Potosí'},
+        {value: 'Sinaloa', name: 'Sinaloa'},
+        {value: 'Sonora', name: 'Sonora'},
+        {value: 'Tabasco', name: 'Tabasco'},
+        {value: 'Tamaulipas', name: 'Tamaulipas'},
+        {value: 'Tlaxcala', name: 'Tlaxcala'},
+        {value: 'Veracruz', name: 'Veracruz'},
+        {value: 'Yucatán', name: 'Yucatán'},
+        {value: 'Zacatecas', name: 'Zacatecas'}
+      ]
+    };
     $scope.items = Items;
     $scope.rifa = {
       chatId: $scope.items.channel.selected.$id,
@@ -10204,6 +10812,8 @@ var RifaController = [
       userIdGname_slug: null,
       userIdGemail: null,
       stop: false,
+      countrys: null,
+      citys: null,
       go: false
     };
     $scope.alert={
@@ -10211,7 +10821,7 @@ var RifaController = [
       type:"success"
     };
     $scope.adding_img = false;
-    var firebaseRef = new Firebase(firebase_url+'/rifas/'+$scope.items.channel.selected.$id);
+    var firebaseRef = new Firebase(firebase_url+'/raffles/'+$scope.items.channel.selected.$id);
     //var firebaseRefPart = new Firebase(firebase_url+'/participants');
     $scope.safeApply = function(fn) {
       var phase = this.$root.$$phase;
@@ -10224,7 +10834,7 @@ var RifaController = [
       }
     };
     $scope.save = function (){
-      if($scope.rifa.cant===undefined || $scope.rifa.cant==null || $scope.rifa.cant<=0 || isNaN($scope.rifa.cantUser) || $scope.rifa.cant % 1 != 0){
+      if($scope.rifa.cant===undefined || $scope.rifa.cant==null || $scope.rifa.cant<=0 || isNaN($scope.rifa.cant) || $scope.rifa.cant % 1 != 0){
         $scope.alert.msg="El campo Cantidad de boletos no puede estar vacio, menor o igual a cero y no numeros con fraccion";
         $scope.alert.type='warning';
         $scope.safeApply(function(){});
@@ -10258,8 +10868,10 @@ var RifaController = [
           userIdGname_slug: null,
           userIdGemail: null,
           stop: false,
+          countrys: $scope.rifa.countrys,
+          citys: $scope.rifa.citys,
           go: false
-        }
+        };
         firebaseRef.set(rifaChat, function(error) {
           if(error){
             $scope.items.rifa.create=false;
@@ -10288,7 +10900,7 @@ var RifaController = [
           url: layer_path + "post/image",
           file: file
         }).success(function (data) {
-          if($scope.rifa.imgUrl.length > 0) {
+          if(!$scope.rifa.imgUrl.length > 0) {
             $scope.rifa.imgUrl += data.url;
           } else {
             $scope.rifa.imgUrl = data.url;
@@ -10301,12 +10913,259 @@ var RifaController = [
     };
   }
 ];
+var EncuestaController = [
+  '$scope',
+  '$firebaseArray',
+  '$firebaseObject',
+  '$modalInstance',
+  'Items',
+  '$http',
+  'Upload',
+  function($scope, $firebaseArray, $firebaseObject, $modalInstance, Items, $http, Upload) {
+    $scope.items = Items;
+    $scope.item = {
+      nombre:"",
+      cant:0,
+      imgUrl:""
+    };
+    $scope.data = {
+      model: null,
+      availableOptions: []
+    };
+    $scope.arrritem=[];
+    $scope.encuesta = {
+      chatId: $scope.items.channel.selected.$id,
+      userId: $scope.items.user.info.id,
+      pregunta: "",
+      stop: false,
+      go: false,
+      items: null,
+      cant: 0,
+      cantUser: 1
+    };
+    $scope.alert={
+      msg:"",
+      type:"success"
+    };
+    $scope.alert2={
+      msg:"",
+      type:"success"
+    };
+    $scope.adding_img = false;
+    var firebaseRef = new Firebase(firebase_url+'/poll/'+$scope.items.channel.selected.$id);
+    var firebaseRef2 = new Firebase(firebase_url+'/polls/'+$scope.items.channel.selected.$id);
+    //var firebaseRefPart = new Firebase(firebase_url+'/participants');
+    $scope.safeApply = function(fn) {
+      var phase = this.$root.$$phase;
+      if(phase == '$apply' || phase == '$digest') {
+        if(fn && (typeof(fn) === 'function')) {
+          fn();
+        }
+      } else {
+        this.$apply(fn);
+      }
+    };
+    $scope.select_poll = function(){
+      firebaseRef2.once("value", function(snapshot) {
+        var data = snapshot.val();
+        if(data==null){
+          $scope.alert2.msg="No hay Encuestas creadas";
+          $scope.alert2.type='warning';
+          $scope.safeApply(function(){});
+        }else{
+          for(var i in data) {
+            if($scope.data.model!=null && i+""==$scope.data.model+""){
+              $scope.encuesta=data[i];
+              $scope.arrritem=data[i].items;
+              $scope.alert2.msg="Encuesta  cargada correctamente";
+              $scope.alert2.type='success';
+              $scope.safeApply(function(){});
+            }else if($scope.data.model==null || $scope.data.model===undefined){
+              $scope.alert2.msg="Seleccione un opcion para cargar";
+              $scope.alert2.type='warning';
+              $scope.safeApply(function(){});
+            }
+          }
+          $scope.safeApply(function(){});
+        }
+      }, function (errorObject) {
+        console.log("The read failed: " + errorObject.code);
+      });
+    };
+    $scope.buscar_poll = function(){
+      firebaseRef2.once("value", function(snapshot) {
+        var data = snapshot.val();
+        if(data==null){
+          $scope.alert2.msg="No hay Encuestas creadas";
+          $scope.alert2.type='warning';
+          $scope.safeApply(function(){});
+        }else{
+          for(var i in data) {
+            $scope.data.availableOptions.push(
+              {id: i, name: data[i].pregunta}
+            );
+          }
+          $scope.safeApply(function(){});
+        }
+      }, function (errorObject) {
+        console.log("The read failed: " + errorObject.code);
+      });
+    };
+    $scope.save_poll = function(){
+      if($scope.encuesta.cantUser===undefined || $scope.encuesta.cantUser==null || $scope.encuesta.cantUser<=0 || isNaN($scope.encuesta.cantUser) || $scope.encuesta.cantUser % 1 != 0){
+        $scope.alert.msg="El campo Votos por usuario no puede estar vacio, menor o igual a cero y no numeros con fraccion";
+        $scope.alert.type='warning';
+        $scope.safeApply(function(){});
+      }else if($scope.arrritem.length <= 1 && $scope.encuesta.pregunta != ""){
+        $scope.alert.msg="Debe agregar por lo menos 2 items a la encuesta";
+        $scope.alert.type='warning';
+        $scope.safeApply(function(){});
+      }else if($scope.arrritem.length > 1 && $scope.encuesta.pregunta == ""){
+        $scope.alert.msg="No debes dejar el campo Pregunta Vacio";
+        $scope.alert.type='warning';
+        $scope.safeApply(function(){});
+      }else if($scope.arrritem.length <= 1 && $scope.encuesta.pregunta == ""){
+        $scope.alert.msg="Debe agregar por lo menos 2 items a la encuesta, No debes dejar el campo Pregunta Vacio";
+        $scope.alert.type='warning';
+        $scope.safeApply(function(){});
+      }else{
+        var arrtemp=[];
+        for (var i = 0; i < $scope.arrritem.length; i++) {
+          arrtemp.push({
+            nombre: $scope.arrritem[i].nombre,
+            cant: $scope.arrritem[i].cant,
+            imgUrl: $scope.arrritem[i].imgUrl
+          });     
+        }
+        $scope.encuesta.items=arrtemp;
+        var data = $scope.encuesta;
+        var newticket=firebaseRef2
+        .push(data);
+        var key = newticket.key();
+        if(key==null){
+          $scope.alert.msg='Problemas al guardar la Encuesta, intente otravez pueden ser problemas de conexión';
+          $scope.alert.type='warning';
+          $scope.safeApply(function(){});
+        }else{
+          $scope.alert.msg='Encuesta Guardada correctamente';
+          $scope.alert.type='success';
+          $scope.safeApply(function(){});       
+        }
+      }
+    };
+    $scope.remove_item = function($nombre){
+      var arrtemp=[];
+      for (var i = 0; i < $scope.arrritem.length; i++) {
+        if($scope.arrritem[i].nombre!=$nombre){
+          arrtemp.push($scope.arrritem[i]);
+        }          
+      }
+      $scope.arrritem=arrtemp;
+    };
+    $scope.add_item = function() {
+      if($scope.item.nombre==""){
+        $scope.alert.msg="No debes dejar el campo Nombre del item Vacio";
+        $scope.alert.type='warning';
+        $scope.safeApply(function(){});
+      }else{
+        var nomequal=false;
+        for (var i = 0; i < $scope.arrritem.length; i++) {
+          if($scope.arrritem[i].nombre==$scope.item.nombre){
+            nomequal=true;
+          }          
+        }
+        if(nomequal){
+          $scope.alert.msg="El nombre "+$scope.item.nombre+" ya existe en la lista de items";
+          $scope.alert.type='warning';
+          $scope.safeApply(function(){});
+        }else{
+          $scope.arrritem.push({
+            nombre: $scope.item.nombre,
+            cant: $scope.item.cant,
+            imgUrl: $scope.item.imgUrl
+          });
+          $scope.item.nombre="";
+          $scope.item.cant=0;
+          $scope.item.imgUrl="";
+        }
+      }
+    };
+    $scope.save = function (){
+      if($scope.encuesta.cantUser===undefined || $scope.encuesta.cantUser==null || $scope.encuesta.cantUser<=0 || isNaN($scope.encuesta.cantUser) || $scope.encuesta.cantUser % 1 != 0){
+        $scope.alert.msg="El campo Votos por usuario no puede estar vacio, menor o igual a cero y no numeros con fraccion";
+        $scope.alert.type='warning';
+        $scope.safeApply(function(){});
+      }else if($scope.arrritem.length <= 1 && $scope.encuesta.pregunta != ""){
+        $scope.alert.msg="Debe agregar por lo menos 2 items a la encuesta";
+        $scope.alert.type='warning';
+        $scope.safeApply(function(){});
+      }else if($scope.arrritem.length > 1 && $scope.encuesta.pregunta == ""){
+        $scope.alert.msg="No debes dejar el campo Pregunta Vacio";
+        $scope.alert.type='warning';
+        $scope.safeApply(function(){});
+      }else if($scope.arrritem.length <= 1 && $scope.encuesta.pregunta == ""){
+        $scope.alert.msg="Debe agregar por lo menos 2 items a la encuesta, No debes dejar el campo Pregunta Vacio";
+        $scope.alert.type='warning';
+        $scope.safeApply(function(){});
+      }else{
+        var arrtemp=[];
+        for (var i = 0; i < $scope.arrritem.length; i++) {
+          arrtemp.push({
+            nombre: $scope.arrritem[i].nombre,
+            cant: $scope.arrritem[i].cant,
+            imgUrl: $scope.arrritem[i].imgUrl
+          });     
+        }
+        $scope.encuesta.items=arrtemp;
 
+        var data = $scope.encuesta;
+        firebaseRef.set(data, function(error) {
+          if(error){
+            $scope.items.encuesta.create=false;
+            $scope.$apply(function(){
+              $scope.alert.msg=error;
+              $scope.alert.type='danger';
+            });
+          }else{
+            $scope.items.encuesta.create=true;
+            $scope.$apply(function(){
+              $scope.alert.msg='Creada correctamente';
+              $scope.alert.type='success';
+            });
+          }
+        });
+      }
+    };
+    $scope.uploadPicture = function(files) {
+      if(files.length == 1) {
+        var file = files[0];
+        $scope.adding_img = true;
+        Upload.upload({
+          url: layer_path + "post/image",
+          file: file
+        }).success(function (data) {
+          if(!$scope.item.imgUrl.length > 0) {
+            $scope.item.imgUrl += data.url;
+          } else {
+            $scope.item.imgUrl = data.url;
+          }
+          $scope.adding_img = false;
+        }).error(function(data) {
+          $scope.adding_img = false;
+        });
+      }
+    };
+    $scope.cancel = function (){
+      $modalInstance.dismiss('cancel');
+    };
+  }
+];
 var enter=false;
 var chatModule = angular.module('chatModule', ['firebase', 'ngSanitize']);
 
 chatModule.controller('ChatController', ChatController);
 chatModule.controller('RifaController', RifaController);
+chatModule.controller('EncuestaController', EncuestaController);
 
 chatModule.directive('sgEnter', function() {
   return {
@@ -12408,7 +13267,9 @@ var boardApplication = angular.module('board', [
   'mm.acl',
   'yaru22.angular-timeago',
   'searchBar',
-  'btford.socket-io'
+  'btford.socket-io',
+  'ngGeolocation',
+  'siderbar'
 ]);
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'markedProvider', 'AclServiceProvider', '$opbeatProvider',

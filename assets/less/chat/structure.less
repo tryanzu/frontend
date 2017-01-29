@@ -187,6 +187,9 @@
       width: 600px;
     }
   }
+  .men-lat{
+    display: none;
+  }
 }
 
 @media(min-width:768px) and (max-width: 1024px) {
@@ -204,8 +207,25 @@
   .yt-video {
     height: 360px;
   }
+  .men-lat{
+    display: none;
+  }
 }
 
 @media(max-width:768px) {
+  #page-content-wrapper {
+    padding: 20px;
+    position: relative;
+    margin-top: @header-height;
+  }
 
+  #wrapper.toggled #page-content-wrapper {
+    position: relative;
+    margin-right: 0;
+  }
+
+  .men-lat{
+    display: inline-block;
+  }
+  
 }

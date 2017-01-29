@@ -12,11 +12,13 @@
 // @codekit-prepend vendor/angular-acl.min.js
 // @codekit-prepend vendor/angular-timeago.js
 // @codekit-prepend vendor/algoliasearch.angular.min.js
+// @codekit-prepend vendor/ngGeolocation.js
 // @codekit-prepend vendor/emoji.config.js
 // @codekit-prepend vendor/emoji.min.js
 // @codekit-prepend vendor/jquery.knob.min.js
 // @codekit-prepend vendor/socket.min.js
 // @codekit-prepend vendor/country-picker.min.js
+// @codekit-prepend vendor/sidebar.js
 
 // @codekit-prepend common/directives.js
 // @codekit-prepend common/filters.js
@@ -77,7 +79,9 @@ var boardApplication = angular.module('board', [
   'mm.acl',
   'yaru22.angular-timeago',
   'searchBar',
-  'btford.socket-io'
+  'btford.socket-io',
+  'ngGeolocation',
+  'siderbar'
 ]);
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'markedProvider', 'AclServiceProvider', '$opbeatProvider',

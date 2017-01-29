@@ -8,7 +8,22 @@ var ChatController = [
   '$routeParams',
   '$http',
   '$uibModal',
-  function($scope, $firebaseArray, $firebaseObject, $timeout, $location, $route, $routeParams, $http, $uibModal) {
+  '$geolocation',
+  function($scope, $firebaseArray, $firebaseObject, $timeout, $location, $route, $routeParams, $http, $uibModal, $geolocation) {
+    $scope.formatted_address=null;
+    $scope.$geolocation = $geolocation;
+    // basic usage
+    $geolocation.getCurrentPosition().then(function(location) {
+      $scope.location = location;
+    });
+    $scope.encuesta = {
+      create: false,
+      active: false,
+      pregunta: true,
+      encuesta: false,
+      arts: [],
+      poll: null
+    };
     $scope.rifaID=null;
     $scope.tiempo=false;
     $scope.rifa = {
@@ -28,14 +43,22 @@ var ChatController = [
         userIdGname_slug: null,
         userIdGemail:null,
         stop:false,
+        countrys:null,
+        citys:null,
         go:false
       },
       user:{
         cant:1,
         userid:null,
-        username:null
+        username:null,
+        username_slug:null,
+        email:null,
+        ticketskey:null
       }
     };
+
+    $scope.radioModel = 'chat';
+
     $scope.dynamicPopover = {
       content: 'Hello, World!',
       templateUrl: 'myPopoverTemplate.html',
@@ -86,11 +109,20 @@ var ChatController = [
     $scope._statusRef      = null;
     $scope._messageRef     = $scope._firebase.child('messages');
     $scope._channelRef     = $scope._firebase.child('channels');
-    $scope._rifasRef       = $scope._firebase.child('rifas');
+    $scope._pollRef        = $scope._firebase.child('poll');
+    $scope._ticketsPollRef = $scope._firebase.child('ticketsPoll');
+    $scope._rifasRef       = $scope._firebase.child('raffles');
     $scope._participantsRef= $scope._firebase.child('participants');
+    $scope._ticketsRef     = $scope._firebase.child('tickets');
     //$scope._privateRoomRef = $scope._firebase.child('room-private-metadata');
     //$scope._moderatorsRef  = $scope._firebase.child('moderators');
     $scope._suspensionsRef = $scope._firebase.child('suspensions');
+
+    $scope._firebaseRefR = null;
+    $scope._firebaseRefRPart = null;
+    $scope._firebaseRefRTickets = null;
+    $scope._firebaseRefPoll = null;
+    $scope._firebaseRefTicketsPoll = null;
     //$scope._usersOnlineRef = $scope._firebase.child('user-names-online');
 
     // Setup and establish default options.
@@ -173,6 +205,27 @@ var ChatController = [
         this.$apply(fn);
       }
     };
+    $scope.copy_to_clip = function(){
+      /*if($scope.rifa.art.userIdGemail!=null && window.clipboardData){
+        window.clipboardData.setData("Text", $scope.rifa.art.userIdGemail+""); 
+      }*/
+      // seleccionar el texto de la dirección de email
+      var email = document.querySelector('.email');
+      var range = document.createRange();
+      range.selectNode(email);
+      window.getSelection().addRange(range);
+     
+      try {
+        // intentar copiar el contenido seleccionado
+        var resultado = document.execCommand('copy');
+        console.log(resultado ? 'Email copiado' : 'No se pudo copiar el email');
+      } catch(err) {
+        console.log('ERROR al intentar copiar el email');
+      }
+     
+      // eliminar el texto seleccionado
+      window.getSelection().removeAllRanges();
+    }
     $scope.getRandomInt = function(min, max) {
       return Math.floor(Math.random() * (max - min)) + min;
     }
@@ -216,6 +269,18 @@ var ChatController = [
         console.log("The read failed: " + errorObject.code);
       });
     }
+    $scope.stopEncuesta = function(){
+      $scope._pollRef.child($scope.channel.selected.$id)
+      .update({
+        stop: true
+      });
+    }
+    $scope.startEncuesta = function(){
+      $scope._pollRef.child($scope.channel.selected.$id)
+      .update({
+        stop: false
+      });
+    }
     $scope.stopRifa = function(){
       $scope._rifasRef.child($scope.channel.selected.$id)
       .update({
@@ -229,61 +294,275 @@ var ChatController = [
       });
     }
     $scope.updateRifa = function(){
-      $scope._participantsRef.child($scope.channel.selected.$id)
-      .once("value", function(snapshot) {
-        var data = snapshot.val();
-        //console.log(snapshot.val());
-        var cont = 0;
-        for(var i in data) {
-          //console.log(data[i].cant);
-          cont = cont + data[i].cant;
-        }
-        var stop = false;
-        if(cont>=$scope.rifa.art.cant){
-          stop = true;
-        }
-        $scope._rifasRef.child($scope.channel.selected.$id)
+      $scope._ticketsRef.child($scope.channel.selected.$id).once("value", function(snapshot){
+        if(snapshot.val()==null){
+          var stop=false;
+          $scope._rifasRef.child($scope.channel.selected.$id).once("value",function(snapshot2){
+            if(snapshot2.val()!=null){
+              stop=snapshot2.val().stop;
+            }
+          });
+          $scope._rifasRef.child($scope.channel.selected.$id)
           .update({
-            cantComprados: cont,
+            cantComprados: 0,
             stop: stop
           });
-      }, function (errorObject) {
-        console.log("The read failed: " + errorObject.code);
+        }else{
+          var countT=0;
+          var stop=false;
+          $scope._rifasRef.child($scope.channel.selected.$id).once("value",function(snapshot2){
+            if(snapshot2.val()!=null){
+              stop=snapshot2.val().stop;
+              countT=snapshot2.val().cant;
+            }
+          });
+          var count = Object.keys(snapshot.val()).length;
+          if(count>=countT){
+            stop = true;
+          }
+          $scope._rifasRef.child($scope.channel.selected.$id)
+          .update({
+            /*cantComprados: count,*/
+            stop: stop
+          });
+        }
       });
     }
     $scope.dejarBoletos = function(){
       if(confirm("Desea dejar la rifa?")){
+        var arrTK=$scope.rifa.user.ticketskey;
+        for (var i = 0; i < arrTK.length; i++) {
+          $scope._ticketsRef.child($scope.channel.selected.$id).child(arrTK[i]).set(null);
+          $scope.ticketsUPDATE($scope._rifasRef.child($scope.channel.selected.$id),false);
+        }        
         var firebaseRefR = $scope._participantsRef.child($scope.channel.selected.$id).child($scope.user.info.id);
         var obj = $firebaseObject(firebaseRefR);
         obj.$remove().then(function(ref){
           // data has been deleted locally and in the database
           $scope.pregunta=true;
-          $scope.updateRifa();
+          //$scope.updateRifa();
         }, function(error) {
           console.log("Error:", error);
           $scope.pregunta=false;
         });
       }
     };
-    $scope.comprarBoletos = function(){
-      if(($scope.rifa.user.cant%1)==0 && $scope.rifa.user.cant>0 && $scope.rifa.user.cant<=$scope.rifa.art.cantUser && $scope.rifa.user.cant<=($scope.rifa.art.cant-$scope.rifa.art.cantComprados)){
-        $scope._participantsRef.child($scope.channel.selected.$id).child($scope.user.info.id)
-        .set($scope.rifa.user, function(error) {
-          if(error){
-            $scope.pregunta=true;
+    $scope.ticketsUPDATE = function (postRef, action) {
+      postRef.transaction(function(rifa) {
+        if (rifa) {
+          if (rifa.cantComprados<rifa.cant && action) {
+            rifa.cantComprados++;
+          }else if(!action) {
+            rifa.cantComprados--;
+          }
+        }
+        return rifa;
+      });
+    };
+    $scope.getPosition = function(){
+      //init geolocation
+      if($scope.formatted_address==null && !($scope.rifa.art.countrys===undefined && $scope.rifa.art.citys===undefined)){
+        var dir = "";
+        var lat=$scope.location.coords.latitude;
+        var lon=$scope.location.coords.longitude;
+        var latlng = new google.maps.LatLng(lat, lon);
+        geocoder = new google.maps.Geocoder();
+        geocoder.geocode({"latLng": latlng}, function(results, status)
+        {
+          if(status == google.maps.GeocoderStatus.OK){
+            if(results[0]){
+              $scope.formatted_address=results[0].formatted_address;
+              //dir = "Dirección:" + results[0].formatted_address;
+            }else{
+              dir = "No se ha podido obtener ninguna dirección en esas coordenadas";
+            }
           }else{
-            $scope.pregunta=false;
-            $scope.updateRifa();
+            dir = "El Servicio de Codificación Geográfica ha fallado con el siguiente error: " + status;
+          }
+          if(dir!=""){
+            alert(dir);
           }
         });
-      }else if(!($scope.rifa.user.cant%1)==0){
-        alert("Deben ser numero enteros sin fracción");
-      }else if($scope.rifa.user.cant<=0 || $scope.rifa.user.cant>$scope.rifa.art.cantUser || $scope.rifa.user.cant===undefined){
-        alert("Sobrepasas los limite de boletos debe ser minimo 1 y menos o igual que "+$scope.rifa.art.cantUser+" Ó Deben ser numero enteros sin fracción");
-      }else if($scope.rifa.user.cant<=($scope.rifa.art.cant-$scope.rifa.art.cantComprados)){
-        alert("Lo siento boletos agotados mas rapido la proxima vez");
+      }//End, init geolocation
+    };
+    $scope.pollUPDATE = function (postRef, action) {
+      postRef.transaction(function(encuesta_item) {
+        if (encuesta_item) {
+          if (action) {
+            encuesta_item.cant++;
+          }else if(!action) {
+            encuesta_item.cant--;
+          }
+        }
+        return encuesta_item;
+      });
+    };
+    $scope.pollbttn = function($nom){
+      var x = false;
+      for (var i = 0; i < $scope.encuesta.arts.length; i++) {
+        if($scope.encuesta.arts[i]==$nom){
+          x=true;
+        }
+      }
+      return x;
+    };
+    $scope.quitarvoto = function($nom){
+      var arrt = $scope.encuesta.poll.items;
+      var arrtemp = $scope.encuesta.arts;
+      var count=0;
+      for (var i = 0; i < arrt.length; i++) {
+        if(arrt[i].nombre==$nom){
+          count=i;
+          break;
+        }
+      }
+      var arrnvo = [];
+      for (var i = 0; i < arrtemp.length; i++) {
+        if(arrtemp[i]!=$nom){
+          arrnvo.push(arrtemp[i]);
+        }
+      }
+      $scope._ticketsPollRef.child($scope.channel.selected.$id).child($scope.user.info.id)
+      .set(arrnvo, function(error) {
+        if(error){
+          //$scope.encuesta.pregunta=true;
+        }else{
+          //$scope.encuesta.pregunta=false;
+          $scope.pollUPDATE($scope._pollRef.child($scope.channel.selected.$id).child("items").child(count),false);
+          $scope.pollUPDATE($scope._pollRef.child($scope.channel.selected.$id),false);
+          $timeout(function(){});
+          //$scope.updateRifa();
+        }
+      });
+    };
+    $scope.votar = function($nom){
+      var arrtemp = $scope.encuesta.poll.items;
+      var count=0;
+      for (var i = 0; i < arrtemp.length; i++) {
+        if(arrtemp[i].nombre==$nom){
+          count=i;
+          break;
+        }
+      }
+      var x = $scope.encuesta.arts.length;
+      if(x<$scope.encuesta.poll.cantUser){
+        $scope.encuesta.arts.push($nom);
+        $scope._ticketsPollRef.child($scope.channel.selected.$id).child($scope.user.info.id)
+        .set($scope.encuesta.arts, function(error) {
+          if(error){
+            //$scope.encuesta.pregunta=true;
+          }else{
+            //$scope.encuesta.pregunta=false;
+            $scope.pollUPDATE($scope._pollRef.child($scope.channel.selected.$id).child("items").child(count),true);
+            $scope.pollUPDATE($scope._pollRef.child($scope.channel.selected.$id),true);
+          }
+        });
+      }
+    };
+    $scope.comprarBoletos = function(){
+      $scope.getPosition();
+      if($scope.formatted_address!=null || ($scope.rifa.art.countrys===undefined && $scope.rifa.art.citys===undefined)){
+        var yes=false;
+        //console.log($scope.formatted_address);
+        if($scope.rifa.art.citys===undefined){
+        }else{
+          var ArrB=$scope.rifa.art.citys;
+          var contArr=ArrB.length;
+          for (var i = 0; i < contArr; i++) {
+            var temp = ArrB[i];
+            if ($scope.formatted_address.indexOf(''+temp)!=-1) {
+              yes=true;
+              break;
+            }
+          }
+        }
+        if($scope.rifa.art.countrys===undefined){
+        }else{
+          var ArrB=$scope.rifa.art.countrys;
+          var contArr=ArrB.length;
+          for (var i = 0; i < contArr; i++) {
+            var temp = ArrB[i];
+            if ($scope.formatted_address.indexOf(''+temp)!=-1) {
+              yes=true;
+              break;
+            }
+          }
+        }
+        if($scope.rifa.art.countrys===undefined && $scope.rifa.art.citys===undefined){
+          yes=true;
+        }
+        if(yes){
+          if(($scope.rifa.user.cant%1)==0 && $scope.rifa.user.cant>0 && $scope.rifa.user.cant<=$scope.rifa.art.cantUser && $scope.rifa.user.cant<=($scope.rifa.art.cant-$scope.rifa.art.cantComprados)){
+            var bolcomp = [];
+            for (var i = 0; i < $scope.rifa.user.cant; i++) {
+              var count=0;
+              $scope._ticketsRef.child($scope.channel.selected.$id).once("value", function(snapshot){
+                if(snapshot.val()==null){
+                  count = 0;
+                }else{
+                  count = Object.keys(snapshot.val()).length;
+                }
+                if(count<$scope.rifa.art.cant){
+                  var newticket=$scope._ticketsRef.child($scope.channel.selected.$id)
+                  .push($scope.rifa.user);
+                  var key = newticket.key();
+                  if(key==null){
+                  }else{
+                    $scope.ticketsUPDATE($scope._rifasRef.child($scope.channel.selected.$id),true);
+                    bolcomp.push(key);
+                  }
+                }
+              });
+            }
+            if(bolcomp.length>0){
+              $scope.rifa.user.ticketskey=bolcomp;
+              $scope.rifa.user.cant=bolcomp.length;
+              $scope._participantsRef.child($scope.channel.selected.$id).child($scope.user.info.id)
+              .set($scope.rifa.user, function(error) {
+                if(error){
+                  $scope.pregunta=true;
+                }else{
+                  $scope.pregunta=false;
+                  //$scope.updateRifa();
+                }
+              });
+            }
+            if(bolcomp.length>0 && bolcomp.length<$scope.rifa.user.cant){
+              alert("Por la alta demanda de boletos solo pudiste comprar "+bolcomp.length+" boletos");
+            }else if(bolcomp.length>0 && bolcomp.length==$scope.rifa.user.cant){
+            }else if(bolcomp.length==0){
+              alert("Por la alta demanda de boletos no alcanzaste boletos");
+            }
+          }else if(!($scope.rifa.user.cant%1)==0){
+            alert("Deben ser numero enteros sin fracción");
+          }else if($scope.rifa.user.cant<=0 || $scope.rifa.user.cant>$scope.rifa.art.cantUser || $scope.rifa.user.cant===undefined){
+            alert("Sobrepasas los limite de boletos debe ser minimo 1 y menos o igual que "+$scope.rifa.art.cantUser+" Ó Deben ser numero enteros sin fracción");
+          }else if($scope.rifa.user.cant<=($scope.rifa.art.cant-$scope.rifa.art.cantComprados)){
+            alert("Lo siento boletos agotados mas rapido la proxima vez");
+          }else if($scope.rifa.user.cant>($scope.rifa.art.cant-$scope.rifa.art.cantComprados)){
+            alert("Lo siento Intentaste comprar mas boletos de los existentes, esto paso por que alguien fue mas rapido que tu");
+          }else{
+            alert("Fallo");
+          }
+        }else{
+          alert('Esta Rifa no es para tu region');
+        }
       }else{
-        alert("Fallo");
+        alert('Para participar debes activar la geolocalización en tu navegador o ver si la soporta, si no cambia de navegador a uno mas reciente');
+      }
+    };
+    $scope.deleteEncuesta = function(){
+      if(confirm("Desea continuar con la eliminación de la Encuesta?")){
+        $scope._pollRef.child($scope.channel.selected.$id).set(null);
+        $scope._ticketsPollRef.child($scope.channel.selected.$id).set(null);
+        $scope.encuesta = {
+          create: false,
+          active: false,
+          pregunta: true,
+          encuesta: false,
+          arts: [],
+          poll: null
+        };
       }
     };
     $scope.deleteRifa = function(){
@@ -291,6 +570,7 @@ var ChatController = [
       if(confirm("Desea continuar con la eliminación de la rifa?")){
         $scope._rifasRef.child($scope.channel.selected.$id).set(null);
         $scope._participantsRef.child($scope.channel.selected.$id).set(null);
+        $scope._ticketsRef.child($scope.channel.selected.$id).set(null);
         $scope.rifa.create=false;
         $scope.rifa.active=false;
         $scope.rifa.pregunta=false;
@@ -306,6 +586,8 @@ var ChatController = [
         $scope.rifa.art.userIdGname_slug=null;
         $scope.rifa.art.userIdGemail=null;
         $scope.rifa.art.stop=false;
+        $scope.rifa.art.countrys=null;
+        $scope.rifa.art.citys=null;
         $scope.rifa.art.go=false;
         $scope.rifa.user.cant=1;
       }
@@ -315,6 +597,23 @@ var ChatController = [
       var modalInstance = $uibModal.open({
         templateUrl: '/js/partials/create-rifa.html',
         controller: 'RifaController',
+        size: 'lg',
+        resolve: {
+          Items: function() //scope del modal
+            {
+                return $scope;
+            }
+        }
+      });
+
+      modalInstance.result.then(function() {}, function() {
+        //$log.info('Modal dismissed at: ' + new Date());
+      });
+    };
+    $scope.createEncuesta = function() {
+      var modalInstance = $uibModal.open({
+        templateUrl: '/js/partials/create-encuesta.html',
+        controller: 'EncuestaController',
         size: 'lg',
         resolve: {
           Items: function() //scope del modal
@@ -429,88 +728,169 @@ var ChatController = [
             }
           });
         });
-      }
-      var firebaseRefR = $scope._rifasRef.child(channel.$id);
-      var firebaseRefRPart = $scope._participantsRef.child(channel.$id).child($scope.user.info.id);
-      firebaseRefR.on("value", function(snapshot) {
-        //console.log(snapshot.val());
-        if(snapshot.val()==null){
-          //$scope.safeApply(function(){
-          $timeout(function(){
-            $scope.rifa.create=false;
-            $scope.rifa.active=false;
-            $scope.rifa.pregunta=false;
-            $scope.rifa.rifa=false;
-            $scope.rifa.art.cant=0;
-            $scope.rifa.art.cantComprados=0;
-            $scope.rifa.art.cantUser=0;
-            $scope.rifa.art.imgUrl=null;
-            $scope.rifa.art.nomArt=null;
-            $scope.rifa.art.precioBole=0;
-            $scope.rifa.art.userIdG=null;
-            $scope.rifa.art.userIdGname=null;
-            $scope.rifa.art.userIdGname_slug=null;
-            $scope.rifa.art.userIdGemail=null;
-            $scope.rifa.art.stop=false;
-            $scope.rifa.art.go=false;
-            $scope.rifa.user.cant=1;
-          });
-          //});
-        }else{
-          //$scope.safeApply(function(){
-          $timeout(function(){
-            $scope.rifa.create=true;
-            $scope.rifa.active=true;
-            $scope.rifa.rifa=true;
-            $scope._participantsRef.child($scope.channel.selected.$id).child($scope.user.info.id)
-            .once('value', function(snapshott) {
-              if(snapshott.val()==null){
-                $scope.rifa.pregunta=true;
-              }else{
-                $scope.rifa.pregunta=false;
-              }
-            }, function (errorObject) {
-              console.log("The read failed: " + errorObject.code);
+        //poll
+        $scope._firebaseRefPoll = $scope._pollRef.child(channel.$id);
+        $scope._firebaseRefTicketsPoll = $scope._ticketsPollRef.child(channel.$id).child($scope.user.info.id);
+        $scope._firebaseRefPoll.on("value", function(snapshot) {
+          //console.log(snapshot.val());
+          if(snapshot.val()==null){
+            //$scope.safeApply(function(){
+            $timeout(function(){
+              $scope.encuesta.create=false;
+              $scope.encuesta.active=false;
+              //$scope.encuesta.pregunta=true;
+              $scope.encuesta.encuesta=false;
+              $scope.encuesta.arts=[];
+              $scope.encuesta.poll=null;
             });
-            $scope.rifa.art.cant=snapshot.val().cant;
-            $scope.rifa.art.cantUser=snapshot.val().cantUser;
-            $scope.rifa.art.imgUrl=snapshot.val().imgUrl;
-            $scope.rifa.art.nomArt=snapshot.val().nomArt;
-            $scope.rifa.art.precioBole=snapshot.val().precioBole;
-            $scope.rifa.art.cantComprados=snapshot.val().cantComprados;
-            $scope.rifa.art.userIdG=snapshot.val().userIdG;
-            $scope.rifa.art.userIdGname=snapshot.val().userIdGname;
-            $scope.rifa.art.userIdGname_slug=snapshot.val().userIdGname_slug;
-            $scope.rifa.art.userIdGemail=snapshot.val().userIdGemail;
-            $scope.rifa.art.stop=snapshot.val().stop;
-            $scope.rifa.art.go=snapshot.val().go;
+            //});
+          }else{
+            $timeout(function(){
+              $scope.encuesta.create=true;
+              $scope.encuesta.active=true;
+              $scope.encuesta.encuesta=true;
+              $scope._firebaseRefTicketsPoll
+              .on('value', function(snapshott) {
+                if(snapshott.val()==null){
+                  $scope.encuesta.arts=[];
+                  //$scope.encuesta.pregunta=true;
+                }else{
+                  $scope.encuesta.arts=snapshott.val();
+                  //$scope.encuesta.pregunta=false;
+                }
+              }, function (errorObject) {
+                console.log("The read failed: " + errorObject.code);
+              });
+              $scope.encuesta.poll=snapshot.val();
+            });
+          }
+        }, function (errorObject) {
+          console.log("The read failed: " + errorObject.code);
+        });
+
+        //updates for rifas
+        $scope._firebaseRefR = $scope._rifasRef.child(channel.$id);
+        $scope._firebaseRefRPart = $scope._participantsRef.child(channel.$id).child($scope.user.info.id);
+        $scope._firebaseRefRTickets = $scope._ticketsRef.child(channel.$id);
+        //var firebaseRefRPartAdmin = $scope._participantsRef.child(channel.$id);
+        $scope._firebaseRefR.on("value", function(snapshot) {
+          //console.log(snapshot.val());
+          if(snapshot.val()==null){
+            //$scope.safeApply(function(){
+            $timeout(function(){
+              $scope.rifa.create=false;
+              $scope.rifa.active=false;
+              $scope.rifa.pregunta=false;
+              $scope.rifa.rifa=false;
+              $scope.rifa.art.cant=0;
+              //$scope.rifa.art.cantComprados=0;
+              $scope.rifa.art.cantUser=0;
+              $scope.rifa.art.imgUrl=null;
+              $scope.rifa.art.nomArt=null;
+              $scope.rifa.art.precioBole=0;
+              $scope.rifa.art.userIdG=null;
+              $scope.rifa.art.userIdGname=null;
+              $scope.rifa.art.userIdGname_slug=null;
+              $scope.rifa.art.userIdGemail=null;
+              $scope.rifa.art.stop=false;
+              $scope.rifa.art.countrys=null;
+              $scope.rifa.art.citys=null;
+              $scope.rifa.art.go=false;
+              $scope.rifa.user.cant=1;
+            });
+            //});
+          }else{
+            //$scope.safeApply(function(){
+            $timeout(function(){
+              $scope.rifa.create=true;
+              $scope.rifa.active=true;
+              $scope.rifa.rifa=true;
+              $scope._participantsRef.child($scope.channel.selected.$id).child($scope.user.info.id)
+              .once('value', function(snapshott) {
+                if(snapshott.val()==null){
+                  $scope.rifa.pregunta=true;
+                }else{
+                  $scope.rifa.pregunta=false;
+                }
+              }, function (errorObject) {
+                console.log("The read failed: " + errorObject.code);
+              });
+              $scope.rifa.art.cant=snapshot.val().cant;
+              $scope.rifa.art.cantUser=snapshot.val().cantUser;
+              $scope.rifa.art.imgUrl=snapshot.val().imgUrl;
+              $scope.rifa.art.nomArt=snapshot.val().nomArt;
+              $scope.rifa.art.precioBole=snapshot.val().precioBole;
+              //$scope.rifa.art.cantComprados=snapshot.val().cantComprados;
+              $scope.rifa.art.userIdG=snapshot.val().userIdG;
+              $scope.rifa.art.userIdGname=snapshot.val().userIdGname;
+              $scope.rifa.art.userIdGname_slug=snapshot.val().userIdGname_slug;
+              $scope.rifa.art.userIdGemail=snapshot.val().userIdGemail;
+              $scope.rifa.art.stop=snapshot.val().stop;
+              $scope.rifa.art.countrys=snapshot.val().countrys;
+              $scope.rifa.art.citys=snapshot.val().citys;
+              $scope.rifa.art.go=snapshot.val().go;
+            });
+          }
+        }, function (errorObject) {
+          console.log("The read failed: " + errorObject.code);
+        });
+        $scope._firebaseRefRPart.on("value", function(snapshot) {
+          //console.log(snapshot.val());
+          if(snapshot.val()==null){
+            $scope.rifa.pregunta=true;
+            $scope.rifa.user.cant=1;
+            $scope.rifa.user.userid=$scope.user.info.id;
+            $scope.rifa.user.username=$scope.user.info.username;
+            $scope.rifa.user.username_slug=$scope.user.info.username_slug;
+            $scope.rifa.user.email=$scope.user.info.email;
+            $scope.rifa.user.ticketskey=null;
+          }else{
+            $scope.rifa.pregunta=false;
+            $scope.rifa.user={
+              cant:snapshot.val().cant,
+              userid:snapshot.val().userid,
+              username:snapshot.val().username,
+              username_slug:snapshot.val().username_slug,
+              email:snapshot.val().email,
+              ticketskey:snapshot.val().ticketskey
+            };
+          }
+        }, function (errorObject) {
+          console.log("The read failed: " + errorObject.code);
+        });
+        $scope._firebaseRefRTickets.on("value", function(snapshot) {
+          //console.log(snapshot.val().length);
+          if(snapshot.val()==null){
+            $timeout(function(){
+              $scope.rifa.art.cantComprados=0;
+            });
+          }else{
+            var count = Object.keys(snapshot.val()).length;
+            $timeout(function(){
+              $scope.rifa.art.cantComprados=count;
+            });
+          }
+        }, function (errorObject) {
+          console.log("The read failed: " + errorObject.code);
+        });
+        if($scope.can('board-config')){
+          $scope._firebaseRefRTickets.on("value", function(snapshot) {
+            if(snapshot.val()==null){
+              $scope._firebaseRefR.once("value", function(snapshott){
+                if(snapshott.val()!=null){
+                  $scope.updateRifa();    
+                }
+              }, function(errorObjectt){
+                console.log("The read failed: " + errorObjectt.code);
+              });
+            }else{
+              $scope.updateRifa();
+            }
+          }, function (errorObject) {
+            console.log("The read failed: " + errorObject.code);
           });
         }
-      }, function (errorObject) {
-        console.log("The read failed: " + errorObject.code);
-      });
-      firebaseRefRPart.on("value", function(snapshot) {
-        //console.log(snapshot.val());
-        if(snapshot.val()==null){
-          $scope.rifa.pregunta=true;
-          $scope.rifa.user.cant=1;
-          $scope.rifa.user.userid=$scope.user.info.id;
-          $scope.rifa.user.username=$scope.user.info.username;
-          $scope.rifa.user.username_slug=$scope.user.info.username_slug;
-          $scope.rifa.user.email=$scope.user.info.email;
-        }else{
-          $scope.rifa.pregunta=false;
-          $scope.rifa.user={
-            cant:snapshot.val().cant,
-            userid:snapshot.val().userid,
-            username:snapshot.val().username,
-            username_slug:snapshot.val().username_slug,
-            email:snapshot.val().email
-          };
-        }
-      }, function (errorObject) {
-        console.log("The read failed: " + errorObject.code);
-      });
+      }
     };
 
     $scope.exitChannel = function() {
@@ -520,6 +900,21 @@ var ChatController = [
           if($scope._statusRef) {
             $scope._statusRef.off();
             $scope._statusRef.set(null);
+          }
+          if($scope._firebaseRefR){
+            $scope._firebaseRefR.off();  
+          }
+          if($scope._firebaseRefRPart){
+            $scope._firebaseRefRPart.off();  
+          }
+          if($scope._firebaseRefRTickets){
+            $scope._firebaseRefRTickets.off();  
+          }
+          if($scope._firebaseRefTicketsPoll){
+            $scope._firebaseRefTicketsPoll.off();  
+          }
+          if($scope._firebaseRefPoll){
+            $scope._firebaseRefPoll.off();  
           }
         }
       }
@@ -742,6 +1137,74 @@ var RifaController = [
   '$http',
   'Upload',
   function($scope, $firebaseArray, $firebaseObject, $modalInstance, Items, $http ,Upload) {
+    $scope.countrysarr={
+      model: null,
+      availableOptions: [
+        {value: 'Argentina', name: 'Argentina'},
+        {value: 'Belice', name: 'Belice'},
+        {value: 'Bolivia', name: 'Bolivia'},
+        {value: 'Brasil', name: 'Brasil'},
+        {value: 'Canad\u00e1', name: 'Canad\u00e1'},
+        {value: 'Costa Rica', name: 'Costa Rica'},
+        {value: 'Colombia', name: 'Colombia'},
+        {value: 'Cuba', name: 'Cuba'},
+        {value: 'Ecuador', name: 'Ecuador'},        
+        {value: 'Estados Unidos', name: 'Estados Unidos'},
+        {value: 'España', name: 'España'},
+        {value: 'El Salvador', name: 'El Salvador'},
+        {value: 'Guatemala', name: 'Guatemala'},
+        {value: 'Guyana', name: 'Guyana'},
+        {value: 'Honduras', name: 'Honduras'},
+        {value: 'M\u00e9xico', name: 'M\u00e9xico'},
+        {value: 'Nicaragua', name: 'Nicaragua'},
+        {value: 'Panam\u00e1', name: 'Panam\u00e1'},
+        {value: 'Per\u00fa', name: 'Per\u00fa'},
+        {value: 'Paraguay', name: 'Paraguay'},
+        {value: 'Surinam', name: 'Surinam'},
+        {value: 'Uruguay', name: 'Uruguay'},
+        {value: 'Venezuela', name: 'Venezuela'}        
+      ]
+    };
+    $scope.citysarr={
+      model: null,
+      availableOptions: [
+        {value: 'Aguascalientes', name: 'Aguascalientes'},
+        {value: 'Baja California', name: 'Baja California'},
+        {value: 'Baja California Sur', name: 'Baja California Sur'},
+        {value: 'Campeche', name: 'Campeche'},
+        {value: 'Chiapas', name: 'Chiapas'},
+        {value: 'Chihuahua', name: 'Chihuahua'},
+        {value: 'Coahuila', name: 'Coahuila'},
+        {value: 'Colima', name: 'Colima'},
+        {value: 'Distrito Federal', name: 'Distrito Federal'},
+        {value: 'Estado de México', name: 'Estado de México'},
+        {value: 'Ciudad de México', name: 'Ciudad de México'},
+        {value: 'CDMX', name: 'CDMX'},
+        {value: 'Méx.', name: 'Méx.'},
+        {value: 'Durango', name: 'Durango'},
+        {value: 'Guanajuato', name: 'Guanajuato'},
+        {value: 'Guerrero', name: 'Guerrero'},
+        {value: 'Hidalgo', name: 'Hidalgo'},
+        {value: 'Jalisco', name: 'Jalisco'},
+        {value: 'México', name: 'México'},
+        {value: 'Michoacán', name: 'Michoacán'},
+        {value: 'Morelos', name: 'Morelos'},
+        {value: 'Nayarit', name: 'Nayarit'},
+        {value: 'Nuevo León', name: 'Nuevo León'},
+        {value: 'Puebla', name: 'Puebla'},
+        {value: 'Querétaro', name: 'Querétaro'},
+        {value: 'Quintana Roo', name: 'Quintana Roo'},
+        {value: 'San Luis Potosí', name: 'San Luis Potosí'},
+        {value: 'Sinaloa', name: 'Sinaloa'},
+        {value: 'Sonora', name: 'Sonora'},
+        {value: 'Tabasco', name: 'Tabasco'},
+        {value: 'Tamaulipas', name: 'Tamaulipas'},
+        {value: 'Tlaxcala', name: 'Tlaxcala'},
+        {value: 'Veracruz', name: 'Veracruz'},
+        {value: 'Yucatán', name: 'Yucatán'},
+        {value: 'Zacatecas', name: 'Zacatecas'}
+      ]
+    };
     $scope.items = Items;
     $scope.rifa = {
       chatId: $scope.items.channel.selected.$id,
@@ -757,6 +1220,8 @@ var RifaController = [
       userIdGname_slug: null,
       userIdGemail: null,
       stop: false,
+      countrys: null,
+      citys: null,
       go: false
     };
     $scope.alert={
@@ -764,7 +1229,7 @@ var RifaController = [
       type:"success"
     };
     $scope.adding_img = false;
-    var firebaseRef = new Firebase(firebase_url+'/rifas/'+$scope.items.channel.selected.$id);
+    var firebaseRef = new Firebase(firebase_url+'/raffles/'+$scope.items.channel.selected.$id);
     //var firebaseRefPart = new Firebase(firebase_url+'/participants');
     $scope.safeApply = function(fn) {
       var phase = this.$root.$$phase;
@@ -777,7 +1242,7 @@ var RifaController = [
       }
     };
     $scope.save = function (){
-      if($scope.rifa.cant===undefined || $scope.rifa.cant==null || $scope.rifa.cant<=0 || isNaN($scope.rifa.cantUser) || $scope.rifa.cant % 1 != 0){
+      if($scope.rifa.cant===undefined || $scope.rifa.cant==null || $scope.rifa.cant<=0 || isNaN($scope.rifa.cant) || $scope.rifa.cant % 1 != 0){
         $scope.alert.msg="El campo Cantidad de boletos no puede estar vacio, menor o igual a cero y no numeros con fraccion";
         $scope.alert.type='warning';
         $scope.safeApply(function(){});
@@ -811,8 +1276,10 @@ var RifaController = [
           userIdGname_slug: null,
           userIdGemail: null,
           stop: false,
+          countrys: $scope.rifa.countrys,
+          citys: $scope.rifa.citys,
           go: false
-        }
+        };
         firebaseRef.set(rifaChat, function(error) {
           if(error){
             $scope.items.rifa.create=false;
@@ -841,7 +1308,7 @@ var RifaController = [
           url: layer_path + "post/image",
           file: file
         }).success(function (data) {
-          if($scope.rifa.imgUrl.length > 0) {
+          if(!$scope.rifa.imgUrl.length > 0) {
             $scope.rifa.imgUrl += data.url;
           } else {
             $scope.rifa.imgUrl = data.url;
@@ -854,12 +1321,259 @@ var RifaController = [
     };
   }
 ];
+var EncuestaController = [
+  '$scope',
+  '$firebaseArray',
+  '$firebaseObject',
+  '$modalInstance',
+  'Items',
+  '$http',
+  'Upload',
+  function($scope, $firebaseArray, $firebaseObject, $modalInstance, Items, $http, Upload) {
+    $scope.items = Items;
+    $scope.item = {
+      nombre:"",
+      cant:0,
+      imgUrl:""
+    };
+    $scope.data = {
+      model: null,
+      availableOptions: []
+    };
+    $scope.arrritem=[];
+    $scope.encuesta = {
+      chatId: $scope.items.channel.selected.$id,
+      userId: $scope.items.user.info.id,
+      pregunta: "",
+      stop: false,
+      go: false,
+      items: null,
+      cant: 0,
+      cantUser: 1
+    };
+    $scope.alert={
+      msg:"",
+      type:"success"
+    };
+    $scope.alert2={
+      msg:"",
+      type:"success"
+    };
+    $scope.adding_img = false;
+    var firebaseRef = new Firebase(firebase_url+'/poll/'+$scope.items.channel.selected.$id);
+    var firebaseRef2 = new Firebase(firebase_url+'/polls/'+$scope.items.channel.selected.$id);
+    //var firebaseRefPart = new Firebase(firebase_url+'/participants');
+    $scope.safeApply = function(fn) {
+      var phase = this.$root.$$phase;
+      if(phase == '$apply' || phase == '$digest') {
+        if(fn && (typeof(fn) === 'function')) {
+          fn();
+        }
+      } else {
+        this.$apply(fn);
+      }
+    };
+    $scope.select_poll = function(){
+      firebaseRef2.once("value", function(snapshot) {
+        var data = snapshot.val();
+        if(data==null){
+          $scope.alert2.msg="No hay Encuestas creadas";
+          $scope.alert2.type='warning';
+          $scope.safeApply(function(){});
+        }else{
+          for(var i in data) {
+            if($scope.data.model!=null && i+""==$scope.data.model+""){
+              $scope.encuesta=data[i];
+              $scope.arrritem=data[i].items;
+              $scope.alert2.msg="Encuesta  cargada correctamente";
+              $scope.alert2.type='success';
+              $scope.safeApply(function(){});
+            }else if($scope.data.model==null || $scope.data.model===undefined){
+              $scope.alert2.msg="Seleccione un opcion para cargar";
+              $scope.alert2.type='warning';
+              $scope.safeApply(function(){});
+            }
+          }
+          $scope.safeApply(function(){});
+        }
+      }, function (errorObject) {
+        console.log("The read failed: " + errorObject.code);
+      });
+    };
+    $scope.buscar_poll = function(){
+      firebaseRef2.once("value", function(snapshot) {
+        var data = snapshot.val();
+        if(data==null){
+          $scope.alert2.msg="No hay Encuestas creadas";
+          $scope.alert2.type='warning';
+          $scope.safeApply(function(){});
+        }else{
+          for(var i in data) {
+            $scope.data.availableOptions.push(
+              {id: i, name: data[i].pregunta}
+            );
+          }
+          $scope.safeApply(function(){});
+        }
+      }, function (errorObject) {
+        console.log("The read failed: " + errorObject.code);
+      });
+    };
+    $scope.save_poll = function(){
+      if($scope.encuesta.cantUser===undefined || $scope.encuesta.cantUser==null || $scope.encuesta.cantUser<=0 || isNaN($scope.encuesta.cantUser) || $scope.encuesta.cantUser % 1 != 0){
+        $scope.alert.msg="El campo Votos por usuario no puede estar vacio, menor o igual a cero y no numeros con fraccion";
+        $scope.alert.type='warning';
+        $scope.safeApply(function(){});
+      }else if($scope.arrritem.length <= 1 && $scope.encuesta.pregunta != ""){
+        $scope.alert.msg="Debe agregar por lo menos 2 items a la encuesta";
+        $scope.alert.type='warning';
+        $scope.safeApply(function(){});
+      }else if($scope.arrritem.length > 1 && $scope.encuesta.pregunta == ""){
+        $scope.alert.msg="No debes dejar el campo Pregunta Vacio";
+        $scope.alert.type='warning';
+        $scope.safeApply(function(){});
+      }else if($scope.arrritem.length <= 1 && $scope.encuesta.pregunta == ""){
+        $scope.alert.msg="Debe agregar por lo menos 2 items a la encuesta, No debes dejar el campo Pregunta Vacio";
+        $scope.alert.type='warning';
+        $scope.safeApply(function(){});
+      }else{
+        var arrtemp=[];
+        for (var i = 0; i < $scope.arrritem.length; i++) {
+          arrtemp.push({
+            nombre: $scope.arrritem[i].nombre,
+            cant: $scope.arrritem[i].cant,
+            imgUrl: $scope.arrritem[i].imgUrl
+          });     
+        }
+        $scope.encuesta.items=arrtemp;
+        var data = $scope.encuesta;
+        var newticket=firebaseRef2
+        .push(data);
+        var key = newticket.key();
+        if(key==null){
+          $scope.alert.msg='Problemas al guardar la Encuesta, intente otravez pueden ser problemas de conexión';
+          $scope.alert.type='warning';
+          $scope.safeApply(function(){});
+        }else{
+          $scope.alert.msg='Encuesta Guardada correctamente';
+          $scope.alert.type='success';
+          $scope.safeApply(function(){});       
+        }
+      }
+    };
+    $scope.remove_item = function($nombre){
+      var arrtemp=[];
+      for (var i = 0; i < $scope.arrritem.length; i++) {
+        if($scope.arrritem[i].nombre!=$nombre){
+          arrtemp.push($scope.arrritem[i]);
+        }          
+      }
+      $scope.arrritem=arrtemp;
+    };
+    $scope.add_item = function() {
+      if($scope.item.nombre==""){
+        $scope.alert.msg="No debes dejar el campo Nombre del item Vacio";
+        $scope.alert.type='warning';
+        $scope.safeApply(function(){});
+      }else{
+        var nomequal=false;
+        for (var i = 0; i < $scope.arrritem.length; i++) {
+          if($scope.arrritem[i].nombre==$scope.item.nombre){
+            nomequal=true;
+          }          
+        }
+        if(nomequal){
+          $scope.alert.msg="El nombre "+$scope.item.nombre+" ya existe en la lista de items";
+          $scope.alert.type='warning';
+          $scope.safeApply(function(){});
+        }else{
+          $scope.arrritem.push({
+            nombre: $scope.item.nombre,
+            cant: $scope.item.cant,
+            imgUrl: $scope.item.imgUrl
+          });
+          $scope.item.nombre="";
+          $scope.item.cant=0;
+          $scope.item.imgUrl="";
+        }
+      }
+    };
+    $scope.save = function (){
+      if($scope.encuesta.cantUser===undefined || $scope.encuesta.cantUser==null || $scope.encuesta.cantUser<=0 || isNaN($scope.encuesta.cantUser) || $scope.encuesta.cantUser % 1 != 0){
+        $scope.alert.msg="El campo Votos por usuario no puede estar vacio, menor o igual a cero y no numeros con fraccion";
+        $scope.alert.type='warning';
+        $scope.safeApply(function(){});
+      }else if($scope.arrritem.length <= 1 && $scope.encuesta.pregunta != ""){
+        $scope.alert.msg="Debe agregar por lo menos 2 items a la encuesta";
+        $scope.alert.type='warning';
+        $scope.safeApply(function(){});
+      }else if($scope.arrritem.length > 1 && $scope.encuesta.pregunta == ""){
+        $scope.alert.msg="No debes dejar el campo Pregunta Vacio";
+        $scope.alert.type='warning';
+        $scope.safeApply(function(){});
+      }else if($scope.arrritem.length <= 1 && $scope.encuesta.pregunta == ""){
+        $scope.alert.msg="Debe agregar por lo menos 2 items a la encuesta, No debes dejar el campo Pregunta Vacio";
+        $scope.alert.type='warning';
+        $scope.safeApply(function(){});
+      }else{
+        var arrtemp=[];
+        for (var i = 0; i < $scope.arrritem.length; i++) {
+          arrtemp.push({
+            nombre: $scope.arrritem[i].nombre,
+            cant: $scope.arrritem[i].cant,
+            imgUrl: $scope.arrritem[i].imgUrl
+          });     
+        }
+        $scope.encuesta.items=arrtemp;
 
+        var data = $scope.encuesta;
+        firebaseRef.set(data, function(error) {
+          if(error){
+            $scope.items.encuesta.create=false;
+            $scope.$apply(function(){
+              $scope.alert.msg=error;
+              $scope.alert.type='danger';
+            });
+          }else{
+            $scope.items.encuesta.create=true;
+            $scope.$apply(function(){
+              $scope.alert.msg='Creada correctamente';
+              $scope.alert.type='success';
+            });
+          }
+        });
+      }
+    };
+    $scope.uploadPicture = function(files) {
+      if(files.length == 1) {
+        var file = files[0];
+        $scope.adding_img = true;
+        Upload.upload({
+          url: layer_path + "post/image",
+          file: file
+        }).success(function (data) {
+          if(!$scope.item.imgUrl.length > 0) {
+            $scope.item.imgUrl += data.url;
+          } else {
+            $scope.item.imgUrl = data.url;
+          }
+          $scope.adding_img = false;
+        }).error(function(data) {
+          $scope.adding_img = false;
+        });
+      }
+    };
+    $scope.cancel = function (){
+      $modalInstance.dismiss('cancel');
+    };
+  }
+];
 var enter=false;
 var chatModule = angular.module('chatModule', ['firebase', 'ngSanitize']);
 
 chatModule.controller('ChatController', ChatController);
 chatModule.controller('RifaController', RifaController);
+chatModule.controller('EncuestaController', EncuestaController);
 
 chatModule.directive('sgEnter', function() {
   return {
