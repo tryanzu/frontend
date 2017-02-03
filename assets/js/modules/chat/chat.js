@@ -321,7 +321,10 @@ var ChatController = [
           $scope._rifasRef.child($scope.channel.selected.$id).once("value",function(snapshot2){
             if(snapshot2.val()!=null){
               stop=snapshot2.val().stop;
-              countT=snapshot2.val().cant;
+              if(snapshot2.val().cant>0)
+                countT=snapshot2.val().cant-1;
+              else
+                countT=snapshot2.val().cant;
             }
           });
           var count = Object.keys(snapshot.val()).length;
@@ -517,9 +520,9 @@ var ChatController = [
                   console.log('Transaction failed abnormally!', error);
                 } else if (!committed) {
                   console.log('We aborted the transaction (because ada already exists).');
-                } else {
-                  //console.log('Cont Exitoso');
-                  if(action){
+                } else if (committed) {
+                  //console.log('Cont Exitoso',committed,'ERROR',error,'DATA',snapshot.val());
+                  if(action && snapshot.val().cantComprados < snapshot.val().cant){
                     var count=0;
                     $scope._ticketsRef.child($scope.channel.selected.$id).once("value", function(snapshot){
                       if(snapshot.val()==null){
@@ -1295,7 +1298,7 @@ var RifaController = [
       }else{
         var rifaChat = {
           userId: $scope.items.user.info.id,
-          cant: $scope.rifa.cant,
+          cant: $scope.rifa.cant+1,
           cantUser: $scope.rifa.cantUser,
           cantComprados: $scope.rifa.cantComprados,
           precioBole: $scope.rifa.precioBole,
