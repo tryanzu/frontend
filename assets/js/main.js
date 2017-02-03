@@ -41,7 +41,7 @@
 // @codekit-prepend modules/donations/donations.js
 // @codekit-prepend modules/events/event.js
 
-var version = '081';
+var version = '082';
 
 var boardApplication = angular.module('board', [
   'ngOpbeat',
