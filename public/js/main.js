@@ -6915,218 +6915,432 @@ angular.module('siderbar', [])
 
 var directives = angular.module('directivesModule', []);
 
+
+
 directives.directive('adjustHeight', function($window, $document, $timeout) {
+
 	return {
+
 		restrict: 'A',
+
 		link: function(scope, element, attrs) {
+
 			scope.calculate = function() {
+
         var top = $(element).offset().top;
+
         var height = $(window).height();
+
         var neededHeight = height - top;
+
         //console.log(top, height, neededHeight, element);
 
+
+
         $(element).css('height', neededHeight);
+
       };
+
       $timeout(function(){
+
         scope.calculate();
+
       }, 100);
 
+
+
       $window.addEventListener('resize', function() {
+
         scope.calculate();
+
       });
 
+
+
       // Listen for possible container size changes
+
       scope.$on('changedContainers', function() {
+
         scope.calculate();
+
       });
+
 		}
+
 	};
+
 });
+
+
 
 directives.directive('adjustHeightChat', function($window, $document, $timeout) {
+
   return {
+
     restrict: 'A',
+
     link: function(scope, element, attrs) {
+
       scope.calculate = function() {
+
         var top = $(element).offset().top;
+
         var height = $(window).height();
+
         var footer = $('div.footer').outerHeight();
+
         var neededHeight = height - top - footer;
+
         //console.log(top, height, footer, neededHeight);
 
+
+
         $(element).css('height', neededHeight);
+
       };
+
       $timeout(function(){
+
         scope.calculate();
+
       }, 100);
 
+
+
       $window.addEventListener('resize', function() {
+
         scope.calculate();
+
       });
+
+
 
       // Listen for possible container size changes
+
       scope.$on('changedContainers', function() {
+
         scope.calculate();
+
       });
+
     }
+
   };
+
 });
+
+
 
 directives.directive('scrollMe', function() {
+
   return {
+
     restrict: 'A',
+
     scope: {
+
       trigger: '&scrollMe'
+
     },
+
     link: function(scope, element, attrs) {
+
       // If space is bigger, load more items
+
       element.on('scroll', function() {
+
         if($(this).scrollTop() + $(this).innerHeight() >= this.scrollHeight) {
+
           scope.$apply(function() {
+
             // Trigger scroll
+
             scope.trigger();
+
           });
+
         }
+
       });
+
     }
+
   }
+
 });
+
+
 
 directives.directive('myRefresh', ['$location', function($location) {
+
   return {
+
     restrict: 'A',
+
     scope: {
+
       trigger: '&myRefresh'
+
     },
+
     link: function(scope, element, attrs) {
+
       element.bind('click', function() {
+
         if(element[0] && element[0].href && element[0].href === $location.absUrl()){
+
           //console.log("Recarga!");
+
           scope.trigger();
+
         }
+
       });
+
     }
+
   };
+
 }]);
 
+
+
 directives.directive('markedsg', function () {
+
   return {
+
     restrict: 'AE',
+
     replace: true,
+
     scope: {
+
       markedsg: '='
+
     },
+
     link: function (scope, element, attrs) {
+
       set(scope.markedsg || element.text() || '');
 
+
+
       if (attrs.markedsg) {
+
         scope.$watch('markedsg', set);
+
       }
+
+
 
       function unindent(text) {
+
         if (!text) return text;
 
+
+
         var lines = text
+
           .replace(/\t/g, '  ')
+
           .split(/\r?\n/);
 
+
+
         var i, l, min = null, line, len = lines.length;
+
         for (i = 0; i < len; i++) {
+
           line = lines[i];
+
           l = line.match(/^(\s*)/)[0].length;
+
           if (l === line.length) { continue; }
+
           min = (l < min || min === null) ? l : min;
+
         }
+
+
 
         if (min !== null && min > 0) {
+
           for (i = 0; i < len; i++) {
+
             lines[i] = lines[i].substr(min);
+
           }
+
         }
+
         return lines.join('\n');
+
       }
+
+
 
       function set(text) {
+
         text = unindent(text || '');
+
         // Parse mentions links
+
         var links = $('<div>' + text + '</div>');
+
         links.find('a.user-mention').each(function( index ) {
+
           $(this).attr("href", "/u/"+ $(this).data('username') +"/"+ $(this).data('id'));
+
           if($(this).data('comment') != undefined) {
+
             $(this).before('<i class="fa fa-reply comment-response"></i>')
+
           }
+
         });
+
         text = links.html();
+
         element.html(marked(text, scope.opts || null));
+
       }
 
+
+
     }
+
   };
+
 });
+
+
 
 directives.directive('populometro', function() {
+
   return {
+
     restrict: 'EACM',
+
     template: function(elem, attrs) {
+
       return '<div style="display:block;width:100px;height:80px;margin: 0 auto"><svg style="position:absolute" width="100" height="100"><g><polygon points="50 20 54 50 46 50" fill="#E6E9EE" transform="rotate({{ (knob*2.4) - 120 }} 50 50)"></polygon><circle class="ring" cx="50" cy="50" r="10" fill="#E6E9EE"></circle><circle class="ring" cx="51" cy="51" r="8" fill="#d0d7dd"></circle><circle class="ring" cx="50" cy="50" r="7" fill="#F1F1F1"></circle></g></svg><div style="display: none; position:absolute;top:50%;width:100px;text-align:center;font-weight:bold;font-size: 1.1em;">{{ knob | number : 0 }}</div><input value="{{ knob }}"></div>';
+
     },
+
     replace: true,
+
     scope: true,
+
     link: function(scope, elem, attrs) {
+
       scope.opts = {
+
         'width':100,
+
         'height':80,
+
         'bgColor':'#E6E9EE',
+
         'fgColor':'#386db8',
+
         'readOnly':true,
+
         'displayInput':false,
+
         'max': 100,
+
         'angleArc':240,
+
         'angleOffset':-120,
+
         'thickness':'.25'
+
       };
+
       var renderKnob = function(){
+
         scope.knob = scope.$eval(attrs.knobData);
+
         $elem = $(elem).find('input');
+
         $elem.val(scope.knob);
+
         $elem.change();
+
         $elem.knob(scope.opts);
+
       };
+
       scope.$watch(attrs.knobData, function () {
+
         renderKnob();
+
       });
+
     },
+
   }
+
 });
 
+
+
 /**
+
  * ng-flags module
+
  * Turns country ISO code to flag thumbnail.
+
  *
+
  * Author: asafdav - https://github.com/asafdav
+
  */
+
 directives.directive('flag', function() {
+
   return {
+
     restrict: 'E',
+
     replace: true,
+
     template: '<span class="f{{ size }}"><span class="flag {{ country }}"></span></span>',
+
     scope: {
+
       country: '@',
+
       size: '@'
+
     },
+
     link: function(scope, elm, attrs) {
+
       // Default flag size
+
       scope.size = 16;
 
+
+
       scope.$watch('country', function(value) {
+
         scope.country = angular.lowercase(value);
+
       });
 
+
+
       scope.$watch('size', function(value) {
+
         scope.size = value;
+
       });
+
     }
+
   };
+
 });
 var filters = angular.module('filtersModule', []);
 
@@ -7261,12 +7475,19 @@ services.factory('socket', function (socketFactory) {
 })
 
 var FeedService = ['$resource', function($resource) {
+
   return $resource(layer_path + 'feed');
+
 }];
+
+
 
 var FeedModule = angular.module('feedModule', ['ngResource']);
 
+
+
 // Service of the feed module
+
 FeedModule.factory('Feed', FeedService);
 var CategoryService = ['$resource', function($resource) {
   return $resource(layer_path + 'category/:categoryId',
@@ -9650,6 +9871,14 @@ var ChatController = [
     };
 
     $scope.radioModel = 'chat';
+    $scope.alert_rifa = false;
+    $scope.alert_encuesta = false;
+    $scope.a_rifa = function(){
+      $scope.alert_rifa = false;
+    };
+    $scope.a_encuesta = function(){
+      $scope.alert_encuesta = false;
+    };
 
     $scope.dynamicPopover = {
       content: 'Hello, World!',
@@ -9905,7 +10134,10 @@ var ChatController = [
           $scope._rifasRef.child($scope.channel.selected.$id).once("value",function(snapshot2){
             if(snapshot2.val()!=null){
               stop=snapshot2.val().stop;
-              countT=snapshot2.val().cant;
+              if(snapshot2.val().cant>0)
+                countT=snapshot2.val().cant-1;
+              else
+                countT=snapshot2.val().cant;
             }
           });
           var count = Object.keys(snapshot.val()).length;
@@ -10085,45 +10317,61 @@ var ChatController = [
         }
         if(yes){
           if(($scope.rifa.user.cant%1)==0 && $scope.rifa.user.cant>0 && $scope.rifa.user.cant<=$scope.rifa.art.cantUser && $scope.rifa.user.cant<=($scope.rifa.art.cant-$scope.rifa.art.cantComprados)){
-            var bolcomp = [];
             for (var i = 0; i < $scope.rifa.user.cant; i++) {
-              var count=0;
-              $scope._ticketsRef.child($scope.channel.selected.$id).once("value", function(snapshot){
-                if(snapshot.val()==null){
-                  count = 0;
-                }else{
-                  count = Object.keys(snapshot.val()).length;
+              var action = true;
+              $scope._rifasRef.child($scope.channel.selected.$id).transaction(function(rifa) {
+                if (rifa) {
+                  if (rifa.cantComprados<rifa.cant && action) {
+                    rifa.cantComprados++;
+                  }else if(!action) {
+                    rifa.cantComprados--;
+                  }
                 }
-                if(count<$scope.rifa.art.cant){
-                  var newticket=$scope._ticketsRef.child($scope.channel.selected.$id)
-                  .push($scope.rifa.user);
-                  var key = newticket.key();
-                  if(key==null){
-                  }else{
-                    $scope.ticketsUPDATE($scope._rifasRef.child($scope.channel.selected.$id),true);
-                    bolcomp.push(key);
+                return rifa;
+              }, function(error, committed, snapshot){
+                if (error) {
+                  console.log('Transaction failed abnormally!', error);
+                } else if (!committed) {
+                  console.log('We aborted the transaction (because ada already exists).');
+                } else if (committed) {
+                  //console.log('Cont Exitoso',committed,'ERROR',error,'DATA',snapshot.val());
+                  if(action && snapshot.val().cantComprados < snapshot.val().cant){
+                    var count=0;
+                    $scope._ticketsRef.child($scope.channel.selected.$id).once("value", function(snapshot){
+                      if(snapshot.val()==null){
+                        count = 0;
+                      }else{
+                        count = Object.keys(snapshot.val()).length;
+                      }
+                      if(count<=$scope.rifa.art.cant){
+                        var newticket=$scope._ticketsRef.child($scope.channel.selected.$id)
+                        .push($scope.rifa.user);
+                        var key = newticket.key();
+                        if(key==null){
+                        }else{
+                          //Exito
+                          if($scope.rifa.user.ticketskey===undefined || $scope.rifa.user.ticketskey==null){
+                            $scope.rifa.user.ticketskey=[];
+                          }
+                          var bolcomp = $scope.rifa.user.ticketskey;
+                          bolcomp.push(key);
+                          $scope.rifa.user.ticketskey=bolcomp;
+                          $scope.rifa.user.cant=bolcomp.length;
+                          $scope._participantsRef.child($scope.channel.selected.$id).child($scope.user.info.id)
+                          .set($scope.rifa.user, function(error) {
+                            if(error){
+                              $scope.pregunta=true;
+                            }else{
+                              $scope.pregunta=false;
+                              //$scope.updateRifa();
+                            }
+                          });
+                        }
+                      }
+                    });
                   }
                 }
               });
-            }
-            if(bolcomp.length>0){
-              $scope.rifa.user.ticketskey=bolcomp;
-              $scope.rifa.user.cant=bolcomp.length;
-              $scope._participantsRef.child($scope.channel.selected.$id).child($scope.user.info.id)
-              .set($scope.rifa.user, function(error) {
-                if(error){
-                  $scope.pregunta=true;
-                }else{
-                  $scope.pregunta=false;
-                  //$scope.updateRifa();
-                }
-              });
-            }
-            if(bolcomp.length>0 && bolcomp.length<$scope.rifa.user.cant){
-              alert("Por la alta demanda de boletos solo pudiste comprar "+bolcomp.length+" boletos");
-            }else if(bolcomp.length>0 && bolcomp.length==$scope.rifa.user.cant){
-            }else if(bolcomp.length==0){
-              alert("Por la alta demanda de boletos no alcanzaste boletos");
             }
           }else if(!($scope.rifa.user.cant%1)==0){
             alert("Deben ser numero enteros sin fracción");
@@ -10334,6 +10582,7 @@ var ChatController = [
               $scope.encuesta.encuesta=false;
               $scope.encuesta.arts=[];
               $scope.encuesta.poll=null;
+              $scope.alert_encuesta = false;
             });
             //});
           }else{
@@ -10354,6 +10603,8 @@ var ChatController = [
                 console.log("The read failed: " + errorObject.code);
               });
               $scope.encuesta.poll=snapshot.val();
+              if($scope.radioModel!="encuesta")
+                $scope.alert_encuesta = true;
             });
           }
         }, function (errorObject) {
@@ -10389,6 +10640,7 @@ var ChatController = [
               $scope.rifa.art.citys=null;
               $scope.rifa.art.go=false;
               $scope.rifa.user.cant=1;
+              $scope.alert_rifa = false;
             });
             //});
           }else{
@@ -10421,6 +10673,8 @@ var ChatController = [
               $scope.rifa.art.countrys=snapshot.val().countrys;
               $scope.rifa.art.citys=snapshot.val().citys;
               $scope.rifa.art.go=snapshot.val().go;
+              if($scope.radioModel!="rifa")
+                $scope.alert_rifa = true;
             });
           }
         }, function (errorObject) {
@@ -10857,7 +11111,7 @@ var RifaController = [
       }else{
         var rifaChat = {
           userId: $scope.items.user.info.id,
-          cant: $scope.rifa.cant,
+          cant: $scope.rifa.cant+1,
           cantUser: $scope.rifa.cantUser,
           cantComprados: $scope.rifa.cantComprados,
           precioBole: $scope.rifa.precioBole,
