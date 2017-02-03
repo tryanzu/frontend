@@ -5,11 +5,11 @@
         <label class="btn btn-default" ng-model="radioModel" uib-btn-radio="'chat'" class="text-center" title="Canales">
           <i class="fa fa-comments" aria-hidden="true"></i>
         </label>
-        <label class="btn btn-default" ng-model="radioModel" uib-btn-radio="'rifa'" class="text-center" title="Rifas">
-          <i class="fa fa-archive" aria-hidden="true"></i>
+        <label class="btn btn-default" ng-model="radioModel" uib-btn-radio="'rifa'" class="text-center" title="Rifas" ng-click="a_rifa()">
+          <i class="fa fa-archive" aria-hidden="true"></i><i ng-if="radioModel!='rifa' && alert_rifa" class="fa fa-asterisk fa-spin" aria-hidden="true" style="color:#386db8; position: absolute; top: 2px; right: 2px; z-index:10;"></i>
         </label>
-        <label class="btn btn-default" ng-model="radioModel" uib-btn-radio="'encuesta'" class="text-center" title="Encuestas">
-          <i class="fa fa-pie-chart" aria-hidden="true"></i>
+        <label class="btn btn-default" ng-model="radioModel" uib-btn-radio="'encuesta'" class="text-center" title="Encuestas" ng-click="a_encuesta()">
+          <i class="fa fa-pie-chart" aria-hidden="true"></i><i ng-if="radioModel!='encuesta' && alert_encuesta" class="fa fa-asterisk fa-spin" aria-hidden="true" style="color:#386db8; position: absolute; top: 2px; right: 2px; z-index:10;"></i>
         </label>
         <label class="btn btn-default" ng-model="radioModel" uib-btn-radio="'subasta'" class="text-center" title="Subastas">
           <i class="fa fa-money" aria-hidden="true"></i>
@@ -153,11 +153,11 @@
         <label class="btn btn-default" ng-model="radioModel" uib-btn-radio="'chat'" class="text-center" title="Canales">
           <i class="fa fa-comments" aria-hidden="true"></i>
         </label>
-        <label class="btn btn-default" ng-model="radioModel" uib-btn-radio="'rifa'" class="text-center" title="Rifas">
-          <i class="fa fa-archive" aria-hidden="true"></i>
+        <label class="btn btn-default" ng-model="radioModel" uib-btn-radio="'rifa'" class="text-center" title="Rifas" ng-click="a_rifa()">
+          <i class="fa fa-archive" aria-hidden="true"></i><i ng-if="radioModel!='rifa' && alert_rifa" class="fa fa-asterisk fa-spin" aria-hidden="true" style="color:#386db8; position: absolute; top: 2px; right: 2px; z-index:10;"></i>
         </label>
-        <label class="btn btn-default" ng-model="radioModel" uib-btn-radio="'encuesta'" class="text-center" title="Encuestas">
-          <i class="fa fa-pie-chart" aria-hidden="true"></i>
+        <label class="btn btn-default" ng-model="radioModel" uib-btn-radio="'encuesta'" class="text-center" title="Encuestas" ng-click="a_encuesta()">
+          <i class="fa fa-pie-chart" aria-hidden="true"></i><i ng-if="radioModel!='encuesta' && alert_encuesta" class="fa fa-asterisk fa-spin" aria-hidden="true" style="color:#386db8; position: absolute; top: 2px; right: 2px; z-index:10;"></i>
         </label>
         <label class="btn btn-default" ng-model="radioModel" uib-btn-radio="'subasta'" class="text-center" title="Subastas">
           <i class="fa fa-money" aria-hidden="true"></i>

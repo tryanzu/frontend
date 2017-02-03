@@ -58,6 +58,14 @@ var ChatController = [
     };
 
     $scope.radioModel = 'chat';
+    $scope.alert_rifa = false;
+    $scope.alert_encuesta = false;
+    $scope.a_rifa = function(){
+      $scope.alert_rifa = false;
+    };
+    $scope.a_encuesta = function(){
+      $scope.alert_encuesta = false;
+    };
 
     $scope.dynamicPopover = {
       content: 'Hello, World!',
@@ -493,45 +501,61 @@ var ChatController = [
         }
         if(yes){
           if(($scope.rifa.user.cant%1)==0 && $scope.rifa.user.cant>0 && $scope.rifa.user.cant<=$scope.rifa.art.cantUser && $scope.rifa.user.cant<=($scope.rifa.art.cant-$scope.rifa.art.cantComprados)){
-            var bolcomp = [];
             for (var i = 0; i < $scope.rifa.user.cant; i++) {
-              var count=0;
-              $scope._ticketsRef.child($scope.channel.selected.$id).once("value", function(snapshot){
-                if(snapshot.val()==null){
-                  count = 0;
-                }else{
-                  count = Object.keys(snapshot.val()).length;
+              var action = true;
+              $scope._rifasRef.child($scope.channel.selected.$id).transaction(function(rifa) {
+                if (rifa) {
+                  if (rifa.cantComprados<rifa.cant && action) {
+                    rifa.cantComprados++;
+                  }else if(!action) {
+                    rifa.cantComprados--;
+                  }
                 }
-                if(count<$scope.rifa.art.cant){
-                  var newticket=$scope._ticketsRef.child($scope.channel.selected.$id)
-                  .push($scope.rifa.user);
-                  var key = newticket.key();
-                  if(key==null){
-                  }else{
-                    $scope.ticketsUPDATE($scope._rifasRef.child($scope.channel.selected.$id),true);
-                    bolcomp.push(key);
+                return rifa;
+              }, function(error, committed, snapshot){
+                if (error) {
+                  console.log('Transaction failed abnormally!', error);
+                } else if (!committed) {
+                  console.log('We aborted the transaction (because ada already exists).');
+                } else {
+                  //console.log('Cont Exitoso');
+                  if(action){
+                    var count=0;
+                    $scope._ticketsRef.child($scope.channel.selected.$id).once("value", function(snapshot){
+                      if(snapshot.val()==null){
+                        count = 0;
+                      }else{
+                        count = Object.keys(snapshot.val()).length;
+                      }
+                      if(count<=$scope.rifa.art.cant){
+                        var newticket=$scope._ticketsRef.child($scope.channel.selected.$id)
+                        .push($scope.rifa.user);
+                        var key = newticket.key();
+                        if(key==null){
+                        }else{
+                          //Exito
+                          if($scope.rifa.user.ticketskey===undefined || $scope.rifa.user.ticketskey==null){
+                            $scope.rifa.user.ticketskey=[];
+                          }
+                          var bolcomp = $scope.rifa.user.ticketskey;
+                          bolcomp.push(key);
+                          $scope.rifa.user.ticketskey=bolcomp;
+                          $scope.rifa.user.cant=bolcomp.length;
+                          $scope._participantsRef.child($scope.channel.selected.$id).child($scope.user.info.id)
+                          .set($scope.rifa.user, function(error) {
+                            if(error){
+                              $scope.pregunta=true;
+                            }else{
+                              $scope.pregunta=false;
+                              //$scope.updateRifa();
+                            }
+                          });
+                        }
+                      }
+                    });
                   }
                 }
               });
-            }
-            if(bolcomp.length>0){
-              $scope.rifa.user.ticketskey=bolcomp;
-              $scope.rifa.user.cant=bolcomp.length;
-              $scope._participantsRef.child($scope.channel.selected.$id).child($scope.user.info.id)
-              .set($scope.rifa.user, function(error) {
-                if(error){
-                  $scope.pregunta=true;
-                }else{
-                  $scope.pregunta=false;
-                  //$scope.updateRifa();
-                }
-              });
-            }
-            if(bolcomp.length>0 && bolcomp.length<$scope.rifa.user.cant){
-              alert("Por la alta demanda de boletos solo pudiste comprar "+bolcomp.length+" boletos");
-            }else if(bolcomp.length>0 && bolcomp.length==$scope.rifa.user.cant){
-            }else if(bolcomp.length==0){
-              alert("Por la alta demanda de boletos no alcanzaste boletos");
             }
           }else if(!($scope.rifa.user.cant%1)==0){
             alert("Deben ser numero enteros sin fracción");
@@ -742,6 +766,7 @@ var ChatController = [
               $scope.encuesta.encuesta=false;
               $scope.encuesta.arts=[];
               $scope.encuesta.poll=null;
+              $scope.alert_encuesta = false;
             });
             //});
           }else{
@@ -762,6 +787,8 @@ var ChatController = [
                 console.log("The read failed: " + errorObject.code);
               });
               $scope.encuesta.poll=snapshot.val();
+              if($scope.radioModel!="encuesta")
+                $scope.alert_encuesta = true;
             });
           }
         }, function (errorObject) {
@@ -797,6 +824,7 @@ var ChatController = [
               $scope.rifa.art.citys=null;
               $scope.rifa.art.go=false;
               $scope.rifa.user.cant=1;
+              $scope.alert_rifa = false;
             });
             //});
           }else{
@@ -829,6 +857,8 @@ var ChatController = [
               $scope.rifa.art.countrys=snapshot.val().countrys;
               $scope.rifa.art.citys=snapshot.val().citys;
               $scope.rifa.art.go=snapshot.val().go;
+              if($scope.radioModel!="rifa")
+                $scope.alert_rifa = true;
             });
           }
         }, function (errorObject) {
