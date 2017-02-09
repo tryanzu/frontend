@@ -8,7 +8,7 @@
   <div class="modal-body">
     <div class="form-centered">
       <p style="font-size: 13px; margin-bottom: 12px; background-color: #f1f1f1; padding: 8px 10px; border-radius: 8px;">Al crear una cuenta aceptas los <a href="/terminos-y-condiciones" target="_blank">términos y condiciones</a> de SpartanGeek.</p>
-      <a href="https://api.spartangeek.com/v1/oauth/facebook" class="btn btn-fb" ng-click="fb_loading = true" ng-if="!fb_loading"><i class="fa fa-facebook"></i> Crear cuenta con Facebook</a>
+      <a ng-href="https://api.spartangeek.com/v1/oauth/facebook?redir={{current_url}}" class="btn btn-fb" ng-click="fb_loading = true" ng-if="!fb_loading"><i class="fa fa-facebook"></i> Crear cuenta con Facebook</a>
       <a href="" class="btn btn-fb disabled" ng-if="fb_loading"><i class="fa fa-facebook"></i> Creando cuenta con Facebook...</a>
       <div class="text-left">
         <div class="or-up">ó si prefieres</div>
