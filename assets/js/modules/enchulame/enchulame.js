@@ -63,8 +63,14 @@ DonationsModule.controller('EnchulameController', ['$scope', '$http', '$route', 
     saveData();
   }
 
+  $scope.sendAgain = function() {
+    saveData(true);
+  }
+
   // Send current form data
-  var saveData = function() {
+  var saveData = function(send_again) {
+    send_again = (typeof send_again !== 'undefined') ?  send_again : false;
+
     payload = {
       "name": $scope.form.nombres,
       "email": $scope.form.email,
@@ -90,7 +96,16 @@ DonationsModule.controller('EnchulameController', ['$scope', '$http', '$route', 
       payload.code = $scope.form.code;
     }
 
-    $http.put(layer_path + 'contest-lead', payload).then(function success(response) {
+    config = {};
+    if(send_again) {
+      config = {
+        params: {
+          resend: true
+        }
+      };
+    }
+
+    $http.put(layer_path + 'contest-lead', payload, config).then(function success(response) {
       console.log(response.data);
 
     }, function(error){
@@ -122,4 +137,9 @@ DonationsModule.controller('EnchulameController', ['$scope', '$http', '$route', 
   }
   // Retrieve current filled info
   getData();
+
+  // If login action sucessfull anywhere, sign in the user
+  $scope.$on('login', function(e) {
+    getData();
+  });
 }]);
