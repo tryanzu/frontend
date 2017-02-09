@@ -40,6 +40,7 @@
 // @codekit-prepend modules/tournament/init.js
 // @codekit-prepend modules/donations/donations.js
 // @codekit-prepend modules/events/event.js
+// @codekit-prepend modules/enchulame/enchulame.js
 
 var version = '082';
 
@@ -68,6 +69,7 @@ var boardApplication = angular.module('board', [
   'sg.module.tournament',
   'sg.module.donations',
   'sg.module.events',
+  'sg.module.enchulame',
   'chatModule',
   'angular-jwt',
   'firebase',
@@ -81,7 +83,7 @@ var boardApplication = angular.module('board', [
   'searchBar',
   'btford.socket-io',
   'ngGeolocation',
-  'siderbar'
+  'siderbar',
 ]);
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'markedProvider', 'AclServiceProvider', '$opbeatProvider',
@@ -198,6 +200,10 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
         window.location = '/';
       }
     }
+  });
+  $routeProvider.when('/enchulame', {
+    templateUrl: '/js/partials/enchulame.html?v=' + version,
+    controller: 'EnchulameController'
   });
   $routeProvider.when('/', {
     templateUrl: '/js/partials/main.html?v=' + version,

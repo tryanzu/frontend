@@ -1,0 +1,44 @@
+.sprite {
+  background: url('/images/enchulame/sprite.png') no-repeat top left;
+  display: inline-block;
+}
+.sprite.step1 { background-position: 0px 0px; width: 198px; height: 227px;  }
+.sprite.step2 { background-position: -208px 0px; width: 198px; height: 227px;  }
+.sprite.step3 { background-position: -416px 0px; width: 198px; height: 227px;  }
+.sprite.step4 { background-position: -624px 0px; width: 200px; height: 227px;  }
+.sprite.step5 { background-position: -834px 0px; width: 198px; height: 227px;  }
+
+.header.header-enchula {
+  background: url('/images/enchulame/cover.png') top center no-repeat;
+  padding-top: 2em;
+  padding-bottom: 3em;
+
+  .img-responsive {
+    max-height: 100px;
+    display: inline-block;
+  }
+}
+
+.tipo-enchulame {
+  list-style-type: none;
+  li {
+    margin-bottom: 15px;
+    margin-left: 0;
+    padding-left: 0;
+    a {
+      display: inline-block;
+      padding: 10px 15px;
+      border: 1px solid #888;
+
+      &:hover {
+        border color: @brand-primary;
+      }
+
+      span {
+        display: block;
+        color: #888;
+        font-size: 85%;
+      }
+    }
+  }
+}

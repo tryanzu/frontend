@@ -1,0 +1,207 @@
+<main class="global-content component">
+    <div class="header header-enchula">
+        <div class="container">
+            <div class="text-center">
+                <img src="/images/head-white.png" class="img-responsive">
+                <h1>Bienvenido</h1>
+                <h2>A la segunda edición del enchúlame la PC</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="container" ng-if="!user.isLogged">
+        <div class="row">
+            <div class="col-md-12">
+                <h2 class="text-center">Para participar debes tener una cuenta en Spartan Geek.</h2>
+                <p class="text-center mb-20">¡Pero no te preocupes! Ese proceso es sencillo...</p>
+                <div class="row">
+                    <div class="col-md-3 col-md-offset-3">
+                        <a href="" class="btn btn-lg btn-primary btn-block" ng-click="signIn()">Ya tengo cuenta</a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="" class="btn btn-lg btn-default btn-block" ng-click="signUp()">Crear una cuenta nueva</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container" ng-if="user.isLogged">
+        <div class="row" ng-if="helpers.current_step == 0">
+            <div class="col-md-8 col-md-offset-2">
+                <h3 class="text-center">5 Recomendaciones Para Mejorar Tu Participación</h3>
+                <div ng-repeat="t in tutorial" class="text-center" ng-show="t.index == tutorial_index">
+                    <h2>{{ t.title }}</h2>
+                    <div class="sprite" ng-class="'step' + t.index"></div>
+                    <p ng-repeat="p in t.description">{{p}}</p>
+
+                    <br clear="mb-20">
+                    <div class="text-center" ng-if="t.index < 5">
+                        <a href="" class="btn btn-default btn-lg" ng-click="tutorialNext()">Siguiente</a>
+                    </div>
+                    <div class="text-center" ng-if="t.index == 5">
+                        <a href="" class="btn btn-primary btn-lg" ng-click="nextStep()">¡Comenzar ahora!</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row" ng-if="helpers.current_step == 1">
+            <div class="col-md-8 col-md-offset-2">
+                <h2>Datos personales</h2>
+                <div class="row" ng-show="!helpers.validating_number">
+                    <div class="form-group col-md-4">
+                        <label for="nombres">Nombre(s)</label>
+                        <input type="text" class="form-control" id="nombres" placeholder="Nobody" ng-model="form.nombres">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="apellidos">Apellidos</label>
+                        <input type="text" class="form-control" id="apellidos" placeholder="Ydobon" ng-model="form.apellidos">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="email">E-mail principal</label>
+                        <input type="email" class="form-control" id="email" placeholder="nobody@p0wned.com" ng-model="form.email">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="fecha_nacimiento">Fecha de nacimiento</label>
+                        <input type="text" class="form-control" id="fecha_nacimiento" placeholder="12 de Enero de 1990" ng-model="form.fecha_nacimiento">
+                    </div>
+
+                    <div class="form-group col-md-12">
+                        <label for="celular">Celular</label>
+                        <input type="tel" class="form-control" id="celular" placeholder="5515519876" ng-model="form.celular">
+                    </div>
+
+                    <div class="col-md-12">
+                        <a href="" class="btn btn-default" ng-click="validateNumber()">Siguiente</a>
+                    </div>
+                </div>
+                <div class="row" ng-show="helpers.validating_number">
+                    <div class="col-md-12">
+                        <p>Recibirás en tu celular un código de 5 letras. Escríbelo en el siguiente campo:</p>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="code">Código recibido</label>
+                        <input type="text" class="form-control" id="code" placeholder="5515519876" ng-model="form.code">
+                    </div>
+                    <div class="col-md-12">
+                        <a href="" class="btn btn-primary btn-lg" ng-click="nextStep()">Siguiente</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row" ng-if="helpers.current_step == 2">
+            <div class="col-md-8 col-md-offset-2">
+                <h2>Lugar de residencia</h2>
+                <div class="row">
+                    <div class="form-group col-md-4">
+                        <label for="estado">Estado</label>
+                        <input type="text" class="form-control" id="estado" placeholder="" ng-model="form.estado">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="cp">Código postal</label>
+                        <input type="text" class="form-control" id="cp" placeholder="" ng-model="form.cp">
+                    </div>
+                    <div class="form-group col-md-8">
+                        <label for="direccion">Dirección</label>
+                        <input type="text" class="form-control" id="direccion" placeholder="" ng-model="form.direccion">
+                    </div>
+
+                    <div class="col-md-12">
+                        <a href="" class="btn btn-primary btn-lg" ng-click="nextStep()">Siguiente</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row" ng-if="helpers.current_step == 3">
+            <div class="col-md-8 col-md-offset-2">
+                <h2>¿En cuál te interesa participar?</h2>
+                <div class="row">
+                    <div class="col-md-12">
+                        <ul class="tipo-enchulame">
+                            <li><a href="" ng-click="selectType('enchulame-pc-gamer')">Enchúlame la PC: PC Gamer</a></li>
+                            <li><a href="" ng-click="selectType('enchulame-pc-work')">Enchúlame la PC: Estación de Trabajo</a></li>
+                            <li><a href="" ng-click="selectType('enchulame-gpu')">Enchúlame la Tarjeta de Video<span>NVIDIA GTX 1050</span></a></li>
+                            <li><a href="" ng-click="selectType('enchulame-case')">Enchúlame el Gabinete<span>Gabinete Eagle Warrior</span><span>Gabinete Aerocool DS 200</span></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row" ng-if="helpers.current_step == 4">
+            <div class="col-md-8 col-md-offset-2">
+                <h2>Cuéntanos por qué deberíamos seleccionarte.</h2>
+                <h3>¿Cuál es tu historia?</h3>
+                <div class="row">
+                    <div class="col-md-12 mb-40">
+                        <textarea class="form-control" rows="10"></textarea>
+                    </div>
+                    <div class="col-md-12">
+                        <a href="" class="btn btn-primary btn-lg" ng-click="nextStep()">Siguiente</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row" ng-if="helpers.current_step == 5">
+            <div class="col-md-8 col-md-offset-2">
+                <h2>Si eres un verdadero Spartano,</h2>
+                <p>entonces ya debes saber que estamos empezando otro gran proyecto: Comparateca.com</p>
+                <p>Queremos transformar otra categoría de productos. Y nos vamos a ir por las que todos usan: servicios de Telefonía e Internet.</p>
+                <p>Necesitamos de mucha gente para romper con todo lo establecido y darle más poder a los consumidores.</p>
+                <p>Completa los siguientes pasos</p>
+                <ul class="mb-20">
+                    <li>Crea un perfil básico en <a href="https://comparateca.com/" alt="Comparateca.com">Comparateca</a></li>
+                    <li>Elige cuál es tu compañía de telefonía móvil actual</li>
+                    <li>Elige si estás en modalidad Postpago o Prepago</li>
+                    <li>Elige cuál es tu celular actual</li>
+                </ul>
+
+                <div class="row">
+                    <div class="form-group col-md-4">
+                        <label for="compania">Compañía actual</label>
+                        <input type="text" class="form-control" id="compania" placeholder="" ng-model="form.compania">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="modalidad">Modalidad (prepago o postpago)</label>
+                        <input type="text" class="form-control" id="modalidad" placeholder="" ng-model="form.modalidad">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="modelo_celular">Modelo de celular</label>
+                        <input type="text" class="form-control" id="modelo_celular" placeholder="" ng-model="form.modelo_celular">
+                    </div>
+                </div>
+
+                <div class="row mb-20">
+                    <div class="col-md-12">
+                        <a href="" class="btn btn-primary btn-lg" ng-click="nextStep()">Siguiente</a>
+                    </div>
+                </div>
+                <p class="alert alert-info">Estamos pensando en hacer pronto un Enchúlame el Celular. Mantente al tanto en Comparateca.com</p>
+            </div>
+        </div>
+        <div class="row" ng-if="helpers.current_step == 6">
+            <div class="col-md-8 col-md-offset-2">
+                <h2>Datos adicionales</h2>
+                <p>Email y teléfono de persona (familiar, amigo, compañero de trabajo) que pueda verificar tus datos</p>
+                <div class="row">
+                    <div class="form-group col-md-4">
+                        <label for="email_secundario">E-mail</label>
+                        <input type="text" class="form-control" id="email_secundario" placeholder="" ng-model="form.email_secundario">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="celular_secundario">Teléfono</label>
+                        <input type="text" class="form-control" id="celular_secundario" placeholder="" ng-model="form.celular_secundario">
+                    </div>
+                </div>
+                <div class="row mb-20">
+                    <div class="col-md-12">
+                        <a href="" class="btn btn-primary btn-lg" ng-click="nextStep()">Siguiente</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row" ng-if="helpers.current_step == 7">
+            <div class="col-md-8 col-md-offset-2">
+                <h2 class="text-center">¡Gracias por completar tu información!</h2>
+            </div>
+        </div>
+    </div>
+</main>
