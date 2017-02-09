@@ -42,7 +42,7 @@
 // @codekit-prepend modules/events/event.js
 // @codekit-prepend modules/enchulame/enchulame.js
 
-var version = '082';
+var version = '083';
 
 var boardApplication = angular.module('board', [
   'ngOpbeat',
