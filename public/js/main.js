@@ -13284,7 +13284,8 @@ DonationsModule.controller('EnchulameController', ['$scope', '$http', '$route', 
   $scope.helpers = {
     'historia_old': '',
     'current_step': 0,
-    'validating_number': false
+    'validating_number': false,
+    'validated': false
   }
 
   $scope.tutorial = [
@@ -13320,10 +13321,15 @@ DonationsModule.controller('EnchulameController', ['$scope', '$http', '$route', 
     $scope.nextStep();
   }
 
+  $scope.restart = function() {
+    $scope.helpers.current_step = 1;
+    saveData();
+  }
+
   // Send current form data
   var saveData = function() {
     payload = {
-      "name": $scope.form.nombres + ' ' + $scope.form.apellidos,
+      "name": $scope.form.nombres,
       "email": $scope.form.email,
       "phone": $scope.form.celular,
       "birthday": $scope.form.fecha_nacimiento,
@@ -13337,7 +13343,8 @@ DonationsModule.controller('EnchulameController', ['$scope', '$http', '$route', 
         "cell_phone": $scope.form.modelo_celular,
         "address": $scope.form.direccion,
         "email2": $scope.form.email_secundario,
-        "phone2": $scope.form.celular_secundario
+        "phone2": $scope.form.celular_secundario,
+        "apellidos": $scope.form.apellidos
       },
       "step": $scope.helpers.current_step
     }
@@ -13358,6 +13365,22 @@ DonationsModule.controller('EnchulameController', ['$scope', '$http', '$route', 
     $http.get(layer_path + 'contest-lead').then(function success(response){
       console.log(response.data);
       $scope.helpers.current_step = response.data.step;
+      $scope.helpers.validated = response.data.validated;
+      $scope.form.nombres = response.data.name;
+      $scope.form.apellidos = response.data.additional.apellidos;
+      $scope.form.email = response.data.email;
+      $scope.form.celular = response.data.phone;
+      $scope.form.fecha_nacimiento = response.data.birthday;
+      $scope.form.estado = response.data.additional.state;
+      $scope.form.cp = response.data.additional.zipcode;
+      $scope.form.modo_elegido = response.data.additional.contest;
+      $scope.form.historia = response.data.additional.history;
+      $scope.form.compania = response.data.additional.cell_company;
+      $scope.form.modalidad = response.data.additional.cell_mode;
+      $scope.form.modelo_celular = response.data.additional.cell_phone;
+      $scope.form.direccion = response.data.additional.address;
+      $scope.form.email_secundario = response.data.additional.email2;
+      $scope.form.celular_secundario = response.data.additional.phone2;
     });
   }
   // Retrieve current filled info
@@ -13575,13 +13598,15 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   AclServiceProvider.config({storage: false});
 }]);
 
-boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http', '$uibModalInstance',
-  function($scope, $rootScope, $http, $uibModalInstance) {
+boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http', '$uibModalInstance', '$location',
+  function($scope, $rootScope, $http, $uibModalInstance, $location) {
     $scope.form = {
       email: '',
       password: '',
       error: false
     };
+
+    $scope.current_url = $location.absUrl();
 
     $scope.fb_loading = false;
 
@@ -13638,8 +13663,8 @@ boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http'
   }
 ]);
 
-boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http', '$uibModalInstance',
-  function($scope, $rootScope, $http, $uibModalInstance) {
+boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http', '$uibModalInstance', '$location',
+  function($scope, $rootScope, $http, $uibModalInstance, $location) {
     $scope.form = {
       email: '',
       password: '',
@@ -13648,6 +13673,7 @@ boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http'
       error: false
     };
     $scope.fb_loading = false;
+    $scope.current_url = $location.absUrl();
 
     $scope.check_username = function() {
       if( /^[a-zA-Z][a-zA-Z0-9\-]{1,30}[a-zA-Z0-9]$/.test($scope.form.username) ) {
@@ -13939,7 +13965,7 @@ boardApplication.controller('MainController', [
         $scope.user.isLogged = false;
         localStorage.removeItem('id_token');
         localStorage.removeItem('firebase_token');
-        window.location = '/';
+        window.location = $location.absUrl();;
       });
     };
 

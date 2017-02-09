@@ -253,13 +253,15 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   AclServiceProvider.config({storage: false});
 }]);
 
-boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http', '$uibModalInstance',
-  function($scope, $rootScope, $http, $uibModalInstance) {
+boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http', '$uibModalInstance', '$location',
+  function($scope, $rootScope, $http, $uibModalInstance, $location) {
     $scope.form = {
       email: '',
       password: '',
       error: false
     };
+
+    $scope.current_url = $location.absUrl();
 
     $scope.fb_loading = false;
 
@@ -316,8 +318,8 @@ boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http'
   }
 ]);
 
-boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http', '$uibModalInstance',
-  function($scope, $rootScope, $http, $uibModalInstance) {
+boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http', '$uibModalInstance', '$location',
+  function($scope, $rootScope, $http, $uibModalInstance, $location) {
     $scope.form = {
       email: '',
       password: '',
@@ -326,6 +328,7 @@ boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http'
       error: false
     };
     $scope.fb_loading = false;
+    $scope.current_url = $location.absUrl();
 
     $scope.check_username = function() {
       if( /^[a-zA-Z][a-zA-Z0-9\-]{1,30}[a-zA-Z0-9]$/.test($scope.form.username) ) {
@@ -617,7 +620,7 @@ boardApplication.controller('MainController', [
         $scope.user.isLogged = false;
         localStorage.removeItem('id_token');
         localStorage.removeItem('firebase_token');
-        window.location = '/';
+        window.location = $location.absUrl();;
       });
     };
 

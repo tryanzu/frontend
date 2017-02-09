@@ -65,13 +65,14 @@
                         <input type="text" class="form-control" id="fecha_nacimiento" placeholder="12 de Enero de 1990" ng-model="form.fecha_nacimiento">
                     </div>
 
-                    <div class="form-group col-md-12">
+                    <div class="form-group col-md-12" ng-if="!helpers.validated">
                         <label for="celular">Celular</label>
                         <input type="tel" class="form-control" id="celular" placeholder="5515519876" ng-model="form.celular">
                     </div>
 
                     <div class="col-md-12">
-                        <a href="" class="btn btn-default" ng-click="validateNumber()">Siguiente</a>
+                        <a href="" class="btn btn-default" ng-click="validateNumber()" ng-if="!helpers.validated">Siguiente</a>
+                        <a href="" class="btn btn-primary btn-lg" ng-click="nextStep()" ng-if="helpers.validated">Siguiente</a>
                     </div>
                 </div>
                 <div class="row" ng-show="helpers.validating_number">
@@ -132,7 +133,7 @@
                 <h3>¿Cuál es tu historia?</h3>
                 <div class="row">
                     <div class="col-md-12 mb-40">
-                        <textarea class="form-control" rows="10"></textarea>
+                        <textarea class="form-control" rows="10" ng-model="form.historia"></textarea>
                     </div>
                     <div class="col-md-12">
                         <a href="" class="btn btn-primary btn-lg" ng-click="nextStep()">Siguiente</a>
@@ -199,8 +200,14 @@
             </div>
         </div>
         <div class="row" ng-if="helpers.current_step == 7">
-            <div class="col-md-8 col-md-offset-2">
-                <h2 class="text-center">¡Gracias por completar tu información!</h2>
+            <div class="col-md-8 col-md-offset-2 text-center">
+                <h2>¡Gracias por completar tu ingreso al segundo Enchúlame la PC!</h2>
+
+                <p>Tienes hasta el <strong>11 de Febrero</strong> para modificar tu solicitud. Puedes editar tus datos o tu historia cuantas veces necesites para estar seguro.</p>
+
+                <p class="alert alert-info" ng-if="!helpers.validated">Recuerda <strong>validar tu número de teléfono</strong> para poder participar.</p>
+
+                <a href="" class="btn btn-default" ng-click="restart()">Editar mi solicitud</a>
             </div>
         </div>
     </div>
