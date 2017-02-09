@@ -13364,7 +13364,7 @@ DonationsModule.controller('EnchulameController', ['$scope', '$http', '$route', 
   getData();
 }]);
 
-var version = '082';
+var version = '083';
 
 var boardApplication = angular.module('board', [
   'ngOpbeat',
