@@ -54,7 +54,7 @@ DonationsModule.controller('EnchulameController', ['$scope', '$http', '$route', 
   }
 
   $scope.selectType = function(type) {
-    $scope.modo_elegido = type;
+    $scope.form.modo_elegido = type;
     $scope.nextStep();
   }
 

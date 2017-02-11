@@ -42,7 +42,7 @@
 // @codekit-prepend modules/events/event.js
 // @codekit-prepend modules/enchulame/enchulame.js
 
-var version = '085';
+var version = '086';
 
 var boardApplication = angular.module('board', [
   'ngOpbeat',
@@ -723,6 +723,27 @@ boardApplication.controller('MainController', [
       localStorage.setItem('ref', ref);
     }
 
+    $scope.misc.enchulame_remaining = 0;
+    $http.get(layer_path + 'contest-lead').then(function success(response) {
+      if(response.data.step < 7) {
+        $scope.misc.enchulame_remaining = 1;
+      } else {
+        $scope.misc.enchulame_remaining += response.data.name?0:1;
+        $scope.misc.enchulame_remaining += response.data.additional.apellidos?0:1;
+        $scope.misc.enchulame_remaining += response.data.email?0:1;
+        $scope.misc.enchulame_remaining += response.data.phone?0:1;
+        $scope.misc.enchulame_remaining += response.data.birthday?0:1;
+        $scope.misc.enchulame_remaining += response.data.additional.state?0:1;
+        $scope.misc.enchulame_remaining += response.data.additional.zipcode?0:1;
+        $scope.misc.enchulame_remaining += response.data.additional.contest?0:1;
+        $scope.misc.enchulame_remaining += response.data.additional.history?0:1;
+        $scope.misc.enchulame_remaining += response.data.additional.cell_company?0:1;
+        $scope.misc.enchulame_remaining += response.data.additional.cell_mode?0:1;
+        $scope.misc.enchulame_remaining += response.data.additional.cell_phone?0:1;
+        $scope.misc.enchulame_remaining += response.data.additional.address?0:1;
+      }
+    });
+
     /*
     OneSignal.push(function() {
       OneSignal.on('subscriptionChange', function(isSubscribed) {
@@ -763,7 +784,6 @@ boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', 'cart'
     localStorage.signed_in = false;
 
   var location = $location.path();
-  //console.log(location);
 
   if($location.search().fbToken && $location.search().token) {
     localStorage.setItem('signed_in', 'true');
