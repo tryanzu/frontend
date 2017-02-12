@@ -14117,7 +14117,7 @@ boardApplication.controller('MainController', [
             completed += response.data.additional.cell_mode?1:0;
             completed += response.data.additional.cell_phone?1:0;
             completed += response.data.additional.address?1:0;
-            if(completed>1) {
+            if(completed>1 && completed < 13) {
               $scope.misc.enchulame_remaining++;
             }
           }
