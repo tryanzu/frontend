@@ -7210,7 +7210,7 @@ services.service('modalService', ['$uibModal', function ($modal) {
     modalFade: true,
     windowClass: 'modal-confirm',
     size: 'sm',
-    templateUrl: '/js/partials/modal.html'
+    templateUrl: '/app/partials/modal.html'
   };
 
   var modalOptions = {
@@ -9759,7 +9759,7 @@ var ChatController = [
       blocked: false
     };
     $scope.text = '';
-    
+
     $scope.config = {
       autocomplete: [
         {
@@ -9807,14 +9807,14 @@ var ChatController = [
     };
     $scope.copy_to_clip = function(){
       /*if($scope.rifa.art.userIdGemail!=null && window.clipboardData){
-        window.clipboardData.setData("Text", $scope.rifa.art.userIdGemail+""); 
+        window.clipboardData.setData("Text", $scope.rifa.art.userIdGemail+"");
       }*/
       // seleccionar el texto de la dirección de email
       var email = document.querySelector('.email');
       var range = document.createRange();
       range.selectNode(email);
       window.getSelection().addRange(range);
-     
+
       try {
         // intentar copiar el contenido seleccionado
         var resultado = document.execCommand('copy');
@@ -9822,7 +9822,7 @@ var ChatController = [
       } catch(err) {
         console.log('ERROR al intentar copiar el email');
       }
-     
+
       // eliminar el texto seleccionado
       window.getSelection().removeAllRanges();
     }
@@ -9937,7 +9937,7 @@ var ChatController = [
         for (var i = 0; i < arrTK.length; i++) {
           $scope._ticketsRef.child($scope.channel.selected.$id).child(arrTK[i]).set(null);
           $scope.ticketsUPDATE($scope._rifasRef.child($scope.channel.selected.$id),false);
-        }        
+        }
         var firebaseRefR = $scope._participantsRef.child($scope.channel.selected.$id).child($scope.user.info.id);
         var obj = $firebaseObject(firebaseRefR);
         obj.$remove().then(function(ref){
@@ -10214,7 +10214,7 @@ var ChatController = [
     };
     $scope.createRifa = function() {
       var modalInstance = $uibModal.open({
-        templateUrl: '/js/partials/create-rifa.html',
+        templateUrl: '/app/partials/create-rifa.html',
         controller: 'RifaController',
         size: 'lg',
         resolve: {
@@ -10231,7 +10231,7 @@ var ChatController = [
     };
     $scope.createEncuesta = function() {
       var modalInstance = $uibModal.open({
-        templateUrl: '/js/partials/create-encuesta.html',
+        templateUrl: '/app/partials/create-encuesta.html',
         controller: 'EncuestaController',
         size: 'lg',
         resolve: {
@@ -10503,7 +10503,7 @@ var ChatController = [
             if(snapshot.val()==null){
               $scope._firebaseRefR.once("value", function(snapshott){
                 if(snapshott.val()!=null){
-                  $scope.updateRifa();    
+                  $scope.updateRifa();
                 }
               }, function(errorObjectt){
                 console.log("The read failed: " + errorObjectt.code);
@@ -10527,19 +10527,19 @@ var ChatController = [
             $scope._statusRef.set(null);
           }
           if($scope._firebaseRefR){
-            $scope._firebaseRefR.off();  
+            $scope._firebaseRefR.off();
           }
           if($scope._firebaseRefRPart){
-            $scope._firebaseRefRPart.off();  
+            $scope._firebaseRefRPart.off();
           }
           if($scope._firebaseRefRTickets){
-            $scope._firebaseRefRTickets.off();  
+            $scope._firebaseRefRTickets.off();
           }
           if($scope._firebaseRefTicketsPoll){
-            $scope._firebaseRefTicketsPoll.off();  
+            $scope._firebaseRefTicketsPoll.off();
           }
           if($scope._firebaseRefPoll){
-            $scope._firebaseRefPoll.off();  
+            $scope._firebaseRefPoll.off();
           }
         }
       }
@@ -10773,7 +10773,7 @@ var RifaController = [
         {value: 'Costa Rica', name: 'Costa Rica'},
         {value: 'Colombia', name: 'Colombia'},
         {value: 'Cuba', name: 'Cuba'},
-        {value: 'Ecuador', name: 'Ecuador'},        
+        {value: 'Ecuador', name: 'Ecuador'},
         {value: 'Estados Unidos', name: 'Estados Unidos'},
         {value: 'España', name: 'España'},
         {value: 'El Salvador', name: 'El Salvador'},
@@ -10787,7 +10787,7 @@ var RifaController = [
         {value: 'Paraguay', name: 'Paraguay'},
         {value: 'Surinam', name: 'Surinam'},
         {value: 'Uruguay', name: 'Uruguay'},
-        {value: 'Venezuela', name: 'Venezuela'}        
+        {value: 'Venezuela', name: 'Venezuela'}
       ]
     };
     $scope.citysarr={
@@ -11068,7 +11068,7 @@ var EncuestaController = [
             nombre: $scope.arrritem[i].nombre,
             cant: $scope.arrritem[i].cant,
             imgUrl: $scope.arrritem[i].imgUrl
-          });     
+          });
         }
         $scope.encuesta.items=arrtemp;
         var data = $scope.encuesta;
@@ -11082,7 +11082,7 @@ var EncuestaController = [
         }else{
           $scope.alert.msg='Encuesta Guardada correctamente';
           $scope.alert.type='success';
-          $scope.safeApply(function(){});       
+          $scope.safeApply(function(){});
         }
       }
     };
@@ -11091,7 +11091,7 @@ var EncuestaController = [
       for (var i = 0; i < $scope.arrritem.length; i++) {
         if($scope.arrritem[i].nombre!=$nombre){
           arrtemp.push($scope.arrritem[i]);
-        }          
+        }
       }
       $scope.arrritem=arrtemp;
     };
@@ -11105,7 +11105,7 @@ var EncuestaController = [
         for (var i = 0; i < $scope.arrritem.length; i++) {
           if($scope.arrritem[i].nombre==$scope.item.nombre){
             nomequal=true;
-          }          
+          }
         }
         if(nomequal){
           $scope.alert.msg="El nombre "+$scope.item.nombre+" ya existe en la lista de items";
@@ -11147,7 +11147,7 @@ var EncuestaController = [
             nombre: $scope.arrritem[i].nombre,
             cant: $scope.arrritem[i].cant,
             imgUrl: $scope.arrritem[i].imgUrl
-          });     
+          });
         }
         $scope.encuesta.items=arrtemp;
 
@@ -11455,7 +11455,7 @@ angular.module('searchBar', [
 ])
 .directive('searchBar', function() {
   return {
-    templateUrl: '/js/partials/search.html'
+    templateUrl: '/app/partials/search.html'
   };
 })
 .controller('SearchController', ['$scope', '$timeout', '$http', function ($scope, $timeout, $http) {
@@ -12557,7 +12557,7 @@ ComponentsModule.controller('MassdropController', ['$scope', '$http', '$timeout'
 
   $scope.interestedDialog = function() {
     var modalInstance = $uibModal.open({
-      templateUrl: '/js/partials/massdrop/interested-modal.html',
+      templateUrl: '/app/partials/massdrop/interested-modal.html',
       controller: 'InterestedController',
       size: 'sm',
       resolve: {
@@ -13283,7 +13283,7 @@ DonationsModule.controller('EnchulameController', ['$scope', '$http', '$route', 
   };
   $scope.helpers = {
     'historia_old': '',
-    'current_step': 0,
+    'current_step': 1,
     'validating_number': false,
     'validated': false
   }
@@ -13377,25 +13377,30 @@ DonationsModule.controller('EnchulameController', ['$scope', '$http', '$route', 
   }
 
   var getData = function() {
-    $http.get(layer_path + 'contest-lead').then(function success(response){
-      console.log(response.data);
+    $http.get(layer_path + 'contest-lead').then(function success(response) {
       $scope.helpers.current_step = response.data.step;
       $scope.helpers.validated = response.data.validated;
       $scope.form.nombres = response.data.name;
-      $scope.form.apellidos = response.data.additional.apellidos;
       $scope.form.email = response.data.email;
       $scope.form.celular = response.data.phone;
       $scope.form.fecha_nacimiento = response.data.birthday;
-      $scope.form.estado = response.data.additional.state;
-      $scope.form.cp = response.data.additional.zipcode;
-      $scope.form.modo_elegido = response.data.additional.contest;
-      $scope.form.historia = response.data.additional.history;
-      $scope.form.compania = response.data.additional.cell_company;
-      $scope.form.modalidad = response.data.additional.cell_mode;
-      $scope.form.modelo_celular = response.data.additional.cell_phone;
-      $scope.form.direccion = response.data.additional.address;
-      $scope.form.email_secundario = response.data.additional.email2;
-      $scope.form.celular_secundario = response.data.additional.phone2;
+      if(response.data.additional) {
+        $scope.form.apellidos = response.data.additional.apellidos;
+        $scope.form.estado = response.data.additional.state;
+        $scope.form.cp = response.data.additional.zipcode;
+        $scope.form.modo_elegido = response.data.additional.contest;
+        $scope.form.historia = response.data.additional.history;
+        $scope.form.compania = response.data.additional.cell_company;
+        $scope.form.modalidad = response.data.additional.cell_mode;
+        $scope.form.modelo_celular = response.data.additional.cell_phone;
+        $scope.form.direccion = response.data.additional.address;
+        $scope.form.email_secundario = response.data.additional.email2;
+        $scope.form.celular_secundario = response.data.additional.phone2;
+      }
+
+      if($scope.helpers.current_step < 1) {
+        window.location.href = "/";
+      }
     });
   }
   // Retrieve current filled info
@@ -13407,7 +13412,7 @@ DonationsModule.controller('EnchulameController', ['$scope', '$http', '$route', 
   });
 }]);
 
-var version = '088';
+var version = '089';
 
 var boardApplication = angular.module('board', [
   'ngOpbeat',
@@ -13455,110 +13460,110 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, markedProvider, AclServiceProvider, $opbeatProvider) {
 
   $routeProvider.when('/home', {
-    templateUrl: '/js/partials/home.html?v=' + version
+    templateUrl: '/app/partials/home.html?v=' + version
   });
   $routeProvider.when('/terminos-y-condiciones', {
-    templateUrl: '/js/partials/terms.html?v=' + version
+    templateUrl: '/app/partials/terms.html?v=' + version
   });
   $routeProvider.when('/aviso-de-privacidad', {
-    templateUrl: '/js/partials/privacy.html?v=' + version
+    templateUrl: '/app/partials/privacy.html?v=' + version
   });
   $routeProvider.when('/reglamento', {
-    templateUrl: '/js/partials/rules.html?v=' + version
+    templateUrl: '/app/partials/rules.html?v=' + version
   });
   $routeProvider.when('/about', {
-    templateUrl: '/js/partials/about.html?v=' + version
+    templateUrl: '/app/partials/about.html?v=' + version
   });
   $routeProvider.when('/rangos', {
-    templateUrl: '/js/partials/ranks.html?v=' + version,
+    templateUrl: '/app/partials/ranks.html?v=' + version,
     controller: 'RanksController'
   });
   $routeProvider.when('/medallas', {
-    templateUrl: '/js/partials/badges.html?v=' + version,
+    templateUrl: '/app/partials/badges.html?v=' + version,
     controller: 'BadgeController'
   });
   $routeProvider.when('/top-ranking', {
-    templateUrl: '/js/partials/tops.html?v=' + version,
+    templateUrl: '/app/partials/tops.html?v=' + version,
     controller: 'TopController'
   });
   $routeProvider.when('/signup/confirm/:code', {
-    templateUrl: '/js/partials/validate.html?v=' + version,
+    templateUrl: '/app/partials/validate.html?v=' + version,
     controller: 'UserValidationController'
   });
   $routeProvider.when('/componentes/armar-pc', {
-    templateUrl: '/js/partials/pc_builder.html?v=' + version,
+    templateUrl: '/app/partials/pc_builder.html?v=' + version,
     controller: 'PcBuilderController'
   });
   $routeProvider.when('/componentes/checkout', {
-    templateUrl: '/js/partials/checkout.html?v=' + version,
+    templateUrl: '/app/partials/checkout.html?v=' + version,
     controller: 'CheckoutController'
   });
   $routeProvider.when('/componentes/:type?', {
-    templateUrl: '/js/partials/components.html?v=' + version,
+    templateUrl: '/app/partials/components.html?v=' + version,
     controller: 'ComponentsController'
   });
   $routeProvider.when('/componentes/:type/:slug', {
-    templateUrl: '/js/partials/component.html?v=' + version,
+    templateUrl: '/app/partials/component.html?v=' + version,
     controller: 'ComponentController'
   });
   $routeProvider.when('/compra-en-legion/faq', {
-    templateUrl: '/js/partials/massdrop/faq.html?v=' + version,
+    templateUrl: '/app/partials/massdrop/faq.html?v=' + version,
     //controller: 'ComponentController'
   });
   $routeProvider.when('/compra-en-legion/:slug', {
-    templateUrl: '/js/partials/massdrop/show.html?v=' + version,
+    templateUrl: '/app/partials/massdrop/show.html?v=' + version,
     controller: 'MassdropController'
   });
   $routeProvider.when('/compra-en-legion/:slug/unirme', {
-    templateUrl: '/js/partials/massdrop/pay.html?v=' + version,
+    templateUrl: '/app/partials/massdrop/pay.html?v=' + version,
     controller: 'MassdropPayController'
   });
   $routeProvider.when('/compra-en-legion', {
-    templateUrl: '/js/partials/massdrop/index.html?v=' + version,
+    templateUrl: '/app/partials/massdrop/index.html?v=' + version,
     controller: 'MassdropIndexController'
   });
   $routeProvider.when('/c/:slug', {
-    templateUrl: '/js/partials/main.html?v=' + version,
+    templateUrl: '/app/partials/main.html?v=' + version,
     controller: 'CategoryListController'
   });
   $routeProvider.when('/p/:slug/:id/edit', {
-    templateUrl: '/js/partials/edit.html?v=' + version,
+    templateUrl: '/app/partials/edit.html?v=' + version,
     controller: 'EditPostController'
   });
   $routeProvider.when('/p/:slug/:id/:comment_position?', {
-    templateUrl: '/js/partials/main.html?v=' + version,
+    templateUrl: '/app/partials/main.html?v=' + version,
     controller: 'CategoryListController'
   });
   $routeProvider.when('/u/:username/:id', {
-    templateUrl: '/js/partials/profile.html?v=' + version,
+    templateUrl: '/app/partials/profile.html?v=' + version,
     controller: 'UserController'
   });
   $routeProvider.when('/user/lost_password/:token', {
-    templateUrl: '/js/partials/recovery.html?v=' + version,
+    templateUrl: '/app/partials/recovery.html?v=' + version,
     controller: 'UserRecoveryController'
   });
   $routeProvider.when('/chat/:slug?', {
-    templateUrl: '/js/partials/chat.html?v=' + version,
+    templateUrl: '/app/partials/chat.html?v=' + version,
     controller: 'ChatController'
   });
   $routeProvider.when('/donacion', {
-    templateUrl: '/js/partials/donations.html?v=' + version,
+    templateUrl: '/app/partials/donations.html?v=' + version,
     controller: 'DonationsController'
   });
   $routeProvider.when('/donacion/error', {
-    templateUrl: '/js/partials/donations.html?v=' + version,
+    templateUrl: '/app/partials/donations.html?v=' + version,
     controller: 'DonationsController'
   });
   $routeProvider.when('/donacion/exitosa', {
-    templateUrl: '/js/partials/donations.html?v=' + version,
+    templateUrl: '/app/partials/donations.html?v=' + version,
     controller: 'DonationsController'
   });
   $routeProvider.when('/eventos', {
-    templateUrl: '/js/partials/events.html?v=' + version,
+    templateUrl: '/app/partials/events.html?v=' + version,
     controller: 'EventController'
   });
   $routeProvider.when('/post/create/:cat_slug?', {
-    templateUrl: '/js/partials/publish.html?v=' + version,
+    templateUrl: '/app/partials/publish.html?v=' + version,
     controller: 'PublishController',
     onEnter: function() {
       if(!$scope.user.isLogged) {
@@ -13566,8 +13571,12 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
       }
     }
   });
+  $routeProvider.when('/enchulame/editar', {
+    templateUrl: '/app/partials/enchulame.html?v=' + version,
+    controller: 'EnchulameController'
+  });
   $routeProvider.when('/', {
-    templateUrl: '/js/partials/main.html?v=' + version,
+    templateUrl: '/app/partials/main.html?v=' + version,
     controller: 'CategoryListController'
   });
   $routeProvider.otherwise({ redirectTo: '/' });
@@ -13578,6 +13587,8 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   // Marked
   markedProvider.setRenderer({
     link: function(href, title, text) {
+      href = href.replace("javascript:window", "");
+      href = href.replace("javascript:", "");
       return "<a href='" + href + "' title='" + title + "' target='_blank'>" + text + "</a>";
     }
   });
@@ -13955,7 +13966,7 @@ boardApplication.controller('MainController', [
 
     $scope.signIn = function() {
       var modalInstance = $uibModal.open({
-        templateUrl: '/js/partials/sign-in.html',
+        templateUrl: '/app/partials/sign-in.html',
         controller: 'SignInController',
         size: 'sm'
       });
@@ -13967,7 +13978,7 @@ boardApplication.controller('MainController', [
 
     $scope.signUp = function() {
       var modalInstance = $uibModal.open({
-        templateUrl: '/js/partials/sign-up.html',
+        templateUrl: '/app/partials/sign-up.html',
         controller: 'SignUpController',
         size: 'sm'
       });
@@ -14083,6 +14094,36 @@ boardApplication.controller('MainController', [
     if(ref != undefined) {
       localStorage.setItem('ref', ref);
     }
+
+    $scope.misc.enchulame_remaining = 0;
+    $http.get(layer_path + 'contest-lead').then(function success(response) {
+      if(response.data.step > 0) {
+
+        if(response.data.name == 'null null' || (response.data.additional.history == '' && response.data.validated)) {
+          $scope.misc.enchulame_remaining++;
+        } else {
+          if(response.data.additional) {
+            completed = 0;
+            completed += response.data.name?1:0;
+            completed += response.data.additional.apellidos?1:0;
+            completed += response.data.email?1:0;
+            completed += response.data.phone?1:0;
+            completed += response.data.birthday?1:0;
+            completed += response.data.additional.state?1:0;
+            completed += response.data.additional.zipcode?1:0;
+            completed += response.data.additional.contest?1:0;
+            completed += response.data.additional.history?1:0;
+            completed += response.data.additional.cell_company?1:0;
+            completed += response.data.additional.cell_mode?1:0;
+            completed += response.data.additional.cell_phone?1:0;
+            completed += response.data.additional.address?1:0;
+            if(completed>1) {
+              $scope.misc.enchulame_remaining++;
+            }
+          }
+        }
+      }
+    });
 
   }
 ]);

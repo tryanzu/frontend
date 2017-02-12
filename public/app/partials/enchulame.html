@@ -215,10 +215,9 @@
             <div class="col-md-8 col-md-offset-2 text-center">
                 <h2>¡Gracias por completar tu ingreso al segundo Enchúlame la PC!</h2>
 
-                <p>Tienes hasta el <strong>11 de Febrero</strong> para modificar tu solicitud. Puedes editar tus datos o tu historia cuantas veces necesites para estar seguro.</p>
+                <p>Puedes editar tus datos o tu historia cuantas veces necesites para estar seguro.</p>
 
                 <h3>Tu solicitud actual</h3>
-                <p class="alert alert-info" ng-if="!helpers.validated">Recuerda <strong>validar tu número de teléfono</strong> para que te contactemos en caso de resultar ganador.</p>
 
                 <table class="table">
                     <tr>
@@ -300,6 +299,9 @@
                         <td ng-if="form.modelo_celular" class="success"><i class="fa fa-check-circle-o" aria-hidden="true"></i> Agregado</td>
                     </tr>
                 </table>
+
+                <p class="alert alert-info" ng-if="!helpers.validated">Recuerda <strong>validar tu número de teléfono</strong> para que nos sea más fácil que te contactemos en caso de resultar ganador.</p>
+
                 <a href="" class="btn btn-default" ng-click="restart()">Editar mi solicitud</a>
             </div>
         </div>

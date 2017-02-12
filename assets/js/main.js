@@ -42,7 +42,7 @@
 // @codekit-prepend modules/events/event.js
 // @codekit-prepend modules/enchulame/enchulame.js
 
-var version = '088';
+var version = '089';
 
 var boardApplication = angular.module('board', [
   'ngOpbeat',
@@ -90,110 +90,110 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, markedProvider, AclServiceProvider, $opbeatProvider) {
 
   $routeProvider.when('/home', {
-    templateUrl: '/js/partials/home.html?v=' + version
+    templateUrl: '/app/partials/home.html?v=' + version
   });
   $routeProvider.when('/terminos-y-condiciones', {
-    templateUrl: '/js/partials/terms.html?v=' + version
+    templateUrl: '/app/partials/terms.html?v=' + version
   });
   $routeProvider.when('/aviso-de-privacidad', {
-    templateUrl: '/js/partials/privacy.html?v=' + version
+    templateUrl: '/app/partials/privacy.html?v=' + version
   });
   $routeProvider.when('/reglamento', {
-    templateUrl: '/js/partials/rules.html?v=' + version
+    templateUrl: '/app/partials/rules.html?v=' + version
   });
   $routeProvider.when('/about', {
-    templateUrl: '/js/partials/about.html?v=' + version
+    templateUrl: '/app/partials/about.html?v=' + version
   });
   $routeProvider.when('/rangos', {
-    templateUrl: '/js/partials/ranks.html?v=' + version,
+    templateUrl: '/app/partials/ranks.html?v=' + version,
     controller: 'RanksController'
   });
   $routeProvider.when('/medallas', {
-    templateUrl: '/js/partials/badges.html?v=' + version,
+    templateUrl: '/app/partials/badges.html?v=' + version,
     controller: 'BadgeController'
   });
   $routeProvider.when('/top-ranking', {
-    templateUrl: '/js/partials/tops.html?v=' + version,
+    templateUrl: '/app/partials/tops.html?v=' + version,
     controller: 'TopController'
   });
   $routeProvider.when('/signup/confirm/:code', {
-    templateUrl: '/js/partials/validate.html?v=' + version,
+    templateUrl: '/app/partials/validate.html?v=' + version,
     controller: 'UserValidationController'
   });
   $routeProvider.when('/componentes/armar-pc', {
-    templateUrl: '/js/partials/pc_builder.html?v=' + version,
+    templateUrl: '/app/partials/pc_builder.html?v=' + version,
     controller: 'PcBuilderController'
   });
   $routeProvider.when('/componentes/checkout', {
-    templateUrl: '/js/partials/checkout.html?v=' + version,
+    templateUrl: '/app/partials/checkout.html?v=' + version,
     controller: 'CheckoutController'
   });
   $routeProvider.when('/componentes/:type?', {
-    templateUrl: '/js/partials/components.html?v=' + version,
+    templateUrl: '/app/partials/components.html?v=' + version,
     controller: 'ComponentsController'
   });
   $routeProvider.when('/componentes/:type/:slug', {
-    templateUrl: '/js/partials/component.html?v=' + version,
+    templateUrl: '/app/partials/component.html?v=' + version,
     controller: 'ComponentController'
   });
   $routeProvider.when('/compra-en-legion/faq', {
-    templateUrl: '/js/partials/massdrop/faq.html?v=' + version,
+    templateUrl: '/app/partials/massdrop/faq.html?v=' + version,
     //controller: 'ComponentController'
   });
   $routeProvider.when('/compra-en-legion/:slug', {
-    templateUrl: '/js/partials/massdrop/show.html?v=' + version,
+    templateUrl: '/app/partials/massdrop/show.html?v=' + version,
     controller: 'MassdropController'
   });
   $routeProvider.when('/compra-en-legion/:slug/unirme', {
-    templateUrl: '/js/partials/massdrop/pay.html?v=' + version,
+    templateUrl: '/app/partials/massdrop/pay.html?v=' + version,
     controller: 'MassdropPayController'
   });
   $routeProvider.when('/compra-en-legion', {
-    templateUrl: '/js/partials/massdrop/index.html?v=' + version,
+    templateUrl: '/app/partials/massdrop/index.html?v=' + version,
     controller: 'MassdropIndexController'
   });
   $routeProvider.when('/c/:slug', {
-    templateUrl: '/js/partials/main.html?v=' + version,
+    templateUrl: '/app/partials/main.html?v=' + version,
     controller: 'CategoryListController'
   });
   $routeProvider.when('/p/:slug/:id/edit', {
-    templateUrl: '/js/partials/edit.html?v=' + version,
+    templateUrl: '/app/partials/edit.html?v=' + version,
     controller: 'EditPostController'
   });
   $routeProvider.when('/p/:slug/:id/:comment_position?', {
-    templateUrl: '/js/partials/main.html?v=' + version,
+    templateUrl: '/app/partials/main.html?v=' + version,
     controller: 'CategoryListController'
   });
   $routeProvider.when('/u/:username/:id', {
-    templateUrl: '/js/partials/profile.html?v=' + version,
+    templateUrl: '/app/partials/profile.html?v=' + version,
     controller: 'UserController'
   });
   $routeProvider.when('/user/lost_password/:token', {
-    templateUrl: '/js/partials/recovery.html?v=' + version,
+    templateUrl: '/app/partials/recovery.html?v=' + version,
     controller: 'UserRecoveryController'
   });
   $routeProvider.when('/chat/:slug?', {
-    templateUrl: '/js/partials/chat.html?v=' + version,
+    templateUrl: '/app/partials/chat.html?v=' + version,
     controller: 'ChatController'
   });
   $routeProvider.when('/donacion', {
-    templateUrl: '/js/partials/donations.html?v=' + version,
+    templateUrl: '/app/partials/donations.html?v=' + version,
     controller: 'DonationsController'
   });
   $routeProvider.when('/donacion/error', {
-    templateUrl: '/js/partials/donations.html?v=' + version,
+    templateUrl: '/app/partials/donations.html?v=' + version,
     controller: 'DonationsController'
   });
   $routeProvider.when('/donacion/exitosa', {
-    templateUrl: '/js/partials/donations.html?v=' + version,
+    templateUrl: '/app/partials/donations.html?v=' + version,
     controller: 'DonationsController'
   });
   $routeProvider.when('/eventos', {
-    templateUrl: '/js/partials/events.html?v=' + version,
+    templateUrl: '/app/partials/events.html?v=' + version,
     controller: 'EventController'
   });
   $routeProvider.when('/post/create/:cat_slug?', {
-    templateUrl: '/js/partials/publish.html?v=' + version,
+    templateUrl: '/app/partials/publish.html?v=' + version,
     controller: 'PublishController',
     onEnter: function() {
       if(!$scope.user.isLogged) {
@@ -201,8 +201,12 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
       }
     }
   });
+  $routeProvider.when('/enchulame/editar', {
+    templateUrl: '/app/partials/enchulame.html?v=' + version,
+    controller: 'EnchulameController'
+  });
   $routeProvider.when('/', {
-    templateUrl: '/js/partials/main.html?v=' + version,
+    templateUrl: '/app/partials/main.html?v=' + version,
     controller: 'CategoryListController'
   });
   $routeProvider.otherwise({ redirectTo: '/' });
@@ -213,6 +217,8 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   // Marked
   markedProvider.setRenderer({
     link: function(href, title, text) {
+      href = href.replace("javascript:window", "");
+      href = href.replace("javascript:", "");
       return "<a href='" + href + "' title='" + title + "' target='_blank'>" + text + "</a>";
     }
   });
@@ -590,7 +596,7 @@ boardApplication.controller('MainController', [
 
     $scope.signIn = function() {
       var modalInstance = $uibModal.open({
-        templateUrl: '/js/partials/sign-in.html',
+        templateUrl: '/app/partials/sign-in.html',
         controller: 'SignInController',
         size: 'sm'
       });
@@ -602,7 +608,7 @@ boardApplication.controller('MainController', [
 
     $scope.signUp = function() {
       var modalInstance = $uibModal.open({
-        templateUrl: '/js/partials/sign-up.html',
+        templateUrl: '/app/partials/sign-up.html',
         controller: 'SignUpController',
         size: 'sm'
       });
@@ -718,6 +724,36 @@ boardApplication.controller('MainController', [
     if(ref != undefined) {
       localStorage.setItem('ref', ref);
     }
+
+    $scope.misc.enchulame_remaining = 0;
+    $http.get(layer_path + 'contest-lead').then(function success(response) {
+      if(response.data.step > 0) {
+
+        if(response.data.name == 'null null' || (response.data.additional.history == '' && response.data.validated)) {
+          $scope.misc.enchulame_remaining++;
+        } else {
+          if(response.data.additional) {
+            completed = 0;
+            completed += response.data.name?1:0;
+            completed += response.data.additional.apellidos?1:0;
+            completed += response.data.email?1:0;
+            completed += response.data.phone?1:0;
+            completed += response.data.birthday?1:0;
+            completed += response.data.additional.state?1:0;
+            completed += response.data.additional.zipcode?1:0;
+            completed += response.data.additional.contest?1:0;
+            completed += response.data.additional.history?1:0;
+            completed += response.data.additional.cell_company?1:0;
+            completed += response.data.additional.cell_mode?1:0;
+            completed += response.data.additional.cell_phone?1:0;
+            completed += response.data.additional.address?1:0;
+            if(completed>1) {
+              $scope.misc.enchulame_remaining++;
+            }
+          }
+        }
+      }
+    });
 
   }
 ]);

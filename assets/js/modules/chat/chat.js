@@ -167,7 +167,7 @@ var ChatController = [
       blocked: false
     };
     $scope.text = '';
-    
+
     $scope.config = {
       autocomplete: [
         {
@@ -215,14 +215,14 @@ var ChatController = [
     };
     $scope.copy_to_clip = function(){
       /*if($scope.rifa.art.userIdGemail!=null && window.clipboardData){
-        window.clipboardData.setData("Text", $scope.rifa.art.userIdGemail+""); 
+        window.clipboardData.setData("Text", $scope.rifa.art.userIdGemail+"");
       }*/
       // seleccionar el texto de la dirección de email
       var email = document.querySelector('.email');
       var range = document.createRange();
       range.selectNode(email);
       window.getSelection().addRange(range);
-     
+
       try {
         // intentar copiar el contenido seleccionado
         var resultado = document.execCommand('copy');
@@ -230,7 +230,7 @@ var ChatController = [
       } catch(err) {
         console.log('ERROR al intentar copiar el email');
       }
-     
+
       // eliminar el texto seleccionado
       window.getSelection().removeAllRanges();
     }
@@ -345,7 +345,7 @@ var ChatController = [
         for (var i = 0; i < arrTK.length; i++) {
           $scope._ticketsRef.child($scope.channel.selected.$id).child(arrTK[i]).set(null);
           $scope.ticketsUPDATE($scope._rifasRef.child($scope.channel.selected.$id),false);
-        }        
+        }
         var firebaseRefR = $scope._participantsRef.child($scope.channel.selected.$id).child($scope.user.info.id);
         var obj = $firebaseObject(firebaseRefR);
         obj.$remove().then(function(ref){
@@ -622,7 +622,7 @@ var ChatController = [
     };
     $scope.createRifa = function() {
       var modalInstance = $uibModal.open({
-        templateUrl: '/js/partials/create-rifa.html',
+        templateUrl: '/app/partials/create-rifa.html',
         controller: 'RifaController',
         size: 'lg',
         resolve: {
@@ -639,7 +639,7 @@ var ChatController = [
     };
     $scope.createEncuesta = function() {
       var modalInstance = $uibModal.open({
-        templateUrl: '/js/partials/create-encuesta.html',
+        templateUrl: '/app/partials/create-encuesta.html',
         controller: 'EncuestaController',
         size: 'lg',
         resolve: {
@@ -911,7 +911,7 @@ var ChatController = [
             if(snapshot.val()==null){
               $scope._firebaseRefR.once("value", function(snapshott){
                 if(snapshott.val()!=null){
-                  $scope.updateRifa();    
+                  $scope.updateRifa();
                 }
               }, function(errorObjectt){
                 console.log("The read failed: " + errorObjectt.code);
@@ -935,19 +935,19 @@ var ChatController = [
             $scope._statusRef.set(null);
           }
           if($scope._firebaseRefR){
-            $scope._firebaseRefR.off();  
+            $scope._firebaseRefR.off();
           }
           if($scope._firebaseRefRPart){
-            $scope._firebaseRefRPart.off();  
+            $scope._firebaseRefRPart.off();
           }
           if($scope._firebaseRefRTickets){
-            $scope._firebaseRefRTickets.off();  
+            $scope._firebaseRefRTickets.off();
           }
           if($scope._firebaseRefTicketsPoll){
-            $scope._firebaseRefTicketsPoll.off();  
+            $scope._firebaseRefTicketsPoll.off();
           }
           if($scope._firebaseRefPoll){
-            $scope._firebaseRefPoll.off();  
+            $scope._firebaseRefPoll.off();
           }
         }
       }
@@ -1181,7 +1181,7 @@ var RifaController = [
         {value: 'Costa Rica', name: 'Costa Rica'},
         {value: 'Colombia', name: 'Colombia'},
         {value: 'Cuba', name: 'Cuba'},
-        {value: 'Ecuador', name: 'Ecuador'},        
+        {value: 'Ecuador', name: 'Ecuador'},
         {value: 'Estados Unidos', name: 'Estados Unidos'},
         {value: 'España', name: 'España'},
         {value: 'El Salvador', name: 'El Salvador'},
@@ -1195,7 +1195,7 @@ var RifaController = [
         {value: 'Paraguay', name: 'Paraguay'},
         {value: 'Surinam', name: 'Surinam'},
         {value: 'Uruguay', name: 'Uruguay'},
-        {value: 'Venezuela', name: 'Venezuela'}        
+        {value: 'Venezuela', name: 'Venezuela'}
       ]
     };
     $scope.citysarr={
@@ -1476,7 +1476,7 @@ var EncuestaController = [
             nombre: $scope.arrritem[i].nombre,
             cant: $scope.arrritem[i].cant,
             imgUrl: $scope.arrritem[i].imgUrl
-          });     
+          });
         }
         $scope.encuesta.items=arrtemp;
         var data = $scope.encuesta;
@@ -1490,7 +1490,7 @@ var EncuestaController = [
         }else{
           $scope.alert.msg='Encuesta Guardada correctamente';
           $scope.alert.type='success';
-          $scope.safeApply(function(){});       
+          $scope.safeApply(function(){});
         }
       }
     };
@@ -1499,7 +1499,7 @@ var EncuestaController = [
       for (var i = 0; i < $scope.arrritem.length; i++) {
         if($scope.arrritem[i].nombre!=$nombre){
           arrtemp.push($scope.arrritem[i]);
-        }          
+        }
       }
       $scope.arrritem=arrtemp;
     };
@@ -1513,7 +1513,7 @@ var EncuestaController = [
         for (var i = 0; i < $scope.arrritem.length; i++) {
           if($scope.arrritem[i].nombre==$scope.item.nombre){
             nomequal=true;
-          }          
+          }
         }
         if(nomequal){
           $scope.alert.msg="El nombre "+$scope.item.nombre+" ya existe en la lista de items";
@@ -1555,7 +1555,7 @@ var EncuestaController = [
             nombre: $scope.arrritem[i].nombre,
             cant: $scope.arrritem[i].cant,
             imgUrl: $scope.arrritem[i].imgUrl
-          });     
+          });
         }
         $scope.encuesta.items=arrtemp;
 
