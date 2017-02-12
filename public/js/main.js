@@ -13407,7 +13407,7 @@ DonationsModule.controller('EnchulameController', ['$scope', '$http', '$route', 
   });
 }]);
 
-var version = '086';
+var version = '087';
 
 var boardApplication = angular.module('board', [
   'ngOpbeat',
@@ -14090,9 +14090,7 @@ boardApplication.controller('MainController', [
 
     $scope.misc.enchulame_remaining = 0;
     $http.get(layer_path + 'contest-lead').then(function success(response) {
-      if(response.data.step < 7) {
-        $scope.misc.enchulame_remaining = 1;
-      } else {
+      if(response.data.step == 7) {
         $scope.misc.enchulame_remaining += response.data.name?0:1;
         $scope.misc.enchulame_remaining += response.data.additional.apellidos?0:1;
         $scope.misc.enchulame_remaining += response.data.email?0:1;

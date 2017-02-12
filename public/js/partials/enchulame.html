@@ -65,7 +65,7 @@
                         <input type="text" class="form-control" id="fecha_nacimiento" placeholder="12 de Enero de 1990" ng-model="form.fecha_nacimiento">
                     </div>
 
-                    <div class="form-group col-md-12" ng-if="!helpers.validated">
+                    <div class="form-group col-md-12" ng-if="!helpers.validated || (helpers.validated && !form.celular)">
                         <label for="celular">Celular</label>
                         <input type="tel" class="form-control" id="celular" placeholder="5515519876" ng-model="form.celular">
                     </div>
