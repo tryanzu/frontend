@@ -13407,7 +13407,7 @@ DonationsModule.controller('EnchulameController', ['$scope', '$http', '$route', 
   });
 }]);
 
-var version = '087';
+var version = '088';
 
 var boardApplication = angular.module('board', [
   'ngOpbeat',
@@ -13565,10 +13565,6 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
         window.location = '/';
       }
     }
-  });
-  $routeProvider.when('/enchulame', {
-    templateUrl: '/js/partials/enchulame.html?v=' + version,
-    controller: 'EnchulameController'
   });
   $routeProvider.when('/', {
     templateUrl: '/js/partials/main.html?v=' + version,
@@ -13928,11 +13924,13 @@ boardApplication.controller('MainController', [
 
             OneSignal.getUserId( function(userId) {
               if($scope.user.isLogged) {
-                // Make a POST call to your server with the user ID
-                $http.patch(layer_path + 'me/onesignal_id', {value: userId}).then(function success(response){
-                  console.log("Suscribed and registered!")
-                }, function error(response){
-                  console.log(response);
+                $scope.promises.self.then(function() {
+                  // Make a POST call to your server with the user ID
+                  $http.patch(layer_path + 'me/onesignal_id', {value: userId}).then(function success(response){
+                    console.log("Suscribed and registered!")
+                  }, function error(response){
+                    console.log(response);
+                  });
                 });
               }
             });
@@ -14036,8 +14034,6 @@ boardApplication.controller('MainController', [
     var fbRef = new Firebase(firebase_url);
     var updatesRef = fbRef.child('version');
     updatesRef.on('value', function(ss) {
-      //console.log('Local version', parseInt(version));
-      //console.log('Remote version', parseInt(ss.val()));
       $scope.$apply(function(){
         if( parseInt(ss.val()) > parseInt(version) ) {
           $scope.update.available = true;
@@ -14088,46 +14084,6 @@ boardApplication.controller('MainController', [
       localStorage.setItem('ref', ref);
     }
 
-    $scope.misc.enchulame_remaining = 0;
-    $http.get(layer_path + 'contest-lead').then(function success(response) {
-      if(response.data.step == 7) {
-        $scope.misc.enchulame_remaining += response.data.name?0:1;
-        $scope.misc.enchulame_remaining += response.data.additional.apellidos?0:1;
-        $scope.misc.enchulame_remaining += response.data.email?0:1;
-        $scope.misc.enchulame_remaining += response.data.phone?0:1;
-        $scope.misc.enchulame_remaining += response.data.birthday?0:1;
-        $scope.misc.enchulame_remaining += response.data.additional.state?0:1;
-        $scope.misc.enchulame_remaining += response.data.additional.zipcode?0:1;
-        $scope.misc.enchulame_remaining += response.data.additional.contest?0:1;
-        $scope.misc.enchulame_remaining += response.data.additional.history?0:1;
-        $scope.misc.enchulame_remaining += response.data.additional.cell_company?0:1;
-        $scope.misc.enchulame_remaining += response.data.additional.cell_mode?0:1;
-        $scope.misc.enchulame_remaining += response.data.additional.cell_phone?0:1;
-        $scope.misc.enchulame_remaining += response.data.additional.address?0:1;
-      }
-    });
-
-    /*
-    OneSignal.push(function() {
-      OneSignal.on('subscriptionChange', function(isSubscribed) {
-        if (isSubscribed) {
-          // The user is subscribed
-          // Either the user subscribed for the first time
-          // Or the user was subscribed -> unsubscribed -> subscribed
-          OneSignal.getUserId( function(userId) {
-            if($scope.user.isLogged) {
-              // Make a POST call to your server with the user ID
-              $http.patch(layer_path + 'me/onesignal_id', {value: userId}).then(function success(response){
-                console.log("Suscribed and registered!")
-              }, function error(response){
-                console.log(response);
-              });
-            }
-          });
-        }
-      });
-    });
-    */
   }
 ]);
 
