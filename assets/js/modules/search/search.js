@@ -6,7 +6,7 @@ angular.module('searchBar', [
 ])
 .directive('searchBar', function() {
   return {
-    templateUrl: '/js/partials/search.html'
+    templateUrl: '/app/partials/search.html'
   };
 })
 .controller('SearchController', ['$scope', '$timeout', '$http', function ($scope, $timeout, $http) {
