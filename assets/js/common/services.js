@@ -34,7 +34,7 @@ services.service('modalService', ['$uibModal', function ($modal) {
     modalFade: true,
     windowClass: 'modal-confirm',
     size: 'sm',
-    templateUrl: '/js/partials/modal.html'
+    templateUrl: '/app/partials/modal.html'
   };
 
   var modalOptions = {

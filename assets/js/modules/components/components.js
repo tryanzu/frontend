@@ -998,7 +998,7 @@ ComponentsModule.controller('MassdropController', ['$scope', '$http', '$timeout'
 
   $scope.interestedDialog = function() {
     var modalInstance = $uibModal.open({
-      templateUrl: '/js/partials/massdrop/interested-modal.html',
+      templateUrl: '/app/partials/massdrop/interested-modal.html',
       controller: 'InterestedController',
       size: 'sm',
       resolve: {
