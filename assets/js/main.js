@@ -40,9 +40,8 @@
 // @codekit-prepend modules/tournament/init.js
 // @codekit-prepend modules/donations/donations.js
 // @codekit-prepend modules/events/event.js
-// @codekit-prepend modules/enchulame/enchulame.js
 
-var version = '089';
+var version = '090';
 
 var boardApplication = angular.module('board', [
   'ngOpbeat',
@@ -69,7 +68,6 @@ var boardApplication = angular.module('board', [
   'sg.module.tournament',
   'sg.module.donations',
   'sg.module.events',
-  'sg.module.enchulame',
   'chatModule',
   'angular-jwt',
   'firebase',
@@ -200,10 +198,6 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
         window.location = '/';
       }
     }
-  });
-  $routeProvider.when('/enchulame/editar', {
-    templateUrl: '/app/partials/enchulame.html?v=' + version,
-    controller: 'EnchulameController'
   });
   $routeProvider.when('/', {
     templateUrl: '/app/partials/main.html?v=' + version,
@@ -724,37 +718,6 @@ boardApplication.controller('MainController', [
     if(ref != undefined) {
       localStorage.setItem('ref', ref);
     }
-
-    $scope.misc.enchulame_remaining = 0;
-    $http.get(layer_path + 'contest-lead').then(function success(response) {
-      if(response.data.step > 0) {
-
-        if(response.data.name == 'null null' || (response.data.additional.history == '' && response.data.validated)) {
-          $scope.misc.enchulame_remaining++;
-        } else {
-          if(response.data.additional) {
-            completed = 0;
-            completed += response.data.name?1:0;
-            completed += response.data.additional.apellidos?1:0;
-            completed += response.data.email?1:0;
-            completed += response.data.phone?1:0;
-            completed += response.data.birthday?1:0;
-            completed += response.data.additional.state?1:0;
-            completed += response.data.additional.zipcode?1:0;
-            completed += response.data.additional.contest?1:0;
-            completed += response.data.additional.history?1:0;
-            completed += response.data.additional.cell_company?1:0;
-            completed += response.data.additional.cell_mode?1:0;
-            completed += response.data.additional.cell_phone?1:0;
-            completed += response.data.additional.address?1:0;
-            if(completed>1 && completed < 13) {
-              $scope.misc.enchulame_remaining++;
-            }
-          }
-        }
-      }
-    });
-
   }
 ]);
 
