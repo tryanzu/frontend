@@ -75,7 +75,7 @@ block.normal = merge({}, block);
  */
 
 block.gfm = merge({}, block.normal, {
-  fences: /^ *(`{3,}|~{3,})[ \.]*(\S+)? *\n([\s\S]+?)\s*\1 *(?:\n+|$)/,
+  fences: /^ *(`{3,}|~{3,})[ \.]*(\S+)? *\n([\s\S]*?)\s*\1 *(?:\n+|$)/,
   paragraph: /^/,
   heading: /^ *(#{1,6}) +([^\n]+?) *#* *(?:\n+|$)/
 });
@@ -189,7 +189,7 @@ Lexer.prototype.token = function(src, top, bq) {
       this.tokens.push({
         type: 'code',
         lang: cap[2],
-        text: cap[3]
+        text: cap[3] || ''
       });
       continue;
     }
@@ -456,7 +456,7 @@ var inline = {
   reflink: /^!?\[(inside)\]\s*\[([^\]]*)\]/,
   nolink: /^!?\[((?:\[[^\]]*\]|[^\[\]])*)\]/,
   strong: /^__([\s\S]+?)__(?!_)|^\*\*([\s\S]+?)\*\*(?!\*)/,
-  em: /^\b_((?:__|[\s\S])+?)_\b|^\*((?:\*\*|[\s\S])+?)\*(?!\*)/,
+  em: /^\b_((?:[^_]|__)+?)_\b|^\*((?:\*\*|[\s\S])+?)\*(?!\*)/,
   code: /^(`+)\s*([\s\S]*?[^`])\s*\1(?!`)/,
   br: /^ {2,}\n(?!\s*$)/,
   del: noop,
@@ -875,7 +875,7 @@ Renderer.prototype.link = function(href, title, text) {
     } catch (e) {
       return '';
     }
-    if (prot.indexOf('javascript:') === 0 || prot.indexOf('vbscript:') === 0) {
+    if (prot.indexOf('javascript:') === 0 || prot.indexOf('vbscript:') === 0 || prot.indexOf('data:') === 0) {
       return '';
     }
   }
@@ -1094,7 +1094,8 @@ function escape(html, encode) {
 }
 
 function unescape(html) {
-  return html.replace(/&([#\w]+);/g, function(_, n) {
+  // explicitly match decimal, hex, and named HTML entities
+  return html.replace(/&(#(?:\d+)|(?:#x[0-9A-Fa-f]+)|(?:\w+));?/g, function(_, n) {
     n = n.toLowerCase();
     if (n === 'colon') return ':';
     if (n.charAt(0) === '#') {
