@@ -210,9 +210,13 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   // Marked
   markedProvider.setRenderer({
     link: function(href, title, text) {
-      href = href.replace("javascript:window", "");
-      href = href.replace("vbscript:", "");
-      href = href.replace("javascript:", "");
+
+      var regex = new RegExp("'^(?!mailto:)(?:(?:http|https|ftp)://)(?:\\S+(?::\\S*)?@)?(?:(?:(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}(?:\\.(?:[0-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))|(?:(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)(?:\\.(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)*(?:\\.(?:[a-z\\u00a1-\\uffff]{2,})))|localhost)(?::\\d{2,5})?(?:(/|\\?|#)[^\\s]*)?$'", "gi");
+      var to_replace = "$1";
+
+      href = href.replace(regex, to_replace);
+
+
       return "<a href='" + href + "' title='" + title + "' target='_blank'>" + text + "</a>";
     }
   });
