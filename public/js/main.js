@@ -13266,7 +13266,6 @@ EventModule.controller('EventController', ['$scope', '$timeout', '$http', 'Uploa
 var version = '090';
 
 var boardApplication = angular.module('board', [
-  'ngOpbeat',
   'ngRoute',
   'ui.bootstrap',
   'directivesModule',
@@ -13306,8 +13305,8 @@ var boardApplication = angular.module('board', [
   'siderbar',
 ]);
 
-boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'markedProvider', 'AclServiceProvider', '$opbeatProvider',
-  function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, markedProvider, AclServiceProvider, $opbeatProvider) {
+boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'markedProvider', 'AclServiceProvider',
+  function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, markedProvider, AclServiceProvider) {
 
   $routeProvider.when('/home', {
     templateUrl: '/app/partials/home.html?v=' + version
@@ -13434,6 +13433,7 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   markedProvider.setRenderer({
     link: function(href, title, text) {
       href = href.replace("javascript:window", "");
+      href = href.replace("vbscript:", "");
       href = href.replace("javascript:", "");
       return "<a href='" + href + "' title='" + title + "' target='_blank'>" + text + "</a>";
     }
@@ -13461,11 +13461,6 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
     }
   }];
   $httpProvider.interceptors.push('jwtInterceptor');
-
-  $opbeatProvider.config({
-    orgId: '4718fb1324fc4d3897ee39d393f9b734',
-    appId: '0fecd2a8d9'
-  })
 
   // ACL Configuration
   AclServiceProvider.config({storage: false});
@@ -13509,7 +13504,7 @@ boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http'
       }
 
       // Post credentials to the auth rest point
-      $http.get(layer_path + 'auth/get-token', {
+      $http.post(layer_path + 'auth/get-token', {}, {
         params: {
           email: $scope.form.email,
           password: $scope.form.password
@@ -13520,11 +13515,10 @@ boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http'
         var data = response.data;
         localStorage.setItem('id_token', data.token);
         localStorage.setItem('firebase_token', data.firebase);
-        //localStorage.setItem('firebase_token', 'AIzaSyCBR1iyAv25IG2T8WMMtRSZzabfJ_4KBNs');
         localStorage.setItem('signed_in', true);
 
-        $uibModalInstance.dismiss('logged');
         $rootScope.$broadcast('login');
+        $uibModalInstance.dismiss('logged');
       }, function(error){
         $scope.form.error = { message: 'Usuario o contraseña incorrecta.' };
       });
