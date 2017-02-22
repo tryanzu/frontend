@@ -41,7 +41,7 @@
 // @codekit-prepend modules/donations/donations.js
 // @codekit-prepend modules/events/event.js
 
-var version = '091';
+var version = '092';
 
 var boardApplication = angular.module('board', [
   'ngRoute',
@@ -210,14 +210,15 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
   // Marked
   markedProvider.setRenderer({
     link: function(href, title, text) {
+      console.log("href before", href);
+      var expression = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
+      var regex = new RegExp(expression);
 
-      var regex = new RegExp("'^(?!mailto:)(?:(?:http|https|ftp)://)(?:\\S+(?::\\S*)?@)?(?:(?:(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}(?:\\.(?:[0-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))|(?:(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)(?:\\.(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)*(?:\\.(?:[a-z\\u00a1-\\uffff]{2,})))|localhost)(?::\\d{2,5})?(?:(/|\\?|#)[^\\s]*)?$'", "gi");
-      var to_replace = "$1";
-
-      href = href.replace(regex, to_replace);
-
-
-      return "<a href='" + href + "' title='" + title + "' target='_blank'>" + text + "</a>";
+      if (href.match(regex)) {
+        return "<a href='" + href + "' title='" + title + "' target='_blank'>" + text + "</a>";
+      } else {
+        return "" + text;
+      }
     }
   });
 
