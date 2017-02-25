@@ -166,43 +166,7 @@ var ChatController = [
       loaded: false,
       blocked: false
     };
-    $scope.text = '';
-
-    $scope.config = {
-      autocomplete: [
-        {
-          words: [/@([A-Za-z0-9]+[_A-Za-z0-9]+)/gi],
-          cssClass: 'user'
-        }
-      ],
-      dropdown: [
-        {
-          trigger: /@([A-Za-z0-9]+[_A-Za-z0-9]+)/gi,
-          list: function(match, callback){
-              data=[];
-              $scope.members.forEach(function (member) {
-                var nombre_mem=member.username;
-                data.push({username: nombre_mem});
-              });
-              var listData = data.filter(function(element){
-                return element.username.substr(0,match[1].length).toLowerCase() === match[1].toLowerCase()
-                && element.username.length > match[1].length;
-              }).map(function(element){
-                return {
-                  display: element.username, // This gets displayed in the dropdown
-                  item: element // This will get passed to onSelect
-                };
-              });
-              callback(listData);
-          },
-          onSelect: function(item){
-            enter=true;
-            return item.display;
-          },
-          mode: 'replace'
-        }
-      ]
-    };
+    
     $scope.safeApply = function(fn) {
       var phase = this.$root.$$phase;
       if(phase == '$apply' || phase == '$digest') {
@@ -1601,7 +1565,6 @@ var EncuestaController = [
     };
   }
 ];
-var enter=false;
 var chatModule = angular.module('chatModule', ['firebase', 'ngSanitize']);
 
 chatModule.controller('ChatController', ChatController);
@@ -1610,16 +1573,14 @@ chatModule.controller('EncuestaController', EncuestaController);
 
 chatModule.directive('sgEnter', function() {
   return {
-    link: function(scope, element, attrs){
+    link: function(scope, element, attrs) {
       //console.log(scope.message.send_on_enter);
-      element.bind("keyup", function(event) {
-        if(enter==false && event.which === 13 && scope.message.send_on_enter) {
+      element.bind("keydown keypress", function(event) {
+        if(event.which === 13 && scope.message.send_on_enter) {
           scope.$apply(function(){
             scope.$eval(attrs.sgEnter, {'event': event});
           });
           event.preventDefault();
-        }else if(enter==true){
-          enter=false;
         }
       });
     }
