@@ -10480,6 +10480,7 @@ var ChatController = [
 
         x.$watch(function(event) {
           if(event.event === "child_added") {
+            //console.log(event);
             if(!$scope.scroll_help.scrolledUp) {
               $timeout(function() {
                 var mh_window = $('.message-history');
@@ -10901,30 +10902,31 @@ var ChatController = [
     }
 
     jQuery('.message-history').scroll(function() {
-      $scope.scroll_help.from_top = $(this).scrollTop();
-      $scope.scroll_help.max_height = $(this)[0].scrollHeight - $(this).height();
-
-      // If scrolling further than possible... (happens because of some OS effects)
-      if($scope.scroll_help.from_top > $scope.scroll_help.max_height) {
-        $scope.scroll_help.from_top = $scope.scroll_help.max_height; // we "saturate" from_top distance
-      }
-
-      if ($scope.scroll_help.from_top >= $scope.scroll_help.lastScrollTop) {
-        // downscroll code
-        //if($scope.can('debug')) console.log("Scrolling downward");
-        if($scope.scroll_help.from_top == $scope.scroll_help.max_height) {
-          $scope.scroll_help.scrolledUp = false;
-          $scope.old_messages = [];
+      if($(this).scrollTop() / ($(this)[0].scrollHeight - $(this)[0].offsetHeight) < 0.80){
+        $scope.scroll_help.from_top = $(this).scrollTop();
+        $scope.scroll_help.max_height = $(this)[0].scrollHeight - $(this).height();
+        // If scrolling further than possible... (happens because of some OS effects)
+        if($scope.scroll_help.from_top > $scope.scroll_help.max_height) {
+          $scope.scroll_help.from_top = $scope.scroll_help.max_height; // we "saturate" from_top distance
         }
-      } else {
-        //if($scope.can('debug')) console.log("Scrolling upward");
-        if($scope.scroll_help.last_height <= $scope.scroll_help.max_height) {
-          // upscroll code
-          $scope.scroll_help.scrolledUp = true;
+
+        if ($scope.scroll_help.from_top >= $scope.scroll_help.lastScrollTop) {
+          // downscroll code
+          //if($scope.can('debug')) console.log("Scrolling downward");
+          if($scope.scroll_help.from_top == $scope.scroll_help.max_height) {
+            $scope.scroll_help.scrolledUp = false;
+            $scope.old_messages = [];
+          }
+        } else {
+          //if($scope.can('debug')) console.log("Scrolling upward");
+          if($scope.scroll_help.last_height <= $scope.scroll_help.max_height) {
+            // upscroll code
+            $scope.scroll_help.scrolledUp = true;
+          }
         }
+        $scope.scroll_help.lastScrollTop = $scope.scroll_help.from_top;
+        $scope.scroll_help.last_height = $scope.scroll_help.max_height;
       }
-      $scope.scroll_help.lastScrollTop = $scope.scroll_help.from_top;
-      $scope.scroll_help.last_height = $scope.scroll_help.max_height;
     });
 
     // Hack, so we don't have to reload the controller if the route uses the same controller
