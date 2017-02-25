@@ -41,7 +41,7 @@
 // @codekit-prepend modules/donations/donations.js
 // @codekit-prepend modules/events/event.js
 
-var version = '092';
+var version = '093';
 
 var boardApplication = angular.module('board', [
   'ngRoute',
@@ -71,7 +71,7 @@ var boardApplication = angular.module('board', [
   'angular-jwt',
   'firebase',
   'ngFileUpload',
-  'smartArea',
+  //'smartArea',
   'monospaced.elastic',
   'mentio',
   'uiSwitch',
