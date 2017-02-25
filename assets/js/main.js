@@ -71,7 +71,7 @@ var boardApplication = angular.module('board', [
   'angular-jwt',
   'firebase',
   'ngFileUpload',
-  'smartArea',
+  //'smartArea',
   'monospaced.elastic',
   'mentio',
   'uiSwitch',

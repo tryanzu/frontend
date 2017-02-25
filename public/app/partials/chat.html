@@ -358,7 +358,7 @@
             <div class="footer">
               <div class="input-box" ng-if="user.isLogged">
                 <div class="input-group" style="width: 100%;">
-                  <textarea class="input-box_text" placeholder="Escribe..." ng-trim="false" msd-elastic smart-area="config" ng-model="message.content"  sg-enter="addMessage()" sg-send="message.send_on_enter" ng-readonly="helpers.spam_count > 2" rows="1"></textarea>
+                  <input type="text" class="input-box_text" placeholder="Escribe..." ng-trim="false" ng-model="message.content"  sg-enter="addMessage()" sg-send="message.send_on_enter" ng-readonly="helpers.spam_count > 2"/>
                 </div>
                 <div class="row">
                   <div class="col-md-8">

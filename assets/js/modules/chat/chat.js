@@ -166,43 +166,7 @@ var ChatController = [
       loaded: false,
       blocked: false
     };
-    $scope.text = '';
-
-    $scope.config = {
-      autocomplete: [
-        {
-          words: [/@([A-Za-z0-9]+[_A-Za-z0-9]+)/gi],
-          cssClass: 'user'
-        }
-      ],
-      dropdown: [
-        {
-          trigger: /@([A-Za-z0-9]+[_A-Za-z0-9]+)/gi,
-          list: function(match, callback){
-              data=[];
-              $scope.members.forEach(function (member) {
-                var nombre_mem=member.username;
-                data.push({username: nombre_mem});
-              });
-              var listData = data.filter(function(element){
-                return element.username.substr(0,match[1].length).toLowerCase() === match[1].toLowerCase()
-                && element.username.length > match[1].length;
-              }).map(function(element){
-                return {
-                  display: element.username, // This gets displayed in the dropdown
-                  item: element // This will get passed to onSelect
-                };
-              });
-              callback(listData);
-          },
-          onSelect: function(item){
-            enter=true;
-            return item.display;
-          },
-          mode: 'replace'
-        }
-      ]
-    };
+    
     $scope.safeApply = function(fn) {
       var phase = this.$root.$$phase;
       if(phase == '$apply' || phase == '$digest') {
@@ -701,6 +665,7 @@ var ChatController = [
 
         x.$watch(function(event) {
           if(event.event === "child_added") {
+            //console.log(event);
             if(!$scope.scroll_help.scrolledUp) {
               $timeout(function() {
                 var mh_window = $('.message-history');
@@ -1122,30 +1087,31 @@ var ChatController = [
     }
 
     jQuery('.message-history').scroll(function() {
-      $scope.scroll_help.from_top = $(this).scrollTop();
-      $scope.scroll_help.max_height = $(this)[0].scrollHeight - $(this).height();
-
-      // If scrolling further than possible... (happens because of some OS effects)
-      if($scope.scroll_help.from_top > $scope.scroll_help.max_height) {
-        $scope.scroll_help.from_top = $scope.scroll_help.max_height; // we "saturate" from_top distance
-      }
-
-      if ($scope.scroll_help.from_top >= $scope.scroll_help.lastScrollTop) {
-        // downscroll code
-        //if($scope.can('debug')) console.log("Scrolling downward");
-        if($scope.scroll_help.from_top == $scope.scroll_help.max_height) {
-          $scope.scroll_help.scrolledUp = false;
-          $scope.old_messages = [];
+      if($(this).scrollTop() / ($(this)[0].scrollHeight - $(this)[0].offsetHeight) < 0.80){
+        $scope.scroll_help.from_top = $(this).scrollTop();
+        $scope.scroll_help.max_height = $(this)[0].scrollHeight - $(this).height();
+        // If scrolling further than possible... (happens because of some OS effects)
+        if($scope.scroll_help.from_top > $scope.scroll_help.max_height) {
+          $scope.scroll_help.from_top = $scope.scroll_help.max_height; // we "saturate" from_top distance
         }
-      } else {
-        //if($scope.can('debug')) console.log("Scrolling upward");
-        if($scope.scroll_help.last_height <= $scope.scroll_help.max_height) {
-          // upscroll code
-          $scope.scroll_help.scrolledUp = true;
+
+        if ($scope.scroll_help.from_top >= $scope.scroll_help.lastScrollTop) {
+          // downscroll code
+          //if($scope.can('debug')) console.log("Scrolling downward");
+          if($scope.scroll_help.from_top == $scope.scroll_help.max_height) {
+            $scope.scroll_help.scrolledUp = false;
+            $scope.old_messages = [];
+          }
+        } else {
+          //if($scope.can('debug')) console.log("Scrolling upward");
+          if($scope.scroll_help.last_height <= $scope.scroll_help.max_height) {
+            // upscroll code
+            $scope.scroll_help.scrolledUp = true;
+          }
         }
+        $scope.scroll_help.lastScrollTop = $scope.scroll_help.from_top;
+        $scope.scroll_help.last_height = $scope.scroll_help.max_height;
       }
-      $scope.scroll_help.lastScrollTop = $scope.scroll_help.from_top;
-      $scope.scroll_help.last_height = $scope.scroll_help.max_height;
     });
 
     // Hack, so we don't have to reload the controller if the route uses the same controller
@@ -1601,7 +1567,6 @@ var EncuestaController = [
     };
   }
 ];
-var enter=false;
 var chatModule = angular.module('chatModule', ['firebase', 'ngSanitize']);
 
 chatModule.controller('ChatController', ChatController);
@@ -1610,16 +1575,14 @@ chatModule.controller('EncuestaController', EncuestaController);
 
 chatModule.directive('sgEnter', function() {
   return {
-    link: function(scope, element, attrs){
+    link: function(scope, element, attrs) {
       //console.log(scope.message.send_on_enter);
-      element.bind("keyup", function(event) {
-        if(enter==false && event.which === 13 && scope.message.send_on_enter) {
+      element.bind("keydown keypress", function(event) {
+        if(event.which === 13 && scope.message.send_on_enter) {
           scope.$apply(function(){
             scope.$eval(attrs.sgEnter, {'event': event});
           });
           event.preventDefault();
-        }else if(enter==true){
-          enter=false;
         }
       });
     }

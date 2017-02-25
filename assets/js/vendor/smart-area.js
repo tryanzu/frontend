@@ -193,7 +193,8 @@ angular.module('smartArea', [])
             $scope.keyboardEvents = function(event){
                 if($scope.dropdown.content.length > 0) {
                     var code = event.keyCode || event.which;
-                    if (code === 13) { // Enter
+                    //if (code === 13) { // Enter
+                    if (code === 32 || code === 39) { // Espacio
                         event.preventDefault();
                         event.stopPropagation();
                         // Add the selected word from the Dropdown

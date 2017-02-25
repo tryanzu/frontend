@@ -2518,7 +2518,8 @@ angular.module('smartArea', [])
             $scope.keyboardEvents = function(event){
                 if($scope.dropdown.content.length > 0) {
                     var code = event.keyCode || event.which;
-                    if (code === 13) { // Enter
+                    //if (code === 13) { // Enter
+                    if (code === 32 || code === 39) { // Espacio
                         event.preventDefault();
                         event.stopPropagation();
                         // Add the selected word from the Dropdown
@@ -6916,218 +6917,432 @@ angular.module('siderbar', [])
 
 var directives = angular.module('directivesModule', []);
 
+
+
 directives.directive('adjustHeight', function($window, $document, $timeout) {
+
 	return {
+
 		restrict: 'A',
+
 		link: function(scope, element, attrs) {
+
 			scope.calculate = function() {
+
         var top = $(element).offset().top;
+
         var height = $(window).height();
+
         var neededHeight = height - top;
+
         //console.log(top, height, neededHeight, element);
 
+
+
         $(element).css('height', neededHeight);
+
       };
+
       $timeout(function(){
+
         scope.calculate();
+
       }, 100);
 
+
+
       $window.addEventListener('resize', function() {
+
         scope.calculate();
+
       });
 
+
+
       // Listen for possible container size changes
+
       scope.$on('changedContainers', function() {
+
         scope.calculate();
+
       });
+
 		}
+
 	};
+
 });
+
+
 
 directives.directive('adjustHeightChat', function($window, $document, $timeout) {
+
   return {
+
     restrict: 'A',
+
     link: function(scope, element, attrs) {
+
       scope.calculate = function() {
+
         var top = $(element).offset().top;
+
         var height = $(window).height();
+
         var footer = $('div.footer').outerHeight();
+
         var neededHeight = height - top - footer;
+
         //console.log(top, height, footer, neededHeight);
 
+
+
         $(element).css('height', neededHeight);
+
       };
+
       $timeout(function(){
+
         scope.calculate();
+
       }, 100);
 
+
+
       $window.addEventListener('resize', function() {
+
         scope.calculate();
+
       });
+
+
 
       // Listen for possible container size changes
+
       scope.$on('changedContainers', function() {
+
         scope.calculate();
+
       });
+
     }
+
   };
+
 });
+
+
 
 directives.directive('scrollMe', function() {
+
   return {
+
     restrict: 'A',
+
     scope: {
+
       trigger: '&scrollMe'
+
     },
+
     link: function(scope, element, attrs) {
+
       // If space is bigger, load more items
+
       element.on('scroll', function() {
+
         if($(this).scrollTop() + $(this).innerHeight() >= this.scrollHeight) {
+
           scope.$apply(function() {
+
             // Trigger scroll
+
             scope.trigger();
+
           });
+
         }
+
       });
+
     }
+
   }
+
 });
+
+
 
 directives.directive('myRefresh', ['$location', function($location) {
+
   return {
+
     restrict: 'A',
+
     scope: {
+
       trigger: '&myRefresh'
+
     },
+
     link: function(scope, element, attrs) {
+
       element.bind('click', function() {
+
         if(element[0] && element[0].href && element[0].href === $location.absUrl()){
+
           //console.log("Recarga!");
+
           scope.trigger();
+
         }
+
       });
+
     }
+
   };
+
 }]);
 
+
+
 directives.directive('markedsg', function () {
+
   return {
+
     restrict: 'AE',
+
     replace: true,
+
     scope: {
+
       markedsg: '='
+
     },
+
     link: function (scope, element, attrs) {
+
       set(scope.markedsg || element.text() || '');
 
+
+
       if (attrs.markedsg) {
+
         scope.$watch('markedsg', set);
+
       }
+
+
 
       function unindent(text) {
+
         if (!text) return text;
 
+
+
         var lines = text
+
           .replace(/\t/g, '  ')
+
           .split(/\r?\n/);
 
+
+
         var i, l, min = null, line, len = lines.length;
+
         for (i = 0; i < len; i++) {
+
           line = lines[i];
+
           l = line.match(/^(\s*)/)[0].length;
+
           if (l === line.length) { continue; }
+
           min = (l < min || min === null) ? l : min;
+
         }
+
+
 
         if (min !== null && min > 0) {
+
           for (i = 0; i < len; i++) {
+
             lines[i] = lines[i].substr(min);
+
           }
+
         }
+
         return lines.join('\n');
+
       }
+
+
 
       function set(text) {
+
         text = unindent(text || '');
+
         // Parse mentions links
+
         var links = $('<div>' + text + '</div>');
+
         links.find('a.user-mention').each(function( index ) {
+
           $(this).attr("href", "/u/"+ $(this).data('username') +"/"+ $(this).data('id'));
+
           if($(this).data('comment') != undefined) {
+
             $(this).before('<i class="fa fa-reply comment-response"></i>')
+
           }
+
         });
+
         text = links.html();
+
         element.html(marked(text, scope.opts || null));
+
       }
 
+
+
     }
+
   };
+
 });
+
+
 
 directives.directive('populometro', function() {
+
   return {
+
     restrict: 'EACM',
+
     template: function(elem, attrs) {
+
       return '<div style="display:block;width:100px;height:80px;margin: 0 auto"><svg style="position:absolute" width="100" height="100"><g><polygon points="50 20 54 50 46 50" fill="#E6E9EE" transform="rotate({{ (knob*2.4) - 120 }} 50 50)"></polygon><circle class="ring" cx="50" cy="50" r="10" fill="#E6E9EE"></circle><circle class="ring" cx="51" cy="51" r="8" fill="#d0d7dd"></circle><circle class="ring" cx="50" cy="50" r="7" fill="#F1F1F1"></circle></g></svg><div style="display: none; position:absolute;top:50%;width:100px;text-align:center;font-weight:bold;font-size: 1.1em;">{{ knob | number : 0 }}</div><input value="{{ knob }}"></div>';
+
     },
+
     replace: true,
+
     scope: true,
+
     link: function(scope, elem, attrs) {
+
       scope.opts = {
+
         'width':100,
+
         'height':80,
+
         'bgColor':'#E6E9EE',
+
         'fgColor':'#386db8',
+
         'readOnly':true,
+
         'displayInput':false,
+
         'max': 100,
+
         'angleArc':240,
+
         'angleOffset':-120,
+
         'thickness':'.25'
+
       };
+
       var renderKnob = function(){
+
         scope.knob = scope.$eval(attrs.knobData);
+
         $elem = $(elem).find('input');
+
         $elem.val(scope.knob);
+
         $elem.change();
+
         $elem.knob(scope.opts);
+
       };
+
       scope.$watch(attrs.knobData, function () {
+
         renderKnob();
+
       });
+
     },
+
   }
+
 });
 
+
+
 /**
+
  * ng-flags module
+
  * Turns country ISO code to flag thumbnail.
+
  *
+
  * Author: asafdav - https://github.com/asafdav
+
  */
+
 directives.directive('flag', function() {
+
   return {
+
     restrict: 'E',
+
     replace: true,
+
     template: '<span class="f{{ size }}"><span class="flag {{ country }}"></span></span>',
+
     scope: {
+
       country: '@',
+
       size: '@'
+
     },
+
     link: function(scope, elm, attrs) {
+
       // Default flag size
+
       scope.size = 16;
 
+
+
       scope.$watch('country', function(value) {
+
         scope.country = angular.lowercase(value);
+
       });
 
+
+
       scope.$watch('size', function(value) {
+
         scope.size = value;
+
       });
+
     }
+
   };
+
 });
 var filters = angular.module('filtersModule', []);
 
@@ -7262,12 +7477,19 @@ services.factory('socket', function (socketFactory) {
 })
 
 var FeedService = ['$resource', function($resource) {
+
   return $resource(layer_path + 'feed');
+
 }];
+
+
 
 var FeedModule = angular.module('feedModule', ['ngResource']);
 
+
+
 // Service of the feed module
+
 FeedModule.factory('Feed', FeedService);
 var CategoryService = ['$resource', function($resource) {
   return $resource(layer_path + 'category/:categoryId',
@@ -9759,43 +9981,7 @@ var ChatController = [
       loaded: false,
       blocked: false
     };
-    $scope.text = '';
-
-    $scope.config = {
-      autocomplete: [
-        {
-          words: [/@([A-Za-z0-9]+[_A-Za-z0-9]+)/gi],
-          cssClass: 'user'
-        }
-      ],
-      dropdown: [
-        {
-          trigger: /@([A-Za-z0-9]+[_A-Za-z0-9]+)/gi,
-          list: function(match, callback){
-              data=[];
-              $scope.members.forEach(function (member) {
-                var nombre_mem=member.username;
-                data.push({username: nombre_mem});
-              });
-              var listData = data.filter(function(element){
-                return element.username.substr(0,match[1].length).toLowerCase() === match[1].toLowerCase()
-                && element.username.length > match[1].length;
-              }).map(function(element){
-                return {
-                  display: element.username, // This gets displayed in the dropdown
-                  item: element // This will get passed to onSelect
-                };
-              });
-              callback(listData);
-          },
-          onSelect: function(item){
-            enter=true;
-            return item.display;
-          },
-          mode: 'replace'
-        }
-      ]
-    };
+    
     $scope.safeApply = function(fn) {
       var phase = this.$root.$$phase;
       if(phase == '$apply' || phase == '$digest') {
@@ -10294,6 +10480,7 @@ var ChatController = [
 
         x.$watch(function(event) {
           if(event.event === "child_added") {
+            //console.log(event);
             if(!$scope.scroll_help.scrolledUp) {
               $timeout(function() {
                 var mh_window = $('.message-history');
@@ -10715,30 +10902,31 @@ var ChatController = [
     }
 
     jQuery('.message-history').scroll(function() {
-      $scope.scroll_help.from_top = $(this).scrollTop();
-      $scope.scroll_help.max_height = $(this)[0].scrollHeight - $(this).height();
-
-      // If scrolling further than possible... (happens because of some OS effects)
-      if($scope.scroll_help.from_top > $scope.scroll_help.max_height) {
-        $scope.scroll_help.from_top = $scope.scroll_help.max_height; // we "saturate" from_top distance
-      }
-
-      if ($scope.scroll_help.from_top >= $scope.scroll_help.lastScrollTop) {
-        // downscroll code
-        //if($scope.can('debug')) console.log("Scrolling downward");
-        if($scope.scroll_help.from_top == $scope.scroll_help.max_height) {
-          $scope.scroll_help.scrolledUp = false;
-          $scope.old_messages = [];
+      if($(this).scrollTop() / ($(this)[0].scrollHeight - $(this)[0].offsetHeight) < 0.80){
+        $scope.scroll_help.from_top = $(this).scrollTop();
+        $scope.scroll_help.max_height = $(this)[0].scrollHeight - $(this).height();
+        // If scrolling further than possible... (happens because of some OS effects)
+        if($scope.scroll_help.from_top > $scope.scroll_help.max_height) {
+          $scope.scroll_help.from_top = $scope.scroll_help.max_height; // we "saturate" from_top distance
         }
-      } else {
-        //if($scope.can('debug')) console.log("Scrolling upward");
-        if($scope.scroll_help.last_height <= $scope.scroll_help.max_height) {
-          // upscroll code
-          $scope.scroll_help.scrolledUp = true;
+
+        if ($scope.scroll_help.from_top >= $scope.scroll_help.lastScrollTop) {
+          // downscroll code
+          //if($scope.can('debug')) console.log("Scrolling downward");
+          if($scope.scroll_help.from_top == $scope.scroll_help.max_height) {
+            $scope.scroll_help.scrolledUp = false;
+            $scope.old_messages = [];
+          }
+        } else {
+          //if($scope.can('debug')) console.log("Scrolling upward");
+          if($scope.scroll_help.last_height <= $scope.scroll_help.max_height) {
+            // upscroll code
+            $scope.scroll_help.scrolledUp = true;
+          }
         }
+        $scope.scroll_help.lastScrollTop = $scope.scroll_help.from_top;
+        $scope.scroll_help.last_height = $scope.scroll_help.max_height;
       }
-      $scope.scroll_help.lastScrollTop = $scope.scroll_help.from_top;
-      $scope.scroll_help.last_height = $scope.scroll_help.max_height;
     });
 
     // Hack, so we don't have to reload the controller if the route uses the same controller
@@ -11194,7 +11382,6 @@ var EncuestaController = [
     };
   }
 ];
-var enter=false;
 var chatModule = angular.module('chatModule', ['firebase', 'ngSanitize']);
 
 chatModule.controller('ChatController', ChatController);
@@ -11203,16 +11390,14 @@ chatModule.controller('EncuestaController', EncuestaController);
 
 chatModule.directive('sgEnter', function() {
   return {
-    link: function(scope, element, attrs){
+    link: function(scope, element, attrs) {
       //console.log(scope.message.send_on_enter);
-      element.bind("keyup", function(event) {
-        if(enter==false && event.which === 13 && scope.message.send_on_enter) {
+      element.bind("keydown keypress", function(event) {
+        if(event.which === 13 && scope.message.send_on_enter) {
           scope.$apply(function(){
             scope.$eval(attrs.sgEnter, {'event': event});
           });
           event.preventDefault();
-        }else if(enter==true){
-          enter=false;
         }
       });
     }
@@ -13293,7 +13478,7 @@ var boardApplication = angular.module('board', [
   'angular-jwt',
   'firebase',
   'ngFileUpload',
-  'smartArea',
+  //'smartArea',
   'monospaced.elastic',
   'mentio',
   'uiSwitch',
