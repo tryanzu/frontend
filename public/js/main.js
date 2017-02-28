@@ -10751,7 +10751,10 @@ var ChatController = [
       if($scope.message.content && ($scope.message.content.length <= $scope._options.messagesLength && $scope.message.content.length > 0)) {
         // If message is contained in previous message, or viceversa, or they're the same...
         if($scope.message.content === $scope.message.previous || ($scope.message.previous.indexOf($scope.message.content) > -1) || ($scope.message.content.indexOf($scope.message.previous) > -1)) {
-
+          setTimeout(function() {
+            $scope.helpers.spam_count = 0;
+            $scope.message.content = '';
+          }, 20000);
           $scope.helpers.spam_count++;
         } else {
           if($scope.helpers.spam_count > 0) {
