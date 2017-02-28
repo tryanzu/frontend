@@ -10754,6 +10754,7 @@ var ChatController = [
           setTimeout(function() {
             $scope.helpers.spam_count = 0;
             $scope.message.content = '';
+            $scope.message.previous = '';
           }, 20000);
           $scope.helpers.spam_count++;
         } else {
