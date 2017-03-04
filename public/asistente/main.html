@@ -35,7 +35,7 @@
             <li data-input-trigger>
               <label class="fs-field-label fs-anim-upper" for="usage" data-info="Nos ayudará a darte una mejor recomendación de hardware y actualizaciones futuras">¿Para qué usarás principalmente tu PC?</label>
               <div class="fs-radio-group fs-radio-custom clearfix fs-anim-lower">
-                <span><input id="usagea" name="usage" type="radio" value="gaming"/><label for="usagea" class="options-gaming">Gaming</label></span>
+                <span><input id="usagea" name="usage" type="radio" value="gaming"/><label for="usagea" class="options-gaming">Urgente</label></span>
                 <span><input id="usagec" name="usage" type="radio" value="edicion-y-diseño"/><label for="usagec" class="options-homework">Edición y Diseño</label></span>
                 <span><input id="usageb" name="usage" type="radio" value="arquitectura"/><label for="usageb" class="options-architecture">Arquitectura</label></span>
                 <span><input id="usaged" name="usage" type="radio" value="profesional-multimedia"/><label for="usaged" class="options-professional">Ingeniería y Programación</label></span>
@@ -97,12 +97,23 @@
             </li>
             <li>
               <label class="fs-field-label fs-anim-upper" for="budget" data-info="En múltiplos de $1000">¿Cual es tu presupuesto?</label>
-              <input class="fs-mark fs-anim-lower" id="budget" name="budget" type="number" placeholder="10000" step="1000" min="6000" required />
+              <input class="fs-mark fs-anim-lower" id="budget" name="budget" type="text" placeholder="10000" required minlength="5" maxlength="12" onkeyup="Moneda(this)" onchange="Moneda(this)"/>
             </li>
+            <!--
             <li>
               <label class="fs-field-label fs-anim-upper" for="buydelay">¿En cuantos días planeas hacer la compra?</label>
               <input class="fs-mark fs-anim-lower" id="buydelay" name="buydelay" type="number" placeholder="7" step="1" min="1" max="365" />
+            </li>-->
+            <li data-input-trigger>
+              <label class="fs-field-label fs-anim-upper" for="buydelay" data-info="Nos ayudará a darte una mejor atención">¿En cuantos días planeas hacer la compra?</label>
+              <div class="fs-radio-group fs-radio-custom clearfix fs-anim-lower">
+                <span><input id="buydelaya" name="buydelay" type="radio" value="1"/><label for="buydelaya" class="options-urgente">Urgente (1-2 días)</label></span>
+                <span><input id="buydelayc" name="buydelay" type="radio" value="2"/><label for="buydelayc" class="options-alta">Alta (1 semana)</label></span>
+                <span><input id="buydelayb" name="buydelay" type="radio" value="3"/><label for="buydelayb" class="options-media">Media (1 mes)</label></span>
+                <span><input id="buydelayd" name="buydelay" type="radio" value="4"/><label for="buydelayd" class="options-baja">Baja (más de 1 mes)</label></span>
+              </div>
             </li>
+
             <li>
               <label class="fs-field-label fs-anim-upper" for="estado" data-info="En caso de que estés en el DF podrías pasar por ella">¿En dónde estás ubicado?</label>
               <div class="fs-anim-lower">
@@ -258,8 +269,28 @@
             phone: payload.user_phone
           };
           payload.games = games_list[payload.games];
-          payload.budget = parseInt(payload.budget);
-          payload.buydelay = parseInt(payload.buydelay);
+          payload.budget = parseInt(payload.budget.replace(/[^\d]*/g,""));
+          switch (payload.buydelay) {
+            case "1":
+              payload.buydelay=1;
+              //Urgente              
+              break;
+            case "2":
+              payload.buydelay=7;
+              //Alta              
+              break;
+            case "3":
+              payload.buydelay=30;
+              //Media              
+              break;
+            case "4":
+              payload.buydelay=60;
+              //Baja
+              break;
+            default:
+              payload.buydelay=90;
+              break;
+          }
           delete payload.user_name;
           delete payload.user_email;
           delete payload.user_phone;
@@ -268,14 +299,14 @@
           if( !isArray( payload.extra ) ) {
             payload.extra = [payload.extra];
           }
-
+          
           payload = JSON.stringify(payload);
           console.log(payload);
 
           if(!payload.content) {
             payload.content = "Sin comentarios";
           }
-
+          
           $.ajax({
             url: layer_path + 'store/order',
             type: "POST",
@@ -292,6 +323,19 @@
         });
 
       })();
+      function Moneda(input){
+        var num = input.value.replace(/[^\d]*/g,"");
+        if(!isNaN(parseInt(num))){
+          var temp = numberWithCommas(parseInt(num));
+          input.value = temp;
+        }else{
+          input.value = "";
+        }
+      }
+      function numberWithCommas(n){
+        var parts=n.toString().split(".");
+        return parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",") + (parts[1] ? "." + parts[1] : "");
+      }
     </script>
   </body>
 </html>

@@ -1,22 +1,22 @@
 <sidebar id="sidebar1" size="80%" position="left" is-expanded="true">
-    <div class="btn-toolbar mt-10">
-        <div class="btn-group">
-            <label class="btn btn-default" ng-model="radioModel" uib-btn-radio="'chat'" class="text-center" title="Canales">
-                <i class="fa fa-comments" aria-hidden="true"></i>
-            </label>
-            <label class="btn btn-default" ng-model="radioModel" uib-btn-radio="'rifa'" class="text-center" title="Rifas" ng-click="a_rifa()">
-                <i class="fa fa-archive" aria-hidden="true"></i><i ng-if="radioModel!='rifa' && alert_rifa" class="fa fa-asterisk fa-spin" aria-hidden="true" style="color:#386db8; position: absolute; top: 2px; right: 2px; z-index:10;"></i>
-            </label>
-            <label class="btn btn-default" ng-model="radioModel" uib-btn-radio="'encuesta'" class="text-center" title="Encuestas" ng-click="a_encuesta()">
-                <i class="fa fa-pie-chart" aria-hidden="true"></i><i ng-if="radioModel!='encuesta' && alert_encuesta" class="fa fa-asterisk fa-spin" aria-hidden="true" style="color:#386db8; position: absolute; top: 2px; right: 2px; z-index:10;"></i>
-            </label>
-            <label class="btn btn-default" ng-model="radioModel" uib-btn-radio="'subasta'" class="text-center" title="Subastas">
-                <i class="fa fa-money" aria-hidden="true"></i>
-            </label>
-        </div>
+  <div class="spacing" style="margin-top:60px;">
+    <div class="text-center">
+      <div class="btn-group-vertical" style="float: left; width: 100%;">
+        <label class="btn btn-default opc_menu" ng-model="radioModel" uib-btn-radio="'chat'" title="Canales">
+          <i class="fa fa-comments" aria-hidden="true"></i> Canales
+        </label>
+        <label class="btn btn-default opc_menu" ng-model="radioModel" uib-btn-radio="'rifa'" title="Rifas" ng-click="a_rifa()">
+          <i class="fa fa-archive" aria-hidden="true"></i><i ng-if="radioModel!='rifa' && alert_rifa" class="fa fa-asterisk fa-spin" aria-hidden="true" style="color:#386db8; position: absolute; top: 10px; right: 50px; z-index:10;"></i> Rifas
+        </label>
+        <label class="btn btn-default opc_menu" ng-model="radioModel" uib-btn-radio="'encuesta'" title="Encuestas" ng-click="a_encuesta()">
+          <i class="fa fa-pie-chart" aria-hidden="true"></i><i ng-if="radioModel!='encuesta' && alert_encuesta" class="fa fa-asterisk fa-spin" aria-hidden="true" style="color:#386db8; position: absolute; top: 10px; right: 50px; z-index:10;"></i> Encuestas
+        </label>
+        <label class="btn btn-default opc_menu" ng-model="radioModel" uib-btn-radio="'subasta'" title="Subastas">
+          <i class="fa fa-money" aria-hidden="true"></i> Subastas
+        </label>
+      </div>
     </div>
-
-    <ul ng-show="radioModel=='chat'" class="sidebar-nav" style="margin-top: 90px;">
+    <ul ng-show="radioModel=='chat'" class="sidebar-nav" style="margin-top: 210px;">
       <li class="sidebar-title">Canales públicos</li>
       <li ng-repeat="c in channels" ng-class="{active: c.name == channel.selected.name}">
         <a href="" ng-click="changeChannel(c)" title="{{ c.description }}">
@@ -24,10 +24,9 @@
         </a>
       </li>
     </ul>
-
-    <div ng-show="radioModel=='rifa'" style="margin-top: 10px;" class="text-center">
+    <div ng-show="radioModel=='rifa'" class="text-center">
       <h3 ng-if="user.isLogged">Rifa</h3>
-      <div ng-if="can('board-config') && show_details">
+      <div ng-if="can('board-config') && show_details">  
         <button class="btn btn-success btn-xs" ng-hide="rifa.create" type="button" ng-click="createRifa()">Crear nueva Rifa</button>
         <button class="btn btn-danger btn-xs" ng-hide="!rifa.create" type="button" ng-click="deleteRifa()">Quitar Rifa</button>
         <br>
@@ -106,11 +105,10 @@
         </div>
       </div>
     </div>
-
     <!-- Encuesta -->
-    <div ng-show="radioModel=='encuesta'" class="text-center" style="margin-top: 10px;">
+    <div ng-show="radioModel=='encuesta'" class="text-center">
       <h3 ng-if="user.isLogged">Encuesta</h3>
-      <div ng-if="can('board-config') && show_details">
+      <div ng-if="can('board-config') && show_details">  
         <button class="btn btn-success btn-xs" ng-hide="encuesta.encuesta" type="button" ng-click="createEncuesta()">Crear nueva Encuesta</button>
         <button class="btn btn-danger btn-xs" ng-hide="!encuesta.encuesta" type="button" ng-click="deleteEncuesta()">Quitar Encuesta</button>
         <br><br>
@@ -120,13 +118,13 @@
       <div ng-if="encuesta.active && user.isLogged">
         <div ng-if="encuesta.encuesta">
           <div class="text-center" style="padding: 8px;">
-            <h4 style="margin: 0;line-height: 1.3em;"><strong>{{encuesta.poll.pregunta}}</strong></h4>
+            <h4 style="margin: 0;line-height: 1.3em;"><strong>{{encuesta.poll.pregunta}}</strong></h4>   
           </div>
         </div>
         <div style="padding: 8px;">
           <div class="row">
             <div class="col-xs-6 col-xs-offset-0" ng-repeat="item in encuesta.poll.items">
-              <img ng-if="item.imgUrl" ng-src="{{item.imgUrl}}" class="img-rounded" alt="URL" style="height: 50px">
+              <img ng-if="item.imgUrl" ng-src="{{item.imgUrl}}" class="img-rounded" alt="URL" style="height: 50px">  
               <h6 title="{{item.nombre}}" tooltip-placement="top" uib-tooltip="{{item.nombre | limitTo:8}}">{{item.nombre | limitTo:8}}</h6>
               <div><uib-progressbar class="progress-striped active" max="encuesta.poll.cant" value="item.cant" type="info"><i>{{item.cant}} / {{encuesta.poll.cant}}</i></uib-progressbar></div>
               <button ng-show="pollbttn(item.nombre)==false && !encuesta.poll.stop && !can('board-config')" tooltip-placement="top" uib-tooltip="{{item.nombre | limitTo:8}}" class="btn btn-primary btn-xs" ng-click="votar(item.nombre)">Votar</button>
@@ -140,33 +138,33 @@
           <br><br><br><br>
         </div>
       </div>
-    </div>
-
-    <div ng-show="radioModel=='subasta'" class="text-center" style="margin-top: 10px;">
+    </div> 
+    <div ng-show="radioModel=='subasta'" class="text-center">
       <h3 ng-if="user.isLogged">Subasta</h3>
-    </div>
+    </div> 
+  </div>
 </sidebar>
 
 <div id="wrapper" ng-class="{'stream': channel.selected.fullscreen.video}">
   <!-- Sidebar -->
   <div id="sidebar-wrapper">
     <div class="text-center">
-      <div class="btn-group" style="margin-top: 7px;">
-        <label class="btn btn-default" ng-model="radioModel" uib-btn-radio="'chat'" class="text-center" title="Canales">
-          <i class="fa fa-comments" aria-hidden="true"></i>
+      <div class="btn-group-vertical" style="margin-top: 0px; float: left; width: 100%;">
+        <label class="btn btn-default opc_menu" ng-model="radioModel" uib-btn-radio="'chat'" title="Canales">
+          <i class="fa fa-comments" aria-hidden="true"></i> Canales
         </label>
-        <label class="btn btn-default" ng-model="radioModel" uib-btn-radio="'rifa'" class="text-center" title="Rifas" ng-click="a_rifa()">
-          <i class="fa fa-archive" aria-hidden="true"></i><i ng-if="radioModel!='rifa' && alert_rifa" class="fa fa-asterisk fa-spin" aria-hidden="true" style="color:#386db8; position: absolute; top: 2px; right: 2px; z-index:10;"></i>
+        <label class="btn btn-default opc_menu" ng-model="radioModel" uib-btn-radio="'rifa'" title="Rifas" ng-click="a_rifa()">
+          <i class="fa fa-archive" aria-hidden="true"></i><i ng-if="radioModel!='rifa' && alert_rifa" class="fa fa-asterisk fa-spin" aria-hidden="true" style="color:#386db8; position: absolute; top: 10px; right: 50px; z-index:10;"></i> Rifas
         </label>
-        <label class="btn btn-default" ng-model="radioModel" uib-btn-radio="'encuesta'" class="text-center" title="Encuestas" ng-click="a_encuesta()">
-          <i class="fa fa-pie-chart" aria-hidden="true"></i><i ng-if="radioModel!='encuesta' && alert_encuesta" class="fa fa-asterisk fa-spin" aria-hidden="true" style="color:#386db8; position: absolute; top: 2px; right: 2px; z-index:10;"></i>
+        <label class="btn btn-default opc_menu" ng-model="radioModel" uib-btn-radio="'encuesta'" title="Encuestas" ng-click="a_encuesta()">
+          <i class="fa fa-pie-chart" aria-hidden="true"></i><i ng-if="radioModel!='encuesta' && alert_encuesta" class="fa fa-asterisk fa-spin" aria-hidden="true" style="color:#386db8; position: absolute; top: 10px; right: 50px; z-index:10;"></i> Encuestas
         </label>
-        <label class="btn btn-default" ng-model="radioModel" uib-btn-radio="'subasta'" class="text-center" title="Subastas">
-          <i class="fa fa-money" aria-hidden="true"></i>
+        <label class="btn btn-default opc_menu" ng-model="radioModel" uib-btn-radio="'subasta'" title="Subastas">
+          <i class="fa fa-money" aria-hidden="true"></i> Subastas
         </label>
       </div>
     </div>
-    <ul ng-show="radioModel=='chat'" class="sidebar-nav" style="margin-top: 30px;">
+    <ul ng-show="radioModel=='chat'" class="sidebar-nav" style="margin-top: 160px;">
       <li class="sidebar-title">Canales públicos</li>
       <li ng-repeat="c in channels" ng-class="{active: c.name == channel.selected.name}">
         <a href="" ng-click="changeChannel(c)" title="{{ c.description }}">
@@ -174,7 +172,7 @@
         </a>
       </li>
     </ul>
-    <div ng-show="radioModel=='rifa'" style="margin-top: 10px;" class="text-center">
+    <div ng-show="radioModel=='rifa'" style="margin-top: 180px;" class="text-center">
       <h3 ng-if="user.isLogged">Rifa</h3>
       <div ng-if="can('board-config') && show_details">
         <button class="btn btn-success btn-xs" ng-hide="rifa.create" type="button" ng-click="createRifa()">Crear nueva Rifa</button>
@@ -256,7 +254,7 @@
       </div>
     </div>
     <!-- Encuesta -->
-    <div ng-show="radioModel=='encuesta'" class="text-center" style="margin-top: 10px;">
+    <div ng-show="radioModel=='encuesta'" class="text-center" style="margin-top: 180px;">
       <h3 ng-if="user.isLogged">Encuesta</h3>
       <div ng-if="can('board-config') && show_details">
         <button class="btn btn-success btn-xs" ng-hide="encuesta.encuesta" type="button" ng-click="createEncuesta()">Crear nueva Encuesta</button>
@@ -289,7 +287,7 @@
         </div>
       </div>
     </div>
-    <div ng-show="radioModel=='subasta'" class="text-center" style="margin-top: 10px;">
+    <div ng-show="radioModel=='subasta'" class="text-center" style="margin-top: 180px;">
       <h3 ng-if="user.isLogged">Subasta</h3>
     </div>
   </div>
