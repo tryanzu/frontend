@@ -4,6 +4,11 @@ var PublishController = ['$scope', '$routeParams', '$http', 'Category', 'Part', 
   $scope.publishing = true;
   $scope.message = "";
 
+  $scope.helpers = {
+    category_added: false,
+    title_added: false
+  };
+
   if(!$scope.user.isLogged) {
     window.location = '/';
   }
@@ -99,64 +104,7 @@ var PublishController = ['$scope', '$routeParams', '$http', 'Category', 'Part', 
       budget: '0',
       budget_currency: 'MXN'
     }
-	};
-
-  $scope.partForm = {
-    motherboard: {
-      model: '',
-      brand_list: null,
-      model_list: null
-    },
-    cpu: {
-      model: '',
-      brand_list: null,
-      model_list: null
-    },
-    'cpu-cooler': {
-      model: '',
-      brand_list: null,
-      model_list: null
-    },
-    memory: {
-      model: '',
-      brand_list: null,
-      model_list: null
-    },
-    storage: {
-      model: '',
-      brand_list: null,
-      model_list: null
-    }
-  };
-
-  $scope.changeModels = function(component_name, component_name_post) {
-    if(!component_name_post){
-      component_name_post = component_name;
-    }
-    Part.get({
-      type: component_name,
-      action:'models',
-      manufacturer: $scope.partForm[component_name].model
-    }, function(data) {
-      if(component_name === 'memory') {
-        for(var i = 0; i<data.parts.length; i++) {
-          data.parts[i].full_name = data.parts[i].name + ' ' + data.parts[i].size + ' ' + data.parts[i].speed + ' ' + data.parts[i].memory_type;
-        }
-      }
-      else if(component_name === 'cpu') {
-        for(var i = 0; i < data.parts.length; i++) {
-          data.parts[i].full_name = data.parts[i].name + ' ' + data.parts[i].partnumber;
-        }
-      }
-      else if(component_name === 'storage') {
-        for(var i = 0; i < data.parts.length; i++) {
-          data.parts[i].full_name = data.parts[i].name + ' ' + data.parts[i].capacity + ' ' + data.parts[i].form_factor + '"';
-        }
-      }
-      $scope.partForm[component_name].model_list = data.parts;
-      $scope.computerPost.components[component_name_post].value = '';
-    })
-  }
+	}
 
   $scope.adding_file = false;
   $scope.uploadPicture = function(files) {
@@ -181,98 +129,47 @@ var PublishController = ['$scope', '$routeParams', '$http', 'Category', 'Part', 
     }
   };
 
-	$scope.activateComponents = function() {
-    // Show the components selection form
-		$scope.post.components = true;
-    // If we haven't load Pc Parts Brands List, get them from API
-    if(!$scope.partForm.motherboard.brand_list) {
-      Part.get({type:'motherboard', action:'manufacturers'}, function(data){
-        $scope.partForm.motherboard.brand_list = data.manufacturers;
-      })
-    }
-    if(!$scope.partForm.cpu.brand_list) {
-      Part.get({type:'cpu', action:'manufacturers'}, function(data){
-        $scope.partForm.cpu.brand_list = data.manufacturers;
-      })
-    }
-    if(!$scope.partForm['cpu-cooler'].brand_list) {
-      Part.get({type:'cpu-cooler', action:'manufacturers'}, function(data){
-        $scope.partForm['cpu-cooler'].brand_list = data.manufacturers;
-      })
-    }
-    if(!$scope.partForm.memory.brand_list) {
-      Part.get({type:'memory', action:'manufacturers'}, function(data){
-        $scope.partForm.memory.brand_list = data.manufacturers;
-      })
-    }
-    if(!$scope.partForm.storage.brand_list) {
-      Part.get({type:'storage', action:'manufacturers'}, function(data){
-        $scope.partForm.storage.brand_list = data.manufacturers;
-      })
-    }
-	};
-  $scope.deactivateComponents = function() {
-    $scope.post.components = false;
-  };
-
-	$scope.computerPostPublish = function() {
-		if($scope.post.title === '') {
-      $scope.message = "Te falta el nombre de tu PC";
-    } else if($scope.post.content === '') {
-      $scope.message = "Te falta el contenido de tu publicación";
-    } else if($scope.post.category.length < 1) {
-      $scope.message = "Te falta elegir categoría";
-      console.log($scope.post.category, $scope.post.category.length < 1);
-    } else {
-      $scope.publishing = true;
-  		var components = $scope.computerPost.components;
-  		components.budget_type = $scope.computerPost.budget.type;
-  		components.budget_flexibility = $scope.computerPost.budget.flexibility;
-
-  		for (var i in components) {
-  			if (typeof components[i] === 'object' && 'owned' in components[i]) {
-  				if (components[i].owned == 'true') { components[i].owned = true; }
-  				if (components[i].owned == 'false') { components[i].owned = false; }
-  			}
-  		}
-
-  		var post = {
-  			kind: "recommendations",
-        name: $scope.post.title,
-        category: $scope.post.category,
-        content: $scope.post.content,
-        components: components
-  		};
-
-  		$http.post(layer_path + 'post', post).then(function(data) {
-  			// Return to home
-        window.location.href = "/";
-  		}, function(err) {});
-    }
-	};
 	$scope.normalPostPublish = function() {
-    if($scope.post.title === '') {
-      $scope.message = "Te falta el título de tu publicación";
-    } else if($scope.post.content === '') {
+    if(!['55dc153f3f6ba10071000004','55dc15513f6ba10071000005'].indexOf($scope.post.category) > -1) {
+      if($scope.post.title === '') {
+        $scope.message = "Te falta el título de tu publicación";
+        return;
+      }
+    }
+    if($scope.post.content === '') {
       $scope.message = "Te falta el contenido de tu publicación";
     } else if($scope.post.category.length < 1) {
       $scope.message = "Te falta elegir categoría";
-      console.log($scope.post.category, $scope.post.category.length < 1);
     } else {
       $scope.publishing = true;
+
   		var post = {
-  			content: $scope.post.content,
+        kind: 'category-post',
   			name: $scope.post.title,
   			category: $scope.post.category,
-  			kind: 'category-post',
+        content: $scope.post.content,
         is_question: $scope.post.is_question,
         pinned: $scope.post.pinned,
         lock: $scope.post.lock
   		};
 
+      if(['55dc153f3f6ba10071000004','55dc15513f6ba10071000005'].indexOf($scope.post.category) > -1) {
+        var components = $scope.computerPost.components;
+        components.budget_type = $scope.computerPost.budget.type;
+        components.budget_flexibility = $scope.computerPost.budget.flexibility;
+
+        for (var i in components) {
+          if (typeof components[i] === 'object' && 'owned' in components[i]) {
+            if (components[i].owned == 'true') { components[i].owned = true; }
+            if (components[i].owned == 'false') { components[i].owned = false; }
+          }
+        }
+
+        post.kind = 'recommendations';
+        post.components = components;
+      }
+
   		$http.post(layer_path + 'post', post).then(function success(response) {
-  			// Return to home
-        //console.log(response);
         window.location.href = "/p/"+response.data.post.slug+"/"+response.data.post.id;
   		}, function(err) {
         console.log(err);
