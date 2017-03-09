@@ -43,8 +43,8 @@ var ChatController = [
         userIdGname_slug: null,
         userIdGemail:null,
         stop:false,
-        countrys:null,
-        citys:null,
+        countries:null,
+        cities:null,
         go:false
       },
       user:{
@@ -166,7 +166,7 @@ var ChatController = [
       loaded: false,
       blocked: false
     };
-    
+
     $scope.safeApply = function(fn) {
       var phase = this.$root.$$phase;
       if(phase == '$apply' || phase == '$digest') {
@@ -334,28 +334,24 @@ var ChatController = [
         return rifa;
       });
     };
-    $scope.getPosition = function(){
+    $scope.getPosition = function() {
       //init geolocation
-      if($scope.formatted_address==null && !($scope.rifa.art.countrys===undefined && $scope.rifa.art.citys===undefined)){
+      if($scope.formatted_address == null && !($scope.rifa.art.countries === undefined && $scope.rifa.art.cities === undefined)) {
         var dir = "";
-        var lat=$scope.location.coords.latitude;
-        var lon=$scope.location.coords.longitude;
+        var lat = $scope.location.coords.latitude;
+        var lon = $scope.location.coords.longitude;
         var latlng = new google.maps.LatLng(lat, lon);
         geocoder = new google.maps.Geocoder();
         geocoder.geocode({"latLng": latlng}, function(results, status)
         {
-          if(status == google.maps.GeocoderStatus.OK){
-            if(results[0]){
-              $scope.formatted_address=results[0].formatted_address;
-              //dir = "Dirección:" + results[0].formatted_address;
+          if(status == google.maps.GeocoderStatus.OK) {
+            if(results[0]) {
+              $scope.formatted_address = results[0].formatted_address;
             }else{
-              dir = "No se ha podido obtener ninguna dirección en esas coordenadas";
+              alert("No se ha podido obtener ninguna dirección en esas coordenadas");
             }
-          }else{
-            dir = "El Servicio de Codificación Geográfica ha fallado con el siguiente error: " + status;
-          }
-          if(dir!=""){
-            alert(dir);
+          } else {
+            alert("El Servicio de Codificación Geográfica ha fallado con el siguiente error: " + status);
           }
         });
       }//End, init geolocation
@@ -436,110 +432,104 @@ var ChatController = [
     };
     $scope.comprarBoletos = function(){
       $scope.getPosition();
-      if($scope.formatted_address!=null || ($scope.rifa.art.countrys===undefined && $scope.rifa.art.citys===undefined)){
-        var yes=false;
-        //console.log($scope.formatted_address);
-        if($scope.rifa.art.citys===undefined){
-        }else{
-          var ArrB=$scope.rifa.art.citys;
+      if($scope.formatted_address!=null || ($scope.rifa.art.countries===undefined && $scope.rifa.art.cities===undefined)) {
+        var valid_user_location = false;
+        if($scope.rifa.art.cities !== undefined) {
+          var ArrB=$scope.rifa.art.cities;
           var contArr=ArrB.length;
           for (var i = 0; i < contArr; i++) {
             var temp = ArrB[i];
             if ($scope.formatted_address.indexOf(''+temp)!=-1) {
-              yes=true;
+              valid_user_location=true;
               break;
             }
           }
         }
-        if($scope.rifa.art.countrys===undefined){
-        }else{
-          var ArrB=$scope.rifa.art.countrys;
+        if($scope.rifa.art.countries !== undefined) {
+          var ArrB=$scope.rifa.art.countries;
           var contArr=ArrB.length;
           for (var i = 0; i < contArr; i++) {
             var temp = ArrB[i];
-            if ($scope.formatted_address.indexOf(''+temp)!=-1) {
-              yes=true;
+            if ($scope.formatted_address.indexOf(''+temp) != -1) {
+              valid_user_location = true;
               break;
             }
           }
         }
-        if($scope.rifa.art.countrys===undefined && $scope.rifa.art.citys===undefined){
-          yes=true;
+        if($scope.rifa.art.countries === undefined && $scope.rifa.art.cities === undefined) {
+          valid_user_location = true;
         }
-        if(yes){
-          if(($scope.rifa.user.cant%1)==0 && $scope.rifa.user.cant>0 && $scope.rifa.user.cant<=$scope.rifa.art.cantUser && $scope.rifa.user.cant<=($scope.rifa.art.cant-$scope.rifa.art.cantComprados)){
+        if(valid_user_location) {
+          if(($scope.rifa.user.cant % 1) == 0 && $scope.rifa.user.cant > 0 && $scope.rifa.user.cant <= $scope.rifa.art.cantUser && $scope.rifa.user.cant <= ($scope.rifa.art.cant - $scope.rifa.art.cantComprados)) {
             for (var i = 0; i < $scope.rifa.user.cant; i++) {
-              var action = true;
-              $scope._rifasRef.child($scope.channel.selected.$id).transaction(function(rifa) {
-                if (rifa) {
-                  if (rifa.cantComprados<rifa.cant && action) {
-                    rifa.cantComprados++;
-                  }else if(!action) {
-                    rifa.cantComprados--;
+              var ticket_was_bought = false;
+              $scope._rifasRef.child($scope.channel.selected.$id).transaction(function(raffle) {
+                if (raffle) {
+                  if (raffle.cantComprados < raffle.cant) {
+                    raffle.cantComprados++;
+                    ticket_was_bought = true;
+                    return raffle;
+                  } else {
+                    return; // Abort the transaction
                   }
                 }
-                return rifa;
-              }, function(error, committed, snapshot){
+                return raffle;
+              }, function(error, committed, snapshot) {
                 if (error) {
                   console.log('Transaction failed abnormally!', error);
-                } else if (!committed) {
-                  console.log('We aborted the transaction (because ada already exists).');
-                } else if (committed) {
-                  //console.log('Cont Exitoso',committed,'ERROR',error,'DATA',snapshot.val());
-                  if(action && snapshot.val().cantComprados < snapshot.val().cant){
-                    var count=0;
-                    $scope._ticketsRef.child($scope.channel.selected.$id).once("value", function(snapshot){
-                      if(snapshot.val()==null){
-                        count = 0;
-                      }else{
-                        count = Object.keys(snapshot.val()).length;
+                  // Add message to user
+                }
+
+                if(ticket_was_bought) {
+                  var count = 0;
+                  $scope._ticketsRef.child($scope.channel.selected.$id).once("value", function(snapshot) {
+
+                    //var newticket = $scope._ticketsRef.child($scope.channel.selected.$id)
+                    //  .push({'user_id': $scope.rifa.user.userid});
+                    newticket = $scope._ticketsRef.child($scope.channel.selected.$id)
+                      .push($scope.rifa.user);
+
+                    var key = newticket.key();
+                    if(key == null) {
+                      // No key
+                    } else {
+                      //Exito
+                      if($scope.rifa.user.ticketskey === undefined || $scope.rifa.user.ticketskey == null) {
+                        $scope.rifa.user.ticketskey=[];
                       }
-                      if(count<=$scope.rifa.art.cant){
-                        var newticket=$scope._ticketsRef.child($scope.channel.selected.$id)
-                        .push($scope.rifa.user);
-                        var key = newticket.key();
-                        if(key==null){
-                        }else{
-                          //Exito
-                          if($scope.rifa.user.ticketskey===undefined || $scope.rifa.user.ticketskey==null){
-                            $scope.rifa.user.ticketskey=[];
+                      var bolcomp = $scope.rifa.user.ticketskey;
+                      bolcomp.push(key);
+                      $scope.rifa.user.ticketskey = bolcomp;
+                      $scope.rifa.user.cant = bolcomp.length;
+                      $scope._participantsRef.child($scope.channel.selected.$id).child($scope.user.info.id)
+                        .set($scope.rifa.user, function(error) {
+                          if(error) {
+                            $scope.pregunta = true;
+                          } else {
+                            $scope.pregunta = false;
                           }
-                          var bolcomp = $scope.rifa.user.ticketskey;
-                          bolcomp.push(key);
-                          $scope.rifa.user.ticketskey=bolcomp;
-                          $scope.rifa.user.cant=bolcomp.length;
-                          $scope._participantsRef.child($scope.channel.selected.$id).child($scope.user.info.id)
-                          .set($scope.rifa.user, function(error) {
-                            if(error){
-                              $scope.pregunta=true;
-                            }else{
-                              $scope.pregunta=false;
-                              //$scope.updateRifa();
-                            }
-                          });
-                        }
-                      }
-                    });
-                  }
+                        });
+                    }
+                  });
                 }
               });
             }
-          }else if(!($scope.rifa.user.cant%1)==0){
+          } else if (!($scope.rifa.user.cant % 1) == 0) {
             alert("Deben ser numero enteros sin fracción");
-          }else if($scope.rifa.user.cant<=0 || $scope.rifa.user.cant>$scope.rifa.art.cantUser || $scope.rifa.user.cant===undefined){
+          } else if ($scope.rifa.user.cant <= 0 || $scope.rifa.user.cant > $scope.rifa.art.cantUser || $scope.rifa.user.cant===undefined){
             alert("Sobrepasas los limite de boletos debe ser minimo 1 y menos o igual que "+$scope.rifa.art.cantUser+" Ó Deben ser numero enteros sin fracción");
-          }else if($scope.rifa.user.cant<=($scope.rifa.art.cant-$scope.rifa.art.cantComprados)){
+          } else if ($scope.rifa.user.cant <= ($scope.rifa.art.cant - $scope.rifa.art.cantComprados)) {
             alert("Lo siento boletos agotados mas rapido la proxima vez");
-          }else if($scope.rifa.user.cant>($scope.rifa.art.cant-$scope.rifa.art.cantComprados)){
-            alert("Lo siento Intentaste comprar mas boletos de los existentes, esto paso por que alguien fue mas rapido que tu");
-          }else{
+          } else if ($scope.rifa.user.cant > ($scope.rifa.art.cant - $scope.rifa.art.cantComprados)) {
+            alert("Intentaste comprar mas boletos de los que hay disponibles, esto pasó porque alguien fue mas rápido que tú.");
+          } else {
             alert("Fallo");
           }
-        }else{
-          alert('Esta Rifa no es para tu region');
+        } else {
+          alert('Esta rifa no es para tu región');
         }
-      }else{
-        alert('Para participar debes activar la geolocalización en tu navegador o ver si la soporta, si no cambia de navegador a uno mas reciente');
+      } else {
+        alert('Para participar debes activar la geolocalización en tu navegador. Si tu navegador no soporta geolocalización, cambia de navegador a uno más reciente.');
       }
     };
     $scope.deleteEncuesta = function(){
@@ -556,8 +546,7 @@ var ChatController = [
         };
       }
     };
-    $scope.deleteRifa = function(){
-      //console.log($scope.channel.selected.$id);
+    $scope.deleteRifa = function() {
       if(confirm("Desea continuar con la eliminación de la rifa?")){
         $scope._rifasRef.child($scope.channel.selected.$id).set(null);
         $scope._participantsRef.child($scope.channel.selected.$id).set(null);
@@ -577,8 +566,8 @@ var ChatController = [
         $scope.rifa.art.userIdGname_slug=null;
         $scope.rifa.art.userIdGemail=null;
         $scope.rifa.art.stop=false;
-        $scope.rifa.art.countrys=null;
-        $scope.rifa.art.citys=null;
+        $scope.rifa.art.countries=null;
+        $scope.rifa.art.cities=null;
         $scope.rifa.art.go=false;
         $scope.rifa.user.cant=1;
       }
@@ -788,8 +777,8 @@ var ChatController = [
               $scope.rifa.art.userIdGname_slug=null;
               $scope.rifa.art.userIdGemail=null;
               $scope.rifa.art.stop=false;
-              $scope.rifa.art.countrys=null;
-              $scope.rifa.art.citys=null;
+              $scope.rifa.art.countries=null;
+              $scope.rifa.art.cities=null;
               $scope.rifa.art.go=false;
               $scope.rifa.user.cant=1;
               $scope.alert_rifa = false;
@@ -822,8 +811,8 @@ var ChatController = [
               $scope.rifa.art.userIdGname_slug=snapshot.val().userIdGname_slug;
               $scope.rifa.art.userIdGemail=snapshot.val().userIdGemail;
               $scope.rifa.art.stop=snapshot.val().stop;
-              $scope.rifa.art.countrys=snapshot.val().countrys;
-              $scope.rifa.art.citys=snapshot.val().citys;
+              $scope.rifa.art.countries=snapshot.val().countries;
+              $scope.rifa.art.cities=snapshot.val().cities;
               $scope.rifa.art.go=snapshot.val().go;
               if($scope.radioModel!="rifa")
                 $scope.alert_rifa = true;
@@ -1131,6 +1120,7 @@ var ChatController = [
     });
   }
 ];
+
 var RifaController = [
   '$scope',
   '$firebaseArray',
@@ -1140,7 +1130,7 @@ var RifaController = [
   '$http',
   'Upload',
   function($scope, $firebaseArray, $firebaseObject, $modalInstance, Items, $http ,Upload) {
-    $scope.countrysarr={
+    $scope.countriesarr = {
       model: null,
       availableOptions: [
         {value: 'Argentina', name: 'Argentina'},
@@ -1168,7 +1158,7 @@ var RifaController = [
         {value: 'Venezuela', name: 'Venezuela'}
       ]
     };
-    $scope.citysarr={
+    $scope.citiesarr = {
       model: null,
       availableOptions: [
         {value: 'Aguascalientes', name: 'Aguascalientes'},
@@ -1223,8 +1213,8 @@ var RifaController = [
       userIdGname_slug: null,
       userIdGemail: null,
       stop: false,
-      countrys: null,
-      citys: null,
+      countries: null,
+      cities: null,
       go: false
     };
     $scope.alert={
@@ -1232,7 +1222,9 @@ var RifaController = [
       type:"success"
     };
     $scope.adding_img = false;
+
     var firebaseRef = new Firebase(firebase_url+'/raffles/'+$scope.items.channel.selected.$id);
+
     //var firebaseRefPart = new Firebase(firebase_url+'/participants');
     $scope.safeApply = function(fn) {
       var phase = this.$root.$$phase;
@@ -1244,28 +1236,28 @@ var RifaController = [
         this.$apply(fn);
       }
     };
-    $scope.save = function (){
+    $scope.save = function () {
       if($scope.rifa.cant===undefined || $scope.rifa.cant==null || $scope.rifa.cant<=0 || isNaN($scope.rifa.cant) || $scope.rifa.cant % 1 != 0){
         $scope.alert.msg="El campo Cantidad de boletos no puede estar vacio, menor o igual a cero y no numeros con fraccion";
         $scope.alert.type='warning';
         $scope.safeApply(function(){});
-      }else if($scope.rifa.cantUser===undefined || $scope.rifa.cantUser==null || $scope.rifa.cantUser<=0 || isNaN($scope.rifa.cantUser) || $scope.rifa.cantUser % 1 != 0){
+      } else if($scope.rifa.cantUser===undefined || $scope.rifa.cantUser==null || $scope.rifa.cantUser<=0 || isNaN($scope.rifa.cantUser) || $scope.rifa.cantUser % 1 != 0){
         $scope.alert.msg="El campo Cantidad de boletos por Usuario no puede estar vacio, menor o igual a cero y no numeros con fraccion";
         $scope.alert.type='warning';
         $scope.safeApply(function(){});
-      }else if($scope.rifa.precioBole===undefined || $scope.rifa.precioBole==null || $scope.rifa.precioBole<0 || isNaN($scope.rifa.precioBole)){
+      } else if($scope.rifa.precioBole===undefined || $scope.rifa.precioBole==null || $scope.rifa.precioBole<0 || isNaN($scope.rifa.precioBole)){
         $scope.alert.msg="El campo Precio por boleto no puede estar vacio, recuerde solo 2 numeros despues del punto decimal";
         $scope.alert.type='warning';
         $scope.safeApply(function(){});
-      }else if($scope.rifa.nomArt===undefined || $scope.rifa.nomArt==""){
+      } else if($scope.rifa.nomArt===undefined || $scope.rifa.nomArt==""){
         $scope.alert.msg="El campo Nombre del articulo no puede estar vacio";
         $scope.alert.type='warning';
         $scope.safeApply(function(){});
-      }else if($scope.rifa.imgUrl===undefined || $scope.rifa.imgUrl==""){
+      } else if($scope.rifa.imgUrl===undefined || $scope.rifa.imgUrl==""){
         $scope.alert.msg="Aun no carga una imagen";
         $scope.alert.type='warning';
         $scope.safeApply(function(){});
-      }else{
+      } else {
         var rifaChat = {
           userId: $scope.items.user.info.id,
           cant: $scope.rifa.cant+1,
@@ -1279,8 +1271,8 @@ var RifaController = [
           userIdGname_slug: null,
           userIdGemail: null,
           stop: false,
-          countrys: $scope.rifa.countrys,
-          citys: $scope.rifa.citys,
+          countries: $scope.rifa.countries,
+          cities: $scope.rifa.cities,
           go: false
         };
         firebaseRef.set(rifaChat, function(error) {
@@ -1300,7 +1292,7 @@ var RifaController = [
         });
       }
     };
-    $scope.cancel = function (){
+    $scope.cancel = function () {
       $modalInstance.dismiss('cancel');
     };
     $scope.uploadPicture = function(files) {
