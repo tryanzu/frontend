@@ -238,6 +238,11 @@
                             </div>
                         </div>
 
+                        <div class="btn-toolbar mb-10">
+                            <a class="btn btn-default" href="" ngf-select ngf-change="uploadPicture($files)" ngf-multiple="false" ngf-accept="'image/*'" ng-show="!adding_file"><i class="fa fa-camera-retro"></i> Adjuntar imagen</a>
+                            <a class="btn btn-default" href="" ng-show="adding_file"><i class="fa fa-camera-retro"></i> Cargando...</a>
+                        </div>
+
                         <textarea ng-model="post.content" class="form-control editable-content" placeholder="Escribe el contenido de tu publicación..."></textarea>
                     </div>
 
