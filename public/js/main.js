@@ -9540,10 +9540,10 @@ var ChatController = [
       },
       user:{
         cant:1,
-        userid:null,
-        username:null,
-        username_slug:null,
-        email:null,
+        //userid:null,
+        //username:null,
+        //username_slug:null,
+        //email:null,
         ticketskey:null
       }
     };
@@ -9703,27 +9703,23 @@ var ChatController = [
           for (var x = 0; x < cant; x++) {
             participants.push([
               data[i].cant,
-              data[i].email,
-              data[i].userid,
-              data[i].username,
-              data[i].username_slug
+              data[i].userid
             ]);
           }
         }
-        //console.log(participants);
         var max=participants.length;
         var min=0;
         if(max>0){
-          var y=0;
-          for(var x=1; x<=10 ; x++){
-            y = $scope.getRandomInt(min,max);
-          }
-          $scope._rifasRef.child($scope.channel.selected.$id)
-          .update({
-            userIdG: participants[y][2],
-            userIdGname: participants[y][3],
-            userIdGname_slug: participants[y][4],
-            userIdGemail: participants[y][1]
+          var y = $scope.getRandomInt(min,max);
+          ///users/:id/info
+          $scope._firebase.child('users').child(participants[y][1]).child('info').once("value", function(user){
+            $scope._rifasRef.child($scope.channel.selected.$id)
+            .update({
+              userIdG: participants[y][1],
+              userIdGname: user.val().username,
+              //userIdGname_slug: user.val().username,
+              //userIdGemail: user.val().username
+            });
           });
         }else{
           alert('No hay participantes');
@@ -9785,12 +9781,12 @@ var ChatController = [
           var count = Object.keys(snapshot.val()).length;
           if(count>=countT){
             stop = true;
+            $scope._rifasRef.child($scope.channel.selected.$id)
+            .update({
+              /*cantComprados: count,*/
+              stop: stop
+            });
           }
-          $scope._rifasRef.child($scope.channel.selected.$id)
-          .update({
-            /*cantComprados: count,*/
-            stop: stop
-          });
         }
       });
     }
@@ -9805,11 +9801,11 @@ var ChatController = [
         var obj = $firebaseObject(firebaseRefR);
         obj.$remove().then(function(ref){
           // data has been deleted locally and in the database
-          $scope.pregunta=true;
+          clicButtonRifa=true;
           //$scope.updateRifa();
         }, function(error) {
           console.log("Error:", error);
-          $scope.pregunta=false;
+          clicButtonRifa=false;
         });
       }
     };
@@ -9832,7 +9828,7 @@ var ChatController = [
         var lat = $scope.location.coords.latitude;
         var lon = $scope.location.coords.longitude;
         var latlng = new google.maps.LatLng(lat, lon);
-        geocoder = new google.maps.Geocoder();
+        var geocoder = new google.maps.Geocoder();
         geocoder.geocode({"latLng": latlng}, function(results, status)
         {
           if(status == google.maps.GeocoderStatus.OK) {
@@ -9921,106 +9917,137 @@ var ChatController = [
         });
       }
     };
+    var clicButtonRifa = true;
     $scope.comprarBoletos = function(){
-      $scope.getPosition();
-      if($scope.formatted_address!=null || ($scope.rifa.art.countries===undefined && $scope.rifa.art.cities===undefined)) {
-        var valid_user_location = false;
-        if($scope.rifa.art.cities !== undefined) {
-          var ArrB=$scope.rifa.art.cities;
-          var contArr=ArrB.length;
-          for (var i = 0; i < contArr; i++) {
-            var temp = ArrB[i];
-            if ($scope.formatted_address.indexOf(''+temp)!=-1) {
-              valid_user_location=true;
-              break;
+      if(clicButtonRifa){
+        clicButtonRifa=false;
+        $scope.getPosition();
+        if($scope.formatted_address!=null || ($scope.rifa.art.countries===undefined && $scope.rifa.art.cities===undefined)) {
+          var valid_user_location = false;
+          if($scope.rifa.art.cities !== undefined) {
+            var ArrB=$scope.rifa.art.cities;
+            var contArr=ArrB.length;
+            for (var i = 0; i < contArr; i++) {
+              var temp = ArrB[i];
+              if ($scope.formatted_address.indexOf(''+temp)!=-1) {
+                valid_user_location=true;
+                break;
+              }
             }
           }
-        }
-        if($scope.rifa.art.countries !== undefined) {
-          var ArrB=$scope.rifa.art.countries;
-          var contArr=ArrB.length;
-          for (var i = 0; i < contArr; i++) {
-            var temp = ArrB[i];
-            if ($scope.formatted_address.indexOf(''+temp) != -1) {
-              valid_user_location = true;
-              break;
+          if($scope.rifa.art.countries !== undefined) {
+            var ArrB=$scope.rifa.art.countries;
+            var contArr=ArrB.length;
+            for (var i = 0; i < contArr; i++) {
+              var temp = ArrB[i];
+              if ($scope.formatted_address.indexOf(''+temp) != -1) {
+                valid_user_location = true;
+                break;
+              }
             }
           }
-        }
-        if($scope.rifa.art.countries === undefined && $scope.rifa.art.cities === undefined) {
-          valid_user_location = true;
-        }
-        if(valid_user_location) {
-          if(($scope.rifa.user.cant % 1) == 0 && $scope.rifa.user.cant > 0 && $scope.rifa.user.cant <= $scope.rifa.art.cantUser && $scope.rifa.user.cant <= ($scope.rifa.art.cant - $scope.rifa.art.cantComprados)) {
-            for (var i = 0; i < $scope.rifa.user.cant; i++) {
-              var ticket_was_bought = false;
-              $scope._rifasRef.child($scope.channel.selected.$id).transaction(function(raffle) {
-                if (raffle) {
-                  if (raffle.cantComprados < raffle.cant) {
-                    raffle.cantComprados++;
-                    ticket_was_bought = true;
-                    return raffle;
-                  } else {
-                    return; // Abort the transaction
-                  }
-                }
-                return raffle;
-              }, function(error, committed, snapshot) {
-                if (error) {
-                  console.log('Transaction failed abnormally!', error);
-                  // Add message to user
-                }
-
-                if(ticket_was_bought) {
-                  var count = 0;
-                  $scope._ticketsRef.child($scope.channel.selected.$id).once("value", function(snapshot) {
-
-                    //var newticket = $scope._ticketsRef.child($scope.channel.selected.$id)
-                    //  .push({'user_id': $scope.rifa.user.userid});
-                    newticket = $scope._ticketsRef.child($scope.channel.selected.$id)
-                      .push($scope.rifa.user);
-
-                    var key = newticket.key();
-                    if(key == null) {
-                      // No key
+          if($scope.rifa.art.countries === undefined && $scope.rifa.art.cities === undefined) {
+            valid_user_location = true;
+          }
+          if(valid_user_location) {
+            if(($scope.rifa.user.cant % 1) == 0 && $scope.rifa.user.cant > 0 && $scope.rifa.user.cant <= $scope.rifa.art.cantUser && $scope.rifa.user.cant <= ($scope.rifa.art.cant - $scope.rifa.art.cantComprados)) {
+              for (var i = 0; i < $scope.rifa.user.cant; i++) {
+                var ticket_was_bought = false;
+                $scope._rifasRef.child($scope.channel.selected.$id).transaction(function(raffle) {
+                  if (raffle) {
+                    if (raffle.cantComprados < raffle.cant-1) {
+                      raffle.cantComprados++;
+                      ticket_was_bought = true;
+                      return raffle;
                     } else {
-                      //Exito
-                      if($scope.rifa.user.ticketskey === undefined || $scope.rifa.user.ticketskey == null) {
-                        $scope.rifa.user.ticketskey=[];
-                      }
-                      var bolcomp = $scope.rifa.user.ticketskey;
-                      bolcomp.push(key);
-                      $scope.rifa.user.ticketskey = bolcomp;
-                      $scope.rifa.user.cant = bolcomp.length;
-                      $scope._participantsRef.child($scope.channel.selected.$id).child($scope.user.info.id)
-                        .set($scope.rifa.user, function(error) {
-                          if(error) {
-                            $scope.pregunta = true;
-                          } else {
-                            $scope.pregunta = false;
-                          }
-                        });
+                      return; // Abort the transaction
                     }
-                  });
-                }
-              });
+                  }
+                  return raffle;
+                }, function(error, committed, snapshot) {
+                  console.log(error,committed,snapshot);
+                  if (error) {
+                    console.log('Transaction failed abnormally!', error);
+                    // Add message to user
+                  }
+                  if(ticket_was_bought && committed) {
+                    var count = 0;
+                    $scope._ticketsRef.child($scope.channel.selected.$id).once("value", function(snapshot) {
+                      //var newticket = $scope._ticketsRef.child($scope.channel.selected.$id)
+                      //  .push({'userid': $scope.rifa.user.userid});
+                      newticket = $scope._ticketsRef.child($scope.channel.selected.$id).push({'userid': $scope.rifa.user.userid});
+                      var key = newticket.key();
+                      if(key == null) {
+                        // No key
+                      } else {
+                        //Exito
+                        if($scope.rifa.user.ticketskey === undefined || $scope.rifa.user.ticketskey == null) {
+                          $scope.rifa.user.ticketskey=[];
+                        }
+                        var bolcomp = $scope.rifa.user.ticketskey;
+                        bolcomp.push(key);
+                        $scope.rifa.user.ticketskey = bolcomp;
+                        $scope.rifa.user.cant = bolcomp.length;
+                        $scope._participantsRef.child($scope.channel.selected.$id).child($scope.user.info.id)
+                          .set($scope.rifa.user, function(error) {
+                            if(error) {
+                              //$timeout(function(){$scope.rifa.pregunta = true;},10);
+                              clicButtonRifa=true;
+                            } else {
+                               //$timeout(function(){$scope.rifa.pregunta = false;},10);
+                              clicButtonRifa=false;
+                            }
+                          });
+                      }
+                    });
+                  }
+                });
+              }
+            } else if (!($scope.rifa.user.cant % 1) == 0) {
+              alert("Deben ser numero enteros sin fracción");
+              $timeout(function(){
+                $scope.rifa.pregunta = true;
+              },10);
+              clicButtonRifa=true;
+            } else if ($scope.rifa.user.cant <= 0 || $scope.rifa.user.cant > $scope.rifa.art.cantUser || $scope.rifa.user.cant===undefined){
+              alert("Sobrepasas los limite de boletos debe ser minimo 1 y menos o igual que "+$scope.rifa.art.cantUser+" Ó Deben ser numero enteros sin fracción");
+              $timeout(function(){
+                $scope.rifa.pregunta = true;
+              },10);
+              clicButtonRifa=true;
+            } else if ($scope.rifa.user.cant <= ($scope.rifa.art.cant - $scope.rifa.art.cantComprados)) {
+              alert("Lo siento boletos agotados mas rapido la proxima vez");
+              $timeout(function(){
+                $scope.rifa.pregunta = true;
+              },10);
+              clicButtonRifa=true;
+            } else if ($scope.rifa.user.cant > ($scope.rifa.art.cant - $scope.rifa.art.cantComprados)) {
+              alert("Intentaste comprar mas boletos de los que hay disponibles, esto pasó porque alguien fue mas rápido que tú.");
+              $timeout(function(){
+                $scope.rifa.pregunta = true;
+              },10);
+              clicButtonRifa=true;
+            } else {
+              alert("Fallo");
+              $timeout(function(){
+                $scope.rifa.pregunta = true;
+              },10);
+              clicButtonRifa=true;
             }
-          } else if (!($scope.rifa.user.cant % 1) == 0) {
-            alert("Deben ser numero enteros sin fracción");
-          } else if ($scope.rifa.user.cant <= 0 || $scope.rifa.user.cant > $scope.rifa.art.cantUser || $scope.rifa.user.cant===undefined){
-            alert("Sobrepasas los limite de boletos debe ser minimo 1 y menos o igual que "+$scope.rifa.art.cantUser+" Ó Deben ser numero enteros sin fracción");
-          } else if ($scope.rifa.user.cant <= ($scope.rifa.art.cant - $scope.rifa.art.cantComprados)) {
-            alert("Lo siento boletos agotados mas rapido la proxima vez");
-          } else if ($scope.rifa.user.cant > ($scope.rifa.art.cant - $scope.rifa.art.cantComprados)) {
-            alert("Intentaste comprar mas boletos de los que hay disponibles, esto pasó porque alguien fue mas rápido que tú.");
           } else {
-            alert("Fallo");
+            alert('Esta rifa no es para tu región');
+            $timeout(function(){
+              $scope.rifa.pregunta = true;
+            },10);
+            clicButtonRifa=true;
           }
         } else {
-          alert('Esta rifa no es para tu región');
+          alert('Para participar debes activar la geolocalización en tu navegador. Si tu navegador no soporta geolocalización, cambia de navegador a uno más reciente.');
+          $timeout(function(){
+            $scope.rifa.pregunta = true;
+          },10);
+          clicButtonRifa=true;
         }
-      } else {
-        alert('Para participar debes activar la geolocalización en tu navegador. Si tu navegador no soporta geolocalización, cambia de navegador a uno más reciente.');
       }
     };
     $scope.deleteEncuesta = function(){
@@ -10258,7 +10285,7 @@ var ChatController = [
               $scope.rifa.pregunta=false;
               $scope.rifa.rifa=false;
               $scope.rifa.art.cant=0;
-              //$scope.rifa.art.cantComprados=0;
+              $scope.rifa.art.cantComprados=0;
               $scope.rifa.art.cantUser=0;
               $scope.rifa.art.imgUrl=null;
               $scope.rifa.art.nomArt=null;
@@ -10274,6 +10301,7 @@ var ChatController = [
               $scope.rifa.user.cant=1;
               $scope.alert_rifa = false;
             });
+            clicButtonRifa=true;
             //});
           }else{
             //$scope.safeApply(function(){
@@ -10284,9 +10312,9 @@ var ChatController = [
               $scope._participantsRef.child($scope.channel.selected.$id).child($scope.user.info.id)
               .once('value', function(snapshott) {
                 if(snapshott.val()==null){
-                  $scope.rifa.pregunta=true;
+                  $timeout(function(){$scope.rifa.pregunta=true;});
                 }else{
-                  $scope.rifa.pregunta=false;
+                  $timeout(function(){$scope.rifa.pregunta=false;});
                 }
               }, function (errorObject) {
                 console.log("The read failed: " + errorObject.code);
@@ -10296,7 +10324,7 @@ var ChatController = [
               $scope.rifa.art.imgUrl=snapshot.val().imgUrl;
               $scope.rifa.art.nomArt=snapshot.val().nomArt;
               $scope.rifa.art.precioBole=snapshot.val().precioBole;
-              //$scope.rifa.art.cantComprados=snapshot.val().cantComprados;
+              $scope.rifa.art.cantComprados=snapshot.val().cantComprados;
               $scope.rifa.art.userIdG=snapshot.val().userIdG;
               $scope.rifa.art.userIdGname=snapshot.val().userIdGname;
               $scope.rifa.art.userIdGname_slug=snapshot.val().userIdGname_slug;
@@ -10313,44 +10341,27 @@ var ChatController = [
           console.log("The read failed: " + errorObject.code);
         });
         $scope._firebaseRefRPart.on("value", function(snapshot) {
-          //console.log(snapshot.val());
-          if(snapshot.val()==null){
-            $scope.rifa.pregunta=true;
-            $scope.rifa.user.cant=1;
-            $scope.rifa.user.userid=$scope.user.info.id;
-            $scope.rifa.user.username=$scope.user.info.username;
-            $scope.rifa.user.username_slug=$scope.user.info.username_slug;
-            $scope.rifa.user.email=$scope.user.info.email;
-            $scope.rifa.user.ticketskey=null;
-          }else{
-            $scope.rifa.pregunta=false;
-            $scope.rifa.user={
-              cant:snapshot.val().cant,
-              userid:snapshot.val().userid,
-              username:snapshot.val().username,
-              username_slug:snapshot.val().username_slug,
-              email:snapshot.val().email,
-              ticketskey:snapshot.val().ticketskey
-            };
-          }
-        }, function (errorObject) {
-          console.log("The read failed: " + errorObject.code);
-        });
-        $scope._firebaseRefRTickets.on("value", function(snapshot) {
-          //console.log(snapshot.val().length);
           if(snapshot.val()==null){
             $timeout(function(){
-              $scope.rifa.art.cantComprados=0;
+              $scope.rifa.pregunta=true;
+              $scope.rifa.user.cant=1;
+              $scope.rifa.user.userid=$scope.user.info.id;
+              $scope.rifa.user.ticketskey=null;
             });
           }else{
-            var count = Object.keys(snapshot.val()).length;
             $timeout(function(){
-              $scope.rifa.art.cantComprados=count;
+              $scope.rifa.pregunta=false;
+              $scope.rifa.user={
+                cant:snapshot.val().cant,
+                userid:snapshot.val().userid,
+                ticketskey:snapshot.val().ticketskey
+              };
             });
           }
         }, function (errorObject) {
           console.log("The read failed: " + errorObject.code);
         });
+        
         if($scope.can('board-config')){
           $scope._firebaseRefRTickets.on("value", function(snapshot) {
             if(snapshot.val()==null){
@@ -13120,7 +13131,7 @@ EventModule.controller('EventController', ['$scope', '$timeout', '$http', 'Uploa
 
 }]);
 
-var version = '095';
+var version = '096';
 
 var boardApplication = angular.module('board', [
   'ngRoute',
