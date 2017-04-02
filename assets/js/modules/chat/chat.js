@@ -870,7 +870,7 @@ var ChatController = [
         }, function (errorObject) {
           console.log("The read failed: " + errorObject.code);
         });
-        
+
         if($scope.can('board-config')){
           $scope._firebaseRefRTickets.on("value", function(snapshot) {
             if(snapshot.val()==null){
@@ -1016,7 +1016,6 @@ var ChatController = [
 
     $scope.suspendUser = function(userId, timeLengthSeconds) {
       //var suspendedUntil = new Date().getTime() + 1000*timeLengthSeconds;
-
       $scope._suspensionsRef.child(userId).set(true, function(error) {
         if (error) {
           console.log("error in user ban")
@@ -1034,20 +1033,16 @@ var ChatController = [
           if($scope.channels[i].slug == $routeParams.slug) {
             $scope.changeChannel($scope.channels[i]);
             found = true;
-            break;
+            return;
           }
         }
-        if(!found) {
-          $scope.changeChannel($scope.channels[0]);
-        }
-      } else {
-        $scope.changeChannel($scope.channels[0]);
       }
+      $scope.changeChannel($scope.channels[0]);
     });
 
     $scope.checkValidation = function() {
       if($scope.user.isLogged) {
-        $scope.promises.self.then(function(){
+        $scope.promises.self.then(function() {
 
           $scope._userRef = $scope._firebase.child("users").child($scope.user.info.id);
 
@@ -1066,7 +1061,6 @@ var ChatController = [
               }, 60000);
             }
           });
-
         });
       }
     };
