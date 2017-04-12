@@ -9,7 +9,8 @@ var ChatController = [
   '$http',
   '$uibModal',
   '$geolocation',
-  function($scope, $firebaseArray, $firebaseObject, $timeout, $location, $route, $routeParams, $http, $uibModal, $geolocation) {
+  'socket',
+  function($scope, $firebaseArray, $firebaseObject, $timeout, $location, $route, $routeParams, $http, $uibModal, $geolocation, socket) {
     $scope.formatted_address=null;
     $scope.$geolocation = $geolocation;
     // basic usage
@@ -656,22 +657,20 @@ var ChatController = [
       if($scope.channel.selected == channel) return;
 
       if($scope.channel.selected != null) {
-        $scope.exitChannel();
+        exitChannel();
       }
       $scope.channel.selected = channel;
       $location.path('/chat/' + channel.slug);
-
-      var messagesRef = $scope._messageRef.child(channel.$id).orderByChild('created_at').limitToLast(50);
 
       if($scope.channel.selected.fullscreen) {
         $scope.channel.selected.new_yt_code = $scope.channel.selected.fullscreen.video;
       } else {
         $scope.channel.selected.new_yt_code = "";
       }
-      $scope.messages = $firebaseArray( messagesRef );
+      $scope.messages = [];
 
       // When messages are loaded on UI and also when a new message arrives
-      $scope.messages.$loaded().then(function(x) {
+      /*$scope.messages.$loaded().then(function(x) {
         $timeout(function() {
           var mh_window = $('.message-history');
           if(mh_window[0]) {
@@ -692,15 +691,7 @@ var ChatController = [
             }
           }
         });
-      });
-
-      messagesRef.on('child_removed', function(dataSnapshot) {
-        if($scope.scroll_help.scrolledUp) {
-          $scope.old_messages = $scope.old_messages.concat( dataSnapshot.val() );
-        } else {
-          $scope.old_messages = [];
-        }
-      });
+      });*/
 
       var membersRef = new Firebase(firebase_url + 'members/' + channel.$id);
       $scope.members = $firebaseArray(membersRef);
@@ -736,6 +727,7 @@ var ChatController = [
             }
           });
         });
+
         //poll
         $scope._firebaseRefPoll = $scope._pollRef.child(channel.$id);
         $scope._firebaseRefTicketsPoll = $scope._ticketsPollRef.child(channel.$id).child($scope.user.info.id);
@@ -891,7 +883,7 @@ var ChatController = [
       }
     };
 
-    $scope.exitChannel = function() {
+    var exitChannel = function() {
       if($scope.channel.selected) {
         channel = $scope.channel.selected;
         if($scope.user.isLogged) {
@@ -958,56 +950,17 @@ var ChatController = [
         } else {
           $scope.message.previous = $scope.message.content;
 
-          if($scope.message.content !== '') {
-            var image = $scope.user.info.image || "";
-            var new_message = {
-              author: {
-                id: $scope.user.info.id,
-                username: $scope.user.info.username,
-                image: image
-              },
-              content: $scope.message.content,
-              created_at: Firebase.ServerValue.TIMESTAMP
-            };
-            if($scope.message.highlight) {
-              new_message.highlight = true;
-            }
-            //console.log(new_message);
-            $scope.messages.$add(new_message).then(function(ref) {
-              $scope.message.content = '';
-              $scope.emojiMessage = {};
-            });
-          }
+          $http.post(layer_path + 'chat/messages', {
+            channel: $scope.channel.selected.slug,
+            content: $scope.message.content
+          }).then(function success(response) {
+          }, function error(response) {
+            console.log(response);
+          });
+          $scope.message.content = '';
+          $scope.emojiMessage = {};
         }
       }
-    }
-
-    $scope.addMessageNew = function($event) {
-      if($event.which === 13 && $scope.message.send_on_enter) {
-        $timeout(function(){
-          $scope.addMessage();
-          $timeout.cancel($scope.helpers.writing_timeout);
-          $scope._statusRef.child('writing').set(false);
-          $scope.helpers.writing = false;
-          $event.preventDefault();
-        }, 0);
-      } else {
-        if(!$scope.helpers.writing) {
-          $scope._statusRef.child('writing').set(true);
-          $scope.helpers.writing = true;
-        }
-        if($scope.helpers.writing_timeout) $timeout.cancel($scope.helpers.writing_timeout);
-        $scope.helpers.writing_timeout = $timeout(function() {
-          $scope._statusRef.child('writing').set(false);
-          $scope.helpers.writing = false;
-        }, 1000); // delay in ms
-      }
-    }
-
-    $scope.removeMessage = function(message) {
-      $scope.messages.$remove(message).then(function(ref) {
-        console.log(ref.key() === message.$id); // true
-      });
     }
 
     $scope.toggle_details = function() {
@@ -1072,7 +1025,48 @@ var ChatController = [
 
     $scope.$on("$destroy", function() {
       if($scope.can('debug')) console.log("Closing chat");
-      $scope.exitChannel();
+      exitChannel();
+    });
+
+    // Socket.io logic
+    $scope.$watch('channel.selected.slug', function(newValue, oldValue) {
+      if(oldValue !== undefined) {
+        if($scope.can("debug")) console.log("Socket stop listening to 'chat " + newValue + "'");
+        socket.removeAllListeners("chat " + oldValue);
+      }
+      if(newValue !== undefined) {
+        /* Add socket listener */
+        if($scope.can("debug")) console.log("Socket listening to 'chat " + newValue + "'");
+        socket.on('chat ' + newValue, function (data) {
+          debug = $scope.can("debug");
+          if(debug) console.log("New event: ", data);
+
+          // Create a new JavaScript Date object based on the timestamp
+          // Will display time in 10:30:23 format
+          var formattedTime = new Date(data.timestamp * 1000 - (5 * 60 * 60 * 1000)).toISOString().slice(-13, -5);
+
+          message = {
+            author: {
+              id: data.user_id,
+              image: data.avatar,
+              username: data.username
+            },
+            content: data.content,
+            created_at: formattedTime
+          };
+          if($scope.messages.length > 50) {
+            $scope.messages.shift();
+          }
+          $scope.messages.push(message);
+          $timeout(function() {
+            var mh_window = $('.message-history');
+            if(mh_window[0]) {
+              mh_window.scrollTop(mh_window[0].scrollHeight);
+            }
+          }, 100);
+        });
+        socket.emit('chat update-me', newValue);
+      }
     });
 
     // Scrolling responses
