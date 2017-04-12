@@ -13119,7 +13119,7 @@ EventModule.controller('EventController', ['$scope', '$timeout', '$http', 'Uploa
 
 }]);
 
-var version = '097';
+var version = '098';
 
 var boardApplication = angular.module('board', [
   'ngRoute',
