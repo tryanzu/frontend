@@ -612,13 +612,13 @@ boardApplication.controller('MainController', [
     };
 
     $scope.signOut = function() {
-      $http.get(layer_path + 'auth/logout').then(function success(response) {
+      //$http.get(layer_path + 'auth/logout').then(function success(response) {
         localStorage.signed_in = false;
         $scope.user.isLogged = false;
         localStorage.removeItem('id_token');
         localStorage.removeItem('firebase_token');
         window.location = $location.absUrl();;
-      });
+      //});
     };
 
     $scope.toggle_notifications = function() {

@@ -7256,10 +7256,22 @@ services.service('modalService', ['$uibModal', function ($modal) {
 }]);
 
 services.factory('socket', function (socketFactory) {
-  return socketFactory({
-    //prefix: 'foo~',
-    ioSocket: io.connect(socketio_url)
-  });
+  var socket_config = {};
+
+  var idToken = localStorage.getItem('id_token');
+  if(idToken === null) {
+    socket_config = {
+      //prefix: 'foo~',
+      ioSocket: io.connect(socketio_url)
+    };
+  } else {
+    socket_config = {
+      //prefix: 'foo~',
+      ioSocket: io.connect(socketio_url, {'query': 'token=' + idToken})
+    };
+  }
+
+  return socketFactory(socket_config);
 })
 
 var FeedService = ['$resource', function($resource) {
@@ -10441,13 +10453,15 @@ var ChatController = [
         } else {
           $scope.message.previous = $scope.message.content;
 
-          $http.post(layer_path + 'chat/messages', {
+          socket.emit('chat send', $scope.channel.selected.slug, $scope.message.content);
+
+          /*$http.post(layer_path + 'chat/messages', {
             channel: $scope.channel.selected.slug,
             content: $scope.message.content
           }).then(function success(response) {
           }, function error(response) {
             console.log(response);
-          });
+          });*/
           $scope.message.content = '';
           $scope.emojiMessage = {};
         }
@@ -10549,12 +10563,15 @@ var ChatController = [
             $scope.messages.shift();
           }
           $scope.messages.push(message);
-          $timeout(function() {
-            var mh_window = $('.message-history');
-            if(mh_window[0]) {
-              mh_window.scrollTop(mh_window[0].scrollHeight);
-            }
-          }, 100);
+
+          if(!$scope.scroll_help.scrolledUp) {
+            $timeout(function() {
+              var mh_window = $('.message-history');
+              if(mh_window[0]) {
+                mh_window.scrollTop(mh_window[0].scrollHeight);
+              }
+            }, 100);
+          }
         });
         socket.emit('chat update-me', newValue);
       }
@@ -13690,13 +13707,13 @@ boardApplication.controller('MainController', [
     };
 
     $scope.signOut = function() {
-      $http.get(layer_path + 'auth/logout').then(function success(response) {
+      //$http.get(layer_path + 'auth/logout').then(function success(response) {
         localStorage.signed_in = false;
         $scope.user.isLogged = false;
         localStorage.removeItem('id_token');
         localStorage.removeItem('firebase_token');
         window.location = $location.absUrl();;
-      });
+      //});
     };
 
     $scope.toggle_notifications = function() {

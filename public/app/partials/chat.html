@@ -351,6 +351,8 @@
 
                             <div class="new_chat_alert" ng-if="scroll_help.scrolledUp && old_messages.length > 0"><a href="" ng-click="goToBottom()"><i class="fa fa-arrow-down"></i> Nuevos mensajes ({{ old_messages.length }})</a></div>
 
+                            <div class="new_chat_alert" ng-if="scroll_help.scrolledUp"><a href="" ng-click="goToBottom()"><i class="fa fa-arrow-down"></i> Volver al final</a></div>
+
                             <div class="spam_alert" ng-if="helpers.spam_count > 1 && !helpers.blocked">Debes dejar de hacer spam o tu cuenta se bloqueará.</div>
                         </div>
 

@@ -950,13 +950,15 @@ var ChatController = [
         } else {
           $scope.message.previous = $scope.message.content;
 
-          $http.post(layer_path + 'chat/messages', {
+          socket.emit('chat send', $scope.channel.selected.slug, $scope.message.content);
+
+          /*$http.post(layer_path + 'chat/messages', {
             channel: $scope.channel.selected.slug,
             content: $scope.message.content
           }).then(function success(response) {
           }, function error(response) {
             console.log(response);
-          });
+          });*/
           $scope.message.content = '';
           $scope.emojiMessage = {};
         }
@@ -1058,12 +1060,15 @@ var ChatController = [
             $scope.messages.shift();
           }
           $scope.messages.push(message);
-          $timeout(function() {
-            var mh_window = $('.message-history');
-            if(mh_window[0]) {
-              mh_window.scrollTop(mh_window[0].scrollHeight);
-            }
-          }, 100);
+
+          if(!$scope.scroll_help.scrolledUp) {
+            $timeout(function() {
+              var mh_window = $('.message-history');
+              if(mh_window[0]) {
+                mh_window.scrollTop(mh_window[0].scrollHeight);
+              }
+            }, 100);
+          }
         });
         socket.emit('chat update-me', newValue);
       }
