@@ -427,7 +427,7 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
               $scope.post.lock = false;
               break;
             default:
-              if(debug) console.log("I don't know what the hell did Blacker say!")
+              if(debug) console.log("I don't know what the hell did Blacker said!")
           }
         }
       });
@@ -847,5 +847,6 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
     var to_replace = "<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/$4\" frameborder=\"0\" allowfullscreen></iframe>";
 
     comment.content_final = comment.content_final.replace(yt_re, to_replace);
+
   }
 }];

@@ -151,23 +151,7 @@
 <div id="wrapper" ng-class="{'stream': channel.selected.fullscreen.video}">
     <!-- Sidebar -->
     <div id="sidebar-wrapper">
-        <div class="text-center">
-            <div class="btn-group-vertical" style="margin-top: 0px; float: left; width: 100%;">
-                <label class="btn btn-default opc_menu" ng-model="radioModel" uib-btn-radio="'chat'" title="Canales">
-                    <i class="fa fa-comments" aria-hidden="true"></i> Canales
-                </label>
-                <label class="btn btn-default opc_menu" ng-model="radioModel" uib-btn-radio="'rifa'" title="Rifas" ng-click="a_rifa()">
-                    <i class="fa fa-archive" aria-hidden="true"></i><i ng-if="radioModel!='rifa' && alert_rifa" class="fa fa-asterisk fa-spin" aria-hidden="true" style="color:#386db8; position: absolute; top: 10px; right: 50px; z-index:10;"></i> Rifas
-                </label>
-                <label class="btn btn-default opc_menu" ng-model="radioModel" uib-btn-radio="'encuesta'" title="Encuestas" ng-click="a_encuesta()">
-                    <i class="fa fa-pie-chart" aria-hidden="true"></i><i ng-if="radioModel!='encuesta' && alert_encuesta" class="fa fa-asterisk fa-spin" aria-hidden="true" style="color:#386db8; position: absolute; top: 10px; right: 50px; z-index:10;"></i> Encuestas
-                </label>
-                <label class="btn btn-default opc_menu" ng-model="radioModel" uib-btn-radio="'subasta'" title="Subastas">
-                    <i class="fa fa-money" aria-hidden="true"></i> Subastas
-                </label>
-            </div>
-        </div>
-        <ul ng-show="radioModel=='chat'" class="sidebar-nav" style="margin-top: 160px;">
+        <ul ng-show="radioModel=='chat'" class="sidebar-nav">
             <li class="sidebar-title">Canales públicos</li>
             <li ng-repeat="c in channels" ng-class="{active: c.name == channel.selected.name}">
                 <a href="" ng-click="changeChannel(c)" title="{{ c.description }}">
@@ -175,124 +159,6 @@
                 </a>
             </li>
         </ul>
-        <div ng-show="radioModel=='rifa'" style="margin-top: 180px;" class="text-center">
-            <h3 ng-if="user.isLogged">Rifa</h3>
-            <div ng-if="can('board-config') && show_details">
-                <button class="btn btn-success btn-xs" ng-hide="rifa.create" type="button" ng-click="createRifa()">Crear nueva Rifa</button>
-                <button class="btn btn-danger btn-xs" ng-hide="!rifa.create" type="button" ng-click="deleteRifa()">Quitar Rifa</button>
-                <br>
-            </div>
-            <!-- for users -->
-            <div ng-if="!can('board-config') && rifa.active && user.isLogged">
-                <div ng-if="rifa.rifa">
-                    <div class="text-center" style="padding: 8px;">
-                        <p style="margin: 0;line-height: 1.3em;"><strong>{{rifa.art.nomArt}}</strong></p>
-                        <div>
-                            <img ng-src="{{rifa.art.imgUrl}}" class="img-thumbnail" style="width: 100px;">
-                        </div>
-                        <p class="text-left" style="margin: 0;line-height: 1.3em;">Boletos: {{(rifa.art.cant)-1}}</p>
-                        <p class="text-left" style="margin: 0;line-height: 1.3em;">Boletos comprados: {{rifa.art.cantComprados}}</p>
-                        <p class="text-left" style="margin: 0;line-height: 1.3em;">Boletos por usuario: {{rifa.art.cantUser}}</p>
-                        <p class="text-left" style="margin: 0;line-height: 1.3em;">Precio por boleto: {{rifa.art.precioBole | currency}}</p>
-                    </div>
-                </div>
-                <div ng-show="rifa.pregunta && !rifa.art.userIdG && !rifa.art.stop" style="padding: 8px;">
-                    <div class="text-center">
-                        <button uib-popover-template="dynamicPopover.templateUrl" popover-title="Participar" type="button" class="btn btn-default btn-sm" ng-click="getPosition()">Participar</button>
-                        <script type="text/ng-template" id="myPopoverTemplate.html">
-                            <div></div>
-                            <div class="form-group">
-                                <label>N° de boletos:</label>
-                                <input type="number" ng-model="rifa.user.cant" class="form-control" min="1" max="{{rifa.art.cantUser}}">
-                                <br>
-                                <button class="btn btn-success btn-sm" ng-click="comprarBoletos()">Comprar</button>
-                            </div>
-                        </script>
-                    </div>
-                </div>
-                <div ng-show="rifa.art.stop" style="padding: 8px;">
-                    <p class="text-center"><strong>Rifa cerrada</strong></p>
-                </div>
-                <div ng-show="rifa.art.userIdG" style="padding: 8px;">
-                    <div class="text-left">
-                        <p style="margin: 0;line-height: 1.3em;margin-top: 5px;"><strong>Ganador: {{rifa.art.userIdGname}}</strong></p>
-                    </div>
-                </div>
-                <div ng-show="!rifa.pregunta && !rifa.art.stop" class="text-center">
-                    <button type="button" class="btn btn-danger btn-sm" ng-if="!rifa.art.userIdG" ng-click="dejarBoletos()">Dejar rifa</button>
-                </div>
-            </div>
-            <!-- for admins -->
-            <div ng-if="can('board-config') && rifa.active">
-                <br>
-                <button class="btn btn-danger btn-xs" ng-if="rifa.create && !rifa.art.stop" type="button" ng-click="stopRifa()">Detener Rifa</button>
-                <button class="btn btn-success btn-xs" ng-if="rifa.create && rifa.art.stop" type="button" ng-click="startRifa()">Activar Rifa</button>
-                <button class="btn btn-primary btn-xs" ng-if="rifa.create && rifa.art.stop" type="button" ng-click="ganadorRifa()">Obtener Ganador</button>
-                <br>
-                <br>
-                <div class="text-center" style="padding: 8px;">
-                    <p style="margin: 0;line-height: 1.3em;"><strong>{{rifa.art.nomArt}}</strong></p>
-                    <div>
-                        <img ng-src="{{rifa.art.imgUrl}}" class="img-thumbnail" style="width: 100px;">
-                    </div>
-                    <div>
-                        <p class="text-left" style="margin: 0;line-height: 1.1em;">Boletos: {{(rifa.art.cant)-1}}</p>
-                        <p class="text-left" style="margin: 0;line-height: 1.1em;">Boletos comprados: {{rifa.art.cantComprados}}</p>
-                        <p class="text-left" style="margin: 0;line-height: 1.1em;">Boletos por usuario: {{rifa.art.cantUser}}</p>
-                        <p class="text-left" style="margin: 0;line-height: 1.1em;">Precio por boleto: {{rifa.art.precioBole | currency}}</p>
-                    </div>
-                    <div ng-show="rifa.art.userIdG">
-                        <div>
-                            <p class="text-left" style="line-height: 1.3em;margin-top: 10px;"><strong>Ganador: {{rifa.art.userIdGname}}</strong></p>
-                            <!--<a style="opacity: 0;font-size: 0;" class="email" href="{{rifa.art.userIdGemail}}">{{rifa.art.userIdGemail}}</a>-->
-                            <!--<p class="text-left" style="line-height: 1.3em;">email: {{rifa.art.userIdGemail}}</p>-->
-                            <!--<button title="{{rifa.art.userIdGemail}}" class="btn btn-default btn-sm" ng-click="copy_to_clip()"><i class="fa fa-clipboard" aria-hidden="true"></i> Copiar</button>-->
-                        </div>
-                    </div>
-                    <div ng-show="rifa.art.go">
-                        <div id="number"></div>
-                        <div id="name"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Encuesta -->
-        <div ng-show="radioModel=='encuesta'" class="text-center" style="margin-top: 180px;">
-            <h3 ng-if="user.isLogged">Encuesta</h3>
-            <div ng-if="can('board-config') && show_details">
-                <button class="btn btn-success btn-xs" ng-hide="encuesta.encuesta" type="button" ng-click="createEncuesta()">Crear nueva Encuesta</button>
-                <button class="btn btn-danger btn-xs" ng-hide="!encuesta.encuesta" type="button" ng-click="deleteEncuesta()">Quitar Encuesta</button>
-                <br><br>
-            </div>
-            <button class="btn btn-danger btn-xs" ng-if="can('board-config') && encuesta.encuesta && !encuesta.poll.stop" type="button" ng-click="stopEncuesta()">Detener Encuesta</button>
-            <button class="btn btn-success btn-xs" ng-if="can('board-config') && encuesta.encuesta && encuesta.poll.stop" type="button" ng-click="startEncuesta()">Activar Encuesta</button>
-            <div ng-if="encuesta.active && user.isLogged">
-                <div ng-if="encuesta.encuesta">
-                    <div class="text-center" style="padding: 8px;">
-                        <h4 style="margin: 0;line-height: 1.3em;"><strong>{{encuesta.poll.pregunta}}</strong></h4>
-                    </div>
-                </div>
-                <div style="padding: 8px;">
-                    <div class="row">
-                        <div class="col-xs-6 col-xs-offset-0" ng-repeat="item in encuesta.poll.items">
-                            <img ng-if="item.imgUrl" ng-src="{{item.imgUrl}}" class="img-rounded" alt="URL" style="height: 50px">
-                            <h6 title="{{item.nombre}}" tooltip-placement="top" uib-tooltip="{{item.nombre | limitTo:8}}">{{item.nombre | limitTo:8}}</h6>
-                            <div><uib-progressbar class="progress-striped active" max="encuesta.poll.cant" value="item.cant" type="info"><i>{{item.cant}} / {{encuesta.poll.cant}}</i></uib-progressbar></div>
-                            <button ng-show="pollbttn(item.nombre)==false && !encuesta.poll.stop && !can('board-config')" tooltip-placement="top" uib-tooltip="{{item.nombre | limitTo:8}}" class="btn btn-primary btn-xs" ng-click="votar(item.nombre)">Votar</button>
-                            <button ng-show="pollbttn(item.nombre)==true && !encuesta.poll.stop && !can('board-config')" tooltip-placement="top" uib-tooltip="{{item.nombre | limitTo:8}}" class="btn btn-default btn-xs" ng-click="quitarvoto(item.nombre)">Quitar Voto</button>
-                            <br ng-hide="can('board-config') || encuesta.poll.stop">
-                            <br ng-hide="can('board-config') || encuesta.poll.stop">
-                        </div>
-                    </div>
-                    <p ng-show="encuesta.poll.stop"><strong>Encuesta Cerrada</strong></p>
-                    <p class="text-left">TOTAL DE VOTOS: <strong>{{encuesta.poll.cant}}</strong></p>
-                    <br><br><br><br>
-                </div>
-            </div>
-        </div>
-        <div ng-show="radioModel=='subasta'" class="text-center" style="margin-top: 180px;">
-            <h3 ng-if="user.isLogged">Subasta</h3>
-        </div>
     </div>
     <!-- /#sidebar-wrapper -->
 
