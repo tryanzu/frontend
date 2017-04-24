@@ -8534,12 +8534,6 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
   });
 
   var addMediaEmbed = function(comment) {
-    var options = {
-      'replace_links': true,
-      'track_views': false,
-      'track_clicks': true
-    };
-
     // Replace any image
     var regex = new RegExp("(https?:\/\/.*\\.(?:png|jpg|jpeg|JPEG|PNG|JPG|gif|GIF)((\\?|\\&)[a-zA-Z0-9]+\\=[a-zA-Z0-9]+)*)", "gi");
     var to_replace = "<div class=\"img-preview\"><a href=\"$1\" target=\"_blank\"><img src=\"$1\"></a></div>";
@@ -8719,10 +8713,6 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
     var to_replace = "<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/$4\" frameborder=\"0\" allowfullscreen></iframe>";
 
     comment.content_final = comment.content_final.replace(yt_re, to_replace);
-
-    /*var amazon_re = new RegExp("https?:\/\/(?=(?:....)?amazon|smile)(www|smile)\S+com(\.mx)?(((?:\/(?:dp|gp)\/([A-Z0-9]+))?\S*[?&]?(?:tag=))?\S*?)(?:#)?(\w*?-\w{2})?(\S*)(#?\S*)+", "gi");
-    var to_replace = "https://$1.amazon.com$2$3$7&tag=comparateca04-20";
-    comment.content_final = comment.content_final.replace(amazon_re, to_replace);*/
 
   }
 }];
@@ -13147,7 +13137,7 @@ EventModule.controller('EventController', ['$scope', '$timeout', '$http', 'Uploa
 
 }]);
 
-var version = '099';
+var version = '100';
 
 var boardApplication = angular.module('board', [
   'ngRoute',
