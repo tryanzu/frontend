@@ -8293,7 +8293,7 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
               $scope.post.lock = false;
               break;
             default:
-              if(debug) console.log("I don't know what the hell did Blacker say!")
+              if(debug) console.log("I don't know what the hell did Blacker said!")
           }
         }
       });
@@ -8534,6 +8534,12 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
   });
 
   var addMediaEmbed = function(comment) {
+    var options = {
+      'replace_links': true,
+      'track_views': false,
+      'track_clicks': true
+    };
+
     // Replace any image
     var regex = new RegExp("(https?:\/\/.*\\.(?:png|jpg|jpeg|JPEG|PNG|JPG|gif|GIF)((\\?|\\&)[a-zA-Z0-9]+\\=[a-zA-Z0-9]+)*)", "gi");
     var to_replace = "<div class=\"img-preview\"><a href=\"$1\" target=\"_blank\"><img src=\"$1\"></a></div>";
@@ -8713,6 +8719,11 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
     var to_replace = "<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/$4\" frameborder=\"0\" allowfullscreen></iframe>";
 
     comment.content_final = comment.content_final.replace(yt_re, to_replace);
+
+    /*var amazon_re = new RegExp("https?:\/\/(?=(?:....)?amazon|smile)(www|smile)\S+com(\.mx)?(((?:\/(?:dp|gp)\/([A-Z0-9]+))?\S*[?&]?(?:tag=))?\S*?)(?:#)?(\w*?-\w{2})?(\S*)(#?\S*)+", "gi");
+    var to_replace = "https://$1.amazon.com$2$3$7&tag=comparateca04-20";
+    comment.content_final = comment.content_final.replace(amazon_re, to_replace);*/
+
   }
 }];
 var PostService = ['$resource', function($resource) {
@@ -9621,11 +9632,11 @@ var ChatController = [
     $scope._statusRef      = null;
     $scope._messageRef     = $scope._firebase.child('messages');
     $scope._channelRef     = $scope._firebase.child('channels');
-    $scope._pollRef        = $scope._firebase.child('poll');
-    $scope._ticketsPollRef = $scope._firebase.child('ticketsPoll');
-    $scope._rifasRef       = $scope._firebase.child('raffles');
-    $scope._participantsRef= $scope._firebase.child('participants');
-    $scope._ticketsRef     = $scope._firebase.child('tickets');
+    //$scope._pollRef        = $scope._firebase.child('poll');
+    //$scope._ticketsPollRef = $scope._firebase.child('ticketsPoll');
+    //$scope._rifasRef       = $scope._firebase.child('raffles');
+    //$scope._participantsRef= $scope._firebase.child('participants');
+    //$scope._ticketsRef     = $scope._firebase.child('tickets');
     //$scope._privateRoomRef = $scope._firebase.child('room-private-metadata');
     //$scope._moderatorsRef  = $scope._firebase.child('moderators');
     $scope._suspensionsRef = $scope._firebase.child('suspensions');
@@ -10232,7 +10243,7 @@ var ChatController = [
         });
 
         //poll
-        $scope._firebaseRefPoll = $scope._pollRef.child(channel.$id);
+        /*$scope._firebaseRefPoll = $scope._pollRef.child(channel.$id);
         $scope._firebaseRefTicketsPoll = $scope._ticketsPollRef.child(channel.$id).child($scope.user.info.id);
         $scope._firebaseRefPoll.on("value", function(snapshot) {
           //console.log(snapshot.val());
@@ -10272,10 +10283,10 @@ var ChatController = [
           }
         }, function (errorObject) {
           console.log("The read failed: " + errorObject.code);
-        });
+        });*/
 
         //updates for rifas
-        $scope._firebaseRefR = $scope._rifasRef.child(channel.$id);
+        /*$scope._firebaseRefR = $scope._rifasRef.child(channel.$id);
         $scope._firebaseRefRPart = $scope._participantsRef.child(channel.$id).child($scope.user.info.id);
         $scope._firebaseRefRTickets = $scope._ticketsRef.child(channel.$id);
         //var firebaseRefRPartAdmin = $scope._participantsRef.child(channel.$id);
@@ -10343,8 +10354,8 @@ var ChatController = [
           }
         }, function (errorObject) {
           console.log("The read failed: " + errorObject.code);
-        });
-        $scope._firebaseRefRPart.on("value", function(snapshot) {
+        });*/
+        /*$scope._firebaseRefRPart.on("value", function(snapshot) {
           if(snapshot.val()==null){
             $timeout(function(){
               $scope.rifa.pregunta=true;
@@ -10364,9 +10375,9 @@ var ChatController = [
           }
         }, function (errorObject) {
           console.log("The read failed: " + errorObject.code);
-        });
+        });*/
 
-        if($scope.can('board-config')){
+        /*if($scope.can('board-config')){
           $scope._firebaseRefRTickets.on("value", function(snapshot) {
             if(snapshot.val()==null){
               $scope._firebaseRefR.once("value", function(snapshott){
@@ -10382,7 +10393,7 @@ var ChatController = [
           }, function (errorObject) {
             console.log("The read failed: " + errorObject.code);
           });
-        }
+        }*/
       }
     };
 
@@ -10394,7 +10405,7 @@ var ChatController = [
             $scope._statusRef.off();
             $scope._statusRef.set(null);
           }
-          if($scope._firebaseRefR){
+          /*if($scope._firebaseRefR){
             $scope._firebaseRefR.off();
           }
           if($scope._firebaseRefRPart){
@@ -10408,7 +10419,7 @@ var ChatController = [
           }
           if($scope._firebaseRefPoll){
             $scope._firebaseRefPoll.off();
-          }
+          }*/
         }
       }
     };
@@ -13309,10 +13320,15 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
       var expression = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
       var regex = new RegExp(expression);
 
+      var amazon_re = /https?:\/\/(?=(?:....)?amazon|smile)(www|smile)\S+com(\.mx)?(((?:\/(?:dp|gp)\/([A-Z0-9]+))?\S*[?&]?(?:tag=))?\S*?)(?:#)?(\w*?-\w{2})?(\S*)(#?\S*)+/g;
+      var to_replace = "https://$1.amazon.com$2$3$7&tag=comparateca04-20";
+      href = href.replace(amazon_re, to_replace);
+      console.log("*href after", href);
+
       if (href.match(regex)) {
-        return "<a href='" + href + "' title='" + title + "' target='_blank'>" + text + "</a>";
+        return "<a href='" + href + "' title='" + title + "' target='_blank'>" + href + "</a>";
       } else {
-        return "" + text;
+        return "" + href;
       }
     }
   });
