@@ -1,26 +1,26 @@
 // ---------------------------------
 // COLORS
 
-@brand-primary:         #386db8;
-@brand-success:         #21b384;
-@brand-info:            #3498DB;
-@brand-warning:         #F39C12;
-@brand-danger:          #E74C3C;
+@brand-primary:                  #075dbf; //#386db8;
+@brand-success:                  #21b384;
+@brand-info:                     #3498DB;
+@brand-warning:                  #F39C12;
+@brand-danger:                   #E74C3C;
 
-@gray-lighter:           #eeeef2; // #eee
+@gray-lighter:                   #eeeef2; // #eee
 
-@primary-hue:                      hue(@brand-primary);
-@primary-sat:                      saturation(@brand-primary);
+@primary-hue:                    hue(@brand-primary);
+@primary-sat:                    saturation(@brand-primary);
 
-@secondary-hue:                    hue(@brand-primary-light);
-@secondary-sat:                    saturation(@brand-primary-light);
+@secondary-hue:                  hue(@brand-primary-light);
+@secondary-sat:                  saturation(@brand-primary-light);
 
-@brand-primary-light:       #e5e5e9;//lighten(@brand-primary, 42%);
-@brand-primary-lighter:     #f6f6fb;//hsl(@secondary-hue, max(70%, @secondary-sat), 95%);
-@brand-primary-light-text:  desaturate(lighten(@brand-primary, 25%), 30%);
-@brand-primary-normal:      desaturate(darken(@brand-primary, 5%), 10%);
-@brand-primary-dark:        desaturate(darken(@brand-primary, 10%), 20%);
-@brand-primary-opaque:      desaturate(darken(@brand-primary, 20%), 50%);
+@brand-primary-light:            #e8eaec;//#e5e5e9;//lighten(@brand-primary, 42%);
+@brand-primary-lighter:          #f6f8fa;//#f6f6fb;//hsl(@secondary-hue, max(70%, @secondary-sat), 95%);
+@brand-primary-light-text:       desaturate(lighten(@brand-primary, 20%), 50%);
+@brand-primary-normal:           desaturate(darken(@brand-primary, 5%), 10%);
+@brand-primary-dark:             desaturate(darken(@brand-primary, 20%), 30%);
+@brand-primary-opaque:           desaturate(darken(@brand-primary, 30%), 50%);
 
 @control-bg:                     @brand-primary-lighter;//hsl(@secondary-hue, max(70%, @secondary-sat), 94%);
 @control-color:                  @brand-primary-light-text;
@@ -115,12 +115,12 @@
 
 @btn-font-weight:                normal;
 
-@btn-default-color:              @brand-primary-dark;
+@btn-default-color:              #475a6f;//@brand-primary-dark;
 @btn-default-bg:                 white;
-@btn-default-border:             lighten(@brand-primary-opaque, 35%);
+@btn-default-border:             #9fb0c3;//lighten(@brand-primary-opaque, 35%);
 
 @btn-primary-color:              white;
-@btn-primary-bg:                 darken(@brand-primary, 5%);
+@btn-primary-bg:                 @brand-primary;
 @btn-primary-border:             @btn-primary-bg;
 
 @btn-success-color:              white;
@@ -418,20 +418,20 @@
 //
 //##
 
-@pagination-color:                     #fff;
-@pagination-bg:                        @brand-primary;
-@pagination-border:                    transparent;
+@pagination-color:                     @brand-primary;
+@pagination-bg:                        #ffffff;
+@pagination-border:                    rgba(27,31,35,0.15);
 
 @pagination-hover-color:               #fff;
 @pagination-hover-bg:                  darken(@brand-primary, 15%);
 @pagination-hover-border:              transparent;
 
 @pagination-active-color:              #fff;
-@pagination-active-bg:                 darken(@brand-primary, 15%);
-@pagination-active-border:             transparent;
+@pagination-active-bg:                 @brand-primary;
+@pagination-active-border:             @brand-primary;
 
-@pagination-disabled-color:            @gray-lighter;
-@pagination-disabled-bg:               lighten(@brand-primary, 15%);
+@pagination-disabled-color:            #aaaaaa;
+@pagination-disabled-bg:               rgba(27,31,35,0.15);
 @pagination-disabled-border:           transparent;
 
 
