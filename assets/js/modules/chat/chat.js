@@ -1043,32 +1043,35 @@ var ChatController = [
           debug = $scope.can("debug");
           if(debug) console.log("New event: ", data);
 
-          // Create a new JavaScript Date object based on the timestamp
-          // Will display time in 10:30:23 format
-          var formattedTime = new Date(data.timestamp * 1000 - (5 * 60 * 60 * 1000)).toISOString().slice(-13, -5);
+          angular.forEach(data.list, function(value, key) {
+            console.log(value);
+            // Create a new JavaScript Date object based on the timestamp
+            // Will display time in 10:30:23 format
+            var formattedTime = new Date(value.timestamp * 1000 - (5 * 60 * 60 * 1000)).toISOString().slice(-13, -5);
 
-          message = {
-            author: {
-              id: data.user_id,
-              image: data.avatar,
-              username: data.username
-            },
-            content: data.content,
-            created_at: formattedTime
-          };
-          if($scope.messages.length > 50) {
-            $scope.messages.shift();
-          }
-          $scope.messages.push(message);
+            message = {
+              author: {
+                id: value.user_id,
+                image: value.avatar,
+                username: value.username
+              },
+              content: value.content,
+              created_at: formattedTime
+            };
+            if($scope.messages.length > 50) {
+              $scope.messages.shift();
+            }
+            $scope.messages.push(message);
 
-          if(!$scope.scroll_help.scrolledUp) {
-            $timeout(function() {
-              var mh_window = $('.message-history');
-              if(mh_window[0]) {
-                mh_window.scrollTop(mh_window[0].scrollHeight);
-              }
-            }, 100);
-          }
+            if(!$scope.scroll_help.scrolledUp) {
+              $timeout(function() {
+                var mh_window = $('.message-history');
+                if(mh_window[0]) {
+                  mh_window.scrollTop(mh_window[0].scrollHeight);
+                }
+              }, 100);
+            }
+          });
         });
         socket.emit('chat update-me', newValue);
       }
