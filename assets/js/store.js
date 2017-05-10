@@ -6,7 +6,7 @@ var storeApp = angular.module('store', [
   'ui.bootstrap'
 ]);
 
-var version = '071';
+var version = '001';
 
 storeApp.config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
 

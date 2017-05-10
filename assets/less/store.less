@@ -1,9 +1,25 @@
-@import "fonts";
+@import url(https://fonts.googleapis.com/css?family=Roboto);
 @import "bootstrap/bootstrap";
 @import "variables_shop";
 
+html, body {
+  font-family: 'Roboto', sans-serif;
+}
+.navbar {
+  margin-bottom: 0;
+}
+.navbar-brand > img {
+  max-height: 35px;
+  margin-top: -10px;
+  margin-left: -10px;
+  min-height: 35px;
+  width: 108px;
+}
+
 .head-banner {
   padding: 3em 0;
+  background-color: #171C27;
+  color: white;
 
   .copy {
     padding-top: 2em;
@@ -14,7 +30,71 @@
     h2 {
       margin-bottom: 1em;
       margin-top: 0;
+      color: #93969c;
+      font-size: 24px;
     }
+  }
+
+  .img-responsive {
+    display: inline-block;
+    max-height: 400px;
+  }
+}
+.brands {
+  background-color: #EEF2F8;
+  padding: 1.5em 0;
+
+  .brand-logo {
+    display: inline-block;
+    width: 12%;
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  .Status {
+    background-image: url(/images/store/spritesheet.png);
+    background-repeat: no-repeat;
+    display: inline-block;
+  }
+  .Status-NZXT-Logo {
+    width: 55px;
+    height: 14px;
+    background-position: -10px -10px;
+  }
+  .Status-amd-logo {
+    width: 60px;
+    height: 14px;
+    background-position: -85px -10px;
+  }
+  .Status-assus-logo {
+    width: 62px;
+    height: 12px;
+    background-position: -165px -10px;
+  }
+  .Status-corsair-logo {
+    width: 64px;
+    height: 16px;
+    background-position: -247px -10px;
+  }
+  .Status-dell-logo {
+    width: 40px;
+    height: 40px;
+    background-position: -331px -10px;
+  }
+  .Status-gigabyte-logo {
+    width: 95px;
+    height: 12px;
+    background-position: -391px -10px;
+  }
+  .Status-intel-logo {
+    width: 36px;
+    height: 24px;
+    background-position: -506px -10px;
+  }
+  .Status-inwin-logo {
+    width: 30px;
+    height: 22px;
+    background-position: -562px -10px;
   }
 }
 .ship-and-payment {
@@ -59,6 +139,16 @@
   padding: 4em 0;
 }
 
+.btn-round {
+  border-radius: 50px;
+  &.btn-lg {
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+}
+.btn-primary.btn-glow {
+  box-shadow: 0 2px 26px 1px rgba(70,147,255,0.59);
+}
 .mb-10 {
   margin-bottom: 10px;
 }
