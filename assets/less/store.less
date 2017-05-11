@@ -97,46 +97,83 @@ html, body {
     background-position: -562px -10px;
   }
 }
+
+.categories {
+  padding: 2.5em 0;
+  background-color: white;
+
+  .rectangle-22 {
+    background-color: #fff;
+    border: 1px solid #C5CEDF;
+    box-shadow: 2px 3px 12px rgba(235, 240,247,0.5);
+    padding: 15px;
+
+    .title {
+      margin: 0 -15px 2em -15px;
+      padding: 0 30px 15px 30px;
+      border-bottom: 1px solid #C5CEDF;
+    }
+
+    .icon-container {
+      text-align: center;
+      margin-bottom: 1.5em;
+      min-height: 164px;
+    }
+  }
+
+  .category-icon {
+    background-image: url(/images/store/categories-icons.png);
+    background-repeat: no-repeat;
+    display: inline-block;
+  }
+
+  .category-icon-arquitectura {
+      width: 175px;
+      height: 147px;
+      background-position: -10px -10px;
+  }
+
+  .category-icon-desarrollo {
+      width: 173px;
+      height: 159px;
+      background-position: -205px -10px;
+  }
+
+  .category-icon-disen_o {
+      width: 171px;
+      height: 122px;
+      background-position: -398px -10px;
+  }
+
+  .category-icon-gaming {
+      width: 169px;
+      height: 149px;
+      background-position: -589px -10px;
+  }
+}
 .ship-and-payment {
   background-color: #f6f6f6;
   padding: 3.5em 0;
 }
+
+.explanation, .explanation-2 {
+  padding: 4em 0;
+  color: #BBBBBB;
+  h2, h3 {
+    color: #333;
+  }
+}
 .explanation {
-  padding: 4em 0;
+  img {
+    margin-top: 2em;
+  }
 }
-
-.comparascore-graph {
-  background: url(/images/shop/graph.png) bottom left no-repeat;
-  width: 95%;
-  background-size: 100%;
-  height: 160px;
-  position: relative;
-}
-
-.score-line {
-    position: absolute;
-    border-left: 1px solid #6D6D6D;
-    height: 100px;
-    bottom: 0;
-}
-
-.score-number {
-    position: absolute;
-    width: 28px;
-    height: 28px;
-    top: -28px;
-    left: -14px;
-    border-radius: 14px;
-    font-size: 12px;
-    padding-top: 6px;
-    font-weight: 700;
-    background: #6D6D6D;
-    text-align: center;
-    color: #fff;
-}
-
-.comparascore-explain {
-  padding: 4em 0;
+.explanation-2 {
+  border-top: 2px solid #CCC;
+  background-image: url('/images/store/lap vs pc.png');
+  background-repeat: no-repeat;
+  //background-attachment: fixed;
+  background-position: center right;
 }
 
 .btn-round {
@@ -162,8 +199,9 @@ html, body {
   margin-top: 20px;
 }
 .testimonials {
-  padding: 3em 0;
-  background-color: #f9f9fc;
+  padding: 1.5em 0;
+  background-color: rgba(22,26,35,0.9);
+  color: #fff;
 }
 .testimonial {
   position: relative;
@@ -290,4 +328,9 @@ html, body {
       }
     }
   }
+}
+
+.footer {
+  background-color: #EEF2F8;
+  padding: 1.5em 0;
 }
