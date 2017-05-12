@@ -102,6 +102,10 @@ html, body {
   padding: 2.5em 0;
   background-color: white;
 
+  h3 {
+    color: #888;
+  }
+
   .rectangle-22 {
     background-color: #fff;
     border: 1px solid #C5CEDF;
@@ -118,6 +122,13 @@ html, body {
       text-align: center;
       margin-bottom: 1.5em;
       min-height: 164px;
+    }
+
+    .btn-default:hover {
+      background-color: #3876CD;
+      color: white;
+      border: 1px solid rgba(56,109,184,0.64);
+      box-shadow: 0 2px 4px 0 rgba(96, 138, 198, 0.41);
     }
   }
 
@@ -152,8 +163,36 @@ html, body {
   }
 }
 .ship-and-payment {
-  background-color: #f6f6f6;
-  padding: 3.5em 0;
+  background-color: #ffffff;
+  padding: 1.5em 0;
+
+  .use-assistant {
+    padding: 10px 3em;
+    background-color: #EEF2F8;
+    text-align: center;
+    margin-bottom: 3em;
+
+    h2 {
+      font-size: 24px;
+    }
+  }
+
+  .facts {
+    border: 1px solid #C5CEDF;
+    padding: 15px 25px;
+    color: #6B7C93;
+
+    .br {
+      border-right: 1px solid #C5CEDF;
+    }
+
+    h3 {
+      font-size: 18px;
+    }
+    hr {
+      border-top-color: #C5CEDF;
+    }
+  }
 }
 
 .explanation, .explanation-2 {
@@ -169,7 +208,7 @@ html, body {
   }
 }
 .explanation-2 {
-  border-top: 2px solid #CCC;
+  border-top: 2px solid #C5CEDF;
   background-image: url('/images/store/lap vs pc.png');
   background-repeat: no-repeat;
   //background-attachment: fixed;
@@ -202,25 +241,36 @@ html, body {
   padding: 1.5em 0;
   background-color: rgba(22,26,35,0.9);
   color: #fff;
-}
-.testimonial {
-  position: relative;
 
-  figure {
-    float: left;
-  }
-  .info {
-    position: absolute;
-    margin-left: 7em;
-  }
+  .testimonial {
+    text-align: center;
 
-  h5 {
-    margin-bottom: 0.2em;
-    margin-top: 0;
-  }
-  &::after {
-    content: "";
-    clear: both;
+    figure {
+      display: inline-block;
+      background-color: #1976f9;
+      box-shadow: 0 10px 17px 0 rgba(0,0,0,0.5);
+      padding: 5px;
+      margin-bottom: 10px;
+      border-radius: 50%;
+
+      img {
+        height: 60px;
+        width: 60px;
+        border-radius: 50%;
+      }
+    }
+    .info {
+      p {
+        color: #999;
+        font-size: 18px;
+      }
+
+      h5 {
+        margin-bottom: 0.2em;
+        margin-top: 0;
+        color: white;
+      }
+    }
   }
 }
 

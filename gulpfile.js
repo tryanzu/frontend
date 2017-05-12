@@ -11,7 +11,7 @@ const codekit = require("gulp-codekit");
 const browserSync = require('browser-sync').create();
 const spa = require("browser-sync-spa");
 
-/*browserSync.use(spa({
+browserSync.use(spa({
     // Only needed for angular apps
     selector: "[ng-app]",
 
@@ -21,7 +21,7 @@ const spa = require("browser-sync-spa");
     history: {
       index: '/index.html'
     }
-}));*/
+}));
 
 gulp.task('styles', function() {
   var opts = {comments:true,spare:true};
