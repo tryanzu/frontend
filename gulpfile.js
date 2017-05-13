@@ -19,14 +19,14 @@ browserSync.use(spa({
     // If your application already provides fallback urls (such as an existing proxy server),
     // this value can be set to false to omit using the connect-history-api-fallback middleware entirely.
     history: {
-        index: '/index.html'
+      index: '/index.html'
     }
 }));
 
 gulp.task('styles', function() {
   var opts = {comments:true,spare:true};
 
-  return gulp.src(['assets/less/app.less', 'assets/less/shop.less'])
+  return gulp.src(['assets/less/app.less', 'assets/less/shop.less', 'assets/less/store.less'])
     .pipe(sourcemaps.init({largeFile: true}))
     .pipe(less({compress: false}))
     .pipe(postcss([autoprefixer()]))
@@ -58,6 +58,7 @@ gulp.task('serve', ['styles', 'scripts'], function() {
   gulp.watch("assets/less/*.less", ['styles']);
   gulp.watch("assets/js/*.js", ['scripts']);
   gulp.watch("public/app/partials/*.html").on('change', browserSync.reload);
+  gulp.watch("public/js/partials/store/*.html").on('change', browserSync.reload);
   gulp.watch("public/*.html").on('change', browserSync.reload);
 });
 
