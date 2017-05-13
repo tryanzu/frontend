@@ -13297,10 +13297,6 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
       }
     }
   });
-  $routeProvider.when('/tienda', {
-    templateUrl: '/js/partials/store/main.html?v=' + version,
-    //controller: 'CategoryListController'
-  });
   $routeProvider.when('/', {
     templateUrl: '/app/partials/main.html?v=' + version,
     controller: 'CategoryListController'
