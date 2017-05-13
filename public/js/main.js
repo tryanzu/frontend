@@ -13297,6 +13297,10 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
       }
     }
   });
+  $routeProvider.when('/tienda', {
+    templateUrl: '/js/partials/store/main.html?v=' + version,
+    //controller: 'CategoryListController'
+  });
   $routeProvider.when('/', {
     templateUrl: '/app/partials/main.html?v=' + version,
     controller: 'CategoryListController'
@@ -13312,11 +13316,6 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
       console.log("href before", href);
       var expression = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
       var regex = new RegExp(expression);
-
-      var amazon_re = /https?:\/\/(?=(?:....)?amazon|smile)(www|smile)\S+com(\.mx)?(((?:\/(?:dp|gp)\/([A-Z0-9]+))?\S*[?&]?(?:tag=))?\S*?)(?:#)?(\w*?-\w{2})?(\S*)(#?\S*)+/g;
-      var to_replace = "https://$1.amazon.com$2$3$7&tag=comparateca04-20";
-      href = href.replace(amazon_re, to_replace);
-      console.log("*href after", href);
 
       if (href.match(regex)) {
         return "<a href='" + href + "' title='" + title + "' target='_blank'>" + href + "</a>";

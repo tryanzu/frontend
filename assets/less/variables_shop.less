@@ -33,15 +33,34 @@
 @font-family-sans-serif:  "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
 @font-size-base:          14px;
 @headings-font-family:    'Myriad Set Pro', "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
-@headings-font-weight:    300;
+@headings-font-weight:    400;
 
 //== Navbar
 //
 //##
 
-@navbar-default-color:             #666;
-@navbar-default-bg:                #fff;
+@navbar-default-color:             #777;
+@navbar-default-bg:                #171C27;
 @navbar-default-border:            transparent;
+
+// Navbar links
+@navbar-default-link-color:                rgba(255,255,255,0.75);//#a7b3ca; //#fff;
+@navbar-default-link-hover-color:          #ffffff;
+@navbar-default-link-hover-bg:             transparent;
+@navbar-default-link-active-color:         #fff;
+@navbar-default-link-active-bg:            darken(@navbar-default-bg, 10%);
+@navbar-default-link-disabled-color:       #ccc;
+@navbar-default-link-disabled-bg:          transparent;
+
+// Navbar brand label
+@navbar-default-brand-color:               @navbar-default-link-color;
+@navbar-default-brand-hover-color:         @navbar-default-link-hover-color;
+@navbar-default-brand-hover-bg:            transparent;
+
+// Navbar toggle
+@navbar-default-toggle-hover-bg:           darken(@navbar-default-bg, 10%);
+@navbar-default-toggle-icon-bar-bg:        #fff;
+@navbar-default-toggle-border-color:       darken(@navbar-default-bg, 10%);
 
 //== Breadcrumbs
 //
