@@ -5,6 +5,8 @@
   padding: 0;
   padding-left: 1em;
   padding-right: 1em;
+  padding-bottom: 0.5em;
+
   .message {
     position: relative;
     margin-top: 0.6em;
@@ -172,12 +174,16 @@
     font-size: inherit;
     margin-bottom: 0;
     margin: 0;
-    color: #333;
+    color: #AAA;
 
     box-shadow: 0 2px 5px 2px rgba(100,100,100,0.1);
 
     &:focus {
-      border-color: @brand-primary;
+      border-color: darken(#e0e0e0, 10%);
+    }
+
+    &::placeholder {
+      color: #DEE1E6;
     }
   }
 

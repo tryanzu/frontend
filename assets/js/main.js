@@ -19,8 +19,6 @@
 // @codekit-prepend vendor/socket.min.js
 // @codekit-prepend vendor/country-picker.min.js
 // @codekit-prepend vendor/sidebar.js
-// @codekit-prepend vendor/ng-scrollbars/jquery.mCustomScrollbar.concat.min.js
-// @codekit-prepend vendor/ng-scrollbars/scrollbars.min.js
 
 // @codekit-prepend common/directives.js
 // @codekit-prepend common/filters.js

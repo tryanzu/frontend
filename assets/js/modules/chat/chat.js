@@ -1117,11 +1117,9 @@ var ChatController = [
 
             if(!$scope.scroll_help.scrolledUp) {
               $timeout(function() {
-                var mh_window = $('.mCSB_container');
+                var mh_window = $('.message-history');
                 if(mh_window[0]) {
                   mh_window.scrollTop(mh_window[0].scrollHeight);
-                  th = $('#mCSB_2_container_wrapper').height();
-                  mh_window.css('top', (mh_window[0].scrollHeight - th) * -1 + 'px');
                 }
               }, 100);
             }
@@ -1624,7 +1622,7 @@ var EncuestaController = [
     };
   }
 ];
-var chatModule = angular.module('chatModule', ['firebase', 'ngSanitize', 'ngScrollbars']);
+var chatModule = angular.module('chatModule', ['firebase', 'ngSanitize']);
 
 chatModule.controller('ChatController', ChatController);
 chatModule.controller('RifaController', RifaController);
