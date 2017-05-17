@@ -9600,6 +9600,58 @@ var ChatController = [
     $scope.membersRef_global = [];
     $scope.emojiMessage = {};
 
+    $scope.favorite = {
+      status: false,
+      comment:"salkd lkasdjlaksj lkajsd lkajs lkajs dlkjas lkjasd lkajs dlkajs dlkja slkj das",
+      active: true,
+    };
+
+    $scope.sb_config = {
+      users: {
+        autoHideScrollbar: false,
+        theme: 'dark-thick',
+        advanced:{
+          updateOnContentResize: true
+        },
+        setHeight: '93%',
+        setWidth: '100%',
+        scrollInertia: 0
+      },
+      chat: {
+        autoHideScrollbar: false,
+        theme: 'dark-thick',
+        advanced:{
+          updateOnContentResize: true
+        },
+        setHeight: '80%',
+        setWidth: '100%',
+        scrollInertia: 0
+      }
+    };
+
+    $scope.users = false;
+    $scope.usersViewChange = function($event){
+      $event.preventDefault();
+      $event.stopPropagation();
+      $scope.users = !$scope.users;
+    };
+
+    $scope.status = {
+      isopen: false
+    };
+
+    $scope.toggled = function(open) {
+      $log.log('Dropdown is now: ', open);
+    };
+
+    $scope.toggleDropdown = function($event) {
+      $event.preventDefault();
+      $event.stopPropagation();
+      $scope.status.isopen = !$scope.status.isopen;
+    };
+
+    $scope.appendToEl = angular.element(document.querySelector('#dropdown-long-content'));
+
     var firebaseRef = new Firebase(firebase_url);
 
     // Instantiate a new connection to Firebase.
@@ -13140,7 +13192,7 @@ EventModule.controller('EventController', ['$scope', '$timeout', '$http', 'Uploa
 
 }]);
 
-var version = '102';
+var version = '103';
 
 var boardApplication = angular.module('board', [
   'ngRoute',
