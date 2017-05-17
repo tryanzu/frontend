@@ -67,11 +67,11 @@
                     </a>
                 </p>
             </div>
-            
+
             <!--CHAT-->
             <div class="detail-section-chat" ng-if="!users" ng-class="{'stream': !channel.selected.fullscreen.video}">
                 <div class="content-chat">
-                    <div ng-scrollbars ng-scrollbars-config="config2" class="message-history">
+                    <div ng-scrollbars ng-scrollbars-config="sb_config.chat" class="message-history">
                         <div class="message" ng-repeat="m in old_messages" ng-class="::{'compact':old_messages[$index-1].author.username == old_messages[$index].author.username}">
                             <a href="/u/{{ m.author.username }}/{{ m.author.id }}" class="author" target="_blank" ng-if=":: old_messages[$index-1].author.username != m.author.username">
                                 <span class="avatar" title="{{ m.author.username }}" ng-if="!m.author.image">{{ m.author.username[0] }}</span>
@@ -117,7 +117,7 @@
                             <p class="warning" ng-if="helpers.blocked">Tu cuenta ha sido bloqueada por 60 segundos.</p>
                         </div>
                         <div class="input-box" ng-if="!user.isLogged">
-                            <p class="alert alert-warning">Necesitas crear una cuenta para participar. <a href="" ng-click="signUp()">Regístrate</a> o <a href="" ng-click="signIn()">inicia sesión</a> si ya tienes una.</p>
+                            <p class="alert alert-info text-center">Necesitas crear una cuenta para participar. <a href="" ng-click="signUp()">Regístrate</a> o <a href="" ng-click="signIn()">inicia sesión</a> si ya tienes una.</p>
                         </div>
                     </div>
                 </div>
@@ -127,7 +127,7 @@
             <!-- USERS LIST -->
             <div class="detail-section-chat" ng-if="users">
                 <input type="text" ng-model="searchText.content" class="form-control mb-20" placeholder="Buscar...">
-                <ul ng-scrollbars ng-scrollbars-config="config" class="user-status">
+                <ul ng-scrollbars ng-scrollbars-config="sb_config.users" class="user-status">
                     <li class="online" ng-repeat="m in members | filter:searchText.content | orderBy:['username']">
                         <a href="/u/{{ m.username }}/{{ m.id }}" class="">
                             <span class="avatar" title="{{ m.username }}" ng-if="!m.image">{{ m.username[0] }}</span>

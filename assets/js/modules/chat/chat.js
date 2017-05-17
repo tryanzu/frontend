@@ -102,30 +102,29 @@ var ChatController = [
       active: true,
     };
 
-    $scope.config = {
-      autoHideScrollbar: false,
-      //theme: 'dark-3',
-      theme: 'minimal-dark',
-      advanced:{
-        updateOnContentResize: true
+    $scope.sb_config = {
+      users: {
+        autoHideScrollbar: false,
+        theme: 'dark-thick',
+        advanced:{
+          updateOnContentResize: true
+        },
+        setHeight: '93%',
+        setWidth: '100%',
+        scrollInertia: 0
       },
-      setHeight: '93%',
-      setWidth: '100%',
-      scrollInertia: 0
+      chat: {
+        autoHideScrollbar: false,
+        theme: 'dark-thick',
+        advanced:{
+          updateOnContentResize: true
+        },
+        setHeight: '80%',
+        setWidth: '100%',
+        scrollInertia: 0
+      }
     };
 
-    $scope.config2 = {
-      autoHideScrollbar: false,
-      //theme: 'dark-3',
-      theme: 'minimal-dark',
-      advanced:{
-        updateOnContentResize: true
-      },
-      setHeight: '80%',
-      setWidth: '100%',
-      scrollInertia: 0
-    };
-    
     $scope.users = false;
     $scope.usersViewChange = function($event){
       $event.preventDefault();
@@ -1118,9 +1117,11 @@ var ChatController = [
 
             if(!$scope.scroll_help.scrolledUp) {
               $timeout(function() {
-                var mh_window = $('.message-history');
+                var mh_window = $('.mCSB_container');
                 if(mh_window[0]) {
                   mh_window.scrollTop(mh_window[0].scrollHeight);
+                  th = $('#mCSB_2_container_wrapper').height();
+                  mh_window.css('top', (mh_window[0].scrollHeight - th) * -1 + 'px');
                 }
               }, 100);
             }
@@ -1623,7 +1624,7 @@ var EncuestaController = [
     };
   }
 ];
-var chatModule = angular.module('chatModule', ['firebase', 'ngSanitize']);
+var chatModule = angular.module('chatModule', ['firebase', 'ngSanitize', 'ngScrollbars']);
 
 chatModule.controller('ChatController', ChatController);
 chatModule.controller('RifaController', RifaController);

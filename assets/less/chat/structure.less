@@ -11,34 +11,34 @@
   overflow-y: auto;
   transition: all 0.5s ease;
   background-color: #F1F4F9;
-  #panel,#panelvideo{
+
+  #panel,#panelvideo {
     color: #a3adb8;
     background-color: #FFF;
     width: 100%;
     height: 100%;
     border-radius: 2px;
     border: 0;
-    -webkit-box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.12), 0 1px 6px 0 rgba(0, 0, 0, 0.12);
-    box-shadow: 1px 1px 6px 0 rgba(0, 0, 0, 0.12), 0 1px 6px 0 rgba(0, 0, 0, 0.12);
+    box-shadow: 0 1px 6px rgba(100,100,100,0.2);
+    //box-shadow: 1px 1px 6px 0 rgba(0, 0, 0, 0.12), 0 1px 6px 0 rgba(0, 0, 0, 0.12);
 
-    .panel-title{
+    .panel-title {
       padding: 10px;
       text-align: center;
       width: 100%;
       border-radius: 0px;
       border: 0;
       height: 10%;
-      -webkit-box-shadow: 0 0px 0px 0 rgba(0, 0, 0, 0.12), 0 2px 3px 0 rgba(0, 0, 0, 0.12);
+      min-height: 40px;
       box-shadow: 0px 0px 0px 0 rgba(0, 0, 0, 0.12), 0 2px 3px 0 rgba(0, 0, 0, 0.12);
-      p,div.btn-group{
+
+      p, div.btn-group {
         margin: 0;
         text-align: center;
         position: relative;
-        //z-index: 10000;
         top: 50%;
-        -ms-transform: translateY(-50%);
-        -webkit-transform: translateY(-50%);
         transform: translateY(-50%);
+
         #single-button{
           margin: 0;
           padding: 0;
@@ -54,7 +54,7 @@
       }
       a{
         color: #a3adb8;
-        text-decoration:none; 
+        text-decoration:none;
         padding: 2px;
         i{
           margin: 0;
@@ -93,10 +93,12 @@
       }
     }
     .detail-section-chat{
-      height: 92%;
+      height: 93%;
+
       .content-chat{
         height: 100%;
       }
+
       .user-status{
         height: 93%;
         margin: 0;
@@ -117,7 +119,7 @@
           }
         }
       }
-      .mb-20{
+      .mb-20 {
         border: 0;
         height: 7%;
         margin: 0;
