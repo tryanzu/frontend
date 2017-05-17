@@ -41,7 +41,7 @@
 // @codekit-prepend modules/donations/donations.js
 // @codekit-prepend modules/events/event.js
 
-var version = '102';
+var version = '103';
 
 var boardApplication = angular.module('board', [
   'ngRoute',
