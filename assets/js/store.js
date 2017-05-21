@@ -11,14 +11,13 @@ var version = '001';
 storeApp.config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
 
   $routeProvider.when('/', {
-    templateUrl: '/js/partials/store/main.html?v=' + version,
-    //controller: 'CategoryListController'
+    templateUrl: '/js/partials/store/main.html?v=' + version
   });
   $routeProvider.when('/computadoras/:category?', {
-    templateUrl: '/js/partials/store/list.html?v=' + version,
+    templateUrl: '/js/partials/store/list.html?v=' + version
   });
   $routeProvider.when('/computadoras/:category/:slug?', {
-    templateUrl: '/js/partials/store/show.html?v=' + version,
+    templateUrl: '/js/partials/store/show.html?v=' + version
   });
   $routeProvider.otherwise({ redirectTo: '/' });
 
