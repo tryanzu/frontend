@@ -117,8 +117,12 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
     templateUrl: '/app/partials/validate.html?v=' + version,
     controller: 'UserValidationController'
   });
-  $routeProvider.when('/componentes/armar-pc', {
-    templateUrl: '/app/partials/pc_builder.html?v=' + version,
+  $routeProvider.when('/componentes/tienda/:type?', {
+    templateUrl: '/js/partials/components.html?v=' + version,
+    controller: 'ComponentsController'
+  });
+  $routeProvider.when('/computadoras/armar', {
+    templateUrl: '/js/partials/pc_builder.html?v=' + version,
     controller: 'PcBuilderController'
   });
   $routeProvider.when('/componentes/checkout', {
