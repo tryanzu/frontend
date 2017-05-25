@@ -11681,6 +11681,61 @@ ComponentsModule.factory('cart', ['$localstorage', '$http', 'AclService', functi
   return cart;
 }]);
 
+ComponentsModule.factory('pcbuilder', ['$localstorage', '$http', 'AclService', function($localstorage, $http, AclService) {
+  var pcbuilder = {
+    data: {
+      count: 0,
+      build: {
+        cpu:{
+          name: 'Intel Core i5-6600K 3.5GHz Quad-Core',
+          url: 'https://spartangeek.com/componentes/cpu/intel-cpu-bx80662i56600k',
+          image: 'https://assets.spartangeek.com/components/a78eddcf763b2efc4a330e323914fc6f7b54a6e9.jpg',
+          price: {
+            store: 'Amazon México',
+            value: 6400,
+            shipping: 0
+          }
+        },
+        motherboard: {
+          name: 'Asus MAXIMUS VIII HERO ATX LGA1151',
+          image: 'https://assets.spartangeek.com/components/08fa13b01ceaa9a9e12bbbe7f5c02f12539a01f0.jpg',
+          price: {
+            store: 'Amazon México',
+            value: 7000,
+            shipping: 0
+          }
+        },
+        videocard: [
+          {
+            name: 'GPU 1'
+          },
+          {
+            name: 'GPU 2'
+          }
+        ],
+        screen: [],
+        power: {
+          name: 'CoolMax 400W ATX',
+          image: 'https://assets.spartangeek.com/components/2829fc852de66d5fb0c91bae9c89623147aaef57.jpg',
+          price: {
+            store: null,
+            value: null,
+            shipping: null
+          }
+        }
+      }
+    }
+  };
+
+  pcbuilder.persist = function() {
+    // Use local storage to persist data
+    $localstorage.setObject('pcbuilderdata', pcbuilder.data);
+  };
+
+
+  return pcbuilder;
+}])
+
 ComponentsModule.controller('ComponentsController', ['$scope', '$timeout', '$http', '$route', '$location', '$routeParams', function($scope, $timeout, $http, $route, $location, $routeParams) {
 
   $scope.onlyStore = false;
@@ -12056,6 +12111,48 @@ ComponentsModule.controller('ComponentController', ['$scope', '$routeParams', '$
       window.location.href = "/";
     }
   });
+}]);
+
+ComponentsModule.controller('PcBuilderController', ['$scope', function($scope) {
+  $scope.current_build = {
+    cpu:{
+      name: 'Intel Core i5-6600K 3.5GHz Quad-Core',
+      url: 'https://spartangeek.com/componentes/cpu/intel-cpu-bx80662i56600k',
+      image: 'https://assets.spartangeek.com/components/a78eddcf763b2efc4a330e323914fc6f7b54a6e9.jpg',
+      price: {
+        store: 'Amazon México',
+        value: 6400,
+        shipping: 0
+      }
+    },
+    motherboard: {
+      name: 'Asus MAXIMUS VIII HERO ATX LGA1151',
+      image: 'https://assets.spartangeek.com/components/08fa13b01ceaa9a9e12bbbe7f5c02f12539a01f0.jpg',
+      price: {
+        store: 'Amazon México',
+        value: 7000,
+        shipping: 0
+      }
+    },
+    videocard: [
+      {
+        name: 'GPU 1'
+      },
+      {
+        name: 'GPU 2'
+      }
+    ],
+    screen: [],
+    power: {
+      name: 'CoolMax 400W ATX',
+      image: 'https://assets.spartangeek.com/components/2829fc852de66d5fb0c91bae9c89623147aaef57.jpg',
+      price: {
+        store: null,
+        value: null,
+        shipping: null
+      }
+    }
+  };
 }]);
 
 ComponentsModule.controller('CheckoutController', ['$scope', 'cart', '$http', '$timeout', function($scope, cart, $http, $timeout) {
@@ -13192,7 +13289,7 @@ EventModule.controller('EventController', ['$scope', '$timeout', '$http', 'Uploa
 
 }]);
 
-var version = '103';
+var version = '104';
 
 var boardApplication = angular.module('board', [
   'ngRoute',
@@ -13268,8 +13365,12 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
     templateUrl: '/app/partials/validate.html?v=' + version,
     controller: 'UserValidationController'
   });
-  $routeProvider.when('/componentes/armar-pc', {
-    templateUrl: '/app/partials/pc_builder.html?v=' + version,
+  $routeProvider.when('/componentes/tienda/:type?', {
+    templateUrl: '/js/partials/components.html?v=' + version,
+    controller: 'ComponentsController'
+  });
+  $routeProvider.when('/computadoras/armar', {
+    templateUrl: '/js/partials/pc_builder.html?v=' + version,
     controller: 'PcBuilderController'
   });
   $routeProvider.when('/componentes/checkout', {

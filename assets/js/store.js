@@ -1,5 +1,5 @@
-// @codekit-prepend "vendor/jquery.knob.min"
-// @codekit-prepend "vendor/ui-bootstrap-tpls-0.14.3.min"
+// @codekit-prepend vendor/jquery.knob.min.js
+// @codekit-prepend vendor/ui-bootstrap-tpls-0.14.3.min.js
 
 var storeApp = angular.module('store', [
   'ngRoute',
@@ -11,14 +11,13 @@ var version = '001';
 storeApp.config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
 
   $routeProvider.when('/', {
-    templateUrl: '/js/partials/store/main.html?v=' + version,
-    //controller: 'CategoryListController'
+    templateUrl: '/js/partials/store/main.html?v=' + version
   });
   $routeProvider.when('/computadoras/:category?', {
-    templateUrl: '/js/partials/store/list.html?v=' + version,
+    templateUrl: '/js/partials/store/list.html?v=' + version
   });
   $routeProvider.when('/computadoras/:category/:slug?', {
-    templateUrl: '/js/partials/store/show.html?v=' + version,
+    templateUrl: '/js/partials/store/show.html?v=' + version
   });
   $routeProvider.otherwise({ redirectTo: '/' });
 
@@ -33,6 +32,14 @@ storeApp.controller('MainController', [
   '$timeout',
   '$location',
   function($scope, $http, $uibModal, $timeout, $location) {
+
+    $scope.scrollDown = function() {
+      $('#request-pc').click(function() {
+        $('html,body').animate({
+          scrollTop: $(".categories").offset().top
+        });
+      });
+    };
   }
 ]);
 

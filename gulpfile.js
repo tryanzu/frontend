@@ -39,7 +39,7 @@ gulp.task('styles', function() {
 gulp.task("scripts", function() {
   console.log("-- gulp is running task 'scripts'");
 
-  gulp.src("assets/js/main.js")
+  gulp.src(["assets/js/main.js", 'assets/js/store.js'])
     .pipe(codekit())
       .on('error', console.log)
     .pipe(gulp.dest("public/js"))
