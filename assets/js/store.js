@@ -1,5 +1,5 @@
-// @codekit-prepend "vendor/jquery.knob.min"
-// @codekit-prepend "vendor/ui-bootstrap-tpls-0.14.3.min"
+// @codekit-prepend vendor/jquery.knob.min.js
+// @codekit-prepend vendor/ui-bootstrap-tpls-0.14.3.min.js
 
 var storeApp = angular.module('store', [
   'ngRoute',
@@ -32,6 +32,14 @@ storeApp.controller('MainController', [
   '$timeout',
   '$location',
   function($scope, $http, $uibModal, $timeout, $location) {
+
+    $scope.scrollDown = function() {
+      $('#request-pc').click(function() {
+        $('html,body').animate({
+          scrollTop: $(".categories").offset().top
+        });
+      });
+    };
   }
 ]);
 
