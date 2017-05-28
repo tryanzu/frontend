@@ -1,17 +1,55 @@
 <div id="wrapper" ng-class="{'stream': channel.selected.fullscreen.video}">
     <!-- Page Content -->
+    <div id="page-content-wrapper" ng-if="!channel.selected.fullscreen.video" ng-class="{'no-stream': !channel.selected.fullscreen.video , 'users': users2}">
+        <div id="panel">
+            <div class="panel-title panel-title-chat">
+                <p>
+                    <a href="#" ng-click="usersViewChange2($event)"><span ng-if="users2"><i class="fa fa-circle" aria-hidden="true" style="color: #3DE179;"></i>&nbsp;&nbsp;{{ members.length }} Spartanos conectados&nbsp;&nbsp;</span><i ng-if="!users2" class="fa fa-angle-double-right"></i><i ng-if="users2" class="fa fa-angle-double-left"></i></a>
+                </p>
+            </div>
+            <!-- USERS LIST -->
+            <div class="detail-section-chat users" ng-if="users2">
+                <div class="search-box">
+                    <div class="input-group">
+                        <div class="input-group-addon"><i class="fa fa-search" aria-hidden="true"></i></div>
+                        <input type="text" ng-model="searchText.content" class="form-control mb-20 search" placeholder="Buscar">
+                    </div>
+                </div>
+                <ul class="user-status">
+                    <li class="online" ng-repeat="m in members | filter:searchText.content | orderBy:['username']">
+                        <a href="/u/{{ m.username }}/{{ m.id }}" class="">
+                            <span class="avatar" title="{{ m.username }}" ng-if="!m.image">{{ m.username[0] }}</span>
+                            <img class="avatar" ng-src="{{ m.image }}" alt="{{ m.username }}" ng-if="m.image">
+                        </a>
+                        <a href="/u/{{ m.username }}/{{ m.id }}" class="username">{{ m.username }}</a>
+
+                        <span ng-if="m.id != user.info.id && can('edit-category-comments')" ng-click="m.hide_info = !m.hide_info"><i class="fa fa-ban"></i></span>
+
+                        <div class="status" ng-class="{'writing': m.writing}"><i class="fa fa-ellipsis-h" ng-if="m.writing"></i></div>
+
+                        <div uib-collapse="!m.hide_info" ng-if="m.id != user.info.id && can('edit-category-comments')" style="padding: 10px 0; border-bottom: 1px solid #ddd;">
+                            <div class="btn-toolbar">
+                                <a href="" ng-click="suspendUser(m.id, 60*5); m.already_blocked = true" class="btn btn-default btn-sm" ng-class="{'disabled': m.already_blocked}">Bloquear</a>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <!-- END USERS LIST -->
+        </div>
+    </div>
     <div id="page-content-wrapper" ng-if="channel.selected.fullscreen.video">
         <div id="panelvideo">
             <div class="panel-title">
                 <!-- Single button -->
                 <div class="btn-group" uib-dropdown is-open="status.isopen">
                     <button id="single-button" type="button" class="btn btn-primary" uib-dropdown-toggle ng-disabled="disabled">
-                        {{channel.selected.name}}&nbsp;&nbsp;<i class="fa fa-caret-down" aria-hidden="true"></i>
+                        <b>{{channel.selected.name}}&nbsp;&nbsp;<i class="fa fa-caret-down" aria-hidden="true"></i></b>
                     </button>
                     <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="single-button">
                         <li ng-repeat="c in channels" ng-class="{active: c.name == channel.selected.name}">
-                            <a href ng-click="changeChannel(c)" title="{{ c.description }}">
-                                <span class="icon category-icon" ng-class="{'uncategorized': !c.color}" ng-style="{background: c.color}"></span> {{ c.name }}
+                            <a href ng-click="changeChannel(c)" title="{{ c.description }}" id="ng-binding">
+                                <b><span class="icon category-icon" ng-class="{'uncategorized': !c.color}" ng-style="{background: c.color}"></span> {{ c.name }}</b>
                             </a>
                         </li>
                     </ul>
@@ -33,7 +71,7 @@
             </div>
         </div>
     </div>
-    <div id="page-members-wrapper" ng-class="{'no-stream': !channel.selected.fullscreen.video}">
+    <div id="page-members-wrapper" ng-class="{'no-stream': !channel.selected.fullscreen.video , 'users': users2}">
         <div class="detail-section-admin" ng-if="can('board-config') && show_details && !channel.selected.fullscreen.video">
             <h4>Configuración</h4>
             <form class="form-inline">
@@ -45,21 +83,36 @@
             </form>
         </div>
         <div id="panel">
+            <!--   -->
+            <div class="panel-title panel-title-chat un" style="display:none;" ng-if="!channel.selected.fullscreen.video" ng-class="{'stream': channel.selected.fullscreen.video}">
+                <p>
+                    <a href="#" ng-click="usersViewChange($event)"><i class="fa fa-circle" aria-hidden="true" style="color: #3DE179;"></i>&nbsp;&nbsp;{{ members.length }} Spartanos conectados&nbsp;&nbsp;<i ng-if="!users" class="fa fa-caret-down"></i><i ng-if="users" class="fa fa-caret-up"></i></a>
+                    <a ng-if="can('board-config')" title="Configurar este canal" class="btn btn-default btn-icon btn-round icon-config" ng-click="toggle_details()" ng-class="{'active': show_details}">
+                        <i class="fa fa-fw fa-info-circle icon"></i>
+                    </a>
+                </p>
+            </div>
+            <!--   -->
             <div class="panel-title panel-title-chat" ng-if="!channel.selected.fullscreen.video" ng-class="{'stream': channel.selected.fullscreen.video}">
                 <div class="btn-group" uib-dropdown is-open="status.isopen">
                     <button id="single-button" type="button" class="btn btn-primary" uib-dropdown-toggle ng-disabled="disabled">
-                        {{channel.selected.name}}&nbsp;&nbsp;<i class="fa fa-caret-down" aria-hidden="true"></i>
+                        <b>{{channel.selected.name}}&nbsp;&nbsp;<i class="fa fa-caret-down" aria-hidden="true"></i></b>
                     </button>
                     <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="single-button">
                         <li ng-repeat="c in channels" ng-class="{active: c.name == channel.selected.name}">
-                            <a href ng-click="changeChannel(c)" title="{{ c.description }}">
-                                <span class="icon category-icon" ng-class="{'uncategorized': !c.color}" ng-style="{background: c.color}"></span> {{ c.name }}
+                            <a href ng-click="changeChannel(c)" title="{{ c.description }}" id="ng-binding">
+                                <b><span class="icon category-icon" ng-class="{'uncategorized': !c.color}" ng-style="{background: c.color}"></span> {{ c.name }}</b>
                             </a>
                         </li>
                     </ul>
                 </div>
+                <span>
+                    <a ng-if="can('board-config')" title="Configurar este canal" class="btn btn-default btn-icon btn-round" ng-click="toggle_details()" ng-class="{'active': show_details}">
+                        <i class="fa fa-fw fa-info-circle icon"></i>
+                    </a>
+                </span>
             </div>
-            <div class="panel-title panel-title-chat" ng-class="{'stream': channel.selected.fullscreen.video}">
+            <div class="panel-title panel-title-chat" ng-if="channel.selected.fullscreen.video" ng-class="{'stream': channel.selected.fullscreen.video}">
                 <p>
                     <a href="#" ng-click="usersViewChange($event)"><i class="fa fa-circle" aria-hidden="true" style="color: #3DE179;"></i>&nbsp;&nbsp;{{ members.length }} Spartanos conectados&nbsp;&nbsp;<i ng-if="!users" class="fa fa-caret-down"></i><i ng-if="users" class="fa fa-caret-up"></i></a>
                     <a ng-if="can('board-config')" title="Configurar este canal" class="btn btn-default btn-icon btn-round" ng-click="toggle_details()" ng-class="{'active': show_details}">
@@ -69,7 +122,7 @@
             </div>
 
             <!--CHAT-->
-            <div class="detail-section-chat" ng-if="!users" ng-class="{'stream': !channel.selected.fullscreen.video}">
+            <div class="detail-section-chat" ng-show="!users" ng-class="{'stream': !channel.selected.fullscreen.video}">
                 <div class="content-chat">
                     <div ng-scrollbars ng-scrollbars-config="sb_config.chat" class="message-history">
                         <div class="message" ng-repeat="m in old_messages" ng-class="::{'compact':old_messages[$index-1].author.username == old_messages[$index].author.username}">
@@ -106,7 +159,7 @@
                         <div class="spam_alert" ng-if="helpers.spam_count > 1 && !helpers.blocked">Debes dejar de hacer spam o tu cuenta se bloqueará.</div>
                     </div>
 
-                    <div class="footer">
+                    <div class="footer" ng-class="{'no-stream': !channel.selected.fullscreen.video}">
                         <div class="input-box" ng-if="user.isLogged">
                             <div class="input-group">
                                 <textarea type="text" class="input-box_text" placeholder="Escribe tu mensaje..." ng-trim="false" ng-model="message.content" sg-enter="addMessage()" sg-send="message.send_on_enter" ng-readonly="helpers.spam_count > 2"></textarea>
@@ -125,9 +178,14 @@
             <!-- END CHAT-->
 
             <!-- USERS LIST -->
-            <div class="detail-section-chat" ng-if="users">
-                <input type="text" ng-model="searchText.content" class="form-control mb-20" placeholder="Buscar...">
-                <ul ng-scrollbars ng-scrollbars-config="sb_config.users" class="user-status">
+            <div class="detail-section-chat users" ng-show="users" ng-class="{'stream': !channel.selected.fullscreen.video}">
+                <div class="search-box">
+                    <div class="input-group">
+                        <div class="input-group-addon"><i class="fa fa-search" aria-hidden="true"></i></div>
+                        <input type="text" ng-model="searchText.content" class="form-control mb-20 search" placeholder="Buscar">
+                    </div>
+                </div>
+                <ul class="user-status">
                     <li class="online" ng-repeat="m in members | filter:searchText.content | orderBy:['username']">
                         <a href="/u/{{ m.username }}/{{ m.id }}" class="">
                             <span class="avatar" title="{{ m.username }}" ng-if="!m.image">{{ m.username[0] }}</span>
