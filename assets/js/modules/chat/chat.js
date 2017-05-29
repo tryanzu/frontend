@@ -126,10 +126,17 @@ var ChatController = [
     };
 
     $scope.users = false;
+    $scope.users2 = false;
+
     $scope.usersViewChange = function($event){
       $event.preventDefault();
       $event.stopPropagation();
       $scope.users = !$scope.users;
+    };
+    $scope.usersViewChange2 = function($event){
+      $event.preventDefault();
+      $event.stopPropagation();
+      $scope.users2 = !$scope.users2;
     };
 
     $scope.status = {
@@ -707,7 +714,8 @@ var ChatController = [
 
     $scope.changeChannel = function(channel) {
       if($scope.channel.selected == channel) return;
-
+      $scope.users=false;
+      $scope.users2=false;
       if($scope.channel.selected != null) {
         exitChannel();
       }
