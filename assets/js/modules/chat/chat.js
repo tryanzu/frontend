@@ -1014,6 +1014,15 @@ var ChatController = [
 
                     $scope.message.content = '';
                     $scope.emojiMessage = {};
+
+                    if (!$scope.scroll_help.scrolledUp) {
+                          $timeout(function() {
+                              var mh_window = $('.message-history');
+                              if (mh_window[0]) {
+                                  mh_window.scrollTop(mh_window[0].scrollHeight);
+                              }
+                          }, 100);
+                      }
                 }
             }
         }
@@ -1117,14 +1126,7 @@ var ChatController = [
 
                         $scope.messages.push(message);
 
-                        if (!$scope.scroll_help.scrolledUp) {
-                            $timeout(function() {
-                                var mh_window = $('.message-history');
-                                if (mh_window[0]) {
-                                    mh_window.scrollTop(mh_window[0].scrollHeight);
-                                }
-                            }, 100);
-                        }
+                        
                     });
                 });
                 socket.emit('chat update-me', newValue);
