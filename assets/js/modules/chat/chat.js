@@ -992,8 +992,8 @@ var ChatController = [
                     $scope.message.content = '';
                 } else {
                     $scope.message.previous = $scope.message.content;
-
-                    var formattedTime = new Date().toISOString().slice(-13, -5),
+                    var tzoffset = (new Date()).getTimezoneOffset() * 60000;
+                    var formattedTime = new Date(Date.now() - tzoffset).toISOString().slice(-13, -5),
                         image = $scope.user.info.image || '',
                         message = {
                           author: {
@@ -1016,13 +1016,13 @@ var ChatController = [
                     $scope.emojiMessage = {};
 
                     if (!$scope.scroll_help.scrolledUp) {
-                          $timeout(function() {
-                              var mh_window = $('.message-history');
-                              if (mh_window[0]) {
-                                  mh_window.scrollTop(mh_window[0].scrollHeight);
-                              }
-                          }, 100);
-                      }
+                        $timeout(function() {
+                            var mh_window = $('.message-history');
+                            if (mh_window[0]) {
+                                mh_window.scrollTop(mh_window[0].scrollHeight);
+                            }
+                        }, 100);
+                    }
                 }
             }
         }
@@ -1126,7 +1126,14 @@ var ChatController = [
 
                         $scope.messages.push(message);
 
-                        
+                        if (!$scope.scroll_help.scrolledUp) {
+                            $timeout(function() {
+                                var mh_window = $('.message-history');
+                                if (mh_window[0]) {
+                                    mh_window.scrollTop(mh_window[0].scrollHeight);
+                                }
+                            }, 100);
+                        }                        
                     });
                 });
                 socket.emit('chat update-me', newValue);
