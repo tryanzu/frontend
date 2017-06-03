@@ -80,7 +80,7 @@ var boardApplication = angular.module('board', [
   'searchBar',
   'btford.socket-io',
   'ngGeolocation',
-  'siderbar',
+  //'siderbar',
 ]);
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'markedProvider', 'AclServiceProvider',

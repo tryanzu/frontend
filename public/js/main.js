@@ -9469,39 +9469,7 @@ BadgeModule.controller('BadgeController', ['$scope', '$timeout', '$http', functi
   }
 
 }]);
-var TopModule = angular.module('sg.module.top', []);
-
-
-// Rank module controllers
-TopModule.controller('TopController', ['$scope', '$http', function($scope, $http) {
-  $scope.example = {
-    username: 'AcidKid',
-    image: 'http://s3-us-west-1.amazonaws.com/spartan-board/users/55dce3c893e89a20eb000001-120x120.jpg',
-    id: '54e238652397381217000001',
-    position: 2
-  }
-  $scope.order_by = 'swords';
-  $scope.options = ['swords', 'badges', 'wealth'];
-  $scope.data = [];
-
-  $scope.change_order = function(order) {
-
-    if($scope.options.indexOf(order) < 0) {
-      $scope.order_by = 'swords';
-    } else {
-      $scope.order_by = order;
-    }
-
-    $http.get(layer_path + 'stats/ranking', {params: {sort: $scope.order_by}}).
-      then(function(response){
-        $scope.data = response.data;
-        //console.log($scope.data )
-      });
-  }
-
-  $scope.change_order();
-
-}]);
+// @codekit-prepend modules/top/init.js
 var ChatController = [
     '$scope',
     '$firebaseArray',
@@ -10496,8 +10464,8 @@ var ChatController = [
                     $scope.message.content = '';
                 } else {
                     $scope.message.previous = $scope.message.content;
-
-                    var formattedTime = new Date().toISOString().slice(-13, -5),
+                    var tzoffset = (new Date()).getTimezoneOffset() * 60000;
+                    var formattedTime = new Date(Date.now() - tzoffset).toISOString().slice(-13, -5),
                         image = $scope.user.info.image || '',
                         message = {
                           author: {
@@ -10520,13 +10488,13 @@ var ChatController = [
                     $scope.emojiMessage = {};
 
                     if (!$scope.scroll_help.scrolledUp) {
-                          $timeout(function() {
-                              var mh_window = $('.message-history');
-                              if (mh_window[0]) {
-                                  mh_window.scrollTop(mh_window[0].scrollHeight);
-                              }
-                          }, 100);
-                      }
+                        $timeout(function() {
+                            var mh_window = $('.message-history');
+                            if (mh_window[0]) {
+                                mh_window.scrollTop(mh_window[0].scrollHeight);
+                            }
+                        }, 100);
+                    }
                 }
             }
         }
@@ -10630,7 +10598,14 @@ var ChatController = [
 
                         $scope.messages.push(message);
 
-                        
+                        if (!$scope.scroll_help.scrolledUp) {
+                            $timeout(function() {
+                                var mh_window = $('.message-history');
+                                if (mh_window[0]) {
+                                    mh_window.scrollTop(mh_window[0].scrollHeight);
+                                }
+                            }, 100);
+                        }                        
                     });
                 });
                 socket.emit('chat update-me', newValue);
@@ -13507,7 +13482,7 @@ var boardApplication = angular.module('board', [
   'searchBar',
   'btford.socket-io',
   'ngGeolocation',
-  'siderbar',
+  //'siderbar',
 ]);
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'markedProvider', 'AclServiceProvider',

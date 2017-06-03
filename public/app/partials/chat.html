@@ -124,7 +124,7 @@
             <!--CHAT-->
             <div class="detail-section-chat" ng-show="!users" ng-class="{'stream': !channel.selected.fullscreen.video}">
                 <div class="content-chat">
-                    <div ng-scrollbars ng-scrollbars-config="sb_config.chat" class="message-history">
+                    <div class="message-history">
                         <div class="message" ng-repeat="m in old_messages" ng-class="::{'compact':old_messages[$index-1].author.username == old_messages[$index].author.username}">
                             <a href="/u/{{ m.author.username }}/{{ m.author.id }}" class="author" target="_blank" ng-if=":: old_messages[$index-1].author.username != m.author.username">
                                 <span class="avatar" title="{{ m.author.username }}" ng-if="!m.author.image">{{ m.author.username[0] }}</span>
