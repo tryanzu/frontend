@@ -121,13 +121,11 @@
               Secciones <span class="caret"></span>
             </a>
             <ul class="dropdown-menu dropdown-sections" role="menu">
-              <li><a href="/"><i class="fa fa-users"></i> Comunidad</a></li>
               <li ng-if="user.isLogged"><a href="/chat"><i class="fa fa-comment"></i> Chat</a></li>
-              <li><a href="/componentes"><i class="fa fa-th-large"></i> Catálogo de componentes</a></li>
               <li><a href="https://www.youtube.com/channel/UCk5P7-ZHAS8ddSEkUA2yXHA" alt="Canal de Youtube" target="_blank"><i class="fa fa-youtube-play"></i> Canal de Youtube</a></li>
               <li role="separator" class="divider"></li>
               <li><a href="/workstations/" target="_blank"><i class="fa fa-desktop"></i> Workstations <span class="label label-success">Nuevo</span></a></li>
-              <li><a href="/asistente/" target="_blank"><i class="fa fa-desktop"></i> Pedir una Spartana <span class="label label-success">Nuevo</span></a></li>
+              <li><a href="/asistente/" target="_blank"><i class="fa fa-desktop"></i> Pedir una Spartana</a></li>
               <li class="divider"></li>
               <li ng-if="location.path() != '/donacion' && location.path() != '/compra-en-legion'">
                 <a href="/donacion"><i class="fa fa-heart" style="color: #FF6E6E; padding-right: 5px;" aria-hidden="true"></i> Donar</a>
@@ -229,11 +227,6 @@
               <li uib-tooltip="Cantidad de 'Me gusta' que puedes dar" tooltip-placement="left">
                 <a>
                   <i class="sgi gray big"></i> Tributo: <span class="badge badge-important pull-right">{{ (user.gaming.tribute || 0) | number:0 }}</span>
-                </a>
-              </li>
-              <li uib-tooltip="Cantidad de 'Esto apesta' que puedes dar" tooltip-placement="left">
-                <a>
-                  <i class="sgi gray shit"></i> Mierda: <span class="badge badge-important pull-right">{{ (user.gaming.shit || 0) | number:0 }}</span>
                 </a>
               </li>
               <li class="hidden"><a href="/config"><i class="fa fa-fw fa-cog"></i> Configuración</a></li>

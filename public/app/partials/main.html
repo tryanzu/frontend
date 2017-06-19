@@ -566,16 +566,11 @@
 
                 <div class="votes-count">
                   <span ng-if="post.votes.up > 0">A {{ post.votes.up }} {{post.votes.up == 1 ? 'persona le gusta':'personas les gusta'}}</span>
-                  <span ng-if="post.votes.up > 0 && post.votes.down > 0"> y </span>
-                  <span ng-if="post.votes.down > 0">{{ post.votes.down }} {{post.votes.down == 1 ? 'persona piensa':'personas piensan'}} que apesta</span>
                 </div>
 
                 <ul class="post-actions" ng-class="{empty: post.author.id == user.info.id && post.votes.up == 0 && post.votes.down == 0}">
                   <li class="action" ng-if="post.liked != -1">
                     <a href="" ng-click="post_vote(post, 'up')" class="btn btn-success-border btn-round" ng-class="{'liked': post.liked == 1, 'disabled': user.gaming.tribute == 0}" ng-if="post.author.id != user.info.id"><i class="fa fa-thumbs-up"></i> Me gusta</a>
-                  </li>
-                  <li class="action" ng-if="post.liked != 1">
-                    <a href="" ng-click="post_vote(post, 'down')" ng-class="{'hated': post.liked == -1, 'disabled': user.gaming.shit == 0}" class="btn btn-default btn-round" ng-if="post.author.id != user.info.id"><i class="fa fa-trash"></i> Esto apesta</a>
                   </li>
                 </ul>
 
@@ -739,9 +734,6 @@
                               <li ng-if="post.is_question && (!post.solved && aacl.can('solve', 'posts', user.info, post.author.id, post.category.id))">
                                 <a href="" ng-click="setBestAnswer(comment)"><i class="fa fa-check-circle"></i> Marcar como mejor respuesta</a>
                               </li>
-                              <li ng-if="comment.liked != 1 && comment.author.id != user.info.id && user.gaming.shit > 0">
-                                <a href="" ng-click="comment_vote(post.id, comment, 'down')" ng-class="{'hated': comment.liked == -1}"><i class="sgi gray shit"></i> Esto apesta</a>
-                              </li>
                               <li>
                                 <a href="" ng-class="{disabled: comment.editing}" ng-if="aacl.can('edit', 'comments', user.info, comment.author.id, post.category.id)" ng-click="editCommentShow(comment)"><i class="fa fa-pencil"></i> Editar comentario</a>
                               </li>
@@ -758,11 +750,6 @@
                         <li class="item-liked" ng-if="comment.votes.up > 0">
                           <div class="Post-likedBy">
                             <i class="icon fa fa-fw fa-thumbs-o-up "></i>A <a href="#">{{ comment.votes.up }} {{comment.votes.up > 1 ? 'personas':'persona'}}</a> {{comment.votes.up > 1 ? 'les gusta':'le gusta'}}.
-                          </div>
-                        </li>
-                        <li class="item-liked" ng-if="comment.votes.down > 0">
-                          <div class="Post-likedBy">
-                            <i class="icon fa fa-fw fa-thumbs-o-down "></i><a href="#">{{ comment.votes.down }} {{comment.votes.down > 1 ? 'personas':'persona'}}</a> {{comment.votes.down > 1 ? 'piensan que apesta':'piensa que apesta'}}.
                           </div>
                         </li>
                         <li class="item-replies hidden">
