@@ -47,7 +47,7 @@
     <link type="text/css" rel="stylesheet" href="/css/app.css?v=105">
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyARHDveGvdCsoE981eULSFkBtKU-ua4XoQ" async defer></script>
     <script type="text/javascript" src="js/offline.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.6/socket.io.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
     <script src='https://cdn.firebase.com/js/client/2.2.1/firebase.js'></script>
     <script src="https://cdn.firebase.com/libs/angularfire/1.1.1/angularfire.min.js"></script>
     <script type="text/javascript" src="js/config.js"></script>
@@ -115,7 +115,7 @@
           <li ng-if="location.path() == '/donacion' || location.path() == '/compra-en-legion'">
             <a href="/"><i class="fa fa-users"></i> Comunidad</a>
           </li>
-          <li class="hidden-md"><a href="/asistente/" target="_blank"><i class="fa fa-desktop"></i> Pedir Spartana</a></li>
+          <li class="hidden-md"><a href="/asistente/" target="_blank"><i class="fa fa-desktop"></i> Pedir PC Spartana</a></li>
           <li class="dropdown" uib-dropdown>
             <a uib-dropdown-toggle href="">
               Secciones <span class="caret"></span>
@@ -125,7 +125,7 @@
               <li><a href="https://www.youtube.com/channel/UCk5P7-ZHAS8ddSEkUA2yXHA" alt="Canal de Youtube" target="_blank"><i class="fa fa-youtube-play"></i> Canal de Youtube</a></li>
               <li role="separator" class="divider"></li>
               <li><a href="/workstations/" target="_blank"><i class="fa fa-desktop"></i> Workstations <span class="label label-success">Nuevo</span></a></li>
-              <li><a href="/asistente/" target="_blank"><i class="fa fa-desktop"></i> Pedir una Spartana</a></li>
+              <li><a href="/asistente/" target="_blank"><i class="fa fa-desktop"></i> Pedir PC Spartana</a></li>
               <li class="divider"></li>
               <li ng-if="location.path() != '/donacion' && location.path() != '/compra-en-legion'">
                 <a href="/donacion"><i class="fa fa-heart" style="color: #FF6E6E; padding-right: 5px;" aria-hidden="true"></i> Donar</a>
