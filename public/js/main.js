@@ -7256,22 +7256,18 @@ services.service('modalService', ['$uibModal', function ($modal) {
 }]);
 
 services.factory('socket', function (socketFactory) {
-  var socket_config = {};
-
-  var idToken = localStorage.getItem('id_token');
-  if(idToken === null) {
-    socket_config = {
-      //prefix: 'foo~',
-      ioSocket: io.connect(socketio_url)
-    };
-  } else {
-    socket_config = {
-      //prefix: 'foo~',
-      ioSocket: io.connect(socketio_url, {'query': 'token=' + idToken})
-    };
+  var params = {forceNew: true};
+  var idToken = localStorage.getItem('id_token') || false;
+  if (idToken) {
+    params.query = 'token='+idToken;
   }
 
-  return socketFactory(socket_config);
+  var socket = io(socketio_url, params);
+  var factory = socketFactory({
+    ioSocket: socket
+  });
+
+  return factory;
 })
 
 var FeedService = ['$resource', function($resource) {
@@ -7665,6 +7661,7 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
             if(debug) console.log("New event: new-comment", data);
             for(var i = 0; i < $scope.posts.length; i++) {
               if($scope.posts[i].id == data.id) {
+                console.log($scope.posts[i]);
                 if(!$scope.posts[i].comments.new) {
                   $scope.posts[i].comments.new = 0;
                 }

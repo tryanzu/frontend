@@ -78,20 +78,16 @@ services.service('modalService', ['$uibModal', function ($modal) {
 }]);
 
 services.factory('socket', function (socketFactory) {
-  var socket_config = {};
-
-  var idToken = localStorage.getItem('id_token');
-  if(idToken === null) {
-    socket_config = {
-      //prefix: 'foo~',
-      ioSocket: io.connect(socketio_url)
-    };
-  } else {
-    socket_config = {
-      //prefix: 'foo~',
-      ioSocket: io.connect(socketio_url, {'query': 'token=' + idToken})
-    };
+  var params = {forceNew: true};
+  var idToken = localStorage.getItem('id_token') || false;
+  if (idToken) {
+    params.query = 'token='+idToken;
   }
 
-  return socketFactory(socket_config);
+  var socket = io(socketio_url, params);
+  var factory = socketFactory({
+    ioSocket: socket
+  });
+
+  return factory;
 })

@@ -364,6 +364,7 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
             if(debug) console.log("New event: new-comment", data);
             for(var i = 0; i < $scope.posts.length; i++) {
               if($scope.posts[i].id == data.id) {
+                console.log($scope.posts[i]);
                 if(!$scope.posts[i].comments.new) {
                   $scope.posts[i].comments.new = 0;
                 }

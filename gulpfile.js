@@ -57,6 +57,7 @@ gulp.task('serve', ['styles', 'scripts'], function() {
 
   gulp.watch("assets/less/*.less", ['styles']);
   gulp.watch("assets/js/*.js", ['scripts']);
+  gulp.watch("assets/js/**/*.js", ['scripts']);
   gulp.watch("public/app/partials/*.html").on('change', browserSync.reload);
   gulp.watch("public/js/partials/store/*.html").on('change', browserSync.reload);
   gulp.watch("public/*.html").on('change', browserSync.reload);
