@@ -36,7 +36,6 @@
 // @codekit-prepend modules/top/init.js
 // @codekit-prepend modules/search/search.js
 // @codekit-prepend modules/components/components.js
-// @codekit-prepend modules/tournament/init.js
 // @codekit-prepend modules/events/event.js
 
 var version = '106';
@@ -49,9 +48,7 @@ var boardApplication = angular.module('board', [
     'sg.services',
     'activeReader',
     'hc.marked',
-    //'idiotWizzy',
     'infinite-scroll',
-    //'facebook',
     'feedModule',
     'categoryModule',
     'readerModule',
@@ -62,12 +59,10 @@ var boardApplication = angular.module('board', [
     'sg.module.components',
     'sg.module.badges',
     'sg.module.top',
-    'sg.module.tournament',
     'sg.module.events',
     'angular-jwt',
     'firebase',
     'ngFileUpload',
-    //'smartArea',
     'monospaced.elastic',
     'mentio',
     'uiSwitch',
@@ -76,12 +71,9 @@ var boardApplication = angular.module('board', [
     'searchBar',
     'btford.socket-io',
     'ngGeolocation',
-    //'siderbar',
 ]);
 
-boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'markedProvider', 'AclServiceProvider',
-    function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, markedProvider, AclServiceProvider) {
-
+boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'markedProvider', 'AclServiceProvider', function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, markedProvider, AclServiceProvider) {
         $routeProvider.when('/home', {
             templateUrl: '/app/partials/home.html?v=' + version
         });
