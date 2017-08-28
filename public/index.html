@@ -43,7 +43,6 @@
     <meta name="msapplication-TileImage" content="/favicon/ms-icon-144x144.png">
     <meta name="theme-color" content="#ffffff">
     <!-- /Favicon -->
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
     <link type="text/css" rel="stylesheet" href="/css/app.css?v=105">
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyARHDveGvdCsoE981eULSFkBtKU-ua4XoQ" async defer></script>
     <script type="text/javascript" src="js/offline.js"></script>
@@ -53,6 +52,8 @@
     <script type="text/javascript" src="js/config.js"></script>
     <script type="text/javascript" src="js/main.js?v=105"></script>
 
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/tachyons@4.8.0/css/tachyons.min.css"/>
 </head>
 <body ng-controller="MainController">
   <!-- Google Tag Manager -->
@@ -63,17 +64,6 @@
   j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   '//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
   })(window,document,'script','dataLayer','GTM-MQWXX7');</script>
-  <!-- End Google Tag Manager -->
-  <script type="text/javascript">
-  (function(d, s, id) {
-    var e, f = d.getElementsByTagName(s)[0];
-    if (d.getElementById(id)) {return;}
-    e = d.createElement(s); e.id = id;
-    e.src = 'https://cdn.siftscience.com/s.js';
-    f.parentNode.insertBefore(e, f);
-  })(document, 'script', 'sift-beacon');
-  </script>
-
   <div ng-if="update.available" class="ns-box ns-bar ns-effect-slidetop ns-type-notice" ng-class="{'ns-show': update.show}" ng-cloak>
     <div class="ns-box-inner">
       <i class="fa fa-exclamation-triangle"></i>
@@ -127,9 +117,6 @@
               <li><a href="/workstations/" target="_blank"><i class="fa fa-desktop"></i> Workstations <span class="label label-success">Nuevo</span></a></li>
               <li><a href="/asistente/" target="_blank"><i class="fa fa-desktop"></i> Pedir PC Spartana</a></li>
               <li class="divider"></li>
-              <li ng-if="location.path() != '/donacion' && location.path() != '/compra-en-legion'">
-                <a href="/donacion"><i class="fa fa-heart" style="color: #FF6E6E; padding-right: 5px;" aria-hidden="true"></i> Donar</a>
-              </li>
               <li><a href="/reglamento"><i class="fa fa-hand-peace-o"></i> Reglamento</a></li>
               <li><a href="/terminos-y-condiciones"><i class="fa fa-file-text"></i> Términos y Condiciones</a></li>
               <li><a href="/about"><i class="fa fa-fw fa-question"></i> Acerca de...</a></li>
@@ -235,41 +222,6 @@
             </ul>
           </li>
         </ul>
-
-        <ul class="nav navbar-nav navbar-right" ng-if="cart.getCount() > 0" ng-cloak>
-          <li uib-dropdown is-open="cart.isopen">
-            <a href="" uib-dropdown-toggle>
-              <span class="icon"><i class="fa fa-shopping-cart"></i></span>
-              <span class="label visible-lg-inline">Carrito ({{ cart.getCount() }})</span></span>
-            </a>
-            <ul class="dropdown-menu cart-list" style="min-width: 420px;" role="menu">
-              <li class="no-elements" ng-if="cart.items.length == 0">
-                <a>No has agregado componentes</a>
-              </li>
-              <li ng-repeat="item in cart.items track by $index">
-                <div class="cart-element">
-                  <div class="component-thumbnail">
-                    <img ng-src="https://assets.spartangeek.com/components/{{ item.image }}" alt="{{ item.full_name || item.name }}" ng-if="item.image">
-                    <img src="/images/noimage.jpg" alt="{{ item.full_name || item.name }}" ng-if="!item.image">
-                  </div>
-                  <div class="info">{{ item.fullname || item.name}} <span class="multiplier">x {{ item.quantity | number:0 }}</span><p class="price">{{ item.price * item.quantity | currency:'$':0 }}</p></div>
-                </div>
-              </li>
-              <li ng-if="cart.items.length > 0">
-                <div style="padding: 0.4em 2.5em 0.9em;">
-                  Costo de envío: {{ cart.getShippingFee() | currency:'$ ':0 }} MXN
-                </div>
-              </li>
-              <li ng-if="cart.items.length > 0">
-                <div class="text-center">
-                  <a href="/componentes/tienda" class="btn btn-default"><span class="label">Catálogo de componentes</span></a>
-                  <a href="/componentes/checkout" class="btn btn-primary"><span class="label">Editar carrito / Finalizar pedido</span></a>
-                </div>
-              </li>
-            </ul>
-          </li>
-        </ul>
-
       </div><!-- /.navbar-collapse -->
 
     </div><!-- /.container -->
