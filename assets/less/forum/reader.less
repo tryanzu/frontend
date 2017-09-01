@@ -125,10 +125,14 @@
   .content {
     padding-top: 1em;
     word-wrap: break-word;
-    margin-bottom: 1em;
+    margin-bottom: 0;
 
     p {
       line-height: 24px;
+    }
+
+    p:last-child {
+      margin-bottom: 0;
     }
   }
 }
@@ -167,7 +171,7 @@
 
 .current-article .answers {
   margin-top: 1em;
-  margin-bottom: 2em;
+  margin-bottom: 0;
   padding: 0.6em 0 0.6em;
   border-bottom: 2px solid @brand-primary-lighter;
 
@@ -204,7 +208,6 @@
       font-weight: 600;
       color: #111;
       margin-right: 0.4em;
-      font-family: "Proxima";
       font-size: 15px;
     }
   }
@@ -226,9 +229,8 @@
   margin-left: -1em;
 
   .comment {
-    border-bottom: 1px solid #F4F6F8;
-    margin-bottom: 2em;
-    padding: 1em;
+    margin-bottom: 0;
+    padding: 1rem 1em;
     position: relative;
 
     &:after {
@@ -339,9 +341,8 @@
 }
 
 .post-actions {
-  margin-top: 0.5em;
-  margin-bottom: 1.2em;
   list-style-type: none;
+  margin: 0;
   padding-left: 0;
   text-align: right;
 
@@ -352,8 +353,8 @@
   }
 
   .action {
+    margin: 0;
     display: inline-block;
-    margin-left: 1.2em;
   }
 }
 

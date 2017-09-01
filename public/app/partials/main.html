@@ -1,836 +1,745 @@
-  <main class="main-reader">
-    <div class="row row-no-padding">
-      <div class="col-md-4 col-sm-5" ng-class="{'hidden-xs': activePostId != null}">
-        <div class="row row-no-padding">
-          <div class="col-md-12">
-            <div class="feed-sidebar">
-              <div class="category-selector">
-                <div id="actions" class="row" ng-if="user.isLogged">
-                  <div class="" ng-class="{'col-xs-8': category.slug != null, 'col-xs-6': category.slug == null}">
-                    <a href="/" ng-if="category.slug != null" style="margin-right: 1rem;" ng-click="toggleCategories()"><h2><i class="fa fa-chevron-left"></i></h2></a>
-                    <h2>{{ category.name || "Mi Feed personal" }}</h2>
-                  </div>
-                  <div class="text-right" ng-class="{'col-xs-4': category.slug != null, 'col-xs-6': category.slug == null}" ng-if="category.id == null">
-                    <a class="btn btn-default btn-sm" href="" ng-click="toggleCategories()" ng-if="status.show_categories"><i class="fa fa-chevron-up"></i> Ocultar</a>
-                    <a class="btn btn-default btn-sm" href="" ng-click="toggleCategories()" ng-if="!status.show_categories"><i class="fa fa-th-large" aria-hidden="true"></i> Categorías</a>
-                  </div>
+<main class="main-reader">
+  <div class="row row-no-padding">
+    <div class="col-md-4 col-sm-5" ng-class="{'hidden-xs': activePostId != null}">
+      <div class="row row-no-padding">
+        <div class="col-md-12">
+          <div class="feed-sidebar">
+            <div class="category-selector">
+              <div id="actions" class="columns pa2" ng-if="user.isLogged">
+                <div class="column">
+                  <a href="/" ng-if="category.slug != null" style="margin-right: 1rem;" ng-click="toggleCategories()"><h2><i class="fa fa-chevron-left"></i></h2></a>
+                  <h2>{{ category.name || "Mis categorias" }}</h2>
                 </div>
-                <div id="actions" class="row" ng-if="!user.isLogged">
-                  <div class="" ng-class="{'col-xs-12': category.slug != null, 'col-xs-1': category.slug == null}">
-                    <a href="/" ng-if="category.slug != null" style="margin-right: 1rem;" ng-click="toggleCategories()"><h2><i class="fa fa-chevron-left"></i></h2></a>
-                    <h2>{{ category.name }}</h2>
-                  </div>
-                  <div class="text-right" ng-class="{'col-xs-4': category.slug != null, 'col-xs-11': category.slug == null}" ng-if="category.id == null">
-                    <a class="btn btn-default btn-sm" href="" ng-click="toggleCategories()" ng-if="status.show_categories"><i class="fa fa-chevron-up"></i> Ocultar</a>
-                    <a class="btn btn-default btn-sm" href="" ng-click="toggleCategories()" ng-if="!status.show_categories"><i class="fa fa-th-large" aria-hidden="true"></i> Categorías</a>
-                  </div>
-                </div>
-                <div id="instructions" ng-if="user.isLogged && status.show_categories">
-                  <div class="row">
-                    <div class="col-xs-12">
-                      <p>Puedes personalizar la lista de publicaciones seleccionando únicamente las categorías que te interesan</p>
-                      <div class="text-right" ng-if="user.info.categories.length < 63 || ! user.info.categories">
-                        <span class="see-in-feed">Suscribirme a todas</span>
-                        <switch id="enabled" name="enabled" ng-model="dummy" ng-change="subscribeToAll()" on="Si" off="No" class="sg"></switch>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div id="category-list" ng-if="status.show_categories" style="overflow-y: scroll;" adjust-height>
-                  <ul>
-                    <li ng-repeat="c in categories">
-                      <div class="category-header" ng-style="{'background': 'url(/images/boards/' + c.slug + '.png)'}">
-                        <div class="layer"></div>
-                        <div class="content">
-                          <h4>{{c.name}}</h4>
-                          <p>{{c.description}}</p>
-                        </div>
-                      </div>
-                      <ul class="subcategories">
-                        <li ng-repeat="s in c.subcategories">
-                          <div class="row">
-                            <div class="col-md-6 col-xs-6">
-                              <a href="/c/{{ s.slug }}" uib-tooltip="Haz click para ver sólo esta categoría" tooltip-placement="right">{{ s.name }}</a>
-                            </div>
-                            <div class="col-md-6 col-xs-6 text-right" ng-if="user.isLogged">
-                              <span class="see-in-feed">Suscribirme</span>
-                              <switch id="enabled" name="enabled" ng-model="s.selected" ng-change="toggleSubscription(s)" on="Si" off="No" class="sg"></switch>
-                            </div>
-                          </div>
-                        </li>
-                      </ul>
-                    </li>
-                  </ul>
+                <div class="column tr" ng-if="category.id == null">
+                  <a class="btn btn-default btn-sm" ng-click="toggleCategories()" ng-if="status.show_categories"><i class="fa fa-chevron-up"></i> Ocultar</a>
+                  <a class="btn btn-default btn-sm" ng-click="toggleCategories()" ng-if="!status.show_categories"><i class="icon icon-menu"></i> Navegar Categorías</a>
                 </div>
               </div>
-
-              <div class="feed-type-actions" ng-if="!status.show_categories">
+              <div id="actions" class="pa2" ng-if="user.isLogged == false">
+                <div ng-if="category.slug != null">
+                  <a href="/" style="margin-right: 1rem;" ng-click="toggleCategories()"><h2><i class="fa fa-chevron-left"></i></h2></a>
+                  <h2>{{ category.name }}</h2>
+                </div>
+                <div class="text-right" ng-class="{'col-xs-4': category.slug != null}" ng-if="category.id == null">
+                  <a class="btn btn-default btn-sm" href="" ng-click="toggleCategories()" ng-if="status.show_categories"><i class="fa fa-chevron-up"></i> Ocultar categorías</a>
+                  <a class="btn btn-default btn-sm" href="" ng-click="toggleCategories()" ng-if="!status.show_categories"><i class="icon icon-menu"></i> Navegar Categorías</a>
+                </div>
+              </div>
+              <div id="feed-menu" class="pa2 bb b--light-gray" ng-if="!status.show_categories">
+                <div class="columns">
+                  <div class="column col-6">
+                    <div class="btn-group btn-group-block">
+                      <button class="btn btn-sm" ng-class="{active: !viewing.top_posts}" ng-click="hideTopPosts()">Todas</button>
+                      <button class="btn btn-sm" ng-class="{active: viewing.top_posts}" ng-click="showTopPosts()">Populares</button>
+                    </div>
+                  </div>
+                  <div class="column col-6 tr">
+                    <a href="/post/create/{{ category.slug || '' }}" class="btn btn-sm btn-primary" ng-if="user.isLogged && user.info.validated">
+                      Crear publicación
+                    </a>
+                  </div>
+                </div>
+              </div>
+              <div id="instructions" ng-if="user.isLogged && status.show_categories">
                 <div class="row">
                   <div class="col-xs-12">
-                    <div class="btn-toolbar">
-                      <div class="btn-group">
-                        <label class="btn btn-default btn-sm" ng-model="viewing.top_posts" uib-btn-radio="false"><span class="hidden-xs hidden-sm hidden-md label">Ver todas</span><span class="hidden-lg label">Todas</span></label>
-                        <label class="btn btn-default btn-sm" ng-model="viewing.top_posts" uib-btn-radio="true" ng-click="getTopFeed()"><span class="hidden-xs hidden-sm hidden-md label">Más populares</span><span class="hidden-lg label">Populares</span></label>
-                      </div>
-                      <a href="" class="btn btn-default btn-sm" ng-click="getTopFeed()" ng-if="viewing.top_posts"><i class="fa fa-refresh"></i></a>
-
-                      <a href="/post/create/{{ category.slug }}" class="btn btn-primary btn-sm" style="float:right;" ng-if="user.isLogged && user.info.validated"><span class="label">Crear publicación</span></a>
-                      <a href="/u/{{user.info.username}}/{{user.info.id}}/?section=config" class="btn btn-primary btn-sm" style="float:right;" ng-if="user.isLogged && !user.info.validated"><span class="label">Validar cuenta</span></a>
-                      <a href="" ng-click="signIn()" class="btn btn-primary btn-sm" style="float:right;" ng-if="!user.isLogged"><span class="label">Crear publicación</span></a>
+                    <p>Puedes personalizar la lista de publicaciones seleccionando únicamente las categorías que te interesan</p>
+                    <div class="text-right" ng-if="user.info.categories.length < 63 || ! user.info.categories">
+                      <span class="see-in-feed">Suscribirme a todas</span>
+                      <switch id="enabled" name="enabled" ng-model="dummy" ng-change="subscribeToAll()" on="Si" off="No" class="sg"></switch>
                     </div>
                   </div>
                 </div>
               </div>
-
-              <div class="new-posts" ng-cloak ng-if="status.pending > 0 && !status.show_categories" ng-click="getNewer()" ng-class="{'loading': resolving.newer}">
-                <span ng-if="!resolving.newer">Ver {{ status.pending }} {{ status.pending == 1?'publicación nueva':'publicaciones nuevas' }}</span>
-                <span ng-if="resolving.newer">Cargando...</span>
-                <span class="new-posts-cancel" ng-click="getNewer(false)"><i class="fa fa-times-circle" aria-hidden="true"></i></span>
-              </div>
-
-              <div class="no-feed-error" ng-if="posts.length == 0 && resolving.loaded && category.id != null">
-                No hay publicaciones en esta categoría. Sé el primero en <a href="/post/create/{{ category.slug }}">escribir una publicación</a>.
-              </div>
-
-              <div class="no-feed-error" ng-if="posts.length == 0 && resolving.loaded && category.id == null">
-                Estás suscrito sólo a categorías que no tienen publicaciones, <a href="" ng-click="toggleCategories()">agrega más categorías</a> para unirte a alguna conversación.
-              </div>
-
-              <ul class="discussions-list" scroll-me="walkFeed()" ng-hide="resolving.categories || viewing.top_posts" adjust-height>
-                <li data-id="{{ post.id }}" class="discussion-summary" ng-class="{'active': post.id === $parent.activePostId, 'unread': post.unread == true, 'new': post.new == true}" ng-repeat="post in posts | orderBy:['pinned','-created_at']" ng-click="consolidateComments(post)" ng-cloak>
-                  <div>
-                    <a href="/u/{{ post.author.username }}/{{ post.author.id }}" class="author" title="Escrito por {{ post.author.username }}">
-                      <span class="avatar" title="{{ post.author.username }}" ng-if="!post.author.image">{{ post.author.username[0] }}</span>
-                      <img class="avatar" ng-src="{{ post.author.image }}" alt="{{ post.author.username }}" ng-if="post.author.image">
-                    </a>
-                    <a href="/p/{{ post.slug }}/{{ post.id }}" class="main">
-                      <h3 class="title">{{ post.title }}</h3>
-                      <ul class="info">
-                        <li class="">
-                          <span>
-                            Escrito por <span class="username">{{ post.author.username }}</span> <time time-ago from-time='{{ post.created_at }}'></time>
-                          </span>
-                        </li>
-                      </ul>
-                      <ul class="extra-info">
-                        <li class="pinned" ng-if="post.pinned">
-                          <i class="fa fa-exclamation-circle"></i> <span>Importante</span>
-                        </li>
-                        <li class="category">
-                          <i class="fa fa-asterisk" ng-style="{'color': post.category.color}"></i> <span class="label-category">{{ post.category.name }}</span>
-                        </li>
-                        <li class="solved" ng-if="post.solved">
-                          <i class="fa fa-check-circle"></i> <span>Resuelto</span>
-                        </li>
-                      </ul>
-                    </a>
-                    <span class="count">{{ post.comments.count }}<span class="label">{{ post.comments.count==1?'Respuesta':'Respuestas'}}</span><span class="new" ng-if="post.comments.new > 0">+{{ post.comments.new }}</span></span>
-                  </div>
-                </li>
-                <div class="resolving" ng-if="resolving.older">
-                  <i class="fa fa-asterisk fa-spin"></i>
-                </div>
-              </ul>
-
-              <ul class="discussions-list" ng-if="!resolving.categories && viewing.top_posts" adjust-height>
-                <li data-id="{{ post.id }}" class="discussion-summary" ng-class="{'active': post.id === $parent.activePostId, 'unread new': post.unread == true}" ng-repeat="post in top_posts" ng-cloak>
-                  <div>
-                    <a href="/u/{{ post.author.username }}/{{ post.author.id }}" class="author" title="Escrito por {{ post.author.username }}">
-                      <span class="avatar" title="{{ post.author.username }}" ng-if="!post.author.image">{{ post.author.username[0] }}</span>
-                      <img class="avatar" ng-src="{{ post.author.image }}" alt="{{ post.author.username }}" ng-if="post.author.image">
-                    </a>
-                    <a href="/p/{{ post.slug }}/{{ post.id }}" class="main">
-                      <h3 class="title">{{ post.title }}</h3>
-                      <ul class="info">
-                        <li class="">
-                          <span>
-                            Escrito por <span class="username">{{ post.author.username }}</span> <time time-ago from-time="{{ post.created_at}}"></time>
-                          </span>
-                        </li>
-                      </ul>
-                      <ul class="extra-info">
-                        <li class="category" ng-if="category.slug === '' || true">
-                          <span class="ball" ng-style="{'background-color': post.category.color}"></span>
-                          <span class="name">{{ post.category.name }}</span>
-                        </li>
-                        <li class="pinned" ng-if="post.pinned">
-                          <i class="fa fa-exclamation-circle"></i> <span>Importante</span>
-                        </li>
-                      </ul>
-                    </a>
-                    <span class="count">{{ post.comments.count }}<span class="label">{{ post.comments.count==1?'Respuesta':'Respuestas'}}</span></span>
-                  </div>
-                </li>
-                <div class="resolving" ng-if="resolving_posts">
-                  <i class="fa fa-asterisk fa-spin"></i>
-                </div>
-              </ul>
-
-              <div class="resolving" ng-if="resolving.categories">
-                <i class="fa fa-asterisk fa-spin"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-8 col-sm-7" ng-class="{'hidden-xs': activePostId == null}">
-        <div class="current-article" ng-controller="ReaderViewController" adjust-height>
-
-          <div class="waiting" ng-show="waiting">
-            <section>
-              <ul class="page-stats">
-                <li ng-cloak>
-                  <i class="fa fa-users"></i> <span class="hidden-md">Usuarios</span>: {{ status.stats.users | number:0 }}
-                </li>
-                <li ng-cloak>
-                  <i class="fa fa-file"></i> <span class="hidden-md">Publicaciones</span>: {{ status.stats.posts | number:0 }}
-                </li>
-                <li ng-cloak>
-                  <i class="fa fa-comments"></i> <span class="hidden-md">Comentarios</span>: {{ status.stats.comments | number:0 }}
-                </li>
-              </ul>
-            </section>
-            <section>
-              <div class="row">
-                <div class="col-md-6 text-left">
-                  <h4>Resuelve tus dudas y ayuda a otros</h4>
-
-                  <p><strong>¿Tienes preguntas sobre tecnología, videojuegos, o cualquier otro tema geek?</strong> Publica tus dudas y seguramente tendrás respuestas.<br>
-                  <strong>¿Eres experto en algo?</strong> Ayuda a los demás y aumenta tu rango en la comunidad.</p>
-
-                  <hr>
-                  <h4>Únete a la conversación</h4>
-                  <p>Puedes ver a la <strong>izquierda</strong> las publicaciones de otros espartanos, nuestros foros y nuestras recomendaciones, empieza viendo y únete a la conversación.</p>
-                </div>
-                <div class="col-md-6">
-                  <figure align="right">
-                  <img src="/images/home-browser.png" alt="SpartanGeek Window">
-                  </figure>
-                </div>
-              </div>
-            </section>
-            <section>
-              <div class="row">
-                <div class="col-md-6 text-center">
-                  <a href="/asistente" target="_blank" class="section-resume">
-                    <img src="/images/home-shop.png">
-                    <h2>Compra una PC</h2>
-                  </a>
-                  <a href="/asistente" target="_blank" class="btn btn-sm btn-success mb-20">Ir a la tienda</a>
-                  <p>Usa nuestro asistente para que conozcamos tus necesidades y podamos ofrecerte una PC de acuerdo a tus necesidades y presupuesto.</p>
-                </div>
-                <div class="col-md-6 text-center">
-                  <a href="/chat" class="section-resume">
-                    <img src="/images/home-chat.png">
-                    <h2>Chat</h2>
-                  </a>
-                  <a href="/chat" class="btn btn-sm btn-success mb-20">Quiero chatear</a>
-                  <p>Platica con todos los spartanos de la comunidad.</p>
-                </div>
-              </div>
-            </section>
-          </div>
-
-          <div ng-hide="waiting">
-            <div class="back-to-list visible-xs-block">
-              <a href="/" ng-click="activePostId = null"><i class="fa fa-chevron-left"></i> Regresar al listado de publicaciones</a>
-            </div>
-
-            <div class="resolving" ng-hide="!resolving">
-              <img src="/images/head.png" />
-              <h4>Cargando</h4>
-              <i class="fa fa-asterisk fa-spin"></i>
-            </div>
-
-            <div class="resolving" ng-show="error_loading">
-              <img src="/images/head.png" />
-              <h4>Error 404</h4>
-              <p>No encontramos la publicación que estabas buscando.</p>
-            </div>
-
-            <div ng-hide="resolving || error_loading">
-              <div class="header">
-                <ul class="DiscussionHero-items">
-                  <li class="item-badges">
-                    <ul class="DiscussionHero-badges badges">
-                      <li class="item-sticky" ng-if="post.pinned">
-                        <span class="Badge Badge--sticky " title="Sticky" uib-tooltip="Importante" tooltip-placement="bottom"><i class="icon fa fa-fw fa-thumb-tack Badge-icon"></i></span>
-                      </li>
-                      <li class="item-solved" ng-if="post.solved">
-                        <span class="Badge Badge--solved " title="Sticky" data-original-title="Sticky"><i class="icon fa fa-fw fa-check Badge-icon"></i></span>
-                      </li>
-                      <li class="item-subscription" ng-if="false">
-                        <span class="Badge Badge--following " title="Following" data-original-title="Following"><i class="icon fa fa-fw fa-star Badge-icon"></i></span>
-                      </li>
-                      <li class="item-locked" ng-if="post.lock">
-                        <span class="Badge Badge--locked " title="Locked" uib-tooltip="Comentarios cerrados" tooltip-placement="bottom"><i class="icon fa fa-fw fa-lock Badge-icon"></i></span>
-                      </li>
-                    </ul>
-                  </li>
-                  <li class="item-tags">
-                    <h2><i class="fa fa-asterisk" ng-style="{'color': post.category.color}"></i> {{ post.category.name }}</h2>
-                  </li>
-                  <li class="item-title"><h1 class="DiscussionHero-title">{{ post.title }}</h1></li>
-                </ul>
-              </div>
-
-              <nav class="discussion-nav">
-                <ul>
-                  <li class="primary-control" ng-if="!post.lock">
-                    <a class=" btn btn-primary" href="" ng-click="show_composer()" ng-if="user.isLogged">
-                      <i class="fa fa-fw fa-reply icon"></i> <span class="label">Responder</span>
-                    </a>
-                    <a class=" btn btn-primary" href="" ng-click="signIn()" ng-if="!user.isLogged">
-                      <i class="fa fa-fw fa-reply icon"></i> <span class="label">Quiero comentar</span>
-                    </a>
-                  </li>
-                  <li class="title-control">
-                    <div class="stream-scrubber uib-dropdown hidden-xs">
-                      <a href="#" data-toggle="dropdown" class="btn btn-default dropdown-toggle">
-                        <span class="index">{{ scrubber.current_c }}</span> de <span class="count">{{ post.comments.count + 1}}</span> mensajes <i class="fa fa-fw fa-sort icon-glyph"></i>
-                      </a>
-                      <div class="dropdown-menu">
-                        <div class="scrubber">
-                          <a href="#" class="scrubber-first">
-                            <i class="fa fa-fw fa-angle-double-up"></i> Mensaje original
-                          </a>
-                          <div class="scrubber-scrollbar" style="max-height: 285px; cursor: pointer; -webkit-user-select: none;">
-                            <div class="scrubber-before" style="height: 55%;"></div>
-                            <div class="scrubber-slider" style="height: 45%; cursor: move;">
-                              <div class="scrubber-handle"></div>
-                              <div class="scrubber-info" ng-cloak>
-                                <strong><span class="index">{{ scrubber.current_c + 1 }}</span> de <span class="count">{{ post.comments.count + 1 }}</span> mensajes</strong>
-                                <span class="description" ng-if="scrubber.current_c == 0">{{ post.created_at | date_at }}</span>
-                                <span class="description" ng-if="scrubber.current_c > 0">{{ post.comments.set[post.comments.set.length - scrubber.current_c].created_at | date_at }}</span>
-                              </div>
-                            </div>
-                            <div class="scrubber-after" style="height: 0%;"></div>
+              <div id="category-list" class="overflow-y-auto" ng-if="status.show_categories" adjust-height>
+                <ul class="ma0">
+                  <li class="ma0" ng-repeat="c in categories">
+                    <div class="category-header" ng-style="{'background': 'url(/images/boards/' + c.slug + '.png)'}">
+                      <div class="layer"></div>
+                      <div class="content pa2">
+                        <h4 class="white f6">{{c.name}}</h4>
+                        <p class="near-white ma0">{{c.description}}</p>
+                      </div>
+                    </div>
+                    <ul class="ma0 subcategories">
+                      <li class="ma0" ng-repeat="s in c.subcategories">
+                        <div class="columns">
+                          <div class="column"><a href="/c/{{ s.slug }}" class="tooltip tooltip-right" data-tooltip="Haz click para ver sólo esta categoría">{{ s.name }}</a></div>
+                          <div class="column tr" ng-if="user.isLogged">
+                            <span class="see-in-feed">Suscribirme</span>
+                            <switch id="enabled" name="enabled" ng-model="s.selected" ng-change="toggleSubscription(s)" on="Si" off="No" class="sg"></switch>
                           </div>
-                          <a href="#" class="scrubber-last"><i class="fa fa-fw fa-angle-double-down"></i> Ahora</a>
                         </div>
-                      </div>
-                    </div>
-                  </li>
-                </ul>
-              </nav>
-
-              <div class="discussion-posts">
-                <div class="float-actions text-right">
-                  <div class="btn-group" ng-if="aacl.can('delete', 'posts', user.info, post.author.id, post.category.id)" uib-dropdown>
-                    <button type="button" class="button button-icon button-flat" uib-dropdown-toggle>
-                      <i class="fa fa-pencil"></i>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-right">
-                      <li>
-                        <a href="/p/{{post.slug}}/{{post.id}}/edit" ng-if="aacl.can('edit', 'posts', user.info, post.author.id, post.category.id)" ng-click=""><i class="fa fa-pencil"></i> Editar publicación</a>
-                      </li>
-                      <li>
-                        <a href="" ng-if="aacl.can('delete', 'posts', user.info, post.author.id, post.category.id)" ng-click="deletePost()"><i class="fa fa-trash-o"></i> Eliminar publicación</a>
                       </li>
                     </ul>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div class="feed-type-actions" ng-if="false">
+              <div class="row">
+                <div class="col-xs-12">
+                  <div class="btn-toolbar">
+                    <div class="btn-group">
+                      <label class="btn btn-default btn-sm" ng-model="viewing.top_posts" uib-btn-radio="false"><span class="hidden-xs hidden-sm hidden-md">Ver todas</span><span class="hidden-lg">Todas</span></label>
+                      <label class="btn btn-default btn-sm" ng-model="viewing.top_posts" uib-btn-radio="true" ng-click="getTopFeed()"><span class="hidden-xs hidden-sm hidden-md">Más populares</span><span class="hidden-lg">Populares</span></label>
+                    </div>
+                    <a href="" class="btn btn-default btn-sm" ng-click="getTopFeed()" ng-if="viewing.top_posts"><i class="fa fa-refresh"></i></a>
+                    <a href="/post/create/{{ category.slug }}" class="btn btn-primary btn-sm" ng-if="user.isLogged && user.info.validated">Crear publicación</a>
+                    <a href="/u/{{user.info.username}}/{{user.info.id}}/?section=config" class="btn btn-primary btn-sm" style="float:right;" ng-if="user.isLogged && !user.info.validated"><span class="label">Validar cuenta</span></a>
+                    <a href="" ng-click="signIn()" class="btn btn-primary btn-sm" ng-if="!user.isLogged">Crear publicación</a>
                   </div>
                 </div>
-
-                <div class="comment-author">
-                  <a href="/u/{{ post.author.username }}/{{ post.author.id }}" title="Perfil de {{ post.author.username }}" ng-mouseover="toggleUserCard(post)">
-                    <img class="avatar" ng-src="{{ post.author.image }}" alt="{{ post.author.username }}" ng-if="post.author.image">
-                    <span class="avatar" title="{{ post.author.username }}" ng-if="!post.author.image">{{ post.author.username[0] }}</span>
-                  </a>
-                  <ul class="PostUser-badges badges">
-                    <li class="item-group1" ng-repeat="role in post.author.roles">
-                      <span ng-if="role.name == 'developer'" class="Badge Badge--group--Admin" style="background-color: rgb(103, 156, 77);" uib-tooltip="Developer"><i class="icon fa fa-fw fa-wrench Badge-icon"></i></span>
-                      <span ng-if="role.name == 'category-moderator'" class="Badge Badge--group--Staff" style="background-color: rgb(231, 103, 46);" uib-tooltip="Mod"><i class="icon fa fa-fw fa-gavel Badge-icon"></i></span>
-                      <span ng-if="role.name == 'administrator'" class="Badge Badge--group--Mod" style="background-color: #E85886" uib-tooltip="Staff"><i class="icon fa fa-fw fa-bolt Badge-icon"></i></span>
-                      <span ng-if="role.name == 'spartan-girl'" class="Badge Badge--group--SpartanGirl" style="background-color: rgb(128, 52, 158);" uib-tooltip="SpartanGirl"><i class="icon fa fa-fw fa-moon-o Badge-icon"></i></span>
+              </div>
+            </div>
+            <div class="new-posts" ng-cloak ng-if="status.pending > 0 && !status.show_categories" ng-click="getNewer()" ng-class="{'loading': resolving.newer}">
+              <span ng-if="!resolving.newer">Ver {{ status.pending }} {{ status.pending == 1?'publicación nueva':'publicaciones nuevas' }}</span>
+              <span ng-if="resolving.newer">Cargando...</span>
+              <span class="new-posts-cancel" ng-click="getNewer(false)"><i class="fa fa-times-circle" aria-hidden="true"></i></span>
+            </div>
+            <div class="no-feed-error" ng-if="posts.length == 0 && resolving.loaded && category.id != null">
+              No hay publicaciones en esta categoría. Sé el primero en <a href="/post/create/{{ category.slug }}">escribir una publicación</a>.
+            </div>
+            <div class="no-feed-error" ng-if="posts.length == 0 && resolving.loaded && category.id == null">
+              Estás suscrito sólo a categorías que no tienen publicaciones, <a href="" ng-click="toggleCategories()">agrega más categorías</a> para unirte a alguna conversación.
+            </div>
+            <ul class="discussions-list" scroll-me="walkFeed()" ng-hide="resolving.categories || viewing.top_posts" adjust-height>
+              <li data-id="{{ post.id }}" class="discussion-summary" ng-class="{'active': post.id === $parent.activePostId, 'unread': post.unread == true, 'new': post.new == true}" ng-repeat="post in posts | orderBy:['pinned','-created_at']" ng-click="consolidateComments(post)" ng-cloak>
+                <article class="columns pa2 items-center bb b--near-white">
+                  <a class="column" href="/u/{{ post.author.username }}/{{ post.author.id }}" title="Escrito por {{ post.author.username }}">
+                  <figure class="avatar" title="{{ post.author.username }}" ng-if="!post.author.image">{{ post.author.username[0] }}</figure>
+                  <figure class="avatar" title="{{ post.author.username }}" ng-if="post.author.image">
+                    <img ng-src="{{ post.author.image }}" alt="{{ post.author.username }}" />
+                  </figure>
+                </a>
+                <a class="column col-7" href="/p/{{ post.slug }}/{{ post.id }}">
+                  <h1 class="f7 near-black lh-title ma0 mb1">{{ post.title }}</h1>
+                  <span class="db truncate">
+                    Por <span class="username">{{ post.author.username }}</span> <time time-ago from-time='{{ post.created_at }}'></time>
+                  </span>
+                  <ul class="extra-info">
+                    <li class="pinned" ng-if="post.pinned">
+                      <i class="fa fa-exclamation-circle"></i> <span>Importante</span>
+                    </li>
+                    <li class="category">
+                      <i class="fa fa-asterisk" ng-style="{'color': post.category.color}"></i> <span class="label-category">{{ post.category.name }}</span>
+                    </li>
+                    <li class="solved" ng-if="post.solved">
+                      <i class="fa fa-check-circle"></i> <span>Resuelto</span>
                     </li>
                   </ul>
-                  <div class="UserCard" ng-class="{'UserCard--popover in': post.showAuthorAnimation }" style="background-color: #888;" ng-show="post.showAuthor " ng-mouseleave="toggleUserCard(post)">
-                    <div class="darkenBackground">
-                      <div class="container">
-                        <div class="UserCard-profile">
-                          <h2 class="UserCard-identity">
-                            <a href="/u/{{ post.author.username }}/{{ post.author.id }}">
-                              <div class="UserCard-avatar">
-                                <img class="avatar" ng-src="{{ post.author.image }}" ng-if="post.author.image">
-                                <span class="avatar" title="{{ post.author.username }}" ng-if="!post.author.image">{{ post.author.username[0] }}</span>
-                              </div>
-                              <span>{{ post.author.username }}</span>
-                            </a>
-                          </h2>
-                          <ul class="UserCard-badges badges">
-                            <li class="item-group1" ng-repeat="role in post.author.roles">
-                              <span ng-if="role.name == 'developer'" class="Badge Badge--group--Admin" style="background-color: rgb(103, 156, 77);" uib-tooltip="Developer"><i class="icon fa fa-fw fa-wrench Badge-icon"></i></span>
-                              <span ng-if="role.name == 'category-moderator'" class="Badge Badge--group--Staff" style="background-color: rgb(231, 103, 46);" uib-tooltip="Mod"><i class="icon fa fa-fw fa-gavel Badge-icon"></i></span>
-                              <span ng-if="role.name == 'administrator'" class="Badge Badge--group--Mod" style="background-color: #E85886" uib-tooltip="Staff"><i class="icon fa fa-fw fa-bolt Badge-icon"></i></span>
-                              <span ng-if="role.name == 'spartan-girl'" class="Badge Badge--group--SpartanGirl" style="background-color: rgb(128, 52, 158);" uib-tooltip="SpartanGirl"><i class="icon fa fa-fw fa-moon-o Badge-icon"></i></span>
-                            </li>
-                          </ul>
-                          <ul class="UserCard-info">
-                            <li class="item-bio">
-                              <div class="UserBio ">
-                                <div class="UserBio-content">
-                                  <p>{{ post.author.description }}</p>
-                                </div>
-                              </div>
-                            </li>
-                            <li class="item-game-tags">
-                              <div class="row">
-                                <div class="col-md-12">
-                                  <div class="row">
-                                    <div class="col-md-4">Steam</div>
-                                    <div class="col-md-8">{{ post.author.steam_id || 'No especificado'}}</div>
-                                  </div>
-                                </div>
-                                <div class="col-md-12" ng-show="post.author.origin_id != ''">
-                                  <div class="row">
-                                    <div class="col-md-4">Origin</div>
-                                    <div class="col-md-8">{{ post.author.origin_id || 'No especificado'}}</div>
-                                  </div>
-                                </div>
-                                <div class="col-md-12" ng-show="post.author.battlenet_id != ''">
-                                  <div class="row">
-                                    <div class="col-md-4">Battle.net</div>
-                                    <div class="col-md-8">{{ post.author.battlenet_id || 'No especificado'}}</div>
-                                  </div>
-                                </div>
-                              </table>
-                            </li>
-                            <li class="item-lastSeen">
-                              <span class="user-last-seen online" ng-if="post.author.status">
-                                <i class="fa fa-fw fa-circle"></i> Online
-                              </span>
-                              <span class="user-last-seen" ng-if="!post.author.status">
-                                <i class="fa fa-fw fa-circle-o"></i> Offline
-                              </span>
-                            </li>
-                            <li class="item-joined hidden">Se unió hace 8 meses</li>
-                          </ul>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="username">
-                    <a href="/u/{{ post.author.username }}/{{ post.author.id }}" title="Perfil de {{ post.author.username }}">{{ post.author.username }}</a>
-                    <span class="date dropdown" uib-dropdown auto-close="outsideClick" ng-if="!post.editing">
-                      <a href="" class="dropdown-toggle" uib-dropdown-toggle>
-                        <time>{{ post.created_at | timeAgo }}</time>
-                      </a>
-                      <div class="dropdown-menu post-meta">
-                        <span class="time">
-                          <time datetime="{{ post.created_at }}">
-                            Publicado el {{ post.created_at | date_at}}
-                          </time>
-                        </span>
-                        <input class="form-control permalink" value="http://spartangeek.com/p/{{ post.slug }}/{{ post.id }}">
-                      </div>
-                    </span>
-
-                    <div>
-                      <span ng-if="post.author.country"><flag country="{{ post.author.country }}" size="16"></flag></span>
-                      <span class="level">{{ misc.gaming.rules[post.author.gaming.level].name }}</span>
-                    </div>
-                  </div>
+                </a>
+                <div class="column col-3 tc">
+                  <span class="f5">{{ post.comments.count }}</span>
+                  <span class="db">{{ post.comments.count==1?'respuesta':'respuestas'}}</span>
+                  <span class="new" ng-if="post.comments.new > 0">
+                    +{{ post.comments.new }}
+                  </span>
                 </div>
-
-                <!-- Main post content -->
-                <div class="content" ng-if="post.type !== 'recommendations'" marked="post.content_final"></div>
-
-                <div class="recommendations" ng-if="post.type === 'recommendations'">
-                  <div class="content" marked="post.content_final"></div>
-
-                  <div class="components">
-                    <div ng-if="post.components.cpu.content" class="component">
-                      <div class="row">
-                        <div class="col-md-2 col-sm-3">
-                          <img src="/images/components/cpu.png" alt="CPU" />
-                        </div>
-
-                        <div class="col-md-10 col-sm-9">
-                          <h6>Procesador <span class="status" ng-if="post.components.cpu.status == 'needed'">Lo necesito</span> <span class="status owned" ng-if="post.components.cpu.status == 'owned'">Ya lo tengo</span></h6>
-                          {{ post.components.cpu.content }}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div ng-if="post.components.motherboard.content" class="component">
-                      <div class="row">
-                        <div class="col-md-2 col-sm-3">
-                          <img src="/images/components/motherboard.png" alt="CPU" />
-                        </div>
-
-                        <div class="col-md-10 col-sm-9">
-                          <h6>Motherboard <span class="status" ng-if="post.components.motherboard.status == 'needed'">Lo necesito</span> <span class="status owned" ng-if="post.components.motherboard.status == 'owned'">Ya lo tengo</span></h6>
-                          {{ post.components.motherboard.content }}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div ng-if="post.components.cabinet.content" class="component">
-                      <div class="row">
-                        <div class="col-md-2 col-sm-3">
-                          <img src="/images/components/cabinet.png" alt="CPU" />
-                        </div>
-
-                        <div class="col-md-10 col-sm-9">
-                          <h6>Gabinete <span class="status" ng-if="post.components.cabinet.status == 'needed'">Lo necesito</span> <span class="status owned" ng-if="post.components.cabinet.status == 'owned'">Ya lo tengo</span></h6>
-                          {{ post.components.cabinet.content }}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div ng-if="post.components.ram.content" class="component">
-                      <div class="row">
-                        <div class="col-md-2 col-sm-3">
-                          <img src="/images/components/ram.png" alt="CPU" />
-                        </div>
-
-                        <div class="col-md-10 col-sm-9">
-                          <h6>Memoria RAM <span class="status" ng-if="post.components.ram.status == 'needed'">Lo necesito</span> <span class="status owned" ng-if="post.components.ram.status == 'owned'">Ya lo tengo</span></h6>
-                          {{ post.components.ram.content }}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div ng-if="post.components.screen.content" class="component">
-                      <div class="row">
-                        <div class="col-md-2 col-sm-3">
-                          <img src="/images/components/screen.png" alt="CPU" />
-                        </div>
-
-                        <div class="col-md-10 col-sm-9">
-                          <h6>Monitor <span class="status" ng-if="post.components.screen.status == 'needed'">Lo necesito</span> <span class="status owned" ng-if="post.components.screen.status == 'owned'">Ya lo tengo</span></h6>
-                          {{ post.components.screen.content }}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div ng-if="post.components.videocard.content" class="component">
-                      <div class="row">
-                        <div class="col-md-2 col-sm-3">
-                          <img src="/images/components/videocard.png" alt="CPU" />
-                        </div>
-
-                        <div class="col-md-10 col-sm-9">
-                          <h6>Tarjeta gráfica <span class="status" ng-if="post.components.videocard.status == 'needed'">Lo necesito</span> <span class="status owned" ng-if="post.components.videocard.status == 'owned'">Ya lo tengo</span></h6>
-                          {{ post.components.videocard.content }}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div ng-if="post.components.power.content" class="component">
-                      <div class="row">
-                        <div class="col-md-2 col-sm-3">
-                          <img src="/images/components/power.png" alt="CPU" />
-                        </div>
-
-                        <div class="col-md-10 col-sm-9">
-                          <h6>Fuente de Poder <span class="status" ng-if="post.components.power.status == 'needed'">Lo necesito</span> <span class="status owned" ng-if="post.components.power.status == 'owned'">Ya lo tengo</span></h6>
-                          {{ post.components.power.content }}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div ng-if="post.components.storage.content" class="component">
-                      <div class="row">
-                        <div class="col-md-2 col-sm-3">
-                          <img src="/images/components/storage.png" alt="CPU" />
-                        </div>
-
-                        <div class="col-md-10 col-sm-9">
-                          <h6>Almacenamiento <span class="status" ng-if="post.components.storage.status == 'needed'">Lo necesito</span> <span class="status owned" ng-if="post.components.storage.status == 'owned'">Ya lo tengo</span></h6>
-                          {{ post.components.storage.content }}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div ng-if="post.components.cooler.content" class="component">
-                      <div class="row">
-                        <div class="col-md-2 col-sm-3">
-                          <img src="/images/components/cooler.png" alt="CPU" />
-                        </div>
-
-                        <div class="col-md-10 col-sm-9">
-                          <h6>Enfriamento <span class="status" ng-if="post.components.cooler.status == 'needed'">Lo necesito</span> <span class="status owned" ng-if="post.components.cooler.status == 'owned'">Ya lo tengo</span></h6>
-                          {{ post.components.cooler.content }}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="component" ng-if="post.components.software">
-                      <h6>Programas que utilizaré</h6>
-                      {{ post.components.software }}
-                    </div>
-                  </div>
-                </div>
-
-                <div class="votes-count">
-                  <span ng-if="post.votes.up > 0">A {{ post.votes.up }} {{post.votes.up == 1 ? 'persona le gusta':'personas les gusta'}}</span>
-                </div>
-
-                <ul class="post-actions" ng-class="{empty: post.author.id == user.info.id && post.votes.up == 0 && post.votes.down == 0}">
-                  <li class="action" ng-if="post.liked != -1">
-                    <a href="" ng-click="post_vote(post, 'up')" class="btn btn-success-border btn-round" ng-class="{'liked': post.liked == 1, 'disabled': user.gaming.tribute == 0}" ng-if="post.author.id != user.info.id"><i class="fa fa-thumbs-up"></i> Me gusta</a>
-                  </li>
-                </ul>
-
-                <!-- Best Answer preview -->
-                <div class="best_answer" ng-if="post.comments.answer">
-                  <div class="comment best">
-                    <div class="best-header">
-                      <i class="fa fa-check-circle-o"></i> Mejor respuesta
-                    </div>
-                    <div class="comment-author">
-                      <a href="/u/{{ post.comments.answer.author.username }}/{{ post.comments.answer.author.id }}" title="Perfil de {{ post.comments.answer.author.username }}">
-                        <img class="avatar" ng-src="{{ post.comments.answer.author.image }}" alt="{{ post.comments.answer.author.username }}" ng-if="post.comments.answer.author.image">
-                        <span class="avatar" title="{{ post.comments.answer.author.username }}" ng-if="!post.comments.answer.author.image">{{ post.comments.answer.author.username[0] }}</span>
-                      </a>
-                      <div class="username">
-                        <a href="/u/{{ post.comments.answer.author.username }}/{{ post.comments.answer.author.id }}" title="Perfil de {{ post.comments.answer.author.username }}">
-                          <strong>{{ post.comments.answer.author.username }}</strong>
-                        </a>
-                        <div>
-                          <span class="level">{{ misc.gaming.rules[post.comments.answer.author.gaming.level].name }}</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="content" markedsg="post.comments.answer.content_final"></div>
-                  </div>
-                </div>
-
-                <div class="answers">
-                  <h5 ng-if="!post.lock || post.comments.count > 0">{{ post.comments.count }} respuesta{{post.comments.count == 1?'':'s'}}</h5>
-                </div>
-
-                <div class="text-center mb-40" ng-if="comments_status.loaded < post.comments.count">
-                  <a class="btn btn-default" href="" ng-click="loadPreviousComments()" ng-if="!comments_status.loading">Mostrar <strong>{{ post.comments.count - comments_status.loaded | min }}</strong> anteriores</a>
-                  <a class="btn btn-default" href="" ng-click="loadAllPreviousComments()" ng-if="!comments_status.loading">Mostrar todos los comentarios</a>
-                  <a href="" class="btn btn-default disabled" role="button" ng-if="comments_status.loading">Cargando...</a>
-                </div>
-
-                <!-- Comments loop section -->
-                <div class="comments">
-                  <div class="comment" data-number="{{ comment.position }}" ng-repeat="comment in (post.comments.set | orderBy:'position')" ng-class="{editing: comment.editing, best: comment.chosen}">
-                    <div class="best-header" ng-if="comment.chosen">
-                      <i class="fa fa-check-circle-o"></i> Mejor respuesta
-                    </div>
-                    <div class="comment-author">
-                      <a href="/u/{{ comment.author.username }}/{{ comment.author.id }}" title="Perfil de {{ comment.author.username }}" ng-mouseover="toggleUserCard(comment)">
-                        <img class="avatar" ng-src="{{ comment.author.image }}" alt="{{ comment.author.username }}" ng-if="comment.author.image">
-                        <span class="avatar" title="{{ comment.author.username }}" ng-if="!comment.author.image">{{ comment.author.username[0] }}</span>
-                      </a>
-                      <ul class="PostUser-badges badges">
-                        <li class="item-group1" ng-repeat="role in ::comment.author.roles">
-                          <span ng-if="role.name == 'developer'" class="Badge Badge--group--Admin" style="background-color: rgb(103, 156, 77);" uib-tooltip="Developer"><i class="icon fa fa-fw fa-wrench Badge-icon"></i></span>
-                          <span ng-if="role.name == 'category-moderator'" class="Badge Badge--group--Staff" style="background-color: rgb(231, 103, 46);" uib-tooltip="Mod"><i class="icon fa fa-fw fa-gavel Badge-icon"></i></span>
-                          <span ng-if="role.name == 'administrator'" class="Badge Badge--group--Mod" style="background-color: #E85886" uib-tooltip="Staff"><i class="icon fa fa-fw fa-bolt Badge-icon"></i></span>
-                          <span ng-if="role.name == 'spartan-girl'" class="Badge Badge--group--SpartanGirl" style="background-color: rgb(128, 52, 158);" uib-tooltip="SpartanGirl"><i class="icon fa fa-fw fa-moon-o Badge-icon"></i></span>
-                        </li>
-                      </ul>
-                      <div class="UserCard" ng-class="{'UserCard--popover in': comment.showAuthorAnimation }" style="background-color: #888;" ng-show="comment.showAuthor " ng-mouseleave="toggleUserCard(comment)">
-                        <div class="darkenBackground">
-                          <div class="container">
-                            <div class="UserCard-profile">
-                              <h2 class="UserCard-identity">
-                                <a href="/u/{{ comment.author.username }}/{{ comment.author.id }}">
-                                  <div class="UserCard-avatar">
-                                    <img class="avatar" ng-src="{{ comment.author.image }}" ng-if="comment.author.image">
-                                    <span class="avatar" title="{{ comment.author.username }}" ng-if="!comment.author.image">{{ comment.author.username[0] }}</span>
-                                  </div>
-                                  <span>{{ comment.author.username }}</span>
-                                </a>
-                              </h2>
-                              <ul class="UserCard-badges badges">
-                                <li class="item-group1" ng-repeat="role in ::comment.author.roles">
-                                  <span ng-if="role.name == 'developer'" class="Badge Badge--group--Admin" style="background-color: rgb(103, 156, 77);" uib-tooltip="Developer"><i class="icon fa fa-fw fa-wrench Badge-icon"></i></span>
-                                  <span ng-if="role.name == 'category-moderator'" class="Badge Badge--group--Staff" style="background-color: rgb(231, 103, 46);" uib-tooltip="Mod"><i class="icon fa fa-fw fa-gavel Badge-icon"></i></span>
-                                  <span ng-if="role.name == 'administrator'" class="Badge Badge--group--Mod" style="background-color: #E85886" uib-tooltip="Staff"><i class="icon fa fa-fw fa-bolt Badge-icon"></i></span>
-                                  <span ng-if="role.name == 'spartan-girl'" class="Badge Badge--group--SpartanGirl" style="background-color: rgb(128, 52, 158);" uib-tooltip="SpartanGirl"><i class="icon fa fa-fw fa-moon-o Badge-icon"></i></span>
-                                </li>
-                              </ul>
-                              <ul class="UserCard-info">
-                                <li class="item-bio">
-                                  <div class="UserBio ">
-                                    <div class="UserBio-content">
-                                      <p>{{ comment.author.description }}</p>
-                                    </div>
-                                  </div>
-                                </li>
-                                <li class="item-game-tags">
-                                  <div class="row">
-                                    <div class="col-md-12">
-                                      <div class="row">
-                                        <div class="col-md-4">Steam</div>
-                                        <div class="col-md-8">{{ comment.author.steam_id || 'No especificado'}}</div>
-                                      </div>
-                                    </div>
-                                    <div class="col-md-12" ng-show="comment.author.origin_id != ''">
-                                      <div class="row">
-                                        <div class="col-md-4">Origin</div>
-                                        <div class="col-md-8">{{ comment.author.origin_id || 'No especificado'}}</div>
-                                      </div>
-                                    </div>
-                                    <div class="col-md-12" ng-show="comment.author.battlenet_id != ''">
-                                      <div class="row">
-                                        <div class="col-md-4">Battle.net</div>
-                                        <div class="col-md-8">{{ comment.author.battlenet_id || 'No especificado'}}</div>
-                                      </div>
-                                    </div>
-                                  </table>
-                                </li>
-                                <li class="item-lastSeen">
-                                  <span class="user-last-seen online" ng-if="comment.author.status">
-                                    <i class="fa fa-fw fa-circle"></i> Online
-                                  </span>
-                                  <span class="user-last-seen" ng-if="!comment.author.status">
-                                    <i class="fa fa-fw fa-circle-o"></i> Offline
-                                  </span>
-                                </li>
-                                <li class="item-joined hidden">Se unió hace 8 meses</li>
-                              </ul>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="username">
-                        <a href="/u/{{ ::comment.author.username }}/{{ ::comment.author.id }}" title="Perfil de {{ ::comment.author.username }}">
-                          <strong>{{ ::comment.author.username }}</strong>
-                        </a>
-                        <span class="date dropdown" uib-dropdown auto-close="outsideClick" ng-if="!comment.editing">
-                          <a href="" class="dropdown-toggle" uib-dropdown-toggle>
-                            <time time-ago from-time='{{ ::comment.created_at}}'></time>
-                          </a>
-                          <div class="dropdown-menu post-meta">
-                            <span class="number">Comentario #{{ ::1 + comment.position }}</span>
-                            <span class="time">
-                              <time datetime="{{ comment.created_at }}">
-                                publicado el {{ ::comment.created_at | date_at}}
-                              </time>
-                            </span>
-                            <input class="form-control permalink" value="http://spartangeek.com/p/{{ ::post.slug }}/{{ ::post.id }}/{{ ::comment.position }}">
-                          </div>
-                        </span>
-
-                        <div>
-                          <span ng-if="comment.author.country"><flag country="{{ comment.author.country }}" size="16"></flag></span>
-                          <span class="level">{{ misc.gaming.rules[comment.author.gaming.level].name }}
-                        </div>
-                      </div>
-                    </div>
-                    <div class="content" markedsg="::comment.content_final" ng-if="!comment.editing"></div>
-
-                    <aside class="Post-actions" ng-if="user.isLogged && !comment.editing">
-                      <ul>
-                        <li class="item-like" ng-if="comment.liked != -1 && comment.author.id != user.info.id && user.gaming.tribute > 0">
-                          <a href="" class="btn btn-link" ng-click="comment_vote(post.id, comment, 'up')" ng-class="{'liked': comment.liked == 1}">Me gusta</a>
-                        </li>
-                        <li class="item-reply" ng-if="comment.author.id != user.info.id && !post.lock">
-                          <a href="" class="btn btn-link" ng-click="reply_to(comment.author.username, comment.position)"><i class="fa fa-reply"></i> Responder</a>
-                        </li>
-                        <li>
-                          <div class="btn-group" uib-dropdown>
-                            <button class="button button-icon button-flat" ng-hide="comment.editing" uib-dropdown-toggle><i class="icon fa fa-fw fa-ellipsis-h Button-icon"></i></button>
-                            <ul class="dropdown-menu dropdown-menu-right">
-                              <li ng-if="post.is_question && (!post.solved && aacl.can('solve', 'posts', user.info, post.author.id, post.category.id))">
-                                <a href="" ng-click="setBestAnswer(comment)"><i class="fa fa-check-circle"></i> Marcar como mejor respuesta</a>
-                              </li>
-                              <li>
-                                <a href="" ng-class="{disabled: comment.editing}" ng-if="aacl.can('edit', 'comments', user.info, comment.author.id, post.category.id)" ng-click="editCommentShow(comment)"><i class="fa fa-pencil"></i> Editar comentario</a>
-                              </li>
-                              <li>
-                                <a href="" ng-class="{disabled: comment.editing}" ng-if="aacl.can('delete', 'comments', user.info, comment.author.id, post.category.id)" ng-click="deleteComment(comment)"><i class="fa fa-trash-o"></i> Eliminar comentario</a>
-                              </li>
-                            </ul>
-                          </div>
-                        </li>
-                      </ul>
-                    </aside>
-                    <footer class="Post-footer" ng-if="!comment.editing">
-                      <ul>
-                        <li class="item-liked" ng-if="comment.votes.up > 0">
-                          <div class="Post-likedBy">
-                            <i class="icon fa fa-fw fa-thumbs-o-up "></i>A <a href="#">{{ comment.votes.up }} {{comment.votes.up > 1 ? 'personas':'persona'}}</a> {{comment.votes.up > 1 ? 'les gusta':'le gusta'}}.
-                          </div>
-                        </li>
-                        <li class="item-replies hidden">
-                          <div class="Post-mentionedBy">
-                            <span class="Post-mentionedBy-summary">
-                              <i class="icon fa fa-fw fa-reply "></i><a href="" data-number="0"><span class="username">username</span></a> respondió a esto.
-                            </span>
-                          </div>
-                        </li>
-                      </ul>
-                    </footer>
-
-                    <div class="idiot-wizzy edit" ng-if="comment.editing">
-                      <textarea id="comment-content" placeholder="Escribe tu comentario..." class="form-control flexible-height content" ng-model="comment.content_edit" ng-disabled="waiting_comment" msd-elastic></textarea>
-                      <div class="actions">
-                        <ul>
-                          <li style="margin-left: 1.5em;">
-                            <a href="" class="btn btn-sm btn-danger" ng-click="comment.editing = false"><span class="label">Cancelar</span></a>
-                          </li>
-                          <li>
-                            <a href="" class="btn btn-sm btn-default" ngf-select ngf-change="uploadPicture($files, comment)" ngf-multiple="false" ngf-accept="'image/*'" ng-show="!adding_file"><i class="fa fa-picture-o"></i> <span class="label hidden-xs">Adjuntar imagen</span></a>
-                            <a href="" class="btn btn-sm btn-default disabled" ng-show="adding_file"><i class="fa fa-picture-o"></i> <span class="label hidden-xs">Adjuntando imagen...</span></a>
-                          </li>
-                          <li>
-                            <a href="" ng-click="editComment(comment)" ng-class="{'disabled': waiting_comment == true || comment.content == '' || adding_file}" class="btn btn-sm btn-primary btn-comment"><span class="label">Editar</span></a>
-                          </li>
-                        </ul>
-                      </div>
-                    </div>
-
-                  </div>
-                </div>
-
-                <div class="alert alert-warning text-center" ng-if="post.comments.new > 0"><span ng-if="!comments_status.loading_new">Hay <strong>{{ post.comments.new }}</strong> comentarios nuevos. <a href="" ng-click="loadNewComments()">Cargar comentarios nuevos.</a></span><span ng-if="comments_status.loading_new">Cargando...</span></div>
-
-                <div ng-if="false && can('debug')">comments.count: {{post.comments.count}}, comments.new: {{post.comments.new}}, comments.total: {{post.comments.total}}, comments_status.loaded: {{comments_status.loaded}}</div>
-
-                <div class="need-signin" ng-if="!user.isLogged && !post.lock">
-                  <p>¿Quieres dejar un comentario? <a href="" ng-click="signIn()">Inicia sesión</a> o <a href="" ng-click="signUp()">Crea una cuenta</a></p>
-                </div>
+              </article>
+              <div class="dn">
+                <a href="/u/{{ post.author.username }}/{{ post.author.id }}" class="author" title="Escrito por {{ post.author.username }}">
+                  <span class="avatar" title="{{ post.author.username }}" ng-if="!post.author.image">{{ post.author.username[0] }}</span>
+                  <img class="avatar" ng-src="{{ post.author.image }}" alt="{{ post.author.username }}" ng-if="post.author.image">
+                </a>
+                <a href="/p/{{ post.slug }}/{{ post.id }}" class="main">
+                  <h3 class="title">{{ post.title }}</h3>
+                  <span class="db truncate">
+                    Por <span class="username">{{ post.author.username }}</span> <time time-ago from-time='{{ post.created_at }}'></time>
+                  </span>
+                  <ul class="extra-info">
+                    <li class="pinned" ng-if="post.pinned">
+                      <i class="fa fa-exclamation-circle"></i> <span>Importante</span>
+                    </li>
+                    <li class="category">
+                      <i class="fa fa-asterisk" ng-style="{'color': post.category.color}"></i> <span class="label-category">{{ post.category.name }}</span>
+                    </li>
+                    <li class="solved" ng-if="post.solved">
+                      <i class="fa fa-check-circle"></i> <span>Resuelto</span>
+                    </li>
+                  </ul>
+                </a>
+                <span class="count">
+                  <span class="f5">{{ post.comments.count }}</span>
+                  <span class="db">{{ post.comments.count==1?'respuesta':'respuestas'}}</span>
+                  <span class="new" ng-if="post.comments.new > 0">
+                    +{{ post.comments.new }}
+                  </span>
+                </span>
               </div>
-              <!-- New Comment editor-->
-              <div class="row">
-                <div class="col-md-9">
-                  <div ng-if="!post.lock && user.isLogged && user.info.validated">
-                    <div class="idiot-wizzy">
-                      <textarea id="comment-content" placeholder="Escribe tu comentario..." class="form-control flexible-height content" ng-model="comment.content" ng-disabled="waiting_comment" msd-elastic></textarea>
-                      <div class="actions">
-                        <ul>
-                          <li ng-show="comment.content != ''" class="hidden-xs">
-                            <strong>**Negrita**</strong>
-                          </li>
-                          <li ng-show="comment.content != ''" class="hidden-xs">
-                            <em>*Itálica*</em>
-                          </li>
-                          <li style="margin-left: 1.5em;">
-                            <a href="" class="btn btn-default" ngf-select ngf-change="uploadPicture($files)" ngf-multiple="false" ngf-accept="'image/*'" ng-show="!adding_file"><i class="fa fa-picture-o"></i> <span class="label hidden-xs">Adjuntar imagen</span></a>
-                            <a href="" class="btn btn-default disabled" ng-show="adding_file"><i class="fa fa-picture-o"></i> <span class="label hidden-xs">Adjuntando imagen...</span></a>
-                          </li>
-                          <li>
-                            <a href="" ng-click="publish()" ng-class="{'disabled': waiting_comment == true || comment.content == '' || adding_file}" class="btn btn-primary btn-comment"><span class="label">Publicar</span></a>
-                          </li>
-                        </ul>
-                      </div>
-                    </div>
-                    <p style="margin-top: 5px; font-size: 14px; color: #9C9C9C;">No olvides seguir el <a href="/reglamento" alt="Reglamento de SpartanGeek" target="_blank">reglamento</a> al publicar un comentario.</p>
-                  </div>
-                  <div ng-if="post.lock && post.comments.count > 0">
-                    <p class="alert alert-warning">Esta publicación no permite más comentarios.</p>
-                  </div>
-                  <div ng-if="post.lock && post.comments.count == 0">
-                    <p class="alert alert-info">Esta publicación no permite comentarios.</p>
-                  </div>
-                  <div ng-if="user.isLogged && !user.info.validated">
-                    <p class="alert alert-info">Necesitas <a href="/u/{{user.info.username}}/{{user.info.id}}/?section=config"><strong>validar tu cuenta</strong></a> para poder escribir comentarios.</p>
-                  </div>
-                </div>
-              </div>
+            </li>
+            <div class="resolving" ng-if="resolving.older">
+              <div class="loading loading-lg"></div>
             </div>
+          </ul>
+          <ul class="discussions-list" ng-if="!resolving.categories && viewing.top_posts" adjust-height>
+            <li data-id="{{ post.id }}" class="discussion-summary" ng-class="{'active': post.id === $parent.activePostId, 'unread new': post.unread == true}" ng-repeat="post in top_posts" ng-cloak>
+              <div>
+                <a href="/u/{{ post.author.username }}/{{ post.author.id }}" class="author" title="Escrito por {{ post.author.username }}">
+                  <span class="avatar" title="{{ post.author.username }}" ng-if="!post.author.image">{{ post.author.username[0] }}</span>
+                  <img class="avatar" ng-src="{{ post.author.image }}" alt="{{ post.author.username }}" ng-if="post.author.image">
+                </a>
+                <a href="/p/{{ post.slug }}/{{ post.id }}" class="main">
+                  <h3 class="title">{{ post.title }}</h3>
+                  <ul class="info">
+                    <li class="">
+                      <span>
+                        Escrito por <span class="username">{{ post.author.username }}</span> <time time-ago from-time="{{ post.created_at}}"></time>
+                      </span>
+                    </li>
+                  </ul>
+                  <ul class="extra-info">
+                    <li class="category" ng-if="category.slug === '' || true">
+                      <span class="ball" ng-style="{'background-color': post.category.color}"></span>
+                      <span class="name">{{ post.category.name }}</span>
+                    </li>
+                    <li class="pinned" ng-if="post.pinned">
+                      <i class="fa fa-exclamation-circle"></i> <span>Importante</span>
+                    </li>
+                  </ul>
+                </a>
+                <span class="count">{{ post.comments.count }}<span class="label">{{ post.comments.count==1?'Respuesta':'Respuestas'}}</span></span>
+              </div>
+            </li>
+            <div class="resolving" ng-if="resolving_posts">
+              <div class="loading loading-lg"></div>
+            </div>
+          </ul>
+          <div class="resolving" ng-if="resolving.categories">
+            <div class="loading loading-lg"></div>
           </div>
         </div>
       </div>
     </div>
-  </main>
+  </div>
+  <div class="col-md-8 col-sm-7" ng-class="{'hidden-xs': activePostId == null}">
+    <div class="current-article" ng-controller="ReaderViewController" adjust-height>
+      <div class="waiting" ng-show="waiting">
+        <section>
+          <div class="row">
+            <div class="col-md-6 text-left">
+              <h4>Resuelve tus dudas y ayuda a otros</h4>
+              <p><strong>¿Tienes preguntas sobre tecnología, videojuegos, o cualquier otro tema geek?</strong> Publica tus dudas y seguramente tendrás respuestas.<br>
+              <strong>¿Eres experto en algo?</strong> Ayuda a los demás y aumenta tu rango en la comunidad.</p>
+              <hr>
+              <h4>Únete a la conversación</h4>
+              <p>Puedes ver a la <strong>izquierda</strong> las publicaciones de otros espartanos, nuestros foros y nuestras recomendaciones, empieza viendo y únete a la conversación.</p>
+            </div>
+            <div class="col-md-6">
+              <figure align="right">
+                <img src="/images/home-browser.png" alt="SpartanGeek Window">
+              </figure>
+            </div>
+          </div>
+        </section>
+        <section>
+          <div class="row">
+            <div class="col-md-6 text-center">
+              <a href="/asistente" target="_blank" class="section-resume">
+                <img src="/images/home-shop.png">
+                <h2>Compra una PC</h2>
+              </a>
+              <a href="/asistente" target="_blank" class="btn btn-sm btn-success mb-20">Ir a la tienda</a>
+              <p>Usa nuestro asistente para que conozcamos tus necesidades y podamos ofrecerte una PC de acuerdo a tus necesidades y presupuesto.</p>
+            </div>
+            <div class="col-md-6 text-center">
+              <a href="/chat" class="section-resume">
+                <img src="/images/home-chat.png">
+                <h2>Chat</h2>
+              </a>
+              <a href="/chat" class="btn btn-sm btn-success mb-20">Quiero chatear</a>
+              <p>Platica con todos los spartanos de la comunidad.</p>
+            </div>
+          </div>
+        </section>
+      </div>
+      <div ng-hide="waiting">
+        <div class="back-to-list visible-xs-block">
+          <a href="/" ng-click="activePostId = null"><i class="fa fa-chevron-left"></i> Regresar al listado de publicaciones</a>
+        </div>
+        <div class="resolving" ng-hide="!resolving">
+          <img src="/images/head.png" />
+          <h6 class="mv2">Cargando</h6>
+          <div class="loading loading-lg"></div>
+        </div>
+        <div class="resolving" ng-show="error_loading">
+          <img src="/images/head.png" />
+          <h4>Error 404</h4>
+          <p>No encontramos la publicación que estabas buscando.</p>
+        </div>
+        <div ng-hide="resolving || error_loading">
+          <div class="header">
+            <ul class="DiscussionHero-items">
+              <li class="item-badges">
+                <ul class="DiscussionHero-badges badges">
+                  <li class="item-sticky" ng-if="post.pinned">
+                    <span class="Badge Badge--sticky " title="Sticky" uib-tooltip="Importante" tooltip-placement="bottom"><i class="icon fa fa-fw fa-thumb-tack Badge-icon"></i></span>
+                  </li>
+                  <li class="item-solved" ng-if="post.solved">
+                    <span class="Badge Badge--solved " title="Sticky" data-original-title="Sticky"><i class="icon fa fa-fw fa-check Badge-icon"></i></span>
+                  </li>
+                  <li class="item-subscription" ng-if="false">
+                    <span class="Badge Badge--following " title="Following" data-original-title="Following"><i class="icon fa fa-fw fa-star Badge-icon"></i></span>
+                  </li>
+                  <li class="item-locked" ng-if="post.lock">
+                    <span class="Badge Badge--locked " title="Locked" uib-tooltip="Comentarios cerrados" tooltip-placement="bottom"><i class="icon fa fa-fw fa-lock Badge-icon"></i></span>
+                  </li>
+                </ul>
+              </li>
+              <li class="item-tags">
+                <h2><i class="fa fa-asterisk" ng-style="{'color': post.category.color}"></i> {{ post.category.name }}</h2>
+              </li>
+              <li class="item-title"><h1 class="DiscussionHero-title">{{ post.title }}</h1></li>
+            </ul>
+          </div>
+          <nav class="discussion-nav">
+            <ul>
+              <li class="primary-control" ng-if="!post.lock">
+                <a class="btn btn-primary" ng-click="show_composer()" ng-if="user.isLogged">
+                  <i class="icon icon-message mr1"></i> Responder
+                </a>
+                <a class="btn btn-primary" ng-click="signIn()" ng-if="!user.isLogged">
+                  <i class="icon icon-message mr1"></i> Quiero comentar
+                </a>
+              </li>
+              <li class="title-control">
+                <div class="stream-scrubber uib-dropdown hidden-xs">
+                  <a href="#" data-toggle="dropdown" class="btn btn-default dropdown-toggle">
+                    <span class="index">{{ scrubber.current_c }}</span> de <span class="count">{{ post.comments.count + 1}}</span> mensajes <i class="fa fa-fw fa-sort icon-glyph"></i>
+                  </a>
+                  <div class="dropdown-menu">
+                    <div class="scrubber">
+                      <a href="#" class="scrubber-first">
+                        <i class="fa fa-fw fa-angle-double-up"></i> Mensaje original
+                      </a>
+                      <div class="scrubber-scrollbar" style="max-height: 285px; cursor: pointer; -webkit-user-select: none;">
+                        <div class="scrubber-before" style="height: 55%;"></div>
+                        <div class="scrubber-slider" style="height: 45%; cursor: move;">
+                          <div class="scrubber-handle"></div>
+                          <div class="scrubber-info" ng-cloak>
+                            <strong><span class="index">{{ scrubber.current_c + 1 }}</span> de <span class="count">{{ post.comments.count + 1 }}</span> mensajes</strong>
+                            <span class="description" ng-if="scrubber.current_c == 0">{{ post.created_at | date_at }}</span>
+                            <span class="description" ng-if="scrubber.current_c > 0">{{ post.comments.set[post.comments.set.length - scrubber.current_c].created_at | date_at }}</span>
+                          </div>
+                        </div>
+                        <div class="scrubber-after" style="height: 0%;"></div>
+                      </div>
+                      <a href="#" class="scrubber-last"><i class="fa fa-fw fa-angle-double-down"></i> Ahora</a>
+                    </div>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </nav>
+          <div class="discussion-posts">
+            <div class="float-actions text-right">
+              <div class="btn-group" ng-if="aacl.can('delete', 'posts', user.info, post.author.id, post.category.id)" uib-dropdown>
+                <button type="button" class="button button-icon button-flat" uib-dropdown-toggle>
+                <i class="fa fa-pencil"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right">
+                  <li>
+                    <a href="/p/{{post.slug}}/{{post.id}}/edit" ng-if="aacl.can('edit', 'posts', user.info, post.author.id, post.category.id)" ng-click=""><i class="fa fa-pencil"></i> Editar publicación</a>
+                  </li>
+                  <li>
+                    <a href="" ng-if="aacl.can('delete', 'posts', user.info, post.author.id, post.category.id)" ng-click="deletePost()"><i class="fa fa-trash-o"></i> Eliminar publicación</a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div class="columns items-center">
+              <div class="column col-1">
+                <a href="/u/{{ post.author.username }}/{{ post.author.id }}" title="Perfil de {{ post.author.username }}">
+                  <figure class="avatar" ng-if="post.author.image">
+                    <img ng-src="{{ post.author.image }}" alt="{{ post.author.username }}" />
+                  </figure>
+                <figure class="avatar" ng-if="!post.author.image" data-initial="{{ post.author.username[0] }}"></figure>
+              </a>
+            </div>
+            <div class="column col-11">
+              <a href="/u/{{ post.author.username }}/{{ post.author.id }}" title="Perfil de {{ post.author.username }}" class="b near-black">{{ post.author.username }}</a>
+              <time>{{ post.created_at | timeAgo }}</time>
+              <div class="mt1">
+                <span class="label" title="Reputación">
+                  <i class="fa fa-star gold" aria-hidden="true"></i> {{ post.author.gaming.swords }}
+                </span>
+                <span class="label">{{ misc.gaming.rules[post.author.gaming.level].name }}</span>
+                <span
+                  class="label label-primary"
+                  ng-repeat="role in post.author.roles"
+                  ng-if="role.name !== 'user'">
+                  {{ rolesMap[role.name] || role.name }}
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="comment-author dn">
+            <a href="/u/{{ post.author.username }}/{{ post.author.id }}" title="Perfil de {{ post.author.username }}" ng-mouseover="toggleUserCard(post)">
+              <img class="avatar" ng-src="{{ post.author.image }}" alt="{{ post.author.username }}" ng-if="post.author.image">
+              <span class="avatar" title="{{ post.author.username }}" ng-if="!post.author.image">{{ post.author.username[0] }}</span>
+            </a>
+            <ul class="PostUser-badges badges">
+              <li class="item-group1" ng-repeat="role in post.author.roles">
+                <span ng-if="role.name == 'developer'" class="Badge Badge--group--Admin" style="background-color: rgb(103, 156, 77);" uib-tooltip="Developer"><i class="icon fa fa-fw fa-wrench Badge-icon"></i></span>
+                <span ng-if="role.name == 'category-moderator'" class="Badge Badge--group--Staff" style="background-color: rgb(231, 103, 46);" uib-tooltip="Mod"><i class="icon fa fa-fw fa-gavel Badge-icon"></i></span>
+                <span ng-if="role.name == 'administrator'" class="Badge Badge--group--Mod" style="background-color: #E85886" uib-tooltip="Staff"><i class="icon fa fa-fw fa-bolt Badge-icon"></i></span>
+                <span ng-if="role.name == 'spartan-girl'" class="Badge Badge--group--SpartanGirl" style="background-color: rgb(128, 52, 158);" uib-tooltip="SpartanGirl"><i class="icon fa fa-fw fa-moon-o Badge-icon"></i></span>
+              </li>
+            </ul>
+            <div class="UserCard" ng-class="{'UserCard--popover in': post.showAuthorAnimation }" style="background-color: #888;" ng-show="post.showAuthor" ng-mouseleave="toggleUserCard(post)">
+              <div class="darkenBackground">
+                <div class="container">
+                  <div class="UserCard-profile">
+                    <h2 class="UserCard-identity">
+                    <a href="/u/{{ post.author.username }}/{{ post.author.id }}">
+                      <div class="UserCard-avatar">
+                        <img class="avatar" ng-src="{{ post.author.image }}" ng-if="post.author.image">
+                        <span class="avatar" title="{{ post.author.username }}" ng-if="!post.author.image">{{ post.author.username[0] }}</span>
+                      </div>
+                      <span>{{ post.author.username }}</span>
+                    </a>
+                    </h2>
+                    <ul class="UserCard-badges badges">
+                      <li class="item-group1" ng-repeat="role in post.author.roles">
+                        <span ng-if="role.name == 'developer'" class="Badge Badge--group--Admin" style="background-color: rgb(103, 156, 77);" uib-tooltip="Developer"><i class="icon fa fa-fw fa-wrench Badge-icon"></i></span>
+                        <span ng-if="role.name == 'category-moderator'" class="Badge Badge--group--Staff" style="background-color: rgb(231, 103, 46);" uib-tooltip="Mod"><i class="icon fa fa-fw fa-gavel Badge-icon"></i></span>
+                        <span ng-if="role.name == 'administrator'" class="Badge Badge--group--Mod" style="background-color: #E85886" uib-tooltip="Staff"><i class="icon fa fa-fw fa-bolt Badge-icon"></i></span>
+                        <span ng-if="role.name == 'spartan-girl'" class="Badge Badge--group--SpartanGirl" style="background-color: rgb(128, 52, 158);" uib-tooltip="SpartanGirl"><i class="icon fa fa-fw fa-moon-o Badge-icon"></i></span>
+                      </li>
+                    </ul>
+                    <ul class="UserCard-info">
+                      <li class="item-bio">
+                        <div class="UserBio ">
+                          <div class="UserBio-content">
+                            <p>{{ post.author.description }}</p>
+                          </div>
+                        </div>
+                      </li>
+                      <li class="item-game-tags">
+                        <div class="row">
+                          <div class="col-md-12">
+                            <div class="row">
+                              <div class="col-md-4">Steam</div>
+                              <div class="col-md-8">{{ post.author.steam_id || 'No especificado'}}</div>
+                            </div>
+                          </div>
+                          <div class="col-md-12" ng-show="post.author.origin_id != ''">
+                            <div class="row">
+                              <div class="col-md-4">Origin</div>
+                              <div class="col-md-8">{{ post.author.origin_id || 'No especificado'}}</div>
+                            </div>
+                          </div>
+                          <div class="col-md-12" ng-show="post.author.battlenet_id != ''">
+                            <div class="row">
+                              <div class="col-md-4">Battle.net</div>
+                              <div class="col-md-8">{{ post.author.battlenet_id || 'No especificado'}}</div>
+                            </div>
+                          </div>
+                        </table>
+                      </li>
+                      <li class="item-lastSeen">
+                        <span class="user-last-seen online" ng-if="post.author.status">
+                          <i class="fa fa-fw fa-circle"></i> Online
+                        </span>
+                        <span class="user-last-seen" ng-if="!post.author.status">
+                          <i class="fa fa-fw fa-circle-o"></i> Offline
+                        </span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="username">
+              <a href="/u/{{ post.author.username }}/{{ post.author.id }}" title="Perfil de {{ post.author.username }}">{{ post.author.username }}</a>
+              <time>{{ post.created_at | timeAgo }}</time>
+              <div>
+                <span ng-if="post.author.country"><flag country="{{ post.author.country }}" size="16"></flag></span>
+                <span class="reputation">{{ post.author.gaming.swords }}</span> <span class="level">{{ misc.gaming.rules[post.author.gaming.level].name }}</span>
+              </div>
+            </div>
+          </div>
+          <!-- Main post content -->
+          <div class="content" ng-if="post.type !== 'recommendations'" marked="post.content_final"></div>
+          <div class="recommendations" ng-if="post.type === 'recommendations'">
+            <div class="content" marked="post.content_final"></div>
+            <div class="components">
+              <div ng-if="post.components.cpu.content" class="component">
+                <div class="row">
+                  <div class="col-md-2 col-sm-3">
+                    <img src="/images/components/cpu.png" alt="CPU" />
+                  </div>
+                  <div class="col-md-10 col-sm-9">
+                    <h6>Procesador <span class="status" ng-if="post.components.cpu.status == 'needed'">Lo necesito</span> <span class="status owned" ng-if="post.components.cpu.status == 'owned'">Ya lo tengo</span></h6>
+                    {{ post.components.cpu.content }}
+                  </div>
+                </div>
+              </div>
+              <div ng-if="post.components.motherboard.content" class="component">
+                <div class="row">
+                  <div class="col-md-2 col-sm-3">
+                    <img src="/images/components/motherboard.png" alt="CPU" />
+                  </div>
+                  <div class="col-md-10 col-sm-9">
+                    <h6>Motherboard <span class="status" ng-if="post.components.motherboard.status == 'needed'">Lo necesito</span> <span class="status owned" ng-if="post.components.motherboard.status == 'owned'">Ya lo tengo</span></h6>
+                    {{ post.components.motherboard.content }}
+                  </div>
+                </div>
+              </div>
+              <div ng-if="post.components.cabinet.content" class="component">
+                <div class="row">
+                  <div class="col-md-2 col-sm-3">
+                    <img src="/images/components/cabinet.png" alt="CPU" />
+                  </div>
+                  <div class="col-md-10 col-sm-9">
+                    <h6>Gabinete <span class="status" ng-if="post.components.cabinet.status == 'needed'">Lo necesito</span> <span class="status owned" ng-if="post.components.cabinet.status == 'owned'">Ya lo tengo</span></h6>
+                    {{ post.components.cabinet.content }}
+                  </div>
+                </div>
+              </div>
+              <div ng-if="post.components.ram.content" class="component">
+                <div class="row">
+                  <div class="col-md-2 col-sm-3">
+                    <img src="/images/components/ram.png" alt="CPU" />
+                  </div>
+                  <div class="col-md-10 col-sm-9">
+                    <h6>Memoria RAM <span class="status" ng-if="post.components.ram.status == 'needed'">Lo necesito</span> <span class="status owned" ng-if="post.components.ram.status == 'owned'">Ya lo tengo</span></h6>
+                    {{ post.components.ram.content }}
+                  </div>
+                </div>
+              </div>
+              <div ng-if="post.components.screen.content" class="component">
+                <div class="row">
+                  <div class="col-md-2 col-sm-3">
+                    <img src="/images/components/screen.png" alt="CPU" />
+                  </div>
+                  <div class="col-md-10 col-sm-9">
+                    <h6>Monitor <span class="status" ng-if="post.components.screen.status == 'needed'">Lo necesito</span> <span class="status owned" ng-if="post.components.screen.status == 'owned'">Ya lo tengo</span></h6>
+                    {{ post.components.screen.content }}
+                  </div>
+                </div>
+              </div>
+              <div ng-if="post.components.videocard.content" class="component">
+                <div class="row">
+                  <div class="col-md-2 col-sm-3">
+                    <img src="/images/components/videocard.png" alt="CPU" />
+                  </div>
+                  <div class="col-md-10 col-sm-9">
+                    <h6>Tarjeta gráfica <span class="status" ng-if="post.components.videocard.status == 'needed'">Lo necesito</span> <span class="status owned" ng-if="post.components.videocard.status == 'owned'">Ya lo tengo</span></h6>
+                    {{ post.components.videocard.content }}
+                  </div>
+                </div>
+              </div>
+              <div ng-if="post.components.power.content" class="component">
+                <div class="row">
+                  <div class="col-md-2 col-sm-3">
+                    <img src="/images/components/power.png" alt="CPU" />
+                  </div>
+                  <div class="col-md-10 col-sm-9">
+                    <h6>Fuente de Poder <span class="status" ng-if="post.components.power.status == 'needed'">Lo necesito</span> <span class="status owned" ng-if="post.components.power.status == 'owned'">Ya lo tengo</span></h6>
+                    {{ post.components.power.content }}
+                  </div>
+                </div>
+              </div>
+              <div ng-if="post.components.storage.content" class="component">
+                <div class="row">
+                  <div class="col-md-2 col-sm-3">
+                    <img src="/images/components/storage.png" alt="CPU" />
+                  </div>
+                  <div class="col-md-10 col-sm-9">
+                    <h6>Almacenamiento <span class="status" ng-if="post.components.storage.status == 'needed'">Lo necesito</span> <span class="status owned" ng-if="post.components.storage.status == 'owned'">Ya lo tengo</span></h6>
+                    {{ post.components.storage.content }}
+                  </div>
+                </div>
+              </div>
+              <div ng-if="post.components.cooler.content" class="component">
+                <div class="row">
+                  <div class="col-md-2 col-sm-3">
+                    <img src="/images/components/cooler.png" alt="CPU" />
+                  </div>
+                  <div class="col-md-10 col-sm-9">
+                    <h6>Enfriamento <span class="status" ng-if="post.components.cooler.status == 'needed'">Lo necesito</span> <span class="status owned" ng-if="post.components.cooler.status == 'owned'">Ya lo tengo</span></h6>
+                    {{ post.components.cooler.content }}
+                  </div>
+                </div>
+              </div>
+              <div class="component" ng-if="post.components.software">
+                <h6>Programas que utilizaré</h6>
+                {{ post.components.software }}
+              </div>
+            </div>
+          </div>
+          <div class="votes-count">
+            <span ng-if="post.votes.up > 0">A {{ post.votes.up }} {{post.votes.up == 1 ? 'persona le gusta':'personas les gusta'}}</span>
+          </div>
+          <ul class="post-actions">
+            <li class="action" ng-if="post.liked != -1">
+              <a ng-click="post_vote(post, 'up')" class="btn btn-primary" ng-class="{'liked': post.liked == 1, 'disabled': user.gaming.tribute == 0}" ng-if="post.author.id != user.info.id"><i class="fa fa-thumbs-up"></i> Me gusta</a>
+            </li>
+          </ul>
+          <!-- Best Answer preview -->
+          <div class="best_answer" ng-if="post.comments.answer">
+            <div class="comment best">
+              <div class="best-header">
+                <i class="fa fa-check-circle-o"></i> Mejor respuesta
+              </div>
+              <div class="comment-author">
+                <a href="/u/{{ post.comments.answer.author.username }}/{{ post.comments.answer.author.id }}" title="Perfil de {{ post.comments.answer.author.username }}">
+                  <img class="avatar" ng-src="{{ post.comments.answer.author.image }}" alt="{{ post.comments.answer.author.username }}" ng-if="post.comments.answer.author.image">
+                  <span class="avatar" title="{{ post.comments.answer.author.username }}" ng-if="!post.comments.answer.author.image">{{ post.comments.answer.author.username[0] }}</span>
+                </a>
+                <div class="username">
+                  <a href="/u/{{ post.comments.answer.author.username }}/{{ post.comments.answer.author.id }}" title="Perfil de {{ post.comments.answer.author.username }}">
+                    <strong>{{ post.comments.answer.author.username }}</strong>
+                  </a>
+                  <div>
+                    <span class="level">{{ misc.gaming.rules[post.comments.answer.author.gaming.level].name }}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="content" markedsg="post.comments.answer.content_final"></div>
+            </div>
+          </div>
+          <div class="answers">
+            <h5 ng-if="!post.lock || post.comments.count > 0">{{ post.comments.count }} respuesta{{post.comments.count == 1?'':'s'}}</h5>
+          </div>
+          <div class="text-center mb-40" ng-if="comments_status.loaded < post.comments.count">
+            <a class="btn btn-default" href="" ng-click="loadPreviousComments()" ng-if="!comments_status.loading">Mostrar <strong>{{ post.comments.count - comments_status.loaded | min }}</strong> anteriores</a>
+            <a class="btn btn-default" href="" ng-click="loadAllPreviousComments()" ng-if="!comments_status.loading">Mostrar todos los comentarios</a>
+            <a href="" class="btn btn-default disabled" role="button" ng-if="comments_status.loading">Cargando...</a>
+          </div>
+          <!-- Comments loop section -->
+          <div class="comments">
+            <div class="comment" data-number="{{ comment.position }}" ng-repeat="comment in (post.comments.set | orderBy:'position')" ng-class="{editing: comment.editing, best: comment.chosen}">
+              <div class="best-header" ng-if="comment.chosen">
+                <i class="fa fa-check-circle-o"></i> Mejor respuesta
+              </div>
+              <div class="columns items-center">
+                <div class="column col-1">
+                  <a href="/u/{{ comment.author.username }}/{{ comment.author.id }}" title="Perfil de {{ comment.author.username }}">
+                    <figure class="avatar" ng-if="comment.author.image">
+                      <img ng-src="{{ comment.author.image }}" alt="{{ comment.author.username }}" />
+                    </figure>
+                  <figure class="avatar" ng-if="!comment.author.image" data-initial="{{ comment.author.username[0] }}"></figure>
+                </a>
+              </div>
+              <div class="column flex-auto">
+                <div class="mb1">
+                  <a href="/u/{{ comment.author.username }}/{{ comment.author.id }}" title="Perfil de {{ comment.author.username }}" class="b near-black">{{ comment.author.username }}</a>
+                  <time>{{ comment.created_at | timeAgo }}:</time>
+                </div>
+                <span class="label" title="Reputación">
+                  <i class="fa fa-star gold" aria-hidden="true"></i> {{ comment.author.gaming.swords }}
+                </span>
+                <span class="label">{{ misc.gaming.rules[comment.author.gaming.level].name }}</span>
+                <span
+                  class="label label-primary"
+                  ng-repeat="role in comment.author.roles"
+                  ng-if="role.name !== 'user'">
+                  {{ rolesMap[role.name] || role.name }}
+                </span>
+              </div>
+              <div class="column flex-auto tr">
+                <a class="btn btn-link btn-sm" ng-click="reply_to(comment.author.username, comment.position)" ng-if="comment.author.id != user.info.id && !post.lock"><i class="fa fa-reply"></i> Responder</a>
+                <div class="dib" uib-dropdown>
+                  <button
+                  class="btn btn-action btn-link circle"
+                  ng-hide="comment.editing"
+                  uib-dropdown-toggle>
+                  <i class="icon icon-menu"></i>
+                  </button>
+                  <ul class="dropdown-menu dropdown-menu-right">
+                    <li ng-if="post.is_question && (!post.solved && aacl.can('solve', 'posts', user.info, post.author.id, post.category.id))">
+                      <a href="" ng-click="setBestAnswer(comment)"><i class="fa fa-check-circle"></i> Marcar como mejor respuesta</a>
+                    </li>
+                    <li>
+                      <a href="" ng-class="{disabled: comment.editing}" ng-if="aacl.can('edit', 'comments', user.info, comment.author.id, post.category.id)" ng-click="editCommentShow(comment)"><i class="fa fa-pencil"></i> Editar comentario</a>
+                    </li>
+                    <li>
+                      <a href="" ng-class="{disabled: comment.editing}" ng-if="aacl.can('delete', 'comments', user.info, comment.author.id, post.category.id)" ng-click="deleteComment(comment)"><i class="fa fa-trash-o"></i> Eliminar comentario</a>
+                    </li>
+                  </ul>
+                </div>
+                <a class="btn b btn-sm">{{ comment.votes.up }}</a>
+                <a href="" class="btn btn-link btn-sm"><i class="ficon-thumbs-up"></i></a>
+                <a href="" class="btn btn-link btn-sm"><i class="ficon-thumbs-down"></i></a>
+              </div>
+            </div>
+            <div class="content" ng-if="!comment.editing">
+              <div markedsg="::comment.content_final"></div>
+            </div>
+            <aside class="columns items-center" ng-if="!comment.editing">
+              <div class="column col-6">
+              </div>
+              <div class="column col-6 tr" ng-if="user.isLogged">
+                <a class="btn btn-link dn" ng-click="comment_vote(post.id, comment, 'up')" ng-class="{'liked': comment.liked == 1}" ng-if="comment.liked != -1 && comment.author.id != user.info.id && user.info.gaming.tribute > 0">Me gusta</a>
+              </div>
+            </aside>
+            <div class="idiot-wizzy edit" ng-if="comment.editing">
+              <textarea id="comment-content" placeholder="Escribe tu comentario..." class="form-control flexible-height content" ng-model="comment.content_edit" ng-disabled="waiting_comment" msd-elastic></textarea>
+              <div class="actions">
+                <ul>
+                  <li style="margin-left: 1.5em;">
+                    <a href="" class="btn btn-sm btn-danger" ng-click="comment.editing = false"><span class="label">Cancelar</span></a>
+                  </li>
+                  <li>
+                    <a href="" class="btn btn-sm btn-default" ngf-select ngf-change="uploadPicture($files, comment)" ngf-multiple="false" ngf-accept="'image/*'" ng-show="!adding_file"><i class="fa fa-picture-o"></i> <span class="label hidden-xs">Adjuntar imagen</span></a>
+                    <a href="" class="btn btn-sm btn-default disabled" ng-show="adding_file"><i class="fa fa-picture-o"></i> <span class="label hidden-xs">Adjuntando imagen...</span></a>
+                  </li>
+                  <li>
+                    <a href="" ng-click="editComment(comment)" ng-class="{'disabled': waiting_comment == true || comment.content == '' || adding_file}" class="btn btn-sm btn-primary btn-comment"><span class="label">Editar</span></a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="alert alert-warning text-center" ng-if="post.comments.new > 0"><span ng-if="!comments_status.loading_new">Hay <strong>{{ post.comments.new }}</strong> comentarios nuevos. <a href="" ng-click="loadNewComments()">Cargar comentarios nuevos.</a></span><span ng-if="comments_status.loading_new">Cargando...</span></div>
+        <div ng-if="false && can('debug')">comments.count: {{post.comments.count}}, comments.new: {{post.comments.new}}, comments.total: {{post.comments.total}}, comments_status.loaded: {{comments_status.loaded}}</div>
+        <div class="need-signin" ng-if="!user.isLogged && !post.lock">
+          <p>¿Quieres dejar un comentario? <a href="" ng-click="signIn()">Inicia sesión</a> o <a href="" ng-click="signUp()">Crea una cuenta</a></p>
+        </div>
+      </div>
+      <!-- New Comment editor-->
+      <div class="row">
+        <div class="col-md-9">
+          <div ng-if="!post.lock && user.isLogged && user.info.validated">
+            <div class="idiot-wizzy">
+              <textarea id="comment-content" placeholder="Escribe tu comentario..." class="form-control flexible-height content" ng-model="comment.content" ng-disabled="waiting_comment" msd-elastic></textarea>
+              <div class="actions">
+                <ul>
+                  <li ng-show="comment.content != ''" class="hidden-xs">
+                    <strong>**Negrita**</strong>
+                  </li>
+                  <li ng-show="comment.content != ''" class="hidden-xs">
+                    <em>*Itálica*</em>
+                  </li>
+                  <li style="margin-left: 1.5em;">
+                    <a href="" class="btn btn-default" ngf-select ngf-change="uploadPicture($files)" ngf-multiple="false" ngf-accept="'image/*'" ng-show="!adding_file"><i class="icon icon-photo"></i> <span class="hidden-xs">Adjuntar imagen</span></a>
+                    <a href="" class="btn btn-default disabled" ng-show="adding_file"><i class="fa fa-picture-o"></i> <span class="label hidden-xs">Adjuntando imagen...</span></a>
+                  </li>
+                  <li>
+                    <a ng-click="publish()" ng-class="{'disabled': waiting_comment == true || comment.content == '' || adding_file}" class="btn btn-primary btn-comment">Publicar</a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <p style="margin-top: 5px; font-size: 14px; color: #9C9C9C;">No olvides seguir el <a href="/reglamento" alt="Reglamento de SpartanGeek" target="_blank">reglamento</a> al publicar un comentario.</p>
+          </div>
+          <div ng-if="post.lock && post.comments.count > 0">
+            <p class="alert alert-warning">Esta publicación no permite más comentarios.</p>
+          </div>
+          <div ng-if="post.lock && post.comments.count == 0">
+            <p class="alert alert-info">Esta publicación no permite comentarios.</p>
+          </div>
+          <div ng-if="user.isLogged && !user.info.validated">
+            <p class="alert alert-info">Necesitas <a href="/u/{{user.info.username}}/{{user.info.id}}/?section=config"><strong>validar tu cuenta</strong></a> para poder escribir comentarios.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+</main>

@@ -71,7 +71,43 @@
     </div>
   </div>
 
-  <nav class="navbar navbar-default navbar-fixed-top">
+  <header class="navbar">
+    <section class="navbar-section">
+      <a href="/"><img src="/images/header-logo.svg" alt="Buldar.com" /></a>
+      <a href="/reglamento" class="btn btn-link">Reglamento</a>
+      <a href="/terminos-y-condiciones" class="btn btn-link">Terminos y Condiciones</a>
+      <a href="/about" class="btn btn-link">Acerca de</a>
+    </section>
+
+    <section class="navbar-section" ng-if="user.isLogged == false && user.resolving == false">
+      <a ng-click="signIn()" class="btn btn-link">Iniciar sesión</a>
+      <a ng-click="signUp()" class="btn btn-link">Únete</a>
+    </section>
+
+    <section class="navbar-section" ng-if="user.isLogged == true && user.resolving == false">
+      <a>
+        <span class="badge" ng-if="total_notifications() > 0" data-badge="{{ total_notifications() }}">
+          Notificaciones
+        </span>
+
+        <span class="badge" ng-if="total_notifications() <= 0">
+          Notificaciones
+        </span>
+      </a>
+      <a>
+        <figure class="avatar" data-initial="N">
+          <img src="img/avatar-1.png" alt="" />
+        </figure>
+        <span class="white ml1">{{ user.info.username }} <i class="icon icon-caret"></i></span>
+      </a>
+    </section>
+
+    <section class="navbar-section" ng-if="user.resolving == true">
+      <div class="loading"></div>
+    </section>
+  </header>
+
+  <nav class="navbar navbar-default navbar-fixed-top" style="display:none">
     <div class="container-fluid">
       <!-- Brand and toggle get grouped for better mobile display -->
       <div class="navbar-header">
@@ -141,12 +177,6 @@
                 <a class="unread" href="/u/{{user.info.username}}/{{user.info.id}}/?section=config">
                   Tu correo no ha sido confirmado
                   <div class="description">Te enviamos un correo para que puedas validar tu cuenta.</div>
-                </a>
-              </li>
-              <li ng-if="cart.hasMassdrop()">
-                <a class="unread" href="/componentes/checkout">
-                  Concluye tu pago de Compra en legión
-                  <div class="description">Hemos agregado a tu carrito el pago que te falta por completar.</div>
                 </a>
               </li>
               <li class="hidden">

@@ -380,6 +380,7 @@ boardApplication.controller('MainController', [
     function($scope, $rootScope, $http, $uibModal, $timeout, $firebaseObject, $firebaseArray, AclService, $location, $q) {
         $scope.user = {
             isLogged: false,
+            resolving: false,
             info: null,
             notifications: {
                 count: 0,
@@ -425,31 +426,19 @@ boardApplication.controller('MainController', [
             show: false
         };
 
-        $rootScope.$on('$routeChangeStart', function() {
-            // This runs on every controller change
-            var _sift = window._sift = window._sift || [];
-            _sift.push(['_setAccount', ss_key]);
-            if ($scope.user.isLogged === true && $scope.user.info) {
-                //console.log($scope.user.info.id, $scope.user.info.session_id);
-                _sift.push(['_setUserId', $scope.user.info.id]);
-                _sift.push(['_setSessionId', $scope.user.info.session_id]);
-            } else {
-                _sift.push(['_setUserId', ""]);
-            }
-            _sift.push(['_trackPageview']);
-        });
-
         $scope.show_search = function() {
             $rootScope.$broadcast('open_search');
         }
 
         $scope.logUser = function() {
+            $scope.user.resolving = true;
+
             $scope.promises.self = $q(function(resolve, reject) {
                 $http.get(layer_path + 'user/my', {
                     withCredentials: true
                 }).then(function success(response) {
                     var data = response.data;
-                    //console.log(data);
+                    $scope.user.resolving = false;
                     $scope.user.info = data;
                     $scope.user.isLogged = true;
 
@@ -645,8 +634,10 @@ boardApplication.controller('MainController', [
         };
 
         $scope.total_notifications = function() {
-            var sp = 0;
-            return sp + $scope.user.notifications.count.$value;
+            var user = $scope.user || {};
+            var info = $scope.user.info || {};
+
+            return parseInt(user.notifications.count.$value || 0) + (info.validated ? 0 : 1); 
         };
 
         $scope.reloadPost = function() {
@@ -721,6 +712,13 @@ boardApplication.controller('MainController', [
 
 boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', '$location', function($rootScope, $http, AclService, AdvancedAcl, $location) {
     $rootScope.location = $location;
+    $rootScope.rolesMap = {
+        'user': 'Legión buldar',
+        'developer': 'Dev team',
+        'administrator': 'Admin',
+        'category-moderator': 'Mod',
+        'super-moderator': 'Smod'
+    };
 
     // Initialize the local storage
     if (!localStorage.signed_in)

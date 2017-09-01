@@ -1,11 +1,9 @@
-@import "fonts";
 @import "bootstrap/bootstrap";
 @import "variables";
 
 @import "lib/dropdowns.less";
 @import "lib/modals.less";
 @import "lib/buttons.less";
-
 @import "forum/layout.less";
 @import "forum/sidenav.less";
 @import "forum/reader.less";
@@ -23,30 +21,20 @@
 @import "forum/misc.less";
 @import "forum/Badge.less";
 @import "forum/UserCard.less";
-
 @import "social/medals.less";
 @import "social/gamification.less";
 @import "social/components.less";
 @import "social/notifications.less";
-@import "social/massdrop.less";
 @import "social/events.less";
-@import "social/enchulame.less";
-
-//@import "chat/toolbar.less";
-@import "chat/messages.less";
-//@import "chat/details.less";
-//@import "chat/details.less";
-//@import (inline) "chat/emoji.min.css";
-@import "chat/structure.less";
-//@import (inline)"chat/sidebar.css";
 @import "../js/vendor/ng-scrollbars/jquery.mCustomScrollbar.min.css";
-
 @import "shared/emoji.less";
 @import "shared/flags.less";
-
 @import "catalog/showItem.less";
-
 @import "home.less";
+@import "fonts.less";
+@import "../../node_modules/spectre.css/spectre.less";
+@import "../../node_modules/spectre.css/spectre-icons.less";
+@import "spectre.less";
 
 img {
   image-orientation: from-image;
@@ -63,10 +51,6 @@ img {
 .row.row-recover {
   margin-left: 0px;
   margin-right: 0px;
-}
-
-.main-reader, .application, .global-content {
-  margin-top: @navbar-height;
 }
 
 .navbar-brand {
@@ -105,7 +89,6 @@ img {
 
 .label {
   font-size: 80%;
-  font-weight: 600;
 }
 
 .nav-pills>li.divider {
