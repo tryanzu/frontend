@@ -1,4 +1,30 @@
+.navbar {
+  a.active, a:active, a:focus, a:hover {
+    text-decoration: none;
+    box-shadow: none;
+    outline: 0;
+  }
 
+  .menu.notifications {
+    width: 320px;
+    padding: 0;
+
+    .menu-item {
+      border-bottom: 1px solid #eee;
+      margin-top: 0;
+      padding: 0.4rem 0.8rem;
+
+      &:hover {
+        background-color: #f6f8fa;
+        color: #2970ef;
+      }
+
+      a:hover {
+        background: transparent;
+      }
+    }
+  }
+}
 
 //
 // Navbars

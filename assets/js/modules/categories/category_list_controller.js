@@ -1,6 +1,5 @@
 var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', 'Category', 'Feed', 'Bridge', '$route', '$routeParams', '$http', 'socket',
     function($scope, $rootScope, $timeout, $location, Category, Feed, Bridge, $route, $routeParams, $http, socket) {
-
         $scope.categories = [];
         $scope.resolving = {
             categories: true,

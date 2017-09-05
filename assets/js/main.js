@@ -39,7 +39,6 @@
 // @codekit-prepend modules/events/event.js
 
 var version = '106';
-
 var boardApplication = angular.module('board', [
     'ngRoute',
     'ui.bootstrap',
@@ -74,161 +73,183 @@ var boardApplication = angular.module('board', [
 ]);
 
 boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvider', '$locationProvider', 'markedProvider', 'AclServiceProvider', function($httpProvider, jwtInterceptorProvider, $routeProvider, $locationProvider, markedProvider, AclServiceProvider) {
-        $routeProvider.when('/home', {
-            templateUrl: '/app/partials/home.html?v=' + version
-        });
-        $routeProvider.when('/terminos-y-condiciones', {
-            templateUrl: '/app/partials/terms.html?v=' + version
-        });
-        $routeProvider.when('/aviso-de-privacidad', {
-            templateUrl: '/app/partials/privacy.html?v=' + version
-        });
-        $routeProvider.when('/reglamento', {
-            templateUrl: '/app/partials/rules.html?v=' + version
-        });
-        $routeProvider.when('/about', {
-            templateUrl: '/app/partials/about.html?v=' + version
-        });
-        $routeProvider.when('/rangos', {
-            templateUrl: '/app/partials/ranks.html?v=' + version,
-            controller: 'RanksController'
-        });
-        $routeProvider.when('/medallas', {
-            templateUrl: '/app/partials/badges.html?v=' + version,
-            controller: 'BadgeController'
-        });
-        $routeProvider.when('/top-ranking', {
-            templateUrl: '/app/partials/tops.html?v=' + version,
-            controller: 'TopController'
-        });
-        $routeProvider.when('/signup/confirm/:code', {
-            templateUrl: '/app/partials/validate.html?v=' + version,
-            controller: 'UserValidationController'
-        });
-        $routeProvider.when('/componentes/tienda/:type?', {
-            templateUrl: '/js/partials/components.html?v=' + version,
-            controller: 'ComponentsController'
-        });
-        $routeProvider.when('/computadoras/armar', {
-            templateUrl: '/js/partials/pc_builder.html?v=' + version,
-            controller: 'PcBuilderController'
-        });
-        $routeProvider.when('/componentes/checkout', {
-            templateUrl: '/app/partials/checkout.html?v=' + version,
-            controller: 'CheckoutController'
-        });
-        $routeProvider.when('/componentes/:type?', {
-            templateUrl: '/app/partials/components.html?v=' + version,
-            controller: 'ComponentsController'
-        });
-        $routeProvider.when('/componentes/:type/:slug', {
-            templateUrl: '/app/partials/component.html?v=' + version,
-            controller: 'ComponentController'
-        });
-        $routeProvider.when('/compra-en-legion/faq', {
-            templateUrl: '/app/partials/massdrop/faq.html?v=' + version,
-            //controller: 'ComponentController'
-        });
-        $routeProvider.when('/compra-en-legion/:slug', {
-            templateUrl: '/app/partials/massdrop/show.html?v=' + version,
-            controller: 'MassdropController'
-        });
-        $routeProvider.when('/compra-en-legion/:slug/unirme', {
-            templateUrl: '/app/partials/massdrop/pay.html?v=' + version,
-            controller: 'MassdropPayController'
-        });
-        $routeProvider.when('/compra-en-legion', {
-            templateUrl: '/app/partials/massdrop/index.html?v=' + version,
-            controller: 'MassdropIndexController'
-        });
-        $routeProvider.when('/c/:slug', {
-            templateUrl: '/app/partials/main.html?v=' + version,
-            controller: 'CategoryListController'
-        });
-        $routeProvider.when('/p/:slug/:id/edit', {
-            templateUrl: '/app/partials/edit.html?v=' + version,
-            controller: 'EditPostController'
-        });
-        $routeProvider.when('/p/:slug/:id/:comment_position?', {
-            templateUrl: '/app/partials/main.html?v=' + version,
-            controller: 'CategoryListController'
-        });
-        $routeProvider.when('/u/:username/:id', {
-            templateUrl: '/app/partials/profile.html?v=' + version,
-            controller: 'UserController'
-        });
-        $routeProvider.when('/user/lost_password/:token', {
-            templateUrl: '/app/partials/recovery.html?v=' + version,
-            controller: 'UserRecoveryController'
-        });
-        $routeProvider.when('/eventos', {
-            templateUrl: '/app/partials/events.html?v=' + version,
-            controller: 'EventController'
-        });
-        $routeProvider.when('/post/create/:cat_slug?', {
-            templateUrl: '/app/partials/publish.html?v=' + version,
-            controller: 'PublishController',
-            onEnter: function() {
-                if (!$scope.user.isLogged) {
-                    window.location = '/';
-                }
+    $routeProvider.when('/home', {
+        templateUrl: '/app/partials/home.html?v=' + version
+    });
+    $routeProvider.when('/terminos-y-condiciones', {
+        templateUrl: '/app/partials/terms.html?v=' + version
+    });
+    $routeProvider.when('/aviso-de-privacidad', {
+        templateUrl: '/app/partials/privacy.html?v=' + version
+    });
+    $routeProvider.when('/reglamento', {
+        templateUrl: '/app/partials/rules.html?v=' + version
+    });
+    $routeProvider.when('/about', {
+        templateUrl: '/app/partials/about.html?v=' + version
+    });
+    $routeProvider.when('/rangos', {
+        templateUrl: '/app/partials/ranks.html?v=' + version,
+        controller: 'RanksController'
+    });
+    $routeProvider.when('/medallas', {
+        templateUrl: '/app/partials/badges.html?v=' + version,
+        controller: 'BadgeController'
+    });
+    $routeProvider.when('/top-ranking', {
+        templateUrl: '/app/partials/tops.html?v=' + version,
+        controller: 'TopController'
+    });
+    $routeProvider.when('/signup/confirm/:code', {
+        templateUrl: '/app/partials/validate.html?v=' + version,
+        controller: 'UserValidationController'
+    });
+    $routeProvider.when('/componentes/tienda/:type?', {
+        templateUrl: '/js/partials/components.html?v=' + version,
+        controller: 'ComponentsController'
+    });
+    $routeProvider.when('/computadoras/armar', {
+        templateUrl: '/js/partials/pc_builder.html?v=' + version,
+        controller: 'PcBuilderController'
+    });
+    $routeProvider.when('/componentes/checkout', {
+        templateUrl: '/app/partials/checkout.html?v=' + version,
+        controller: 'CheckoutController'
+    });
+    $routeProvider.when('/componentes/:type?', {
+        templateUrl: '/app/partials/components.html?v=' + version,
+        controller: 'ComponentsController'
+    });
+    $routeProvider.when('/componentes/:type/:slug', {
+        templateUrl: '/app/partials/component.html?v=' + version,
+        controller: 'ComponentController'
+    });
+    $routeProvider.when('/compra-en-legion/faq', {
+        templateUrl: '/app/partials/massdrop/faq.html?v=' + version,
+        //controller: 'ComponentController'
+    });
+
+    $routeProvider.when('/compra-en-legion/:slug', {
+        templateUrl: '/app/partials/massdrop/show.html?v=' + version,
+        controller: 'MassdropController'
+    });
+    $routeProvider.when('/compra-en-legion/:slug/unirme', {
+        templateUrl: '/app/partials/massdrop/pay.html?v=' + version,
+        controller: 'MassdropPayController'
+    });
+    $routeProvider.when('/compra-en-legion', {
+        templateUrl: '/app/partials/massdrop/index.html?v=' + version,
+        controller: 'MassdropIndexController'
+    });
+    $routeProvider.when('/c/:slug', {
+        templateUrl: '/app/partials/main.html?v=' + version,
+        controller: 'CategoryListController'
+    });
+    $routeProvider.when('/p/:slug/:id/edit', {
+        templateUrl: '/app/partials/edit.html?v=' + version,
+        controller: 'EditPostController'
+    });
+    $routeProvider.when('/p/:slug/:id/:comment_position?', {
+        templateUrl: '/app/partials/main.html?v=' + version,
+        controller: 'CategoryListController'
+    });
+    $routeProvider.when('/u/:username/:id', {
+        templateUrl: '/app/partials/profile.html?v=' + version,
+        controller: 'UserController'
+    });
+
+    $routeProvider.when('/user/lost_password/:token', {
+        templateUrl: '/app/partials/recovery.html?v=' + version,
+        controller: 'UserRecoveryController'
+    });
+    $routeProvider.when('/eventos', {
+        templateUrl: '/app/partials/events.html?v=' + version,
+        controller: 'EventController'
+    });
+    $routeProvider.when('/post/create/:cat_slug?', {
+        templateUrl: '/app/partials/publish.html?v=' + version,
+        controller: 'PublishController',
+        onEnter: function() {
+            if (!$scope.user.isLogged) {
+                window.location = '/';
             }
-        });
-        $routeProvider.when('/', {
-            templateUrl: '/app/partials/main.html?v=' + version,
-            controller: 'CategoryListController'
-        });
-        $routeProvider.otherwise({
-            redirectTo: '/'
-        });
+        }
+    });
 
-        // use the HTML5 History API
-        $locationProvider.html5Mode(true);
+    $routeProvider.when('/entrar', {
+        templateUrl: '/app/partials/account/login.html',
+        controller: loginController,
+        controllerAs: 'vm'
+    });
 
-        // Marked
-        markedProvider.setRenderer({
-            link: function(href, title, text) {
-                console.log("href before", href);
-                var expression = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
-                var regex = new RegExp(expression);
+    $routeProvider.when('/unete', {
+        templateUrl: '/app/partials/account/signup.html',
+        controller: signupController,
+        controllerAs: 'vm'
+    });
 
-                if (href.match(regex)) {
-                    return "<a href='" + href + "' title='" + title + "' target='_blank'>" + href + "</a>";
-                } else {
-                    return "" + href;
-                }
-            }
-        });
-
-        // Please note we're annotating the function so that the $injector works when the file is minified
-        jwtInterceptorProvider.tokenGetter = ['config', 'jwtHelper', function(config, jwtHelper) {
-            // Skip authentication for any requests ending in .html
-            if (config.url.substr(config.url.length - 5) == '.html') {
-                return null;
+    $routeProvider.when('/', {
+        templateUrl: '/app/partials/main.html?v=' + version,
+        controller: 'CategoryListController',
+        resolveRedirectTo: function() {
+            if (!$scope.user.isLogged) {
+                return '/entrar';
             }
 
-            if (localStorage.signed_in == 'false')
-                return null;
+            return undefined;
+        }
+    });
+    $routeProvider.otherwise({
+        redirectTo: '/'
+    });
 
-            var idToken = localStorage.getItem('id_token');
-            if (idToken === null) {
-                return null;
-            }
+    // use the HTML5 History API
+    $locationProvider.html5Mode(true);
 
-            if (jwtHelper.isTokenExpired(idToken)) {
-                localStorage.signed_in = false
+    // Marked
+    markedProvider.setRenderer({
+        link: function(href, title, text) {
+            console.log("href before", href);
+            var expression = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
+            var regex = new RegExp(expression);
+
+            if (href.match(regex)) {
+                return "<a href='" + href + "' title='" + title + "' target='_blank'>" + href + "</a>";
             } else {
-                return idToken;
+                return "" + href;
             }
-        }];
-        $httpProvider.interceptors.push('jwtInterceptor');
+        }
+    });
 
-        // ACL Configuration
-        AclServiceProvider.config({
-            storage: false
-        });
-    }
-]);
+    // Please note we're annotating the function so that the $injector works when the file is minified
+    jwtInterceptorProvider.tokenGetter = ['config', 'jwtHelper', function(config, jwtHelper) {
+        // Skip authentication for any requests ending in .html
+        if (config.url.substr(config.url.length - 5) == '.html') {
+            return null;
+        }
+
+        if (localStorage.signed_in == 'false')
+            return null;
+
+        var idToken = localStorage.getItem('id_token');
+        if (idToken === null) {
+            return null;
+        }
+
+        if (jwtHelper.isTokenExpired(idToken)) {
+            localStorage.signed_in = false
+        } else {
+            return idToken;
+        }
+    }];
+
+    $httpProvider.interceptors.push('jwtInterceptor');
+
+    // ACL Configuration
+    AclServiceProvider.config({
+        storage: false
+    });
+}]);
 
 boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http', '$uibModalInstance', '$location',
     function($scope, $rootScope, $http, $uibModalInstance, $location) {
@@ -239,9 +260,7 @@ boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http'
         };
 
         $scope.current_url = $location.absUrl();
-
         $scope.fb_loading = false;
-
         $scope.pass_recovery = {
             show: false,
             form: {
@@ -251,7 +270,6 @@ boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http'
         };
 
         $scope.sendEmail = function() {
-            console.log("enviar correo...")
             $http.get(layer_path + 'auth/lost-password', {
                 params: {
                     'email': $scope.pass_recovery.form.email
@@ -340,20 +358,20 @@ boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http'
             }
 
             $http.post(layer_path + 'user', payload, {
-                    skipAuthorization: true
-                })
-                .then(function success(response) {
-                    var data = response.data;
-                    localStorage.setItem('id_token', data.token);
-                    localStorage.setItem('firebase_token', data.firebase);
-                    localStorage.setItem('signed_in', true);
-                    $uibModalInstance.dismiss('signed');
-                    $rootScope.$broadcast('login');
-                }, function(error) {
-                    $scope.form.error = {
-                        message: 'El usuario o correo elegido ya existe.'
-                    };
-                });
+                skipAuthorization: true
+            })
+            .then(function success(response) {
+                var data = response.data;
+                localStorage.setItem('id_token', data.token);
+                localStorage.setItem('firebase_token', data.firebase);
+                localStorage.setItem('signed_in', true);
+                $uibModalInstance.dismiss('signed');
+                $rootScope.$broadcast('login');
+            }, function(error) {
+                $scope.form.error = {
+                    message: 'El usuario o correo elegido ya existe.'
+                };
+            });
         };
 
         $scope.ok = function() {
@@ -365,6 +383,110 @@ boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http'
         };
     }
 ]);
+
+/**
+ *  Login controller.
+ *  @since 1.0
+ */
+
+loginController.$inject = ['$rootScope', '$http', '$location'];
+function loginController($rootScope, $http, $location) {
+    var vm = this;
+
+    vm.currentUrl = $location.absUrl();
+    vm.form = {
+        email: '',
+        password: '',
+        error: false
+    };
+    vm.error = false;
+    vm.loading = false;
+    vm.send = send;
+
+    function send() {
+        if (vm.loading == true) {
+            return;
+        }
+
+        vm.loading = true;
+        vm.form.error = false;
+
+        // TODO: mover estos fragmentos a un servicio dedicado. (auth service maybe?)
+        $http.post(layer_path + 'auth/get-token', {}, {
+            params: {
+                email: vm.form.email,
+                password: vm.form.password
+            },
+            skipAuthorization: true
+        })
+        .then(success, failed);
+
+        function success(response) {
+            var data = response.data;
+            localStorage.setItem('id_token', data.token);
+            localStorage.setItem('firebase_token', data.firebase);
+            localStorage.setItem('signed_in', true);
+
+            $rootScope.$broadcast('login');
+            $location.path('/');
+        }
+
+        function failed(error) {
+            vm.form.error = true;
+            vm.loading = false;
+        }
+    }
+}
+
+signupController.$inject = ['$rootScope', '$http', '$location'];
+function signupController($rootScope, $http, $location) {
+    var vm = this;
+    var ref = localStorage.getItem('ref') || false;
+
+    vm.currentUrl = $location.absUrl();
+    vm.form = {
+        email: '',
+        password: '',
+        username: ''
+    };
+    vm.error = false;
+    vm.loading = false;
+    vm.send = send;
+
+    function send() {
+        if (vm.loading == true) {
+            return;
+        }
+
+        vm.loading = true;
+        vm.error = false;
+
+        // Construct and copy payload.
+        var payload = Object.assign({}, vm.form);
+        if (ref) {
+            payload = Object.assign({}, payload, {ref: ref});
+        }
+
+        // TODO: mover estos fragmentos a un servicio dedicado. (auth service maybe?)
+        $http.post(layer_path + 'user', payload, {
+            skipAuthorization: true
+        }).then(success, failed);
+
+        function success(response) {
+            var data = response.data;
+            localStorage.setItem('id_token', data.token);
+            localStorage.setItem('firebase_token', data.firebase);
+            localStorage.setItem('signed_in', true);
+            $rootScope.$broadcast('login');
+            $location.path('/');
+        }
+
+        function failed(error) {
+            vm.error = true;
+            vm.loading = false;
+        }
+    }
+}
 
 boardApplication.controller('MainController', [
     '$scope',
@@ -425,14 +547,11 @@ boardApplication.controller('MainController', [
             available: false,
             show: false
         };
-
         $scope.show_search = function() {
             $rootScope.$broadcast('open_search');
         }
-
         $scope.logUser = function() {
             $scope.user.resolving = true;
-
             $scope.promises.self = $q(function(resolve, reject) {
                 $http.get(layer_path + 'user/my', {
                     withCredentials: true
@@ -485,7 +604,7 @@ boardApplication.controller('MainController', [
                             //$scope.signOut();
                         }
                     });
-                    fbRef.authWithCustomToken(localStorage.firebase_token, function(error, authData)  {
+                    fbRef.authWithCustomToken(/*localStorage.firebase_token*/"W6Y5Yp1xarJgugsmkQYiSFwdICb7f08haTzgqi5Y", function(error, authData)  {
                         if (error) {
                             console.log("Login to Firebase failed!", error);
                         } else {
@@ -542,21 +661,6 @@ boardApplication.controller('MainController', [
                         }
                     });
 
-                    OneSignal.getUserId(function(userId) {
-                        if ($scope.user.isLogged) {
-                            $scope.promises.self.then(function() {
-                                // Make a POST call to your server with the user ID
-                                $http.patch(layer_path + 'me/onesignal_id', {
-                                    value: userId
-                                }).then(function success(response) {
-                                    console.log("Suscribed and registered!")
-                                }, function error(response) {
-                                    console.log(response);
-                                });
-                            });
-                        }
-                    });
-
                     if ($location.path() == '/home') {
                         window.location.href = "/";
                     }
@@ -574,18 +678,6 @@ boardApplication.controller('MainController', [
                 });
             });
         }
-
-        $scope.signIn = function() {
-            var modalInstance = $uibModal.open({
-                templateUrl: '/app/partials/sign-in.html',
-                controller: 'SignInController',
-                size: 'sm'
-            });
-
-            modalInstance.result.then(function() {}, function() {
-                //$log.info('Modal dismissed at: ' + new Date());
-            });
-        };
 
         $scope.signUp = function() {
             var modalInstance = $uibModal.open({
@@ -637,7 +729,7 @@ boardApplication.controller('MainController', [
             var user = $scope.user || {};
             var info = $scope.user.info || {};
 
-            return parseInt(user.notifications.count.$value || 0) + (info.validated ? 0 : 1); 
+            return parseInt(user.notifications.count.$value || 0) + (info.validated ? 0 : 1);
         };
 
         $scope.reloadPost = function() {
@@ -721,8 +813,9 @@ boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', '$loca
     };
 
     // Initialize the local storage
-    if (!localStorage.signed_in)
+    if (!localStorage.signed_in) {
         localStorage.signed_in = false;
+    }
 
     var location = $location.path();
 
@@ -732,11 +825,6 @@ boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', '$loca
         localStorage.setItem('firebase_token', $location.search().fbToken);
         $location.search('fbToken', null);
         $location.search('token', null);
-    }
-
-    if (localStorage.signed_in === 'false' && localStorage.redirect_to_home !== 'true' && location == '/') {
-        localStorage.setItem('redirect_to_home', 'true');
-        window.location.href = "/home";
     }
 
     $rootScope.page = {
@@ -766,4 +854,12 @@ boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', '$loca
         });
     $rootScope.can = AclService.can;
     $rootScope.aacl = AdvancedAcl;
+
+    $rootScope.$on('$locationChangeStart', function (event, next, current) {
+        var signedIn = localStorage.getItem('signed_in') === 'true';
+
+        if ($location.path() == '/' && signedIn == false) {
+            $location.path('/entrar');
+        }
+    });
 }]);

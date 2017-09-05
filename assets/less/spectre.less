@@ -1,11 +1,15 @@
 @primary-color: #4180F1;
 
+html {
+	font-size: 20px;
+}
+
 header.navbar {
 	background-color: #131d3a;
 	padding: 0.5rem 1rem;
 }
 
-header.navbar img {
+header.navbar img.logo {
 	height: 20px;
 	margin: 10px 0;
 	margin-right: 10px;
@@ -26,4 +30,21 @@ header.navbar .badge:not([data-badge])::after, header.navbar .badge[data-badge]:
 
 .avatar {
 	background-color: #727e96;
+}
+
+.btn.btn-link.active {
+	color: #555555;
+}
+
+.btn.btn-link.active .ficon-thumbs-down {
+	color: #e85600;
+}
+
+.btn.btn-link.active .ficon-thumbs-up {
+	color: #32b643;
+}
+
+.clean-styles p {
+	margin: 0;
+	padding: 0;
 }

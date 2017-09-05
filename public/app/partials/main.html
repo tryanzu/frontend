@@ -5,7 +5,7 @@
         <div class="col-md-12">
           <div class="feed-sidebar">
             <div class="category-selector">
-              <div id="actions" class="columns pa2" ng-if="user.isLogged">
+              <div id="actions" class="columns col-gapless pa2" ng-if="user.isLogged">
                 <div class="column">
                   <a href="/" ng-if="category.slug != null" style="margin-right: 1rem;" ng-click="toggleCategories()"><h2><i class="fa fa-chevron-left"></i></h2></a>
                   <h2>{{ category.name || "Mis categorias" }}</h2>
@@ -257,9 +257,8 @@
         <div class="back-to-list visible-xs-block">
           <a href="/" ng-click="activePostId = null"><i class="fa fa-chevron-left"></i> Regresar al listado de publicaciones</a>
         </div>
-        <div class="resolving" ng-hide="!resolving">
-          <img src="/images/head.png" />
-          <h6 class="mv2">Cargando</h6>
+        <div class="resolving pt3" ng-hide="resolving == false">
+          <img src="/images/seal.svg" class="w4 mb2" alt="Cargando experiencia Buldar" />
           <div class="loading loading-lg"></div>
         </div>
         <div class="resolving" ng-show="error_loading">
@@ -332,7 +331,7 @@
             </ul>
           </nav>
           <div class="discussion-posts">
-            <div class="float-actions text-right">
+            <div class="float-actions text-right dn">
               <div class="btn-group" ng-if="aacl.can('delete', 'posts', user.info, post.author.id, post.category.id)" uib-dropdown>
                 <button type="button" class="button button-icon button-flat" uib-dropdown-toggle>
                 <i class="fa fa-pencil"></i>
@@ -356,7 +355,7 @@
                 <figure class="avatar" ng-if="!post.author.image" data-initial="{{ post.author.username[0] }}"></figure>
               </a>
             </div>
-            <div class="column col-11">
+            <div class="column flex-auto">
               <a href="/u/{{ post.author.username }}/{{ post.author.id }}" title="Perfil de {{ post.author.username }}" class="b near-black">{{ post.author.username }}</a>
               <time>{{ post.created_at | timeAgo }}</time>
               <div class="mt1">
@@ -370,92 +369,6 @@
                   ng-if="role.name !== 'user'">
                   {{ rolesMap[role.name] || role.name }}
                 </span>
-              </div>
-            </div>
-          </div>
-          <div class="comment-author dn">
-            <a href="/u/{{ post.author.username }}/{{ post.author.id }}" title="Perfil de {{ post.author.username }}" ng-mouseover="toggleUserCard(post)">
-              <img class="avatar" ng-src="{{ post.author.image }}" alt="{{ post.author.username }}" ng-if="post.author.image">
-              <span class="avatar" title="{{ post.author.username }}" ng-if="!post.author.image">{{ post.author.username[0] }}</span>
-            </a>
-            <ul class="PostUser-badges badges">
-              <li class="item-group1" ng-repeat="role in post.author.roles">
-                <span ng-if="role.name == 'developer'" class="Badge Badge--group--Admin" style="background-color: rgb(103, 156, 77);" uib-tooltip="Developer"><i class="icon fa fa-fw fa-wrench Badge-icon"></i></span>
-                <span ng-if="role.name == 'category-moderator'" class="Badge Badge--group--Staff" style="background-color: rgb(231, 103, 46);" uib-tooltip="Mod"><i class="icon fa fa-fw fa-gavel Badge-icon"></i></span>
-                <span ng-if="role.name == 'administrator'" class="Badge Badge--group--Mod" style="background-color: #E85886" uib-tooltip="Staff"><i class="icon fa fa-fw fa-bolt Badge-icon"></i></span>
-                <span ng-if="role.name == 'spartan-girl'" class="Badge Badge--group--SpartanGirl" style="background-color: rgb(128, 52, 158);" uib-tooltip="SpartanGirl"><i class="icon fa fa-fw fa-moon-o Badge-icon"></i></span>
-              </li>
-            </ul>
-            <div class="UserCard" ng-class="{'UserCard--popover in': post.showAuthorAnimation }" style="background-color: #888;" ng-show="post.showAuthor" ng-mouseleave="toggleUserCard(post)">
-              <div class="darkenBackground">
-                <div class="container">
-                  <div class="UserCard-profile">
-                    <h2 class="UserCard-identity">
-                    <a href="/u/{{ post.author.username }}/{{ post.author.id }}">
-                      <div class="UserCard-avatar">
-                        <img class="avatar" ng-src="{{ post.author.image }}" ng-if="post.author.image">
-                        <span class="avatar" title="{{ post.author.username }}" ng-if="!post.author.image">{{ post.author.username[0] }}</span>
-                      </div>
-                      <span>{{ post.author.username }}</span>
-                    </a>
-                    </h2>
-                    <ul class="UserCard-badges badges">
-                      <li class="item-group1" ng-repeat="role in post.author.roles">
-                        <span ng-if="role.name == 'developer'" class="Badge Badge--group--Admin" style="background-color: rgb(103, 156, 77);" uib-tooltip="Developer"><i class="icon fa fa-fw fa-wrench Badge-icon"></i></span>
-                        <span ng-if="role.name == 'category-moderator'" class="Badge Badge--group--Staff" style="background-color: rgb(231, 103, 46);" uib-tooltip="Mod"><i class="icon fa fa-fw fa-gavel Badge-icon"></i></span>
-                        <span ng-if="role.name == 'administrator'" class="Badge Badge--group--Mod" style="background-color: #E85886" uib-tooltip="Staff"><i class="icon fa fa-fw fa-bolt Badge-icon"></i></span>
-                        <span ng-if="role.name == 'spartan-girl'" class="Badge Badge--group--SpartanGirl" style="background-color: rgb(128, 52, 158);" uib-tooltip="SpartanGirl"><i class="icon fa fa-fw fa-moon-o Badge-icon"></i></span>
-                      </li>
-                    </ul>
-                    <ul class="UserCard-info">
-                      <li class="item-bio">
-                        <div class="UserBio ">
-                          <div class="UserBio-content">
-                            <p>{{ post.author.description }}</p>
-                          </div>
-                        </div>
-                      </li>
-                      <li class="item-game-tags">
-                        <div class="row">
-                          <div class="col-md-12">
-                            <div class="row">
-                              <div class="col-md-4">Steam</div>
-                              <div class="col-md-8">{{ post.author.steam_id || 'No especificado'}}</div>
-                            </div>
-                          </div>
-                          <div class="col-md-12" ng-show="post.author.origin_id != ''">
-                            <div class="row">
-                              <div class="col-md-4">Origin</div>
-                              <div class="col-md-8">{{ post.author.origin_id || 'No especificado'}}</div>
-                            </div>
-                          </div>
-                          <div class="col-md-12" ng-show="post.author.battlenet_id != ''">
-                            <div class="row">
-                              <div class="col-md-4">Battle.net</div>
-                              <div class="col-md-8">{{ post.author.battlenet_id || 'No especificado'}}</div>
-                            </div>
-                          </div>
-                        </table>
-                      </li>
-                      <li class="item-lastSeen">
-                        <span class="user-last-seen online" ng-if="post.author.status">
-                          <i class="fa fa-fw fa-circle"></i> Online
-                        </span>
-                        <span class="user-last-seen" ng-if="!post.author.status">
-                          <i class="fa fa-fw fa-circle-o"></i> Offline
-                        </span>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="username">
-              <a href="/u/{{ post.author.username }}/{{ post.author.id }}" title="Perfil de {{ post.author.username }}">{{ post.author.username }}</a>
-              <time>{{ post.created_at | timeAgo }}</time>
-              <div>
-                <span ng-if="post.author.country"><flag country="{{ post.author.country }}" size="16"></flag></span>
-                <span class="reputation">{{ post.author.gaming.swords }}</span> <span class="level">{{ misc.gaming.rules[post.author.gaming.level].name }}</span>
               </div>
             </div>
           </div>
@@ -569,10 +482,10 @@
               </div>
             </div>
           </div>
-          <div class="votes-count">
-            <span ng-if="post.votes.up > 0">A {{ post.votes.up }} {{post.votes.up == 1 ? 'persona le gusta':'personas les gusta'}}</span>
+          <div class="votes-count dn">
+            <span ng-if="post.votes.up > 0">A {{ post.votes.up }} {{ post.votes.up == 1 ? 'persona le gusta' : 'personas les gusta' }}</span>
           </div>
-          <ul class="post-actions">
+          <ul class="post-actions dn">
             <li class="action" ng-if="post.liked != -1">
               <a ng-click="post_vote(post, 'up')" class="btn btn-primary" ng-class="{'liked': post.liked == 1, 'disabled': user.gaming.tribute == 0}" ng-if="post.author.id != user.info.id"><i class="fa fa-thumbs-up"></i> Me gusta</a>
             </li>
@@ -600,7 +513,21 @@
               <div class="content" markedsg="post.comments.answer.content_final"></div>
             </div>
           </div>
-          <div class="answers">
+          <div class="brief bb b--light-gray columns mt3 items-center">
+            <div class="column f7 b pv2">
+              {{ post.comments.count }} respuesta{{post.comments.count == 1?'':'s'}}
+            </div>
+            <div class="column flex-auto tr">
+              <a ng-click="post_vote(post, 'up')" class="btn btn-link" ng-class="{disabled: post.liked == -1 || !user.isLogged || post.author.id == user.info.id, active: post.liked == 1}">
+                <i class="ficon-thumbs-up"></i> {{ post.votes.up }} 
+              </a>
+              <a ng-click="post_vote(post, 'down')" class="btn btn-link" ng-class="{disabled: post.liked == 1 || !user.isLogged || post.author.id == user.info.id, active: post.liked == -1}">
+                <i class="ficon-thumbs-down"></i> {{ post.votes.down }}
+              </a>
+            </div>
+          </div>
+
+          <div class="answers dn">
             <h5 ng-if="!post.lock || post.comments.count > 0">{{ post.comments.count }} respuesta{{post.comments.count == 1?'':'s'}}</h5>
           </div>
           <div class="text-center mb-40" ng-if="comments_status.loaded < post.comments.count">
@@ -614,7 +541,7 @@
               <div class="best-header" ng-if="comment.chosen">
                 <i class="fa fa-check-circle-o"></i> Mejor respuesta
               </div>
-              <div class="columns items-center">
+              <div class="columns items-center col-gapless">
                 <div class="column col-1">
                   <a href="/u/{{ comment.author.username }}/{{ comment.author.id }}" title="Perfil de {{ comment.author.username }}">
                     <figure class="avatar" ng-if="comment.author.image">
@@ -640,8 +567,8 @@
                 </span>
               </div>
               <div class="column flex-auto tr">
-                <a class="btn btn-link btn-sm" ng-click="reply_to(comment.author.username, comment.position)" ng-if="comment.author.id != user.info.id && !post.lock"><i class="fa fa-reply"></i> Responder</a>
-                <div class="dib" uib-dropdown>
+                <a class="btn btn-link btn-sm" ng-click="reply_to(comment.author.username, comment.position)" ng-if="comment.author.id != user.info.id && !post.lock && user.isLogged"><i class="fa fa-reply"></i> Responder</a>
+                <div class="dib" ng-if="aacl.can('edit', 'comments', user.info, comment.author.id, post.category.id) || aacl.can('delete', 'comments', user.info, comment.author.id, post.category.id)" uib-dropdown>
                   <button
                   class="btn btn-action btn-link circle"
                   ng-hide="comment.editing"
@@ -660,21 +587,16 @@
                     </li>
                   </ul>
                 </div>
-                <a class="btn b btn-sm">{{ comment.votes.up }}</a>
-                <a href="" class="btn btn-link btn-sm"><i class="ficon-thumbs-up"></i></a>
-                <a href="" class="btn btn-link btn-sm"><i class="ficon-thumbs-down"></i></a>
+                <a class="btn b btn-sm">{{ comment.votes.up - comment.votes.down }}</a>
+                <a ng-click="comment_vote(post.id, comment, 'up')" ng-if="comment.author.id != user.info.id && user.info.gaming.tribute > 0" class="btn btn-link btn-sm" ng-class="{disabled: comment.liked == -1, active: comment.liked == 1}">
+                  <i class="ficon-thumbs-up"></i>
+                </a>
+                <a ng-click="comment_vote(post.id, comment, 'down')" ng-if="comment.author.id != user.info.id && user.info.gaming.tribute > 0" class="btn btn-link btn-sm" ng-class="{disabled: comment.liked == 1, active: comment.liked == -1}"><i class="ficon-thumbs-down"></i></a>
               </div>
             </div>
             <div class="content" ng-if="!comment.editing">
               <div markedsg="::comment.content_final"></div>
             </div>
-            <aside class="columns items-center" ng-if="!comment.editing">
-              <div class="column col-6">
-              </div>
-              <div class="column col-6 tr" ng-if="user.isLogged">
-                <a class="btn btn-link dn" ng-click="comment_vote(post.id, comment, 'up')" ng-class="{'liked': comment.liked == 1}" ng-if="comment.liked != -1 && comment.author.id != user.info.id && user.info.gaming.tribute > 0">Me gusta</a>
-              </div>
-            </aside>
             <div class="idiot-wizzy edit" ng-if="comment.editing">
               <textarea id="comment-content" placeholder="Escribe tu comentario..." class="form-control flexible-height content" ng-model="comment.content_edit" ng-disabled="waiting_comment" msd-elastic></textarea>
               <div class="actions">

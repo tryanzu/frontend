@@ -2,20 +2,6 @@
 <html ng-app="board">
 <head>
     <link rel="manifest" href="/manifest.json">
-    <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async></script>
-    <script>
-        var OneSignal = window.OneSignal || [];
-        OneSignal.push(["init", {
-            appId: "a382a052-ea8c-416d-a90f-c62b553f15d3",
-            autoRegister: true,
-            persistNotification: false, // Automatically dismiss the notification after ~20 seconds in Chrome Deskop v47+
-            notifyButton: {
-                enable: false /* Set to false to hide */
-            },
-            safari_web_id: 'web.onesignal.auto.6a76584b-4903-4cb9-b550-82d6a06974fc'
-        }]);
-    </script>
-
     <title ng-bind="page.title">SpartanGeek.com | Comunidad de tecnología, geeks y más</title>
     <base href="/">
     <meta charset="utf-8" />
@@ -70,36 +56,78 @@
       <p>Actualización disponible. Se recargará la página automáticamente en 30 segundos... <a href="" ng-click="reloadPage()">Recargar ahora.</a></p>
     </div>
   </div>
-
-  <header class="navbar">
+  <header class="navbar" ng-hide="location.path() == '/entrar' || location.path() == '/unete'">
     <section class="navbar-section">
-      <a href="/"><img src="/images/header-logo.svg" alt="Buldar.com" /></a>
-      <a href="/reglamento" class="btn btn-link">Reglamento</a>
-      <a href="/terminos-y-condiciones" class="btn btn-link">Terminos y Condiciones</a>
+      <a href="/"><img class="logo" src="/images/header-logo.svg" alt="Buldar.com" /></a>
+      <a href="/reglamento" class="dn btn btn-link">Reglamento</a>
+      <a href="/terminos-y-condiciones" class="dn btn btn-link">Terminos y Condiciones</a>
       <a href="/about" class="btn btn-link">Acerca de</a>
     </section>
 
     <section class="navbar-section" ng-if="user.isLogged == false && user.resolving == false">
-      <a ng-click="signIn()" class="btn btn-link">Iniciar sesión</a>
+      <a href="/entrar" class="btn btn-link">Iniciar sesión</a>
       <a ng-click="signUp()" class="btn btn-link">Únete</a>
     </section>
 
     <section class="navbar-section" ng-if="user.isLogged == true && user.resolving == false">
-      <a>
-        <span class="badge" ng-if="total_notifications() > 0" data-badge="{{ total_notifications() }}">
-          Notificaciones
-        </span>
+      <div class="dropdown dropdown-right">
+        <a tabindex="0" class="dropdown-toggle pointer link">
+          <span class="badge" ng-if="total_notifications() > 0" data-badge="{{ total_notifications() }}">
+            Notificaciones
+          </span>
 
-        <span class="badge" ng-if="total_notifications() <= 0">
-          Notificaciones
-        </span>
-      </a>
-      <a>
-        <figure class="avatar" data-initial="N">
-          <img src="img/avatar-1.png" alt="" />
-        </figure>
-        <span class="white ml1">{{ user.info.username }} <i class="icon icon-caret"></i></span>
-      </a>
+          <span class="badge" ng-if="total_notifications() <= 0">
+            Notificaciones
+          </span>
+        </a>
+        <ul class="menu notifications">
+          <li class="menu-item" ng-repeat="n in (user.notifications.list | orderBy:'-created_at')">
+            <a ng-if="false" class="dn">
+              <div class="notification-author" ng-if="n.username">
+                <span class="avatar" title="{{ n.username }}" ng-if="!n.image">{{ n.username[0] }}</span>
+                <img class="avatar" ng-src="{{ n.image }}" alt="{{ post.author.username }}" ng-if="n.image">
+              </div>
+              <div class="content"></div>
+              <div class="description">{{ n.text }}</div>
+              <div class="date" time-ago from-time="{{n.created_at}}"></div>
+            </a>
+            <a href="/p/{{n.related_extra}}/{{n.related_id}}/{{n.position}}" ng-if="n.related ==='comment'" my-refresh="reloadPost()" ng-click="toggle_notification(n)" class="pointer blue" ng-class="{'unread': !n.seen}">
+              <span class="db clean-styles" marked="n.title"></span>
+              <span class="db gray">{{ n.text }}</span>
+              <span class="db mid-gray b" time-ago from-time="{{n.created_at}}"></span>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="dropdown dropdown-right">
+        <a tabindex="0" class="dropdown-toggle pointer link">
+          <figure class="avatar" data-initial="{{ user.info.username[0] }}">
+            <img ng-src="{{ user.info.image }}" alt="Avatar de {{ user.info.username }}" ng-if="user.info.image" />
+          </figure>
+          <span class="white ml1">{{ user.info.username }} <i class="icon icon-caret"></i></span>
+        </a>
+
+        <ul class="menu">
+          <li class="menu-item"><a class="link" href="/u/{{ user.info.username }}/{{ user.info.id }}">Ver mi perfil</a></li>
+          <li class="menu-item"><a class="link" href="/medallas">Medallas</a></li>
+          <li class="menu-item"><a class="link" href="/top-ranking">Ranking de usuarios</a></li>
+          <li class="divider"></li>
+          <li class="menu-item">
+            <div class="menu-badge">
+              <label class="label label-primary">{{ (user.gaming.swords || 0) | number:0 }}</label>
+            </div>
+            <a>Reputación</a>
+          </li>
+          <li class="menu-item">
+            <div class="menu-badge">
+              <label class="label label-primary">{{ (user.gaming.tribute || 0) | number:0 }}</label>
+            </div>
+            <a>Tributo</a>
+          </li>
+          <li class="divider"></li>
+          <li class="menu-item"><a ng-click="signOut()" class="pointer">Salir de mi cuenta</a></li>
+        </ul>
+      </div>
     </section>
 
     <section class="navbar-section" ng-if="user.resolving == true">
@@ -168,7 +196,7 @@
             </a>
             <ul class="dropdown-menu dropdown-sections" role="menu">
               <div class="notifications-header">
-                <a class="btn btn-icon btn-link btn-sm" title="Marcar como leídas" href="" ng-if="total_notifications() > 0" ng-click="toggle_notifications()">
+                <a class="btn btn-icon btn-link btn-smx" title="Marcar como leídas" href="" ng-if="total_notifications() > 0" ng-click="toggle_notifications()">
                   <i class="fa fa-fw fa-check"></i> <span class="label">Marcar como leídas</span>
                 </a>
                 <h4>Notificaciones</h4>
