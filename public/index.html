@@ -61,16 +61,40 @@
       <a href="/"><img class="logo" src="/images/header-logo.svg" alt="Buldar.com" /></a>
       <a href="/reglamento" class="dn btn btn-link">Reglamento</a>
       <a href="/terminos-y-condiciones" class="dn btn btn-link">Terminos y Condiciones</a>
-      <a href="/about" class="btn btn-link">Acerca de</a>
+      <a href="/about" class="btn btn-link dn">Acerca de</a>
     </section>
 
-    <section class="navbar-section" ng-if="user.isLogged == false && user.resolving == false">
-      <a href="/entrar" class="btn btn-link">Iniciar sesión</a>
-      <a ng-click="signUp()" class="btn btn-link">Únete</a>
-    </section>
+    <section class="navbar-section" ng-if="user.resolving == false">
+      
+      <!-- Legacy help links. -->
+      <div class="dropdown">
+        <a tabindex="0" class="dropdown-toggle btn btn-link">
+          Enlaces SpartanGeek
+        </a>
 
-    <section class="navbar-section" ng-if="user.isLogged == true && user.resolving == false">
-      <div class="dropdown dropdown-right">
+        <ul class="menu">
+          <li class="menu-item">
+            <a class="link" href="https://www.youtube.com/user/SpartanGeekTV">Canal de Youtube</a>
+          </li>
+          <li class="menu-item">
+            <a class="link" href="https://spartangeek.com/asistente/">Pedir PC Spartana</a>
+          </li>
+          <li class="menu-item">
+            <a class="link" href="https://spartangeek.com/workstations/">Workstations</a>
+          </li>
+          <li class="divider"></li>
+          <li class="menu-item">
+            <a class="link" href="https://spartangeek.com/">SpartanGeekTVeek.com</a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Sign in links -->
+      <a ng-if="user.isLogged == false && user.resolving == false" href="/entrar" class="btn btn-link">Iniciar sesión</a>
+      <a ng-if="user.isLogged == false && user.resolving == false" ng-click="signUp()" class="btn btn-link">Únete</a>
+
+      <!-- Signed in links & components -->
+      <div class="dropdown dropdown-right" ng-if="user.isLogged == true">
         <a tabindex="0" class="dropdown-toggle pointer link">
           <span class="badge" ng-if="total_notifications() > 0" data-badge="{{ total_notifications() }}">
             Notificaciones
@@ -81,6 +105,14 @@
           </span>
         </a>
         <ul class="menu notifications">
+          <li class="menu-item header">
+            <div class="flex">
+              <div class="flex-auto">
+                <strong class="mid-gray">Notificaciones</strong>
+              </div>
+              <a class="tr dim link pointer" ng-if="total_notifications() > 0" ng-click="toggle_notifications()">Marcar como leídas</a>
+            </div>
+          </li>
           <li class="menu-item" ng-repeat="n in (user.notifications.list | orderBy:'-created_at')">
             <a ng-if="false" class="dn">
               <div class="notification-author" ng-if="n.username">
@@ -99,7 +131,7 @@
           </li>
         </ul>
       </div>
-      <div class="dropdown dropdown-right">
+      <div class="dropdown dropdown-right" ng-if="user.isLogged == true">
         <a tabindex="0" class="dropdown-toggle pointer link">
           <figure class="avatar" data-initial="{{ user.info.username[0] }}">
             <img ng-src="{{ user.info.image }}" alt="Avatar de {{ user.info.username }}" ng-if="user.info.image" />

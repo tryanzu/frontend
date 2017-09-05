@@ -804,12 +804,25 @@ boardApplication.controller('MainController', [
 
 boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', '$location', function($rootScope, $http, AclService, AdvancedAcl, $location) {
     $rootScope.location = $location;
+    
     $rootScope.rolesMap = {
         'user': 'Legión buldar',
         'developer': 'Dev team',
         'administrator': 'Admin',
         'category-moderator': 'Mod',
         'super-moderator': 'Smod'
+    };
+
+    $rootScope.componentsMap = {
+        cpu: 'Procesador (CPU)',
+        motherboard: 'Tarjeta madre (motherboard)',
+        ram: 'Memoría RAM',
+        storage: 'Almacenamiento',
+        cooler: 'Cooler del CPU',
+        power: 'Fuente de poder',
+        cabinet: 'Gabinete',
+        screen: 'Pantalla',
+        videocard: 'Tarjeta de video'
     };
 
     // Initialize the local storage

@@ -76,22 +76,7 @@
                 </ul>
               </div>
             </div>
-            <div class="feed-type-actions" ng-if="false">
-              <div class="row">
-                <div class="col-xs-12">
-                  <div class="btn-toolbar">
-                    <div class="btn-group">
-                      <label class="btn btn-default btn-sm" ng-model="viewing.top_posts" uib-btn-radio="false"><span class="hidden-xs hidden-sm hidden-md">Ver todas</span><span class="hidden-lg">Todas</span></label>
-                      <label class="btn btn-default btn-sm" ng-model="viewing.top_posts" uib-btn-radio="true" ng-click="getTopFeed()"><span class="hidden-xs hidden-sm hidden-md">Más populares</span><span class="hidden-lg">Populares</span></label>
-                    </div>
-                    <a href="" class="btn btn-default btn-sm" ng-click="getTopFeed()" ng-if="viewing.top_posts"><i class="fa fa-refresh"></i></a>
-                    <a href="/post/create/{{ category.slug }}" class="btn btn-primary btn-sm" ng-if="user.isLogged && user.info.validated">Crear publicación</a>
-                    <a href="/u/{{user.info.username}}/{{user.info.id}}/?section=config" class="btn btn-primary btn-sm" style="float:right;" ng-if="user.isLogged && !user.info.validated"><span class="label">Validar cuenta</span></a>
-                    <a href="" ng-click="signIn()" class="btn btn-primary btn-sm" ng-if="!user.isLogged">Crear publicación</a>
-                  </div>
-                </div>
-              </div>
-            </div>
+
             <div class="new-posts" ng-cloak ng-if="status.pending > 0 && !status.show_categories" ng-click="getNewer()" ng-class="{'loading': resolving.newer}">
               <span ng-if="!resolving.newer">Ver {{ status.pending }} {{ status.pending == 1?'publicación nueva':'publicaciones nuevas' }}</span>
               <span ng-if="resolving.newer">Cargando...</span>
@@ -530,7 +515,7 @@
           <div class="answers dn">
             <h5 ng-if="!post.lock || post.comments.count > 0">{{ post.comments.count }} respuesta{{post.comments.count == 1?'':'s'}}</h5>
           </div>
-          <div class="text-center mb-40" ng-if="comments_status.loaded < post.comments.count">
+          <div class="text-center pv2" ng-if="comments_status.loaded < post.comments.count">
             <a class="btn btn-default" href="" ng-click="loadPreviousComments()" ng-if="!comments_status.loading">Mostrar <strong>{{ post.comments.count - comments_status.loaded | min }}</strong> anteriores</a>
             <a class="btn btn-default" href="" ng-click="loadAllPreviousComments()" ng-if="!comments_status.loading">Mostrar todos los comentarios</a>
             <a href="" class="btn btn-default disabled" role="button" ng-if="comments_status.loading">Cargando...</a>
