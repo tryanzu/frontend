@@ -12,6 +12,15 @@
   & > li {
     margin: 0;
 
+    .badge {
+      color: inherit;
+      min-width: auto;
+      padding: inherit;
+      background-color: inherit;
+      border-radius: inherit;
+      font-weight: inherit;
+    }
+
     &.active {
       background: @brand-primary-lighter;
       .title {
@@ -117,15 +126,11 @@
       }
 
       &.pinned {
-        /*background-color: #f35b40;
-        color: #FFF;*/
-        background-color: #ffefed;
-        color: #ef3312;
-        border: 1px solid #ffc2b7;
-        font-size: 11px;
-        //text-transform: uppercase;
-        padding: 2px 5px;
-        border-radius: 3px;
+          background-color: #d85656;
+          color: #fff;
+          font-size: 11px;
+          padding: 2px 5px;
+          border-radius: 3px;
       }
       &.solved {
         color: @brand-success;

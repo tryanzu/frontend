@@ -76,7 +76,6 @@
                 </ul>
               </div>
             </div>
-
             <div class="new-posts" ng-cloak ng-if="status.pending > 0 && !status.show_categories" ng-click="getNewer()" ng-class="{'loading': resolving.newer}">
               <span ng-if="!resolving.newer">Ver {{ status.pending }} {{ status.pending == 1?'publicación nueva':'publicaciones nuevas' }}</span>
               <span ng-if="resolving.newer">Cargando...</span>
@@ -102,9 +101,10 @@
                   <span class="db truncate">
                     Por <span class="username">{{ post.author.username }}</span> <time time-ago from-time='{{ post.created_at }}'></time>
                   </span>
+
                   <ul class="extra-info">
-                    <li class="pinned" ng-if="post.pinned">
-                      <i class="fa fa-exclamation-circle"></i> <span>Importante</span>
+                    <li class="pinned" ng-if="true">
+                      <span>Importante</span>
                     </li>
                     <li class="category">
                       <i class="fa fa-asterisk" ng-style="{'color': post.category.color}"></i> <span class="label-category">{{ post.category.name }}</span>
@@ -116,10 +116,7 @@
                 </a>
                 <div class="column col-3 tc">
                   <span class="f5">{{ post.comments.count }}</span>
-                  <span class="db">{{ post.comments.count==1?'respuesta':'respuestas'}}</span>
-                  <span class="new" ng-if="post.comments.new > 0">
-                    +{{ post.comments.new }}
-                  </span>
+                  <span class="db" ng-class="{badge: post.comments.new > 0}" data-badge="+{{ post.comments.new }}">{{ post.comments.count==1?'respuesta':'respuestas'}}</span>
                 </div>
               </article>
               <div class="dn">
@@ -504,14 +501,13 @@
             </div>
             <div class="column flex-auto tr">
               <a ng-click="post_vote(post, 'up')" class="btn btn-link" ng-class="{disabled: post.liked == -1 || !user.isLogged || post.author.id == user.info.id, active: post.liked == 1}">
-                <i class="ficon-thumbs-up"></i> {{ post.votes.up }} 
+                <i class="ficon-thumbs-up"></i> {{ post.votes.up }}
               </a>
               <a ng-click="post_vote(post, 'down')" class="btn btn-link" ng-class="{disabled: post.liked == 1 || !user.isLogged || post.author.id == user.info.id, active: post.liked == -1}">
                 <i class="ficon-thumbs-down"></i> {{ post.votes.down }}
               </a>
             </div>
           </div>
-
           <div class="answers dn">
             <h5 ng-if="!post.lock || post.comments.count > 0">{{ post.comments.count }} respuesta{{post.comments.count == 1?'':'s'}}</h5>
           </div>
@@ -587,14 +583,14 @@
               <div class="actions">
                 <ul>
                   <li style="margin-left: 1.5em;">
-                    <a href="" class="btn btn-sm btn-danger" ng-click="comment.editing = false"><span class="label">Cancelar</span></a>
+                    <a href="" class="btn btn-sm" ng-click="comment.editing = false">Cancelar</span></a>
                   </li>
                   <li>
-                    <a href="" class="btn btn-sm btn-default" ngf-select ngf-change="uploadPicture($files, comment)" ngf-multiple="false" ngf-accept="'image/*'" ng-show="!adding_file"><i class="fa fa-picture-o"></i> <span class="label hidden-xs">Adjuntar imagen</span></a>
-                    <a href="" class="btn btn-sm btn-default disabled" ng-show="adding_file"><i class="fa fa-picture-o"></i> <span class="label hidden-xs">Adjuntando imagen...</span></a>
+                    <a href="" class="btn btn-sm btn-default" ngf-select ngf-change="uploadPicture($files, comment)" ngf-multiple="false" ngf-accept="'image/*'" ng-show="!adding_file"><i class="fa fa-picture-o"></i> <span class="hidden-xs">Adjuntar imagen</span></a>
+                    <a href="" class="btn btn-sm btn-default disabled" ng-show="adding_file"><i class="fa fa-picture-o"></i> <span class="hidden-xs">Adjuntando imagen...</span></a>
                   </li>
                   <li>
-                    <a href="" ng-click="editComment(comment)" ng-class="{'disabled': waiting_comment == true || comment.content == '' || adding_file}" class="btn btn-sm btn-primary btn-comment"><span class="label">Editar</span></a>
+                    <a href="" ng-click="editComment(comment)" ng-class="{'disabled': waiting_comment == true || comment.content == '' || adding_file}" class="btn btn-sm btn-primary btn-comment">Editar</a>
                   </li>
                 </ul>
               </div>
