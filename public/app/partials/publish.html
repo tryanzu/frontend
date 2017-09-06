@@ -1,3 +1,189 @@
+<main class="container">
+    <div class="container">
+        <div class="columns">
+            <div class="column col-8">
+                <h1 class="tc">Escribir nueva publicación</h1>
+                <ul class="step">
+                  <li class="step-item" ng-class="{active: step == 0}">
+                    <a class="pointer" ng-click="changeStep(0)">Selecciona una Categoría</a>
+                  </li>
+                  <li class="step-item" ng-class="{active: step == 1}">
+                    <a class="pointer" ng-click="changeStep(1)">Publicación</a>
+                  </li>
+                  <li class="step-item" ng-class="{active: step == 2}">
+                    <a class="pointer" ng-click="changeStep(2)">Contenido</a>
+                  </li>
+                </ul>
+
+                <!-- First step -->
+                <section class="pv3 ph4" ng-if="step === 0">
+                    <form name="step1" ng-submit="send()">
+                        <div class="form-group">
+                            <select required ng-model="post.category" ng-disabled="post.components" class="form-select">
+                                <option value="">Selecciona una categoría disponible</option>
+                                <optgroup label="{{::c.name}}: {{::c.description}}" ng-repeat="c in categories">
+                                    <option value="{{s.id}}" ng-repeat="s in c.subcategories" ng-selected="s.id == post.category">{{s.name}}</option>
+                                </optgroup>
+                            </select>
+                        </div>
+
+                        <input type="submit" ng-disabled="post.category == ''" class="btn btn-primary btn-block btn-l" value="Continuar" />
+                    </form>
+                </section>
+
+                <!-- Second step -->
+                <section class="pv3 ph4" ng-if="step === 1">
+                    <form name="step2" ng-submit="send()">
+                        <div class="form-group" ng-if="['55dc153f3f6ba10071000004','55dc15513f6ba10071000005'].indexOf(post.category) === -1">
+                          <label class="form-label">Título de la publicación</label>
+                          <input class="form-input" type="text" ng-model="post.title" placeholder="Escribe el titulo de tu publicación o pregunta..." autofocus />
+                        </div>
+
+                        <div class="form-group" ng-if="['55dc153f3f6ba10071000004','55dc15513f6ba10071000005'].indexOf(post.category) > -1">
+                            <label>Presupuesto de la computadora</label>
+
+                            <div class="input-group">
+                                <!-- % of flexibility -->
+                                <select class="form-select" ng-model="pcBudget" ng-options="budget.label for budget in budgetFlexibility"></select>
+                                <!-- budget money -->
+                                <input required type="text" ng-model="pc.budget" class="form-input" placeholder="12000" />
+                                <!-- currency -->
+                                <select class="form-select" ng-model="pc.budget_currency">
+                                    <option value="MXN">Pesos Mexicanos</option>
+                                    <option value="USD">Dólares</option>
+                                    <option disabled>---</option>
+                                    <option value="ARS">Pesos Argentinos</option>
+                                    <option value="COP">Pesos Colombianos</option>
+                                    <option value="CLP">Pesos Chilenos</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group" ng-if="['55dc153f3f6ba10071000004','55dc15513f6ba10071000005'].indexOf(post.category) > -1">
+                            <label>¿Tienes un nombre para tu PC?</label>
+                            <input type="text" class="form-input" ng-model="post.title" placeholder="Telios, Delios, Drakania, La Licenciada, La luchona, La chiquita pero aguantadora" />
+                            <p class="ma0"><small>Si tu PC no tiene nombre, puedes omitir este campo.</small></p>
+                        </div>
+
+                        <div class="form-group" ng-hide="['55dc153f3f6ba10071000004','55dc15513f6ba10071000005'].indexOf(post.category) > -1">
+                            <label class="form-label ma0 pb0">¿Es una pregunta?</label>
+                            <p class="ma0"><small>De esta forma decidimos a quien mostrar tu publicación, a usuarios que responden o a usuarios que buscan respuestas.</small></p>
+                            <label class="form-switch normal">
+                                <input type="checkbox" name="check" ng-model="post.is_question" />
+                                <i class="form-icon"></i> Mi publicación es una pregunta
+                            </label>
+                        </div>
+
+                        <div class="form-group" ng-if="can('block-own-post-comments')">
+                            <label class="form-switch normal">
+                                <input type="checkbox" name="lock" ng-model="post.lock" /> <i class="form-icon"></i> No permitir comentarios en esta publicación
+                            </label>
+                        </div>
+
+                        <div class="form-group" ng-if="can('pin-board-posts')">
+                            <label class="form-switch normal">
+                                <input type="checkbox" name="pinned" ng-model="post.pinned" /> <i class="form-icon"></i> Publicar como importante
+                            </label>
+                        </div>
+
+                        <input type="submit" ng-disabled="post.title.length == 0" class="btn btn-primary btn-block btn-l" value="Continuar" />
+                    </form>
+                </section>
+
+                <!-- Third step -->
+                <section class="pv3 ph4" ng-if="step === 2">
+                    <form name="step1" ng-submit="send()">
+
+                        <!-- With components -->
+                        <section id="components" ng-if="['55dc153f3f6ba10071000004','55dc15513f6ba10071000005'].indexOf(post.category) > -1">
+                            <h4>Componentes</h4>
+
+                            <div class="columns items-center mb1" ng-repeat="(key, v) in components">
+                                <div class="column col-6">
+                                      <label class="form-label">{{ componentsMap[key] }}:</label>
+                                </div>
+                                <div class="column col-6 tr">
+                                    <div>
+                                      <label class="form-radio">
+                                        <input type="radio" name="{{ key }}" ng-model="components[key].owned" value="true" />
+                                        <i class="form-icon"></i> Ya lo tengo
+                                      </label>
+                                      <label class="form-radio">
+                                        <input type="radio" name="{{ key }}" ng-model="components[key].owned" value="false" />
+                                        <i class="form-icon"></i> Lo necesito
+                                      </label>
+                                    </div>
+                                </div>
+
+                                <div class="column col-12">
+                                    <input class="form-input" type="text" placeholder="Nombre y modelo del componente" ng-model="components[key].value" />    
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Videojuegos o programas que utilizaré</label>
+                                <input class="form-input" type="text" placeholder="Ej. Minecraft, Battlefield 1, Photoshop CS6" ng-model="pc.software" />
+                            </div>
+                        </section>
+
+                        <div class="form-group">
+                            <label class="form-label">Contenido de la publicación</label>
+                            <textarea class="form-input" placeholder="Escribe aquí el contenido de tu publicación..." rows="6" ng-model="post.content"></textarea>
+                        </div>
+
+
+                        <button type="submit" ng-class="{loading: saving}" ng-disabled="post.content.length <= 0" class="btn btn-primary btn-block btn-l">Crear publicación</button>
+                    </form>
+                </section>
+
+                <section class="ph4">
+                    <h6>A tener en cuenta:</h6>
+                    <p ng-show="step === 0"><strong>Las publicaciones deben ser relacionados a su categoría:</strong> si deseas colocar un tema que se salga muy abruptamente de las categorías de la comunidad, te pedimos que utilices la sección de Bar Spartano para hacerlo. Damos la bienvenida a temas de discusión general, pero los rechazamos en las otras secciones.</p>
+                    <p ng-show="step === 1">Utiliza <strong>títulos que expliquen tu pregunta o publicación</strong>: No publiques títulos poniendo solamente frases como “Ayuda”, “No sé qué hacer”, “xD”, “Recomendación”, o cualquier otra cosa que no explique tu tema. Nuestros algoritmos van a penalizar dichas publicaciones, incluso cuando en la descripción expliques perfectamente tu problema. La única excepción para publicar cualquier título es el Bar Spartano.</p>
+                    <p ng-show="step === 2"><strong>Explica y escribe bien tu tema, pregunta o aportación:</strong> Haz un esfuerzo por leer una vez más el texto donde describes tu pregunta o comentario ANTES DE PUBLICAR. Procura que esté lo mejor explicado que puedas, que no esté incompleto, y que sea fácil de comprender. Todo eso ayuda a que los demás contribuyan y a que aumentes tu reputación en la comunidad.</p>
+                </section>
+            </div>
+
+            <div class="column col-4 bg-near-white pa3">
+                <div class="config dn" ng-if="can('block-own-post-comments')">
+                    <h4 class="f5">¿Bloquear comentarios?</h4>
+                    <div class="question">
+                        <div class="check">
+                            <label for="lock">
+                                <input type="checkbox" id="lock" name="check" ng-model="post.lock" /> No permitir comentarios en esta publicación.
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="config dn" ng-if="can('pin-board-posts')">
+                    <h4>Marcar como Importante</h4>
+                    <div class="question">
+                        <div class="check">
+                            <input type="checkbox" id="is_important" name="check" ng-model="post.pinned" />
+                            <label for="is_important">La publicación aparecerá hasta arriba del feed</label>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="f5">Recuerda estas reglas básicas</h3>
+
+                <ul class="pa0 ma0">
+                    <li ng-class="{active: !helpers.category_added && !helpers.title_added}"><strong>Las publicaciones deben ser relacionados a su categoría</strong>: si deseas colocar un tema que se salga muy abruptamente de las categorías de la comunidad, te pedimos que utilices la sección de Bar Spartano para hacerlo. Damos la bienvenida a temas de discusión general, pero los rechazamos en las otras secciones.</li>
+                    <li ng-class="{active: helpers.category_added && !helpers.title_added}"><strong>Utiliza títulos que expliquen tu publicación</strong>: No publiques títulos poniendo solamente frases como “Ayuda”, “No sé qué hacer”, “xD”, “Recomendación”, o cualquier otra cosa que no explique tu tema. Nuestros algoritmos van a penalizar dichas publicaciones, incluso cuando en la descripción expliques perfectamente tu problema. La única excepción para publicar cualquier título es el <em>Bar Spartano</em>.</li>
+                    <li ng-class="{active: helpers.category_added && !helpers.title_added}"><strong>Uso de mayúsculas y caracteres especiales en títulos</strong>: No se deben escribir títulos completamente en mayúsculas, o utilizar cualquier otro carácter con el fin de llamar la atención. La gente irá a tu publicación si el título lo definiste claramente y si el tema es interesante para ellos, no hay más ciencia.</li>
+                    <li ng-class="{active: helpers.category_added && helpers.title_added}"><strong>Explica y escribe bien tu tema, pregunta o aportación</strong>: Haz un esfuerzo por leer una vez más el texto donde describes tu pregunta o comentario ANTES DE PUBLICAR. Procura que esté lo mejor explicado que puedas, que no esté incompleto, y que sea fácil de comprender. Todo eso ayuda a que los demás contribuyan y a que aumentes tu reputación en la comunidad.</li>
+                    <li ng-class="{active: helpers.category_added && helpers.title_added}"><strong>Las publicaciones repetidas serán eliminadas</strong>: no se permite crear una publicación igual, o con tópico similar, por la misma persona. Será de total decisión del moderador si los temas repetidos de una persona se eliminan o se consolidan todos en uno solo.</li>
+                    <li ng-class="{active: helpers.category_added && helpers.title_added}"><strong>Mayúsculas</strong>: No escribas todo en mayúsculas ni tampoco <em>AbUSeS dE ELlAs</em>.</li>
+                    <li ng-class="{active: helpers.category_added && helpers.title_added}"><strong>Videos, canales de Youtube y links a otras comunidades</strong>: SpartanGeek.com no es un sitio creado con el fin de servir como plataforma para apoyar canales, videos o comunidades que no sean de integrantes de nuestra comunidad. Si consideras que hay un contenido importante que puede ayudar o que pueda resolver una duda, haz tu propio resumen de lo que viste en dichos contenidos y publícalo aquí.</li>
+                    <li ng-class="{active: helpers.category_added && helpers.title_added}"><strong>Contenido ilegal (torrents, cracks, MP3, P2P, etc)</strong>: está prohibido cualquier mensaje de solicitud, ayuda o recomendación sobre contenido ilegal. Cualquier mensaje en foros, artículos, perfiles u otra sección pública de la comunidad SpartanGeek.com que contenga dicho material será removido y se evaluará <strong>suspender la cuenta</strong>.</li>
+                </ul>
+
+                <a href="/reglamento" class="btn btn-default btn-xl btn-block" target="_blank">Ver reglamento completo</a>
+            </div>
+        </div>
+    </div>
+</main>
 <main class="global-content">
     <div class="content publish">
         <div class="container">
@@ -255,41 +441,6 @@
                 </div>
 
                 <div class="col-md-4 col-md-offset-1">
-                    <div class="config" ng-if="can('block-own-post-comments')">
-                        <h4>¿Bloquear comentarios?</h4>
-                        <div class="question">
-                            <div class="check">
-                                <label for="lock">
-                                    <input type="checkbox" id="lock" name="check" ng-model="post.lock" /> No permitir comentarios en esta publicación.
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="config" ng-if="can('pin-board-posts')">
-                        <h4>Marcar como Importante</h4>
-                        <div class="question">
-                            <div class="check">
-                                <input type="checkbox" id="is_important" name="check" ng-model="post.pinned" />
-                                <label for="is_important">La publicación aparecerá hasta arriba del feed</label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <h3>Recuerda estas reglas básicas</h3>
-
-                    <ul class="rules mb-20">
-                        <li ng-class="{active: !helpers.category_added && !helpers.title_added}"><strong>Las publicaciones deben ser relacionados a su categoría</strong>: si deseas colocar un tema que se salga muy abruptamente de las categorías de la comunidad, te pedimos que utilices la sección de Bar Spartano para hacerlo. Damos la bienvenida a temas de discusión general, pero los rechazamos en las otras secciones.</li>
-                        <li ng-class="{active: helpers.category_added && !helpers.title_added}"><strong>Utiliza títulos que expliquen tu publicación</strong>: No publiques títulos poniendo solamente frases como “Ayuda”, “No sé qué hacer”, “xD”, “Recomendación”, o cualquier otra cosa que no explique tu tema. Nuestros algoritmos van a penalizar dichas publicaciones, incluso cuando en la descripción expliques perfectamente tu problema. La única excepción para publicar cualquier título es el <em>Bar Spartano</em>.</li>
-                        <li ng-class="{active: helpers.category_added && !helpers.title_added}"><strong>Uso de mayúsculas y caracteres especiales en títulos</strong>: No se deben escribir títulos completamente en mayúsculas, o utilizar cualquier otro carácter con el fin de llamar la atención. La gente irá a tu publicación si el título lo definiste claramente y si el tema es interesante para ellos, no hay más ciencia.</li>
-                        <li ng-class="{active: helpers.category_added && helpers.title_added}"><strong>Explica y escribe bien tu tema, pregunta o aportación</strong>: Haz un esfuerzo por leer una vez más el texto donde describes tu pregunta o comentario ANTES DE PUBLICAR. Procura que esté lo mejor explicado que puedas, que no esté incompleto, y que sea fácil de comprender. Todo eso ayuda a que los demás contribuyan y a que aumentes tu reputación en la comunidad.</li>
-                        <li ng-class="{active: helpers.category_added && helpers.title_added}"><strong>Las publicaciones repetidas serán eliminadas</strong>: no se permite crear una publicación igual, o con tópico similar, por la misma persona. Será de total decisión del moderador si los temas repetidos de una persona se eliminan o se consolidan todos en uno solo.</li>
-                        <li ng-class="{active: helpers.category_added && helpers.title_added}"><strong>Mayúsculas</strong>: No escribas todo en mayúsculas ni tampoco <em>AbUSeS dE ELlAs</em>.</li>
-                        <li ng-class="{active: helpers.category_added && helpers.title_added}"><strong>Videos, canales de Youtube y links a otras comunidades</strong>: SpartanGeek.com no es un sitio creado con el fin de servir como plataforma para apoyar canales, videos o comunidades que no sean de integrantes de nuestra comunidad. Si consideras que hay un contenido importante que puede ayudar o que pueda resolver una duda, haz tu propio resumen de lo que viste en dichos contenidos y publícalo aquí.</li>
-                        <li ng-class="{active: helpers.category_added && helpers.title_added}"><strong>Contenido ilegal (torrents, cracks, MP3, P2P, etc)</strong>: está prohibido cualquier mensaje de solicitud, ayuda o recomendación sobre contenido ilegal. Cualquier mensaje en foros, artículos, perfiles u otra sección pública de la comunidad SpartanGeek.com que contenga dicho material será removido y se evaluará <strong>suspender la cuenta</strong>.</li>
-                    </ul>
-
-                    <a href="/reglamento" class="btn btn-default btn-xl btn-block" target="_blank">Ver reglamento completo</a>
                 </div>
             </div>
         </div>

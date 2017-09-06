@@ -1,3 +1,31 @@
+.navbar {
+  a.active, a:active, a:focus, a:hover {
+    text-decoration: none;
+    box-shadow: none;
+    outline: 0;
+  }
+
+  .menu.notifications {
+    width: 320px;
+    padding: 0;
+
+    .menu-item {
+      border-bottom: 1px solid #eee;
+      margin-top: 0;
+      padding: 0.4rem 0.8rem;
+
+      &:hover, &.header {
+        background-color: #f6f8fa;
+        color: #2970ef;
+      }
+
+      a:hover {
+        background: transparent;
+      }
+    }
+  }
+}
+
 //
 // Navbars
 // --------------------------------------------------
@@ -7,20 +35,6 @@
 //
 // Provide a static navbar from which we expand to create full-width, fixed, and
 // other navbar variations.
-
-.navbar {
-  position: relative;
-  min-height: @navbar-height; // Ensure a navbar always shows (e.g., without a .navbar-brand in collapsed mode)
-  margin-bottom: @navbar-margin-bottom;
-  border: 1px solid transparent;
-
-  // Prevent floats from breaking the navbar
-  &:extend(.clearfix all);
-
-  @media (min-width: @grid-float-breakpoint) {
-    border-radius: @navbar-border-radius;
-  }
-}
 
 
 // Navbar heading
@@ -393,7 +407,7 @@
 
 // Default navbar
 .navbar-default {
-  background-color: @navbar-default-bg;
+  background-color: #131d3a;
   border-color: @navbar-default-border;
 
   .navbar-brand {

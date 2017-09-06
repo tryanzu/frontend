@@ -11,8 +11,15 @@
 
   & > li {
     margin: 0;
-    padding-left: 72px;
-    padding-right: 90px;
+
+    .badge {
+      color: inherit;
+      min-width: auto;
+      padding: inherit;
+      background-color: inherit;
+      border-radius: inherit;
+      font-weight: inherit;
+    }
 
     &.active {
       background: @brand-primary-lighter;
@@ -45,7 +52,6 @@
   .discussions-list {
     & > li {
       margin-right: 0;
-      padding-right: (65px + 25px);
     }
   }
 }
@@ -120,15 +126,11 @@
       }
 
       &.pinned {
-        /*background-color: #f35b40;
-        color: #FFF;*/
-        background-color: #ffefed;
-        color: #ef3312;
-        border: 1px solid #ffc2b7;
-        font-size: 11px;
-        //text-transform: uppercase;
-        padding: 2px 5px;
-        border-radius: 3px;
+          background-color: #d85656;
+          color: #fff;
+          font-size: 11px;
+          padding: 2px 5px;
+          border-radius: 3px;
       }
       &.solved {
         color: @brand-success;
@@ -169,9 +171,6 @@
 
 @media @phone {
   .discussion-summary {
-    padding-left: 45px;
-    padding-right: 45px;
-
     & .author {
       margin-left: -45px;
     }
@@ -216,9 +215,6 @@
 
 @media @tablet-up {
   .discussion-summary {
-    padding-left: 57px;
-    padding-right: 65px;
-
     & .author {
       margin-left: -57px;
     }
@@ -239,17 +235,8 @@
       margin-right: -83px;
       width: 78px;
       text-align: center;
-      text-transform: uppercase;
       color: @brand-primary-light-text;
-      font-size: 20px;
-      font-weight: 300;
 
-      & .label {
-        font-size: 11px;
-        display: block;
-        font-weight: normal;
-        color: @brand-primary-dark;
-      }
       .unread& {
         color: @brand-primary-dark;
         /*font-weight: bold;*/
@@ -295,174 +282,15 @@
   }
 }
 
-.current-board-new {
-  margin: 0;
-  padding: 0;
-  border-right: 1px solid @brand-primary-light;
-
-  .segments {
-    background-color: @brand-primary-lighter;
-    padding: 12px 18px 0 18px;
-    border-top: 1px solid @brand-primary-light;
-
-    h2 {
-      margin-top: 0;
-      margin-bottom: 0;
-      font-size: 14px;
-      text-transform: uppercase;
-      line-height: 20px;
-    }
-
-    #tags {
-      div {
-        padding: 2px 8px 0 0;
-        margin-right: 6px;
-        margin-bottom: 4px;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 13px;
-        color: @brand-primary-dark;
-        position: relative;
-
-        &.active {
-          color: @brand-primary;
-          font-weight: bold;
-
-          a {
-            color: @brand-primary;
-          }
-        }
-
-        a {
-          color: @brand-primary-dark;
-        }
-
-        .count {
-          display: inline-block;
-          background-color: @brand-primary-light;
-          color: @brand-primary;
-          padding: 1px 5px;
-          border-radius: 2px;
-          margin-left: 4px;
-          font-size: 11px;
-          font-weight: 600;
-        }
-      }
-    }
-
-    #category-list {
-      ul {
-        list-style-type: none;
-        padding-left: 0;
-        margin-left: -18px;
-        margin-right: -18px;
-
-        & > li {
-          display: inline-block;
-          width: 100%;
-
-          .category-header {
-            position: relative;
-          }
-
-          .layer {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(40, 40, 40, 0.30);
-          }
-
-          .content {
-            position: relative;
-            z-index: 10;
-            color: #c9c9c9;
-            display: inline-block;
-            padding: 0 18px;
-
-            h4 {
-              color: #ddd;
-              font-size: 16px;
-              margin-bottom: 0.3em;
-            }
-            p {
-              font-size: 13px;
-            }
-          }
-
-          ul.subcategories {
-            margin-left: 0;
-            margin-right: 0;
-            background-color: #fff;
-
-            li {
-              padding: 10px 18px;
-              font-size: 12px;
-              border-bottom: 1px solid @brand-primary-light;
-              color: @brand-primary-light-text;
-              display: inline-table;
-
-              .see-in-feed {
-                height: 22px;
-                line-height: 22px;
-                vertical-align: top;
-                font-weight: 600;
-                padding-right: 5px;
-              }
-
-              &:last-child {
-                border-bottom: none;
-              }
-            }
-          }
-
-          &:hover {
-            .layer {
-              background-color: rgba(30, 30, 30, 0.05);
-            }
-            .content {
-              h4 {
-                color: #fff;
-              }
-            }
-            ul.subcategories {
-              li {
-                color: @brand-primary-opaque;
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-  & > .title {
-    padding: 8px 20px;
-    border-bottom: 2px solid @brand-primary-light;
-
-    .col-md-7 a {
-      margin-right: 1em;
-    }
-
-    h2 {
-      margin: 0;
-      font-size: 14px;
-      color: @brand-primary;
-      line-height: 30px;
-      display: inline-block;
-    }
-  }
-}
-
 .feed-sidebar {
   margin: 0;
   padding: 0;
-  border-right: 1px solid @brand-primary-lighter;
+  border-right: 1px solid #e3e9ef;
 
   .category-selector {
     #actions {
-      background-color: @brand-primary-lighter;
-      padding: 12px 4px;
+      background-color: #fff;
+      border-bottom: 1px solid #e3e9ef;
       margin-left: 0;
       margin-right: 0;
 
@@ -470,8 +298,6 @@
         margin-top: 0;
         margin-bottom: 0;
         font-size: 14px;
-        text-transform: uppercase;
-        line-height: 20px;
         display: inline-block;
       }
     }
@@ -508,23 +334,6 @@
             right: 0;
             bottom: 0;
             background-color: rgba(40, 40, 40, 0.30);
-          }
-
-          .content {
-            position: relative;
-            z-index: 10;
-            color: #c9c9c9;
-            display: inline-block;
-            padding: 0 18px;
-
-            h4 {
-              color: #ddd;
-              font-size: 16px;
-              margin-bottom: 0.3em;
-            }
-            p {
-              font-size: 13px;
-            }
           }
 
           ul.subcategories {
@@ -574,9 +383,6 @@
   }
 
   .feed-type-actions {
-    padding: 8px 12px;
-    border-bottom: 1px solid @brand-primary-light;
-
     .col-md-7 a {
       margin-right: 1em;
     }

@@ -2,20 +2,6 @@
 <html ng-app="board">
 <head>
     <link rel="manifest" href="/manifest.json">
-    <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async></script>
-    <script>
-        var OneSignal = window.OneSignal || [];
-        OneSignal.push(["init", {
-            appId: "a382a052-ea8c-416d-a90f-c62b553f15d3",
-            autoRegister: true,
-            persistNotification: false, // Automatically dismiss the notification after ~20 seconds in Chrome Deskop v47+
-            notifyButton: {
-                enable: false /* Set to false to hide */
-            },
-            safari_web_id: 'web.onesignal.auto.6a76584b-4903-4cb9-b550-82d6a06974fc'
-        }]);
-    </script>
-
     <title ng-bind="page.title">SpartanGeek.com | Comunidad de tecnología, geeks y más</title>
     <base href="/">
     <meta charset="utf-8" />
@@ -43,7 +29,6 @@
     <meta name="msapplication-TileImage" content="/favicon/ms-icon-144x144.png">
     <meta name="theme-color" content="#ffffff">
     <!-- /Favicon -->
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
     <link type="text/css" rel="stylesheet" href="/css/app.css?v=105">
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyARHDveGvdCsoE981eULSFkBtKU-ua4XoQ" async defer></script>
     <script type="text/javascript" src="js/offline.js"></script>
@@ -53,6 +38,8 @@
     <script type="text/javascript" src="js/config.js"></script>
     <script type="text/javascript" src="js/main.js?v=105"></script>
 
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/tachyons@4.8.0/css/tachyons.min.css"/>
 </head>
 <body ng-controller="MainController">
   <!-- Google Tag Manager -->
@@ -63,25 +50,124 @@
   j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   '//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
   })(window,document,'script','dataLayer','GTM-MQWXX7');</script>
-  <!-- End Google Tag Manager -->
-  <script type="text/javascript">
-  (function(d, s, id) {
-    var e, f = d.getElementsByTagName(s)[0];
-    if (d.getElementById(id)) {return;}
-    e = d.createElement(s); e.id = id;
-    e.src = 'https://cdn.siftscience.com/s.js';
-    f.parentNode.insertBefore(e, f);
-  })(document, 'script', 'sift-beacon');
-  </script>
-
   <div ng-if="update.available" class="ns-box ns-bar ns-effect-slidetop ns-type-notice" ng-class="{'ns-show': update.show}" ng-cloak>
     <div class="ns-box-inner">
       <i class="fa fa-exclamation-triangle"></i>
       <p>Actualización disponible. Se recargará la página automáticamente en 30 segundos... <a href="" ng-click="reloadPage()">Recargar ahora.</a></p>
     </div>
   </div>
+  <header class="navbar" ng-hide="location.path() == '/entrar' || location.path() == '/unete'">
+    <section class="navbar-section">
+      <a href="/"><img class="logo" src="/images/header-logo.svg" alt="Buldar.com" /></a>
+      <a href="/reglamento" class="dn btn btn-link">Reglamento</a>
+      <a href="/terminos-y-condiciones" class="dn btn btn-link">Terminos y Condiciones</a>
+      <a href="/about" class="btn btn-link dn">Acerca de</a>
+    </section>
 
-  <nav class="navbar navbar-default navbar-fixed-top">
+    <section class="navbar-section" ng-if="user.resolving == false">
+      
+      <!-- Legacy help links. -->
+      <div class="dropdown">
+        <a tabindex="0" class="dropdown-toggle btn btn-link">
+          Enlaces SpartanGeek
+        </a>
+
+        <ul class="menu">
+          <li class="menu-item">
+            <a class="link" href="https://www.youtube.com/user/SpartanGeekTV">Canal de Youtube</a>
+          </li>
+          <li class="menu-item">
+            <a class="link" href="https://spartangeek.com/asistente/">Pedir PC Spartana</a>
+          </li>
+          <li class="menu-item">
+            <a class="link" href="https://spartangeek.com/workstations/">Workstations</a>
+          </li>
+          <li class="divider"></li>
+          <li class="menu-item">
+            <a class="link" href="https://spartangeek.com/">SpartanGeek.com</a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Sign in links -->
+      <a ng-if="user.isLogged == false && user.resolving == false" href="/entrar" class="btn btn-link">Iniciar sesión</a>
+      <a ng-if="user.isLogged == false && user.resolving == false" ng-click="signUp()" class="btn btn-link">Únete</a>
+
+      <!-- Signed in links & components -->
+      <div class="dropdown dropdown-right" ng-if="user.isLogged == true">
+        <a tabindex="0" class="dropdown-toggle pointer link">
+          <span class="badge" ng-if="total_notifications() > 0" data-badge="{{ total_notifications() }}">
+            Notificaciones
+          </span>
+
+          <span class="badge" ng-if="total_notifications() <= 0">
+            Notificaciones
+          </span>
+        </a>
+        <ul class="menu notifications">
+          <li class="menu-item header">
+            <div class="flex">
+              <div class="flex-auto">
+                <strong class="mid-gray">Notificaciones</strong>
+              </div>
+              <a class="tr dim link pointer" ng-if="total_notifications() > 0" ng-click="toggle_notifications()">Marcar como leídas</a>
+            </div>
+          </li>
+          <li class="menu-item" ng-repeat="n in (user.notifications.list | orderBy:'-created_at')">
+            <a ng-if="false" class="dn">
+              <div class="notification-author" ng-if="n.username">
+                <span class="avatar" title="{{ n.username }}" ng-if="!n.image">{{ n.username[0] }}</span>
+                <img class="avatar" ng-src="{{ n.image }}" alt="{{ post.author.username }}" ng-if="n.image">
+              </div>
+              <div class="content"></div>
+              <div class="description">{{ n.text }}</div>
+              <div class="date" time-ago from-time="{{n.created_at}}"></div>
+            </a>
+            <a href="/p/{{n.related_extra}}/{{n.related_id}}/{{n.position}}" ng-if="n.related ==='comment'" my-refresh="reloadPost()" ng-click="toggle_notification(n)" class="pointer blue" ng-class="{'unread': !n.seen}">
+              <span class="db clean-styles" marked="n.title"></span>
+              <span class="db gray">{{ n.text }}</span>
+              <span class="db mid-gray b" time-ago from-time="{{n.created_at}}"></span>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="dropdown dropdown-right" ng-if="user.isLogged == true">
+        <a tabindex="0" class="dropdown-toggle pointer link">
+          <figure class="avatar" data-initial="{{ user.info.username[0] }}">
+            <img ng-src="{{ user.info.image }}" alt="Avatar de {{ user.info.username }}" ng-if="user.info.image" />
+          </figure>
+          <span class="white ml1">{{ user.info.username }} <i class="icon icon-caret"></i></span>
+        </a>
+
+        <ul class="menu">
+          <li class="menu-item"><a class="link" href="/u/{{ user.info.username }}/{{ user.info.id }}">Ver mi perfil</a></li>
+          <li class="menu-item"><a class="link" href="/medallas">Medallas</a></li>
+          <li class="menu-item"><a class="link" href="/top-ranking">Ranking de usuarios</a></li>
+          <li class="divider"></li>
+          <li class="menu-item">
+            <div class="menu-badge">
+              <label class="label label-primary">{{ (user.gaming.swords || 0) | number:0 }}</label>
+            </div>
+            <a>Reputación</a>
+          </li>
+          <li class="menu-item">
+            <div class="menu-badge">
+              <label class="label label-primary">{{ (user.gaming.tribute || 0) | number:0 }}</label>
+            </div>
+            <a>Tributo</a>
+          </li>
+          <li class="divider"></li>
+          <li class="menu-item"><a ng-click="signOut()" class="pointer">Salir de mi cuenta</a></li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="navbar-section" ng-if="user.resolving == true">
+      <div class="loading"></div>
+    </section>
+  </header>
+
+  <nav class="navbar navbar-default navbar-fixed-top" style="display:none">
     <div class="container-fluid">
       <!-- Brand and toggle get grouped for better mobile display -->
       <div class="navbar-header">
@@ -127,9 +213,6 @@
               <li><a href="/workstations/" target="_blank"><i class="fa fa-desktop"></i> Workstations <span class="label label-success">Nuevo</span></a></li>
               <li><a href="/asistente/" target="_blank"><i class="fa fa-desktop"></i> Pedir PC Spartana</a></li>
               <li class="divider"></li>
-              <li ng-if="location.path() != '/donacion' && location.path() != '/compra-en-legion'">
-                <a href="/donacion"><i class="fa fa-heart" style="color: #FF6E6E; padding-right: 5px;" aria-hidden="true"></i> Donar</a>
-              </li>
               <li><a href="/reglamento"><i class="fa fa-hand-peace-o"></i> Reglamento</a></li>
               <li><a href="/terminos-y-condiciones"><i class="fa fa-file-text"></i> Términos y Condiciones</a></li>
               <li><a href="/about"><i class="fa fa-fw fa-question"></i> Acerca de...</a></li>
@@ -145,7 +228,7 @@
             </a>
             <ul class="dropdown-menu dropdown-sections" role="menu">
               <div class="notifications-header">
-                <a class="btn btn-icon btn-link btn-sm" title="Marcar como leídas" href="" ng-if="total_notifications() > 0" ng-click="toggle_notifications()">
+                <a class="btn btn-icon btn-link btn-smx" title="Marcar como leídas" href="" ng-if="total_notifications() > 0" ng-click="toggle_notifications()">
                   <i class="fa fa-fw fa-check"></i> <span class="label">Marcar como leídas</span>
                 </a>
                 <h4>Notificaciones</h4>
@@ -154,12 +237,6 @@
                 <a class="unread" href="/u/{{user.info.username}}/{{user.info.id}}/?section=config">
                   Tu correo no ha sido confirmado
                   <div class="description">Te enviamos un correo para que puedas validar tu cuenta.</div>
-                </a>
-              </li>
-              <li ng-if="cart.hasMassdrop()">
-                <a class="unread" href="/componentes/checkout">
-                  Concluye tu pago de Compra en legión
-                  <div class="description">Hemos agregado a tu carrito el pago que te falta por completar.</div>
                 </a>
               </li>
               <li class="hidden">
@@ -235,41 +312,6 @@
             </ul>
           </li>
         </ul>
-
-        <ul class="nav navbar-nav navbar-right" ng-if="cart.getCount() > 0" ng-cloak>
-          <li uib-dropdown is-open="cart.isopen">
-            <a href="" uib-dropdown-toggle>
-              <span class="icon"><i class="fa fa-shopping-cart"></i></span>
-              <span class="label visible-lg-inline">Carrito ({{ cart.getCount() }})</span></span>
-            </a>
-            <ul class="dropdown-menu cart-list" style="min-width: 420px;" role="menu">
-              <li class="no-elements" ng-if="cart.items.length == 0">
-                <a>No has agregado componentes</a>
-              </li>
-              <li ng-repeat="item in cart.items track by $index">
-                <div class="cart-element">
-                  <div class="component-thumbnail">
-                    <img ng-src="https://assets.spartangeek.com/components/{{ item.image }}" alt="{{ item.full_name || item.name }}" ng-if="item.image">
-                    <img src="/images/noimage.jpg" alt="{{ item.full_name || item.name }}" ng-if="!item.image">
-                  </div>
-                  <div class="info">{{ item.fullname || item.name}} <span class="multiplier">x {{ item.quantity | number:0 }}</span><p class="price">{{ item.price * item.quantity | currency:'$':0 }}</p></div>
-                </div>
-              </li>
-              <li ng-if="cart.items.length > 0">
-                <div style="padding: 0.4em 2.5em 0.9em;">
-                  Costo de envío: {{ cart.getShippingFee() | currency:'$ ':0 }} MXN
-                </div>
-              </li>
-              <li ng-if="cart.items.length > 0">
-                <div class="text-center">
-                  <a href="/componentes/tienda" class="btn btn-default"><span class="label">Catálogo de componentes</span></a>
-                  <a href="/componentes/checkout" class="btn btn-primary"><span class="label">Editar carrito / Finalizar pedido</span></a>
-                </div>
-              </li>
-            </ul>
-          </li>
-        </ul>
-
       </div><!-- /.navbar-collapse -->
 
     </div><!-- /.container -->

@@ -1,7 +1,7 @@
 <form id="search-bar" class="navbar-form navbar-left" role="search" ng-click="toggle()">
   <div class="form-group">
     <i class="fa fa-search search-icon"></i>
-    <input autocomplete="off" autocorrect="off" class="form-control" ng-keyup="do($event)" ng-model="query" placeholder="Buscar componente o publicación" spellcheck="false" type="text" style="width:260px; padding-left: 30px;">
+    <input autocomplete="off" autocorrect="off" class="form-control" ng-keyup="do($event)" ng-model="query" placeholder="Busqueda en Buldar" spellcheck="false" type="text" style="width:180px; padding-left: 30px;">
   </div>
 </form>
 
@@ -16,8 +16,8 @@
         <div class="search-examples" ng-if="!query">
           <h4>Ejemplos de búsquedas</h4>
           <ul>
-            <li>shanks recomendación pc</li>
-            <li>programmer fechas</li>
+            <li>recomendación pc</li>
+            <li>amd vs intel</li>
             <li>gtx 970</li>
             <li>i5 4460</li>
           </ul>
@@ -34,33 +34,6 @@
       <h2>Resultados</h2>
 
       <div class="row margin-btm40 results">
-        <div class="col-xs-5 components-list">
-          <h3 id="components">Componentes</h3>
-          <p ng-if="statistics.components.total > 0">Se {{statistics.components.total > 1?'encontraron':'encontró' }} {{ statistics.components.total }} {{statistics.components.total > 1?'componentes':'componente' }} en {{ statistics.components.time }} milisegundos</p>
-          <p ng-show="fetching">Cargando...</p>
-          <p ng-hide="hits.components.length || fetching" class="text-danger">No se encontraron resultados para <strong class="text-uc">{{ query }}</strong></p>
-          <div class="hit component" ng-repeat="hit in hits.components" style="padding: 0 15px;" ng-hide="fetching">
-            <div class="row" style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #E8E8E8;">
-              <div>
-                <div class="col-md-3">
-                  <div class="component-thumbnail">
-                    <img ng-src="https://assets.spartangeek.com/components/{{ hit.image }}" alt="{{ hit.full_name || hit.name }}" ng-if="hit.image" class="portrait2">
-                    <img src="/images/noimage.jpg" alt="{{ hit.full_name || hit.name }}" ng-if="!hit.image">
-                  </div>
-                </div>
-                <div class="hit-content col-md-9">
-                  <p class="hit-name"><a href="/componentes/{{ hit.category}}/{{ hit.slug }}" ng-click="toggle()">{{ hit.full_name || hit.name }}</a></p>
-                  <p class="hit-part-number">{{ hit.part_number }}</p>
-                  <div class="row" ng-if="hit.price > 0">
-                    <div class="col-sm-12">
-                      <p class="hit-price">{{ hit.price | currency:'$ ':0 }}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
         <div class="col-xs-7">
           <h3 id="posts">Publicaciones</h3>
           <p ng-if="statistics.posts.total > 0">Se {{statistics.posts.total > 1?'encontraron':'encontró' }} {{ statistics.posts.total }} {{statistics.posts.total > 1?'publicaciones':'publicación' }} en {{ statistics.posts.time }} milisegundos</p>

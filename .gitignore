@@ -8,3 +8,8 @@ config.codekit
 config.codekit3
 node_modules
 /bower_components
+/public/css/app.css
+/public/css/app.css.map
+/public/css/store.css
+/public/js/main.js
+/public/css/store.css.map
