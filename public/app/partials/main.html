@@ -550,7 +550,7 @@
       </div>
       <!-- New Comment editor-->
       <div class="row">
-        <div class="col-md-9">
+        <div class="col-md-9 col-xs-12">
           <div ng-if="!post.lock && user.isLogged && user.info.validated">
             <div class="idiot-wizzy">
               <textarea id="comment-content" placeholder="Escribe tu comentario..." class="form-control flexible-height content" ng-model="comment.content" ng-disabled="waiting_comment" msd-elastic></textarea>
