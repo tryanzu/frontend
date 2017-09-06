@@ -130,20 +130,27 @@
             </div>
           </li>
           <li class="menu-item" ng-repeat="n in (user.notifications.list | orderBy:'-created_at')">
-            <a ng-if="false" class="dn">
-              <div class="notification-author" ng-if="n.username">
-                <span class="avatar" title="{{ n.username }}" ng-if="!n.image">{{ n.username[0] }}</span>
-                <img class="avatar" ng-src="{{ n.image }}" alt="{{ post.author.username }}" ng-if="n.image">
-              </div>
-              <div class="content"></div>
-              <div class="description">{{ n.text }}</div>
-              <div class="date" time-ago from-time="{{n.created_at}}"></div>
-            </a>
             <a href="/p/{{n.related_extra}}/{{n.related_id}}/{{n.position}}" ng-if="n.related ==='comment'" my-refresh="reloadPost()" ng-click="toggle_notification(n)" class="pointer blue" ng-class="{'unread': !n.seen}">
               <span class="db clean-styles" marked="n.title"></span>
               <span class="db gray">{{ n.text }}</span>
               <span class="db mid-gray b" time-ago from-time="{{n.created_at}}"></span>
             </a>
+            <a href="/p/{{n.related_extra}}/{{n.related_id}}/{{n.position}}" ng-if="n.related ==='mention'" my-refresh="reloadPost()" ng-click="toggle_notification(n)" class="pointer blue" ng-class="{'unread': !n.seen}">
+                  <div class="columns items-center">
+                    <div class="column col-2" ng-if="n.username">
+                      <figure class="avatar" data-initial="{{ n.username[0] }}">
+                        <img ng-src="{{ n.image }}" alt="Avatar de {{ n.username }}" ng-if="n.image" />
+                      </figure>
+                    </div>
+                    <div class="column col-10">
+                      <div class="db" ng-if="n.username"><strong>{{n.username}}</strong> te mencionó en un comentario</div>
+                      <div class="db clean-styles" marked="n.title" ng-if="n.title"></div>
+                      <div class="gray">{{ n.text }}</div>
+                      <div class="mid-gray b" time-ago from-time="{{n.created_at}}"></div>
+                    </div>
+                  </div>
+
+                </a>
           </li>
         </ul>
       </div>
