@@ -193,7 +193,7 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
         controller: 'CategoryListController',
         resolveRedirectTo: function() {
             if (!$scope.user.isLogged) {
-                return '/entrar';
+                return '/unete';
             }
 
             return undefined;
@@ -804,7 +804,7 @@ boardApplication.controller('MainController', [
 
 boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', '$location', function($rootScope, $http, AclService, AdvancedAcl, $location) {
     $rootScope.location = $location;
-    
+
     $rootScope.rolesMap = {
         'user': 'Legión buldar',
         'developer': 'Dev team',
@@ -872,7 +872,7 @@ boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', '$loca
         var signedIn = localStorage.getItem('signed_in') === 'true';
 
         if ($location.path() == '/' && signedIn == false) {
-            $location.path('/entrar');
+            $location.path('/unete');
         }
     });
 }]);
