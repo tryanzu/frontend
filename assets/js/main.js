@@ -393,7 +393,7 @@ loginController.$inject = ['$rootScope', '$http', '$location'];
 function loginController($rootScope, $http, $location) {
     var vm = this;
 
-    vm.currentUrl = $location.absUrl();
+    vm.currentUrl = $location.absUrl().substr(0, $location.absUrl().length - $location.url().length);
     vm.form = {
         email: '',
         password: '',
@@ -443,7 +443,7 @@ function signupController($rootScope, $http, $location) {
     var vm = this;
     var ref = localStorage.getItem('ref') || false;
 
-    vm.currentUrl = $location.absUrl();
+    vm.currentUrl = $location.absUrl().substr(0, $location.absUrl().length - $location.url().length);;
     vm.form = {
         email: '',
         password: '',
