@@ -59,13 +59,29 @@
   <header class="navbar" ng-hide="location.path() == '/entrar' || location.path() == '/unete'">
     <section class="navbar-section">
       <a href="/"><img class="logo" src="/images/header-logo.svg" alt="Buldar.com" /></a>
-      <a href="/reglamento" class="dn btn btn-link">Reglamento</a>
-      <a href="/terminos-y-condiciones" class="dn btn btn-link">Terminos y Condiciones</a>
-      <a href="/about" class="btn btn-link dn">Acerca de</a>
     </section>
 
     <section class="navbar-section" ng-if="user.resolving == false">
       
+      <!-- Legacy help links. -->
+      <div class="dropdown">
+        <a tabindex="0" class="dropdown-toggle btn btn-link">
+          Conoce Buldar
+        </a>
+
+        <ul class="menu">
+          <li class="menu-item">
+            <a href="/reglamento" class="link">Reglamento</a>
+          </li>
+          <li class="menu-item">
+            <a href="/terminos-y-condiciones" class="link">Terminos y cond.</a>
+          </li>
+          <li class="menu-item">
+            <a href="/about" class="link">Acerca de</a>
+          </li>
+        </ul>
+      </div>
+
       <!-- Legacy help links. -->
       <div class="dropdown">
         <a tabindex="0" class="dropdown-toggle btn btn-link">

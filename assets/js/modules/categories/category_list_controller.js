@@ -68,7 +68,7 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
 
         $scope.getTopFeed = function() {
             $scope.resolving_posts = true;
-            $scope.top_posts = [];
+            $scope.posts = [];
             var date = new Date();
 
             var request_vars = {
@@ -80,7 +80,7 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
             Feed.get(request_vars, function(response) {
                 $scope.appendCategories(response.feed);
 
-                $scope.top_posts = response.feed;
+                $scope.posts = response.feed;
                 $scope.page.title = "SpartanGeek.com | Comunidad de tecnología, geeks y más";
                 $scope.page.description = "Creamos el mejor contenido para Geeks, y lo hacemos con pasión e irreverencia de Spartanos.";
                 $scope.resolving_posts = false;

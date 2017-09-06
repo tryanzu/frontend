@@ -1,49 +1,72 @@
 <main id="login" style="background-color:#121627;">
-    <header class="avenir bg-main-buldar min-vh-100">
-        <nav class="dt w-100 mw8 center">
-            <div class="dtc v-mid tr pa3">
-                <a class="f7 fw5 hover-white no-underline white-70 dn dib-ns pv2 ph3" href="/" ><i class="icon-youtube-play"></i>Youtube SpartanGeek</a>
-                <a class="f7 fw5 hover-white no-underline white-70 dn dib-l pv2 ph3" href="/" ><i class=" icon-comment"></i> Chat</a>
-                <a class="f7 fw5 br-pill hover-white no-underline white-70 dib ml2 pv1 ph3 ba" href="/unete" >Únete a la comunidad</a>
-            </div>
-        </nav>
-        <div class="dt-ns w-90-ns w-100 center ph4 pb4">
-            <div class="dtc-ns w-50-ns w-100">
-                <img class="w-50" src="/images/header-logo.svg" alt="Buldar" />
-                <h1 class="white fw1 pb3" style="font-size: 0.8rem">Comunidad de <b>58,589</b> entusiastas y apasionados del<br /> PC Gaming y Hardware de Alto Desempeño.</h1>
-                <!--<h3 class="white f5 fw6 ma0 pa0">Crea tu cuenta en Buldar</h3>-->
-                <a class="btn btn-primary db w-70-ns w-90" style="border-color: #4267b2; background: #4267b2;" ng-href="https://api.spartangeek.com/v1/oauth/facebook?redir={{ vm.currentUrl }}"><i class="fa fa-facebook-official mr1" aria-hidden="true"></i> Iniciar sesión con Facebook</a>
-                <h3 class="white-80 f7 fw6 ma0 pa0 pv3 tc w-70-ns">O si prefieres</h3>
-                <form class="center" ng-submit="vm.send()">
-                    <fieldset id="sign_up" class="ba b--transparent pa0 mh0">
-                        <div class="pb1">
-                            <label class="db fw6 white lh-copy mb2" for="email-address">Correo electrónico</label>
-                            <input class="pa2 bg-white-30 br-pill b--transparent white w-70-ns w-90 hover-bg-black outline-0" ng-model="vm.form.email" type="email" name="email" required />
+    <section id="jumbotron" class="bg-main-buldar">
+        <header class="navbar" style="background: transparent;">
+            <section class="navbar-section"></section>
+            <section class="navbar-section">    
+                <!-- Legacy help links. -->
+                <div class="dropdown">
+                    <a tabindex="0" class="dropdown-toggle btn btn-link">
+                        Enlaces SpartanGeek
+                    </a>
+                    <ul class="menu">
+                        <li class="menu-item">
+                            <a class="link" href="https://www.youtube.com/user/SpartanGeekTV">Canal de Youtube</a>
+                        </li>
+                        <li class="menu-item">
+                            <a class="link" href="https://spartangeek.com/asistente/">Pedir PC Spartana</a>
+                        </li>
+                        <li class="menu-item">
+                            <a class="link" href="https://spartangeek.com/workstations/">Workstations</a>
+                        </li>
+                        <li class="divider"></li>
+                        <li class="menu-item">
+                            <a class="link" href="https://spartangeek.com/">SpartanGeek.com</a>
+                        </li>
+                    </ul>
+                </div>
+                <a href="/chat" class="btn btn-link">Chat</a>
+                <a href="/unete" class="btn btn-primary">Únete a la comunidad</a>
+            </section>
+        </header>
+        <div class="avenir min-vh-100">
+            <div class="dt-ns w-90-ns w-100 center ph4 pb4">
+                <div class="dtc-ns w-50-ns w-100">
+                    <img class="w-50" src="/images/header-logo.svg" alt="Buldar" />
+                    <h1 class="white fw1 pb3" style="font-size: 0.8rem">Comunidad de <b>58,589</b> entusiastas y apasionados del<br /> PC Gaming y Hardware de Alto Desempeño.</h1>
+                    <!--<h3 class="white f5 fw6 ma0 pa0">Crea tu cuenta en Buldar</h3>-->
+                    <a class="btn btn-primary db w-70-ns w-90" style="border-color: #4267b2; background: #4267b2;" ng-href="https://api.spartangeek.com/v1/oauth/facebook?redir={{ vm.currentUrl }}"><i class="fa fa-facebook-official mr1" aria-hidden="true"></i> Iniciar sesión con Facebook</a>
+                    <h3 class="white-80 f7 fw6 ma0 pa0 pv3 tc w-70-ns">O si prefieres</h3>
+                    <form class="center" ng-submit="vm.send()">
+                        <fieldset id="sign_up" class="ba b--transparent pa0 mh0">
+                            <div class="pb1">
+                                <label class="db fw6 white lh-copy mb2" for="email-address">Correo electrónico</label>
+                                <input class="pa2 bg-white-30 br-pill b--transparent white w-70-ns w-90 hover-bg-black outline-0" ng-model="vm.form.email" type="email" name="email" required />
+                            </div>
+                            <div class="pb1">
+                                <label class="db fw6 lh-copy white mb2" for="password">Contraseña</label>
+                                <input class="pa2 bg-white-30 br-pill b--transparent white w-70-ns w-90 hover-bg-black outline-0" ng-model="vm.form.password" type="password" name="password" required />
+                            </div>
+                            <label class="pa0 fw6 ma0 lh-copy pointer white-80"><input type="checkbox" /> Recordarme en este equipo</label>
+                        </fieldset>
+                        <button ng-class="{loading: vm.loading}" class="btn btn-primary db w-70-ns w-90 br-pill" type="submit">Iniciar sesión</button>
+                        
+                        <div class="toast w-70-ns w-90 mt3 lh-copy" ng-show="vm.form.error">
+                            Hubo un error al identificar tus credenciales, verifica e intenta nuevamente.
                         </div>
-                        <div class="pb1">
-                            <label class="db fw6 lh-copy white mb2" for="password">Contraseña</label>
-                            <input class="pa2 bg-white-30 br-pill b--transparent white w-70-ns w-90 hover-bg-black outline-0" ng-model="vm.form.password" type="password" name="password" required />
+                        
+                        <div class="lh-copy mt3 white-50">
+                            <a href="/unete" class="link dim white-50 db">Únete a la comunidad</a>
+                            <a href="#0" class="link dim white-50 db">¿Olvidaste tu contraseña?</a>
                         </div>
-                        <label class="pa0 fw6 ma0 lh-copy pointer white-80"><input type="checkbox" /> Recordarme en este equipo</label>
-                    </fieldset>
-
-                    <button ng-class="{loading: vm.loading}" class="btn btn-primary db w-70-ns w-90 br-pill" type="submit">Iniciar sesión</button>
-                    
-                    <div class="toast w-70-ns w-90 mt3 lh-copy" ng-show="vm.form.error">
-                        Hubo un error al identificar tus credenciales, verifica e intenta nuevamente.
-                    </div>
-                    
-                    <div class="lh-copy mt3 white-50">
-                        <a href="/unete" class="link dim white-50 db">Únete a la comunidad</a>
-                        <a href="#0" class="link dim white-50 db">¿Olvidaste tu contraseña?</a>
-                    </div>
-                </form>
-            </div>
-            <div class="dtc-ns w-50-ns v-mid center tc dn">
-                <img class="w-50" src="/images/shield.svg" />
+                    </form>
+                </div>
+                <div class="dtc-ns w-50-ns v-mid center tc dn">
+                    <img class="w-50" src="/images/shield.svg" />
+                </div>
             </div>
         </div>
-    </header>
+    </section>
+
     <div class="benefits w-90-ns w-100 center ph4 pv4 tc">
         <div class="dt-ns pv3">
             <div class="dtc-ns w-30-ns w-100 dib v-mid center">
