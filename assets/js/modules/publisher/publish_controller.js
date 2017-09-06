@@ -23,8 +23,8 @@ var budgetFlexibility = [{
 
 var FINAL_STEP = 2;
 
-var PublishController = ['$scope', '$routeParams', '$http', 'Category', 'Part', 'Upload',
-    function($scope, $routeParams, $http, Category, Part, Upload) {
+var PublishController = ['$scope', '$routeParams', '$http', 'Category', 'Upload',
+    function($scope, $routeParams, $http, Category, Upload) {
         $scope.step = 0;
         $scope.send = send;
         $scope.save = save;

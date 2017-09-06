@@ -1,5 +1,5 @@
-var EditPostController = ['$scope', '$routeParams', '$http', 'Category', 'Part', 'Upload', 'Post', '$routeParams',
-  function($scope, $routeParams, $http, Category, Part, Upload, Post, $routeParams) {
+var EditPostController = ['$scope', '$routeParams', '$http', 'Category', 'Upload', 'Post', '$routeParams',
+  function($scope, $routeParams, $http, Category, Upload, Post, $routeParams) {
 
   $scope.publishing = true;
   $scope.message = "";
