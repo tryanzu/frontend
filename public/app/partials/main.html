@@ -313,11 +313,9 @@
             </ul>
           </nav>
           <div class="discussion-posts">
-            <div class="float-actions text-right dn">
+            <div class="float-actions text-right">
               <div class="btn-group" ng-if="aacl.can('delete', 'posts', user.info, post.author.id, post.category.id)" uib-dropdown>
-                <button type="button" class="button button-icon button-flat" uib-dropdown-toggle>
-                <i class="fa fa-pencil"></i>
-                </button>
+                <button type="btn btn-action btn-link circle" uib-dropdown-toggle><i class="icon icon-menu"></i></button>
                 <ul class="dropdown-menu dropdown-menu-right">
                   <li>
                     <a href="/p/{{post.slug}}/{{post.id}}/edit" ng-if="aacl.can('edit', 'posts', user.info, post.author.id, post.category.id)" ng-click=""><i class="fa fa-pencil"></i> Editar publicación</a>
