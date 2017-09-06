@@ -1,6 +1,6 @@
 <main class="main-reader">
   <div class="row row-no-padding">
-    <div class="col-md-4 col-sm-5" ng-class="{'hidden-xs': activePostId != null}">
+    <div class="col-md-4 col-sm-12" ng-class="{'hidden-xs': activePostId != null}">
       <div class="row row-no-padding">
         <div class="col-md-12">
           <div class="feed-sidebar">
@@ -161,7 +161,7 @@
       </div>
     </div>
   </div>
-  <div class="col-md-8 col-sm-7" ng-class="{'hidden-xs': activePostId == null}">
+  <div class="col-md-8 col-sm-12" ng-class="{'hidden-xs': activePostId == null}">
     <div class="current-article" ng-controller="ReaderViewController" adjust-height>
       <div class="waiting" ng-show="waiting">
         <section>
@@ -274,7 +274,7 @@
               </div>
             </div>
             <div class="columns items-center">
-              <div class="column col-1">
+              <div class="column col-1 col-xs-2">
                 <a href="/u/{{ post.author.username }}/{{ post.author.id }}" title="Perfil de {{ post.author.username }}">
                   <figure class="avatar" ng-if="post.author.image">
                     <img ng-src="{{ post.author.image }}" alt="{{ post.author.username }}" />
@@ -468,7 +468,7 @@
                 <i class="fa fa-check-circle-o"></i> Mejor respuesta
               </div>
               <div class="columns items-center col-gapless">
-                <div class="column col-1">
+                <div class="column col-1 col-xs-2">
                   <a href="/u/{{ comment.author.username }}/{{ comment.author.id }}" title="Perfil de {{ comment.author.username }}">
                     <figure class="avatar" ng-if="comment.author.image">
                       <img ng-src="{{ comment.author.image }}" alt="{{ comment.author.username }}" />
@@ -476,7 +476,7 @@
                   <figure class="avatar" ng-if="!comment.author.image" data-initial="{{ comment.author.username[0] }}"></figure>
                 </a>
               </div>
-              <div class="column flex-auto">
+              <div class="column flex-auto col-xs-10">
                 <div class="mb1">
                   <a href="/u/{{ comment.author.username }}/{{ comment.author.id }}" title="Perfil de {{ comment.author.username }}" class="b near-black">{{ comment.author.username }}</a>
                   <time>{{ comment.created_at | timeAgo }}:</time>
@@ -492,7 +492,7 @@
                   {{ rolesMap[role.name] || role.name }}
                 </span>
               </div>
-              <div class="column flex-auto tr">
+              <div class="column flex-auto tr col-xs-10 col-mr-auto">
                 <a class="btn btn-link btn-sm" ng-click="reply_to(comment.author.username, comment.position)" ng-if="comment.author.id != user.info.id && !post.lock && user.isLogged"><i class="fa fa-reply"></i> Responder</a>
                 <div class="dib" ng-if="aacl.can('edit', 'comments', user.info, comment.author.id, post.category.id) || aacl.can('delete', 'comments', user.info, comment.author.id, post.category.id)" uib-dropdown>
                   <button

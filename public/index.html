@@ -61,7 +61,8 @@
       <a href="/"><img class="logo" src="/images/header-logo.svg" alt="Buldar.com" /></a>
     </section>
 
-    <section class="navbar-section" ng-if="user.resolving == false">
+    
+    <section class="navbar-section hide show-sm" ng-if="user.resolving == false">
       
       <!-- Legacy help links. -->
       <div class="dropdown">
@@ -136,21 +137,20 @@
               <span class="db mid-gray b" time-ago from-time="{{n.created_at}}"></span>
             </a>
             <a href="/p/{{n.related_extra}}/{{n.related_id}}/{{n.position}}" ng-if="n.related ==='mention'" my-refresh="reloadPost()" ng-click="toggle_notification(n)" class="pointer blue" ng-class="{'unread': !n.seen}">
-                  <div class="columns items-center">
-                    <div class="column col-2" ng-if="n.username">
-                      <figure class="avatar" data-initial="{{ n.username[0] }}">
-                        <img ng-src="{{ n.image }}" alt="Avatar de {{ n.username }}" ng-if="n.image" />
-                      </figure>
-                    </div>
-                    <div class="column col-10">
-                      <div class="db" ng-if="n.username"><strong>{{n.username}}</strong> te mencionó en un comentario</div>
-                      <div class="db clean-styles" marked="n.title" ng-if="n.title"></div>
-                      <div class="gray">{{ n.text }}</div>
-                      <div class="mid-gray b" time-ago from-time="{{n.created_at}}"></div>
-                    </div>
+                <div class="columns items-center">
+                  <div class="column col-2" ng-if="n.username">
+                    <figure class="avatar" data-initial="{{ n.username[0] }}">
+                      <img ng-src="{{ n.image }}" alt="Avatar de {{ n.username }}" ng-if="n.image" />
+                    </figure>
                   </div>
-
-                </a>
+                  <div class="column col-10">
+                    <div class="db" ng-if="n.username"><strong>{{n.username}}</strong> te mencionó en un comentario</div>
+                    <div class="db clean-styles" marked="n.title" ng-if="n.title"></div>
+                    <div class="gray">{{ n.text }}</div>
+                    <div class="mid-gray b" time-ago from-time="{{n.created_at}}"></div>
+                  </div>
+                </div>
+              </a>
           </li>
         </ul>
       </div>
