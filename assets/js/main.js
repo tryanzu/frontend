@@ -29,13 +29,11 @@
 // @codekit-prepend modules/categories/init.js
 // @codekit-prepend modules/reader/init.js
 // @codekit-prepend modules/publisher/init.js
-// @codekit-prepend modules/part/init.js
 // @codekit-prepend modules/user/init.js
 // @codekit-prepend modules/rank/init.js
 // @codekit-prepend modules/badges/init.js
 // @codekit-prepend modules/top/init.js
 // @codekit-prepend modules/search/search.js
-// @codekit-prepend modules/components/components.js
 // @codekit-prepend modules/events/event.js
 
 var version = '106';
@@ -52,10 +50,8 @@ var boardApplication = angular.module('board', [
     'categoryModule',
     'readerModule',
     'publisherModule',
-    'partModule',
     'userModule',
     'rankModule',
-    'sg.module.components',
     'sg.module.badges',
     'sg.module.top',
     'sg.module.events',
@@ -96,51 +92,17 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
         templateUrl: '/app/partials/badges.html?v=' + version,
         controller: 'BadgeController'
     });
+
     $routeProvider.when('/top-ranking', {
         templateUrl: '/app/partials/tops.html?v=' + version,
         controller: 'TopController'
     });
+
     $routeProvider.when('/signup/confirm/:code', {
         templateUrl: '/app/partials/validate.html?v=' + version,
         controller: 'UserValidationController'
     });
-    $routeProvider.when('/componentes/tienda/:type?', {
-        templateUrl: '/js/partials/components.html?v=' + version,
-        controller: 'ComponentsController'
-    });
-    $routeProvider.when('/computadoras/armar', {
-        templateUrl: '/js/partials/pc_builder.html?v=' + version,
-        controller: 'PcBuilderController'
-    });
-    $routeProvider.when('/componentes/checkout', {
-        templateUrl: '/app/partials/checkout.html?v=' + version,
-        controller: 'CheckoutController'
-    });
-    $routeProvider.when('/componentes/:type?', {
-        templateUrl: '/app/partials/components.html?v=' + version,
-        controller: 'ComponentsController'
-    });
-    $routeProvider.when('/componentes/:type/:slug', {
-        templateUrl: '/app/partials/component.html?v=' + version,
-        controller: 'ComponentController'
-    });
-    $routeProvider.when('/compra-en-legion/faq', {
-        templateUrl: '/app/partials/massdrop/faq.html?v=' + version,
-        //controller: 'ComponentController'
-    });
 
-    $routeProvider.when('/compra-en-legion/:slug', {
-        templateUrl: '/app/partials/massdrop/show.html?v=' + version,
-        controller: 'MassdropController'
-    });
-    $routeProvider.when('/compra-en-legion/:slug/unirme', {
-        templateUrl: '/app/partials/massdrop/pay.html?v=' + version,
-        controller: 'MassdropPayController'
-    });
-    $routeProvider.when('/compra-en-legion', {
-        templateUrl: '/app/partials/massdrop/index.html?v=' + version,
-        controller: 'MassdropIndexController'
-    });
     $routeProvider.when('/c/:slug', {
         templateUrl: '/app/partials/main.html?v=' + version,
         controller: 'CategoryListController'
@@ -199,6 +161,7 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
             return undefined;
         }
     });
+
     $routeProvider.otherwise({
         redirectTo: '/'
     });
