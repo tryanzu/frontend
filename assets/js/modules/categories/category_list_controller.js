@@ -81,7 +81,7 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
                 $scope.appendCategories(response.feed);
 
                 $scope.posts = response.feed;
-                $scope.page.title = "SpartanGeek.com | Comunidad de tecnología, geeks y más";
+                $scope.page.title = "Buldar | Comunidad de tecnología, geeks y más";
                 $scope.page.description = "Creamos el mejor contenido para Geeks, y lo hacemos con pasión e irreverencia de Spartanos.";
                 $scope.resolving_posts = false;
             });
@@ -120,10 +120,10 @@ var CategoryListController = ['$scope', '$rootScope', '$timeout', '$location', '
 
                 // Title... ToDo: Use a service to update this
                 if (category.slug != null)  {
-                    $scope.page.title = "SpartanGeek.com | " + category.name;
+                    $scope.page.title = "Buldar | " + category.name;
                     $scope.page.description = category.description;
                 } else {
-                    $scope.page.title = "SpartanGeek.com | Comunidad de tecnología, geeks y más";
+                    $scope.page.title = "Buldar | Comunidad de tecnología, geeks y más";
                     $scope.page.description = "Creamos el mejor contenido para Geeks, y lo hacemos con pasión e irreverencia de Spartanos.";
                 }
 

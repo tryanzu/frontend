@@ -498,7 +498,7 @@ var ReaderViewController = ['$scope', '$rootScope', '$http', '$timeout', 'Post',
                 }
 
                 // Attach title and description for SEO purposes
-                $scope.page.title = "SpartanGeek.com | " + $scope.post.title + " en " + $scope.post.category.name;
+                $scope.page.title = "Buldar | " + $scope.post.title + " en " + $scope.post.category.name;
                 if ($scope.post.content.length - 1 < 157) {
                     $scope.page.description = $scope.post.content;
                 } else {

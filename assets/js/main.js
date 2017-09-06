@@ -841,7 +841,7 @@ boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', '$loca
     }
 
     $rootScope.page = {
-        title: "SpartanGeek.com | Comunidad de tecnología, geeks y más",
+        title: "Buldar | Comunidad de tecnología, geeks y más",
         description: "Creamos el mejor contenido para Geeks, y lo hacemos con pasión e irreverencia de Spartanos."
     };
 
