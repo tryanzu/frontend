@@ -21,7 +21,7 @@ var budgetFlexibility = [{
     flexibility: '0'
 }];
 
-const FINAL_STEP = 2;
+var FINAL_STEP = 2;
 
 var PublishController = ['$scope', '$routeParams', '$http', 'Category', 'Part', 'Upload',
     function($scope, $routeParams, $http, Category, Part, Upload) {
