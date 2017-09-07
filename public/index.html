@@ -10,6 +10,7 @@
     <meta property="og:description" content="{{ page.description }}">
     <meta property="og:title" content="{{ page.title }}">
     <meta property="og:image" content="{{ page.image }}">
+    <meta content="#131d3a" name="theme-color" />
 
     <!-- Favicon -->
     <link rel="apple-touch-icon" sizes="57x57" href="/favicon/apple-icon-57x57.png">
@@ -155,7 +156,8 @@
         </ul>
       </div>
     </section>
-    <section class="navbar-section hide-sm" ng-if="user.resolving == false">
+
+    <section class="navbar-section hide-sm" style="flex: 1 1 auto" ng-if="user.resolving == false">
       
       <!-- Legacy help links. -->
       <div class="dropdown">
@@ -210,7 +212,7 @@
             Notificaciones
           </span>
 
-          <span class="badge" ng-if="total_notifications() <= 0">
+          <span class="badge none" ng-if="total_notifications() <= 0">
             Notificaciones
           </span>
         </a>
