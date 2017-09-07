@@ -61,7 +61,100 @@
       <a href="/"><img class="logo" src="/images/header-logo.svg" alt="Buldar.com" /></a>
     </section>
 
+    <section class="navbar-section show-sm tr">
+      <div class="dropdown dropdown-right" ng-if="user.isLogged == true">
+        <a tabindex="0" class="dropdown-toggle pointer link">
+          <figure class="avatar" data-initial="{{ user.info.username[0] }}">
+            <img ng-src="{{ user.info.image }}" alt="Avatar de {{ user.info.username }}" ng-if="user.info.image" />
+          </figure>
+          <i class="icon icon-arrow-down"></i>
+        </a>
 
+        <ul class="menu tl">
+          <li class="menu-item"><a class="link" href="/u/{{ user.info.username }}/{{ user.info.id }}">Ver mi perfil</a></li>
+          <li class="menu-item"><a class="link" href="/medallas">Medallas</a></li>
+          <li class="menu-item"><a class="link" href="/top-ranking">Ranking de usuarios</a></li>
+          <li class="divider"></li>
+          <li class="menu-item">
+            <div class="menu-badge">
+              <label class="label label-primary">{{ (user.gaming.swords || 0) | number:0 }}</label>
+            </div>
+            <a>Reputación</a>
+          </li>
+          <li class="menu-item">
+            <div class="menu-badge">
+              <label class="label label-primary">{{ (user.gaming.tribute || 0) | number:0 }}</label>
+            </div>
+            <a>Tributo</a>
+          </li>
+          <li class="divider"></li>
+          <li class="menu-item"><a ng-click="signOut()" class="pointer">Salir de mi cuenta</a></li>
+        </ul>
+      </div>
+
+      <div class="dropdown dropdown-right" ng-if="user.isLogged == true">
+        <a tabindex="0" class="dropdown-toggle pointer link">
+          <span class="badge" ng-if="total_notifications() > 0" data-badge="{{ total_notifications() }}">
+            <i class="icon icon-message"></i>
+          </span>
+
+          <span class="badge" ng-if="total_notifications() <= 0">
+            <i class="icon icon-message"></i>
+          </span>
+        </a>
+        <ul class="menu notifications tl">
+          <li class="menu-item header">
+            <div class="flex">
+              <div class="flex-auto">
+                <strong class="mid-gray">Notificaciones</strong>
+              </div>
+              <a class="tr dim link pointer" ng-if="total_notifications() > 0" ng-click="toggle_notifications()">Marcar como leídas</a>
+            </div>
+          </li>
+          <li class="menu-item" ng-repeat="n in (user.notifications.list | orderBy:'-created_at')">
+            <a href="/p/{{n.related_extra}}/{{n.related_id}}/{{n.position}}" ng-if="n.related ==='comment'" my-refresh="reloadPost()" ng-click="toggle_notification(n)" class="pointer blue" ng-class="{'unread': !n.seen}">
+              <span class="db clean-styles" marked="n.title"></span>
+              <span class="db gray">{{ n.text }}</span>
+              <span class="db mid-gray b" time-ago from-time="{{n.created_at}}"></span>
+            </a>
+            <a href="/p/{{n.related_extra}}/{{n.related_id}}/{{n.position}}" ng-if="n.related ==='mention'" my-refresh="reloadPost()" ng-click="toggle_notification(n)" class="pointer blue" ng-class="{'unread': !n.seen}">
+                <div class="columns items-center">
+                  <div class="column col-2" ng-if="n.username">
+                    <figure class="avatar" data-initial="{{ n.username[0] }}">
+                      <img ng-src="{{ n.image }}" alt="Avatar de {{ n.username }}" ng-if="n.image" />
+                    </figure>
+                  </div>
+                  <div class="column col-10">
+                    <div class="db" ng-if="n.username"><strong>{{n.username}}</strong> te mencionó en un comentario</div>
+                    <div class="db clean-styles" marked="n.title" ng-if="n.title"></div>
+                    <div class="gray">{{ n.text }}</div>
+                    <div class="mid-gray b" time-ago from-time="{{n.created_at}}"></div>
+                  </div>
+                </div>
+              </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Legacy help links. -->
+      <div class="dropdown dropdown-right">
+        <a tabindex="0" class="dropdown-toggle btn btn-link">
+          <i class="icon icon-menu"></i>
+        </a>
+
+        <ul class="menu">
+          <li class="menu-item">
+            <a href="/reglamento" class="link">Reglamento</a>
+          </li>
+          <li class="menu-item">
+            <a href="/terminos-y-condiciones" class="link">Terminos y cond.</a>
+          </li>
+          <li class="menu-item">
+            <a href="/about" class="link">Acerca de</a>
+          </li>
+        </ul>
+      </div>
+    </section>
     <section class="navbar-section hide-sm" ng-if="user.resolving == false">
       
       <!-- Legacy help links. -->
