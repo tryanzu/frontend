@@ -13,3 +13,4 @@ node_modules
 /public/css/store.css
 /public/js/main.js
 /public/css/store.css.map
+public/dist
