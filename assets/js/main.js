@@ -214,6 +214,18 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
     });
 }]);
 
+boardApplication.directive('navbarHeader', function() {
+    return {
+        restrict: 'E',
+        template: '<div></div>',
+        replace: true,
+        link: function(scope, element, attrs) {
+            var mount = require('src/mount.js');
+            mount.navbar(element[0]);
+        }
+    };
+});
+
 boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http', '$uibModalInstance', '$location',
     function($scope, $rootScope, $http, $uibModalInstance, $location) {
         $scope.form = {
