@@ -1,6 +1,8 @@
-import {run} from '@cycle/run'
+import {run} from '@cycle/run';
+import isolate from '@cycle/isolate';
 import {figure, div, section, label, header, input, img, a, ul, li, h1, h, makeDOMDriver} from '@cycle/dom';
 import xs from 'xstream';
+import {LoginModal} from './modal/login';
 
 const DEFAULT_STATE = {
     user: false,
@@ -41,7 +43,7 @@ export function Navbar({DOM, HTTP, storage}) {
 				}
 			})
 		);
-
+    
 	/**
 	 * Reducers.
 	 * Streams mapped to reducer functions.
@@ -88,32 +90,14 @@ export function Navbar({DOM, HTTP, storage}) {
     const state$ = xs.merge(userR$, tokenR$, modalR$)
         .fold((state, action) => action(state), DEFAULT_STATE);
 
-    const vdom$ = state$.map(state => {
+    // Compute active login modal state
+    const loginModal$ = LoginModal({DOM, props: actions.modalLink$});
+
+    const vdom$ = xs.combine(state$, loginModal$.DOM).map(([state, loginVNode]) => {
         const {user, modal} = state;
 
         return h('main', [
-            modal.signin === true ? 
-                h('div.modal.active.modal-sm', [
-                    h('div.modal-overlay.modal-link', {dataset: {modal: 'signin'}}),
-                    h('div.modal-container.w5', [
-                        h('div.modal-header', [
-                            h('button.btn.btn-clear.float-right.modal-link', {dataset: {modal: 'signin'}}),
-                            h('div.modal-title.f5', 'Iniciar sesión')
-                        ]),  
-                        h('div.modal-body', [
-                            h('div.content', [
-                                h('div.form-group', [
-                                    h('input.form-input.input-lg', {attrs: {type: 'text', placeholder: 'Correo electrónico'}})
-                                ]),
-                                h('div.form-group', [
-                                    h('input.form-input.input-lg', {attrs: {type: 'password', placeholder: 'Contraseña'}})
-                                ]),
-                                h('button.btn.btn-primary.btn-block.btn-lg.f6', 'Iniciar sesión')
-                            ])
-                        ])
-                    ]),
-                ]) 
-            : h('div.dn'),
+            loginVNode,
             h('header.navbar', [
                 h('section.navbar-section', [
                 	a({attrs: {href: '/'}}, img('.logo', {attrs: {src: '/images/header-logo.svg', alt: 'Buldar.com'}}))
