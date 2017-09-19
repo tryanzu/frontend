@@ -91,7 +91,11 @@ export function Navbar({DOM, HTTP, storage}) {
         .fold((state, action) => action(state), DEFAULT_STATE);
 
     // Compute active login modal state
-    const loginModal$ = LoginModal({DOM, props: actions.modalLink$});
+    const loginModal$ = LoginModal({DOM, HTTP, props: actions.modalLink$});
+
+    // Compute child & parent http side effects.
+    const http$ = xs.merge(requestUser$, loginModal$.HTTP);
+    const storage$ = loginModal$.token.map(token => ({key: 'id_token', value: token}));
 
     const vdom$ = xs.combine(state$, loginModal$.DOM).map(([state, loginVNode]) => {
         const {user, modal} = state;
@@ -187,6 +191,7 @@ export function Navbar({DOM, HTTP, storage}) {
 
     return {
         DOM: vdom$,
-        HTTP: requestUser$
+        HTTP: http$,
+        storage: storage$
     };
 }
