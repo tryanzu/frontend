@@ -12,13 +12,14 @@ const DEFAULT_STATE = {
 export function model(actions) {
 
     /**
-     * Write side effects.
+     * HTTP write effects including:
+     * - User info from token stream.
      */
     const requestToken$ = actions.sent$.filter(sent => sent === true)
         .compose(sampleCombine(actions.fields$))
         .map(([sent, [email, password]]) => ({
                 method: 'POST',
-                url: 'http://localhost:3200/v1/auth/get-token', 
+                url: Config.layer + 'auth/get-token', 
                 category: 'token',
                 query: {email, password}
             })

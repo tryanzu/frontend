@@ -19,7 +19,7 @@ export function model(actions, loginModal) {
      */
     const requestUser$ = actions.token$.filter(token => token !== false)
         .map(token => ({
-                url: 'http://localhost:3200/v1/user/my', 
+                url: Config.layer + 'user/my', 
                 category: 'me',
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -31,7 +31,8 @@ export function model(actions, loginModal) {
 
     /**
      * LocalStorage write effects including:
-     * 
+     * - Auth token reset
+     * - New auth token persistence 
      */
     const storage$ = xs.merge(
 
