@@ -1,5 +1,6 @@
 import {h} from '@cycle/dom';
 import xs from 'xstream';
+import isolate from '@cycle/isolate';
 import {LoginModal} from './login';
 import {SignupModal} from './signup';
 
@@ -7,8 +8,10 @@ export function AccountModal({DOM, HTTP, props}) {
 	/**
 	 * Child components declarations.
 	 */
-	const login = LoginModal({DOM, HTTP});
-	const signup = SignupModal({DOM, HTTP});
+	const loginModal = isolate(LoginModal);
+	const signupModal = isolate(SignupModal);
+	const login = loginModal({DOM, HTTP});
+	const signup = signupModal({DOM, HTTP});
 
 	/**
 	 * Intent

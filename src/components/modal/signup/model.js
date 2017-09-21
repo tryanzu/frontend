@@ -21,7 +21,7 @@ export function model(actions) {
                 method: 'POST',
                 url: Anzu.layer + 'user', 
                 category: 'signup',
-                query: {email, password, username}
+                send: {email, password, username}
             })
         );
 

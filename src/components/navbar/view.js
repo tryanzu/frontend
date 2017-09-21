@@ -4,6 +4,7 @@ import xs from 'xstream';
 export function view(effects, account) {
     return xs.combine(effects.state$, account.DOM).map(([state, accountVNode]) => {
         const {user, modal} = state;
+        const image = user.image || '';
 
         return h('main', [
             accountVNode,
@@ -60,8 +61,8 @@ export function view(effects, account) {
                         div('.dropdown.dropdown-right', [
                             a('.dropdown-toggle.pointer.link', {attrs: {tabindex: 0}}, [
                                 figure('.avatar', {dataset: {initial: user.username.substr(0, 1)}}, [
-                                    user.image.length > 0 ? 
-                                        img({attrs: {alt: `Avatar de ${user.username}`, src: user.image}}) 
+                                    image.length > 0 ? 
+                                        img({attrs: {alt: `Avatar de ${user.username}`, src: image}}) 
                                     : div('.dn')
                                 ]),
                                 h('span.white.ml1', [user.username, h('i.icon.icon-caret')])

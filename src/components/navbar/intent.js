@@ -17,7 +17,7 @@ export function intent(dom, http, storage) {
      * - auth token stream.
      */
     const token$ = storage.local.getItem('id_token')
-        .filter(token => token.length > 0)
+        .filter(token => token !== undefined && token.length > 0)
         .startWith(false);
 
     /**
