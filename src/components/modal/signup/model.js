@@ -4,6 +4,7 @@ import sampleCombine from 'xstream/extra/sampleCombine';
 const DEFAULT_STATE = {
     resolving: false,
     email: '',
+    username: '',
     password: '',
     error: false
 };
@@ -12,15 +13,15 @@ export function model(actions) {
 
     /**
      * HTTP write effects including:
-     * - User info from token stream.
+     * - User signup from token stream.
      */
     const requestToken$ = actions.sent$.filter(sent => sent === true)
         .compose(sampleCombine(actions.fields$))
-        .map(([sent, [email, password]]) => ({
+        .map(([sent, [email, username, password]]) => ({
                 method: 'POST',
-                url: Anzu.layer + 'auth/get-token', 
-                category: 'token',
-                query: {email, password}
+                url: Anzu.layer + 'user', 
+                category: 'signup',
+                query: {email, password, username}
             })
         );
 
@@ -31,15 +32,13 @@ export function model(actions) {
      * Reducers.
      * Streams mapped to reducer functions.
      */
-     const fieldsR$ = actions.fields$.map(([email, password]) => state => ({...state, email, password}));
+     const fieldsR$ = actions.fields$.map(([email, username, password]) => state => ({...state, email, username, password}));
      const sentR$ = actions.sent$.map(sent => state => ({...state, resolving: sent}));
-     const tokenR$ = actions.token$.map(res => state => {
-        return {
-            ...state, 
-            resolving: false,
-            error: res instanceof Error ? res : false
-        };
-     });
+     const tokenR$ = actions.token$.map(res => state => ({
+        ...state, 
+        resolving: false,
+        error: res instanceof Error ? res : false
+    }));
 
     const state$ = xs.merge(fieldsR$, sentR$, tokenR$)
         .fold((state, action) => action(state), DEFAULT_STATE);

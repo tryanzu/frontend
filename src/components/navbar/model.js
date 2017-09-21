@@ -11,7 +11,7 @@ const DEFAULT_STATE = {
     }
 };
 
-export function model(actions, loginModal) {
+export function model(actions, accountModal) {
 
     /**
      * HTTP write effects including:
@@ -19,7 +19,7 @@ export function model(actions, loginModal) {
      */
     const requestUser$ = actions.token$.filter(token => token !== false)
         .map(token => ({
-                url: Config.layer + 'user/my', 
+                url: Anzu.layer + 'user/my', 
                 category: 'me',
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -27,7 +27,7 @@ export function model(actions, loginModal) {
             })
         );
 
-    const http$ = xs.merge(requestUser$, loginModal.HTTP);
+    const http$ = xs.merge(requestUser$, accountModal.HTTP);
 
     /**
      * LocalStorage write effects including:
@@ -37,7 +37,7 @@ export function model(actions, loginModal) {
     const storage$ = xs.merge(
 
         // Received new token from login dataflow.
-        loginModal.token.map(token => ({key: 'id_token', value: token})),
+        accountModal.token.map(token => ({key: 'id_token', value: token})),
 
         // Logout link.
         actions.logoutLink$.map(() => ({key: 'id_token', value: ''}))

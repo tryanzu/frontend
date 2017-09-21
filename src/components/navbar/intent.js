@@ -8,7 +8,7 @@ export function intent(dom, http, storage) {
      * - Logout button.
      */
     const modalLink$ = dom.select('.modal-link').events('click')
-        .map(event => ({modal: event.target.dataset.modal}));
+        .map(event => ({modal: event.target.dataset.modal, data: event.target.dataset}));
 
     const logoutLink$ = dom.select('#logout').events('click').mapTo(true);
 

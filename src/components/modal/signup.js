@@ -1,8 +1,8 @@
-import {intent} from './login/intent';
-import {model} from './login/model';
-import {view} from './login/view';
+import {intent} from './signup/intent';
+import {model} from './signup/model';
+import {view} from './signup/view';
 
-export function LoginModal({DOM, HTTP}) {
+export function SignupModal({DOM, HTTP}) {
     const actions = intent(DOM, HTTP);
     const model$ = model(actions);
     const view$ = view(model$.state$);

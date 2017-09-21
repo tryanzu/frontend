@@ -1,7 +1,7 @@
 import xs from 'xstream';
 
 export function intent(dom, http) {
-    const token$ = http.select('token')
+    const token$ = http.select('signup')
         .map(response$ => response$.replaceError(err => xs.of(err)))
         .flatten();
 
@@ -19,11 +19,15 @@ export function intent(dom, http) {
         .map(ev => ev.target.value)
         .startWith('');
 
+    const username$ = dom.select('#username').events('input')
+        .map(ev => ev.target.value)
+        .startWith('');
+
     const sent$ = dom.select('form').events('submit', {preventDefault: true})
         .mapTo(true)
         .startWith(false);
 
-    const fields$ = xs.combine(email$, password$);
+    const fields$ = xs.combine(email$, username$, password$);
 
     return {fields$, sent$, token$};
 }

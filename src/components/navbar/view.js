@@ -1,12 +1,12 @@
 import {figure, div, section, label, header, input, img, a, ul, li, h1, h, makeDOMDriver} from '@cycle/dom';
 import xs from 'xstream';
 
-export function view(effects, loginModal) {
-    return xs.combine(effects.state$, loginModal.DOM).map(([state, loginVNode]) => {
+export function view(effects, account) {
+    return xs.combine(effects.state$, account.DOM).map(([state, accountVNode]) => {
         const {user, modal} = state;
 
         return h('main', [
-            loginVNode,
+            accountVNode,
             h('header.navbar', [
                 h('section.navbar-section', [
                     a({attrs: {href: '/'}}, img('.logo', {attrs: {src: '/images/header-logo.svg', alt: 'Buldar.com'}}))
@@ -31,8 +31,8 @@ export function view(effects, loginModal) {
                             li('.menu-item', a('.link', {attrs: {href: 'https://spartangeek.com'}}, 'SpartanGeek.com'))
                         ])
                     ]),
-                    h('a.link.pointer.btn.btn-link.modal-link', {dataset: {modal: 'signin'}, class: {dn: user !== false}}, 'Iniciar sesión'),
-                    h('a.link.pointer.btn.btn-link.modal-link', {attrs: {href: '/unete'}, dataset: {modal: 'signup'}, class: {dn: user !== false}}, 'Únete'),
+                    h('a.link.pointer.btn.btn-link.modal-link', {dataset: {modal: 'account', tab: 'login'}, class: {dn: user !== false}}, 'Iniciar sesión'),
+                    h('a.link.pointer.btn.btn-link.modal-link', {dataset: {modal: 'account', tab: 'signup'}, class: {dn: user !== false}}, 'Únete'),
                     user !== false ? 
                         div('.dropdown.dropdown-right', [
                             a('.dropdown-toggle.pointer.link', {attrs: {tabindex: 0}}, [
