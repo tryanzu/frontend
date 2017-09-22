@@ -10,6 +10,7 @@ export function SignupModal({DOM, HTTP}) {
     return {
         DOM: view$,
         HTTP: model$.HTTP,
-        token: model$.token$
+        token: model$.token$,
+        finished: actions.finished$
     };
 };

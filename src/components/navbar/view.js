@@ -68,9 +68,9 @@ export function view(effects, account) {
                                 h('span.white.ml1', [user.username, h('i.icon.icon-caret')])
                             ]),
                             h('ul.menu', [
-                                h('li.menu-item', h('a.link.ng-link', {attrs: {href: `/u/${user.username}/${user.id}`}}, 'Ver mi perfil')),
-                                h('li.menu-item', h('a.link.ng-link', {attrs: {href: '/medallas'}}, 'Medallas')),
-                                h('li.menu-item', h('a.link.ng-link', {attrs: {href: '/top-ranking'}}, 'Ranking de usuarios')),
+                                h('li.menu-item', h('a.link.ng-link', {dataset: {href: `/u/${user.username}/${user.id}`}}, 'Ver mi perfil')),
+                                h('li.menu-item', h('a.link.ng-link', {dataset: {href: '/medallas'}}, 'Medallas')),
+                                h('li.menu-item', h('a.link.ng-link', {dataset: {href: '/top-ranking'}}, 'Ranking de usuarios')),
                                 h('li.divider'),
                                 h('li.menu-item.cf', [
                                     h('div.menu-badge', h('label.label.label-primary', user.gaming.swords)),

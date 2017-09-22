@@ -27,7 +27,10 @@ export function intent(dom, http) {
         .mapTo(true)
         .startWith(false);
 
+    const finished$ = dom.select('a.finish').events('click')
+        .mapTo(true);
+
     const fields$ = xs.combine(email$, username$, password$);
 
-    return {fields$, sent$, token$};
+    return {fields$, sent$, token$, finished$};
 }

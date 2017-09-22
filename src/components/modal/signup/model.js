@@ -6,7 +6,8 @@ const DEFAULT_STATE = {
     email: '',
     username: '',
     password: '',
-    error: false
+    error: false,
+    done: false
 };
 
 export function model(actions) {
@@ -37,7 +38,8 @@ export function model(actions) {
      const tokenR$ = actions.token$.map(res => state => ({
         ...state, 
         resolving: false,
-        error: res instanceof Error ? res : false
+        error: res instanceof Error ? res : false,
+        done: !(res instanceof Error)
     }));
 
     const state$ = xs.merge(fieldsR$, sentR$, tokenR$)

@@ -30,7 +30,8 @@ export function AccountModal({DOM, HTTP, props}) {
     	.map(event => event.target.dataset.tab);
 
     const tab$ = xs.merge(openTab$, tabLink$).startWith('login');
-    const active$ = xs.merge(opened$, login.token.mapTo(false));
+
+    const active$ = xs.merge(opened$, login.token.mapTo(false), signup.finished.mapTo(false));
 
     /**
      * View computation.

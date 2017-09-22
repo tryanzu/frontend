@@ -1,7 +1,18 @@
 import {h} from '@cycle/dom';
 
 export function view(state$) {
-    return state$.map(({email, username, password, resolving, error}) => {
+    return state$.map(({email, username, password, resolving, error, done}) => {
+        if (done) {
+            return h('div.content.fade-in', {key: 'signup'}, [
+                h('span.db.tc.b.mb2.f6', '¡Bienvenido a la comunidad!'),
+                h('div.toast.toast-success.mb2', [
+                    h('p.lh-copy', 'Tu cuenta fue creada con éxito y en breve recibirás un correo electrónico para confirmar tu cuenta.'),
+                    h('p.b.lh-copy.mb0', 'Confirmando tu cuenta tendrás acceso completo a buldar.com')
+                ]),
+                h('a.btn.btn-block.btn-primary.finish', 'Entendido')
+            ]);
+        }
+
         return h('div.content.fade-in', {key: 'signup', style: {padding: '0 0.4rem'}}, [
             h('div.form-group', h('a.btn.btn-primary.btn-block', {style: {background: '#4267b2', borderColor: '#4267b2'}}, [
                 h('i.fa.fa-facebook-official.mr1'),
