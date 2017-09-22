@@ -32,7 +32,7 @@ export function model(actions) {
      * Streams mapped to reducer functions.
      */
      const fieldsR$ = actions.fields$.map(([email, password]) => state => ({...state, email, password}));
-     const sentR$ = actions.sent$.map(sent => state => ({...state, resolving: sent}));
+     const sentR$ = actions.sent$.map(sent => state => ({...state, resolving: sent, error: false}));
      const tokenR$ = actions.token$.map(res => state => {
         return {
             ...state, 

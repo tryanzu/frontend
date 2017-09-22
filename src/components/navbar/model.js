@@ -75,17 +75,29 @@ export function model(actions, accountModal) {
     }));
 
     const logoutR$ = actions.logoutLink$.map(() => state => ({
-    	...state,
-    	user: false,
-    	token: false
+        ...state,
+        user: false,
+        token: false
     }));
 
     const state$ = xs.merge(tokenR$, userR$, logoutR$, modalR$)
         .fold((state, action) => action(state), DEFAULT_STATE);
 
+    const ng$ = xs.merge(
+        // Links that will be processed by angular's router
+        actions.ngLink$.map(path => ({type: 'location', path})),
+
+        // User has logged in
+        accountModal.token.map(token => ({type: 'token', token})),
+
+        // User has logged out
+        actions.logoutLink$.map(() => ({type: 'token', token: ''}))
+    );
+
     return {
         state$,
         http$,
-        storage$
+        storage$,
+        ng$
     };
 }

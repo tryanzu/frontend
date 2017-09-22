@@ -11,13 +11,16 @@ export function intent(dom, http, storage) {
         .map(event => ({modal: event.target.dataset.modal, data: event.target.dataset}));
 
     const logoutLink$ = dom.select('#logout').events('click').mapTo(true);
+    
+    const ngLink$ = dom.select('.ng-link').events('click')
+        .map(ev => ev.target.dataset.href);
 
     /**
      * LocalStorage read effects including:
      * - auth token stream.
      */
     const token$ = storage.local.getItem('id_token')
-        .filter(token => token !== undefined && token.length > 0)
+        .filter(token => token !== null && String(token).length > 0)
         .startWith(false);
 
     /**
@@ -30,5 +33,5 @@ export function intent(dom, http, storage) {
         .filter(res => !(res instanceof Error))
         .map(res => res.body);
 
-    return {modalLink$, logoutLink$, token$, user$};
+    return {modalLink$, logoutLink$, token$, user$, ngLink$};
 };

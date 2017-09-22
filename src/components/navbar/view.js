@@ -10,16 +10,16 @@ export function view(effects, account) {
             accountVNode,
             h('header.navbar', [
                 h('section.navbar-section', [
-                    a({attrs: {href: '/'}}, img('.logo', {attrs: {src: '/images/header-logo.svg', alt: 'Buldar.com'}}))
+                    h('a', img('.logo.ng-link', {dataset: {href: '/'}, attrs: {src: '/images/header-logo.svg', alt: 'Buldar.com'}}))
                 ]), 
                 h('section.navbar-section.hide-sm', {style: {flex: '1 1 auto'}}, [
                     a('.btn.btn-link', {attrs: {href: '/chat', target: '_blank'}}, 'Chat'),
                     div('.dropdown', [
                         a('.btn.btn-link.dropdown-toggle', {attrs: {tabindex: 0}}, 'Conoce Buldar'),
                         h('ul.menu', [
-                            h('li.menu-item', a('.link', {attrs: {href: '/reglamento'}}, 'Reglamento')),
-                            h('li.menu-item', a('.link', {attrs: {href: '/terminos-y-condiciones'}}, 'Terminos y cond.')),
-                            h('li.menu-item', a('.link', {attrs: {href: '/about'}}, 'Acerca de'))
+                            h('li.menu-item', h('a.link.ng-link', {dataset: {href: '/reglamento'}}, 'Reglamento')),
+                            h('li.menu-item', h('a.link.ng-link', {dataset: {href: '/terminos-y-condiciones'}}, 'Terminos y cond.')),
+                            h('li.menu-item', h('a.link.ng-link', {dataset: {href: '/about'}}, 'Acerca de'))
                         ])
                     ]),
                     div('.dropdown', [
@@ -46,11 +46,11 @@ export function view(effects, account) {
                                 h('li.divider'),
                                 h('li.menu-item', [
                                     h('div.menu-badge', h('label.label.label-primary', user.gaming.swords)),
-                                    h('span', 'Reputación')
+                                    h('a', 'Reputación')
                                 ]),
                                 h('li.menu-item', [
                                     h('div.menu-badge', h('label.label.label-primary', user.gaming.tribute)),
-                                    h('span', 'Tributo')
+                                    h('a', 'Tributo')
                                 ]),
                                 h('li.divider'),
                                 h('li.menu-item', h('a.pointer', {attrs: {href: '/salir'}}, 'Salir de mi cuenta'))
@@ -68,17 +68,17 @@ export function view(effects, account) {
                                 h('span.white.ml1', [user.username, h('i.icon.icon-caret')])
                             ]),
                             h('ul.menu', [
-                                h('li.menu-item', h('a.link', {attrs: {href: '/'}}, 'Ver mi perfil')),
-                                h('li.menu-item', h('a.link', {attrs: {href: '/'}}, 'Medallas')),
-                                h('li.menu-item', h('a.link', {attrs: {href: '/'}}, 'Ranking de usuarios')),
+                                h('li.menu-item', h('a.link.ng-link', {attrs: {href: `/u/${user.username}/${user.id}`}}, 'Ver mi perfil')),
+                                h('li.menu-item', h('a.link.ng-link', {attrs: {href: '/medallas'}}, 'Medallas')),
+                                h('li.menu-item', h('a.link.ng-link', {attrs: {href: '/top-ranking'}}, 'Ranking de usuarios')),
                                 h('li.divider'),
-                                h('li.menu-item', [
+                                h('li.menu-item.cf', [
                                     h('div.menu-badge', h('label.label.label-primary', user.gaming.swords)),
-                                    h('span', 'Reputación')
+                                    h('a', 'Reputación')
                                 ]),
-                                h('li.menu-item', [
+                                h('li.menu-item.cf', [
                                     h('div.menu-badge', h('label.label.label-primary', user.gaming.tribute)),
-                                    h('span', 'Tributo')
+                                    h('a', 'Tributo')
                                 ]),
                                 h('li.divider'),
                                 h('li.menu-item', h('a.pointer', {attrs: {id: 'logout'}}, 'Salir de mi cuenta'))

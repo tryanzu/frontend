@@ -8,8 +8,9 @@ export function AccountModal({DOM, HTTP, props}) {
 	/**
 	 * Child components declarations.
 	 */
-	const loginModal = isolate(LoginModal);
-	const signupModal = isolate(SignupModal);
+	const loginModal = isolate(LoginModal, 'login');
+	const signupModal = isolate(SignupModal, 'signup');
+
 	const login = loginModal({DOM, HTTP});
 	const signup = signupModal({DOM, HTTP});
 
@@ -42,9 +43,9 @@ export function AccountModal({DOM, HTTP, props}) {
     	return h('div.modal.active', [
             h('div.modal-overlay.modal-link', {dataset: {modal: 'account'}}),
             h('div.modal-container', {style: {width: '360px'}}, [ 
-                h('div.modal-body', {style: {paddingTop: '0', maxHeight: '80vh'}}, [
+                h('div.modal-body', {style: {paddingTop: '0', maxHeight: '85vh'}}, [
                     h('div.bg-near-white.tc.pv3', {style: {margin: '0 -0.8rem'}}, [
-                        h('img.w2', {attrs: {src: '/images/seal.svg'}})
+                        h('img.w2', {attrs: {src: '/images/seal.svg', alt: 'Únete a la conversación'}}),
                     ]),
                     h('ul.tab.tab-block', {style: {margin: '0 -0.8rem 1.2rem'}}, [
                         h('li.tab-item.pointer', {class: {active: tab == 'login'}}, h('a', {dataset: {tab: 'login'}}, 'Iniciar sesión')),
