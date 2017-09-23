@@ -30,7 +30,7 @@ function socketIo() {
         params['query'] = 'token=' + token;
     }
 
-    return io('//localhost:3100', params);
+    return io('//spartangeek.com', params);
 }
 
 export function navbar(element, ngCallback) {
