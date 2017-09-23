@@ -47,13 +47,16 @@ export function view(effects, account) {
                             h('ul.menu.notifications.tl', [
                                 resolving.notifications ? 
                                     h('div.loading.mv2') : 
-                                    h('div.fade-in', state.notifications.map(n => {
-                                        return h('li.menu-item', h('a.pointer.ng-link', {dataset: {href: n.target}}, [
-                                            h('span.db.clean-styles', n.title),
-                                            h('span.db.gray', n.subtitle),
-                                            h('span.db.mid-gray.b', ago.format(n.createdAt)),
-                                        ]));
-                                    }))
+                                    h('div.fade-in', state.notifications.length === 0 ? 
+                                        h('p.tc.mv2', 'No tienes ningúna notificación aún.')
+                                        : state.notifications.map(n => {
+                                            return h('li.menu-item', h('a.pointer.ng-link', {dataset: {href: n.target}}, [
+                                                h('span.db.clean-styles', n.title),
+                                                h('span.db.gray', n.subtitle),
+                                                h('span.db.mid-gray.b', ago.format(n.createdAt)),
+                                            ]));
+                                        })
+                                    )
                             ])
                         ]) 
                     : div('.dn'),
