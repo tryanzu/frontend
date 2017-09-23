@@ -24,7 +24,9 @@
     "@cycle/storage": "^4.1.1",
     "babel-preset-stage-2": "^6.24.1",
     "bower": "^1.8.0",
+    "socket.io-client": "^2.0.3",
     "spectre.css": "^0.3.2",
+    "timeago.js": "^3.0.2",
     "xstream": "^10.9.0"
   },
   "devDependencies": {

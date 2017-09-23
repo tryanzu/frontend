@@ -1,6 +1,6 @@
 import xs from 'xstream';
 
-export function intent(dom, http, storage) {
+export function intent(dom, http, storage, socketIO) {
 
     /**
      * DOM intents including:
@@ -13,7 +13,10 @@ export function intent(dom, http, storage) {
     const logoutLink$ = dom.select('#logout').events('click').mapTo(true);
     
     const ngLink$ = dom.select('.ng-link').events('click')
-        .map(ev => ev.target.dataset.href);
+        .map(ev => ev.currentTarget.dataset.href)
+        .debug();
+
+    const openNotifications$ = dom.select('#notifications').events('click');
 
     /**
      * LocalStorage read effects including:
@@ -33,5 +36,24 @@ export function intent(dom, http, storage) {
         .filter(res => !(res instanceof Error))
         .map(res => res.body);
 
-    return {modalLink$, logoutLink$, token$, user$, ngLink$};
+    const notifications$ = http.select('notifications')
+        .map(response$ => response$.replaceError(err => xs.of(err)))
+        .flatten()
+        .filter(res => !(res instanceof Error))
+        .map(res => res.body);
+
+    const userChan$ = user$.map(user => socketIO.get(`user ${user.id} notification`))
+        .flatten()
+        .debug();
+
+    return {
+        modalLink$, 
+        logoutLink$, 
+        token$, 
+        user$, 
+        notifications$, 
+        userChan$, 
+        ngLink$, 
+        openNotifications$
+    };
 };

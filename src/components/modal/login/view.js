@@ -3,7 +3,7 @@ import {h} from '@cycle/dom';
 export function view(state$) {
     return state$.map(({email, password, resolving, error}) => {
         return h('div.content.fade-in', {key: 'login', style: {padding: '0 0.4rem'}}, [
-            h('div.form-group', h('a.btn.btn-primary.btn-block', {attrs: {href: Anzu.layer + 'oauth/facebook'}, style: {background: '#4267b2', borderColor: '#4267b2'}}, [
+            h('div.form-group', h('a.btn.btn-primary.btn-block', {attrs: {href: Anzu.layer + 'oauth/facebook?redir=' + window.location.href}, style: {background: '#4267b2', borderColor: '#4267b2'}}, [
                 h('i.fa.fa-facebook-official.mr1'),
                 'Iniciar sesión con Facebook'
             ])),

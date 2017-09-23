@@ -1,10 +1,13 @@
 import xs from 'xstream';
+import sampleCombine from 'xstream/extra/sampleCombine';
 
 const DEFAULT_STATE = {
     user: false,
     token: false,
+    notifications: [],
     resolving: {
-        user: false
+        user: false,
+        notifications: false
     },
     modal: {
         signin: false
@@ -27,7 +30,17 @@ export function model(actions, accountModal) {
             })
         );
 
-    const http$ = xs.merge(requestUser$, accountModal.HTTP);
+    const requestNotifications$ = actions.openNotifications$
+        .compose(sampleCombine(actions.token$))
+        .map(([event, token]) => ({
+            url: Anzu.layer + 'notifications',
+            category: 'notifications',
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }));
+
+    const http$ = xs.merge(requestUser$, requestNotifications$, accountModal.HTTP);
 
     /**
      * LocalStorage write effects including:
@@ -74,13 +87,49 @@ export function model(actions, accountModal) {
         user: data
     }));
 
+    const openNotificationsR$ = requestNotifications$
+        .map(r => state => ({
+            ...state, 
+            resolving: {
+                ...state.resolving,
+                notifications: true
+            },
+        }));
+
+    const notificationsR$ = actions.notifications$
+        .map(notifications => state => ({
+            ...state, 
+            resolving: {
+                ...state.resolving,
+                notifications: false
+            },
+            user: {
+                ...state.user,
+                notifications: 0,
+            },
+            notifications
+        }));
+
+    const incomingNotificationR$ = actions.userChan$.filter(ev => ev.fire == 'notification')
+        .map(ev => state => ({
+            ...state, 
+            resolving: {
+                ...state.resolving,
+                user: false
+            },
+            user: {
+                ...state.user,
+                notifications: ev.count
+            }
+        }));
+
     const logoutR$ = actions.logoutLink$.map(() => state => ({
         ...state,
         user: false,
         token: false
     }));
 
-    const state$ = xs.merge(tokenR$, userR$, logoutR$, modalR$)
+    const state$ = xs.merge(tokenR$, userR$, logoutR$, modalR$, notificationsR$, openNotificationsR$, incomingNotificationR$)
         .fold((state, action) => action(state), DEFAULT_STATE);
 
     const ng$ = xs.merge(

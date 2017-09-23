@@ -14,7 +14,7 @@ export function view(state$) {
         }
 
         return h('div.content.fade-in', {key: 'signup', style: {padding: '0 0.4rem'}}, [
-            h('div.form-group', h('a.btn.btn-primary.btn-block', {style: {background: '#4267b2', borderColor: '#4267b2'}}, [
+            h('div.form-group', h('a.btn.btn-primary.btn-block', {attrs: {href: Anzu.layer + 'oauth/facebook?redir=' + window.location.href}, style: {background: '#4267b2', borderColor: '#4267b2'}}, [
                 h('i.fa.fa-facebook-official.mr1'),
                 'Únete con Facebook'
             ])),
