@@ -703,11 +703,11 @@ boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', '$loca
     $rootScope.can = AclService.can;
     $rootScope.aacl = AdvancedAcl;
 
-    $rootScope.$on('$locationChangeStart', function (event, next, current) {
+    /*$rootScope.$on('$locationChangeStart', function (event, next, current) {
         var signedIn = localStorage.getItem('id_token') || false;
 
         if ($location.path() == '/' && signedIn == false) {
             $location.path('/unete');
         }
-    });
+    });*/
 }]);
