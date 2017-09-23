@@ -191,19 +191,16 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
             return null;
         }
 
-        if (localStorage.signed_in == 'false')
-            return null;
-
         var idToken = localStorage.getItem('id_token');
-        if (idToken === null) {
+        if (idToken === null || String(idToken).length == 0) {
             return null;
-        }
+        }   
 
         if (jwtHelper.isTokenExpired(idToken)) {
-            localStorage.signed_in = false
-        } else {
-            return idToken;
+            return null;
         }
+
+        return idToken;
     }];
 
     $httpProvider.interceptors.push('jwtInterceptor');
@@ -212,6 +209,32 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
     AclServiceProvider.config({
         storage: false
     });
+}]);
+
+boardApplication.directive('navbarHeader', ['$location', function($location) {
+    return {
+        restrict: 'E',
+        template: '<div></div>',
+        replace: true,
+        link: function(scope, element, attrs) {
+            var mount = require('src/mount.js');
+            mount.navbar(element[0], ngCallback);
+
+            function ngCallback(event) {
+                if (event.type == 'location') {
+                    scope.$apply(function() {
+                        $location.path(event.path);
+                    });
+                } 
+
+                if (event.type == 'token') {
+                    scope.$apply(function() {
+                        scope.$emit(event.token.length > 0 ? 'login' : 'logout');
+                    });
+                }
+            }
+        }
+    };
 }]);
 
 boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http', '$uibModalInstance', '$location',
@@ -273,72 +296,6 @@ boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http'
                         message: 'Usuario o contraseña incorrecta.'
                     };
                 });
-        };
-
-        $scope.cancel = function() {
-            $uibModalInstance.dismiss('cancel');
-        };
-    }
-]);
-
-boardApplication.controller('SignUpController', ['$scope', '$rootScope', '$http', '$uibModalInstance', '$location',
-    function($scope, $rootScope, $http, $uibModalInstance, $location) {
-        $scope.form = {
-            email: '',
-            password: '',
-            username: '',
-            username_error: false,
-            error: false
-        };
-        $scope.fb_loading = false;
-        $scope.current_url = $location.absUrl();
-
-        $scope.check_username = function() {
-            if (/^[a-zA-Z][a-zA-Z0-9\-]{1,30}[a-zA-Z0-9]$/.test($scope.form.username)) {
-                $scope.form.username_error = false;
-            } else {
-                $scope.form.username_error = true;
-            }
-        };
-
-        $scope.signUp = function() {
-            if ($scope.form.email === '' || $scope.form.password === '' || $scope.form.username === '') {
-                $scope.form.error = {
-                    message: 'Todos los campos son necesarios.'
-                };
-                return;
-            }
-
-            // Post credentials to the UserRegisterAction endpoint
-            var payload = {
-                email: $scope.form.email,
-                password: $scope.form.password,
-                username: $scope.form.username
-            };
-            var ref = localStorage.getItem('ref');
-            if (ref) {
-                payload.ref = ref;
-            }
-
-            $http.post(layer_path + 'user', payload, {
-                skipAuthorization: true
-            })
-            .then(function success(response) {
-                var data = response.data;
-                localStorage.setItem('id_token', data.token);
-                localStorage.setItem('firebase_token', data.firebase);
-                localStorage.setItem('signed_in', true);
-                $uibModalInstance.dismiss('signed');
-                $rootScope.$broadcast('login');
-            }, function(error) {
-                $scope.form.error = {
-                    message: 'El usuario o correo elegido ya existe.'
-                };
-            });
-        };
-
-        $scope.ok = function() {
-            $uibModalInstance.close($scope.selected.item);
         };
 
         $scope.cancel = function() {
@@ -487,7 +444,8 @@ boardApplication.controller('MainController', [
             show_categories: false,
             menuCollapsed: true
         }
-        $scope.user.isLogged = localStorage.getItem('signed_in') === 'true' ? true : false;
+        var isLogged = localStorage.getItem('id_token') || false;
+        $scope.user.isLogged = isLogged !== false && String(isLogged).length > 0;
         $scope.misc = {
             gaming: null,
             badges: null,
@@ -557,77 +515,6 @@ boardApplication.controller('MainController', [
                         }, 0);
                     });
 
-                    // FIREBASE PREPARATION
-                    var fbRef = new Firebase(firebase_url);
-                    fbRef.onAuth(function onComplete(authData) {
-                        if (authData) {
-                            //if($scope.can('debug')) console.log("Authenticated to Firebase", authData);
-                        } else {
-                            console.log("Client unauthenticated.");
-                            //$scope.signOut();
-                        }
-                    });
-                    fbRef.authWithCustomToken(/*localStorage.firebase_token*/"W6Y5Yp1xarJgugsmkQYiSFwdICb7f08haTzgqi5Y", function(error, authData)  {
-                        if (error) {
-                            console.log("Login to Firebase failed!", error);
-                        } else {
-                            var amOnline = fbRef.child(".info/connected");
-                            var userRef = fbRef.child("users").child(data.id);
-                            var presenceRef = userRef.child("presence");
-
-                            // We generate a random string to use as a client id
-                            var client_id = (0 | Math.random() * 9e6).toString(36);
-                            amOnline.on('value', function(snapshot) {
-                                if (snapshot.val()) {
-                                    presenceRef.child(client_id).onDisconnect().remove();
-                                    presenceRef.child(client_id).set(true);
-                                }
-                            });
-
-                            // Personal info
-                            var image = $scope.user.info.image || "";
-                            userRef.child("info").set({
-                                username: $scope.user.info.username,
-                                image: image
-                            });
-
-                            // Gamification attributes
-                            var gamingRef = userRef.child("gaming");
-                            $scope.user.gaming = $firebaseObject(gamingRef);
-                            //$scope.user.gaming.$loaded(function() {});
-
-                            // download the data into a local object
-                            var notificationsCountRef = userRef.child("notifications/count");
-                            var count = $firebaseObject(notificationsCountRef)
-                                // synchronize the object with a three-way data binding
-                            count.$bindTo($scope, "user.notifications.count");
-                            count.$loaded(function() {
-                                var to_show = 15;
-                                if (count.$value > 15) {
-                                    to_show = count.$value;
-                                }
-                                var list_ref = userRef.child("notifications/list");
-                                $scope.user.notifications.list = $firebaseArray(list_ref.limitToLast(to_show));
-
-                                // We wait till notifications list is loaded
-                                $scope.user.notifications.list.$loaded()
-                                    .then(function(x) {
-                                        x.$watch(function(event) {
-                                            // Notification sound
-                                            if (event.event === "child_added") {
-                                                var audio = new Audio('/sounds/notification.mp3');
-                                                audio.play();
-                                            }
-                                        });
-                                    });
-                            });
-                        }
-                    });
-
-                    if ($location.path() == '/home') {
-                        window.location.href = "/";
-                    }
-
                     // Warn everyone
                     $timeout(function() {
                         $scope.$broadcast('userLogged');
@@ -642,26 +529,12 @@ boardApplication.controller('MainController', [
             });
         }
 
-        $scope.signUp = function() {
-            var modalInstance = $uibModal.open({
-                templateUrl: '/app/partials/sign-up.html',
-                controller: 'SignUpController',
-                size: 'sm'
-            });
-
-            modalInstance.result.then(function() {}, function() {
-                //$log.info('Modal dismissed at: ' + new Date());
-            });
-        };
-
         $scope.signOut = function() {
-            //$http.get(layer_path + 'auth/logout').then(function success(response) {
-            localStorage.signed_in = false;
-            $scope.user.isLogged = false;
+            localStorage.removeItem('signed_in');
             localStorage.removeItem('id_token');
             localStorage.removeItem('firebase_token');
-            window.location = $location.absUrl();;
-            //});
+            
+            $scope.user.isLogged = false;
         };
 
         $scope.toggle_notifications = function() {
@@ -709,6 +582,10 @@ boardApplication.controller('MainController', [
             $scope.logUser();
         });
 
+        $scope.$on('logout', function(e) {
+            $scope.signOut();
+        });
+
         // Board updates notification
         var fbRef = new Firebase(firebase_url);
         var updatesRef = fbRef.child('version');
@@ -730,7 +607,7 @@ boardApplication.controller('MainController', [
         });
 
         // If already signed in, sign in the user
-        if (localStorage.signed_in === 'true') {
+        if ($scope.user.isLogged) {
             $scope.logUser();
         }
 
@@ -788,11 +665,6 @@ boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', '$loca
         videocard: 'Tarjeta de video'
     };
 
-    // Initialize the local storage
-    if (!localStorage.signed_in) {
-        localStorage.signed_in = false;
-    }
-
     var location = $location.path();
 
     if ($location.search().fbToken && $location.search().token) {
@@ -831,11 +703,11 @@ boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', '$loca
     $rootScope.can = AclService.can;
     $rootScope.aacl = AdvancedAcl;
 
-    $rootScope.$on('$locationChangeStart', function (event, next, current) {
-        var signedIn = localStorage.getItem('signed_in') === 'true';
+    /*$rootScope.$on('$locationChangeStart', function (event, next, current) {
+        var signedIn = localStorage.getItem('id_token') || false;
 
         if ($location.path() == '/' && signedIn == false) {
             $location.path('/unete');
         }
-    });
+    });*/
 }]);

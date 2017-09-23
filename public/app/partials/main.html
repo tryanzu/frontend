@@ -37,6 +37,9 @@
                     <a href="/post/create/{{ category.slug || '' }}" class="btn btn-sm btn-primary" ng-if="user.isLogged && user.info.validated">
                       Crear publicación
                     </a>
+                    <a href="/u/{{user.info.username}}/{{user.info.id}}/?section=config" class="btn btn-sm" ng-if="user.isLogged && !user.info.validated">
+                      Validar cuenta
+                    </a>
                   </div>
                 </div>
               </div>
@@ -476,7 +479,7 @@
                   <figure class="avatar" ng-if="!comment.author.image" data-initial="{{ comment.author.username[0] }}"></figure>
                 </a>
               </div>
-              <div class="column col-5">
+              <div class="column col-6">
                 <div class="mb1">
                   <a href="/u/{{ comment.author.username }}/{{ comment.author.id }}" title="Perfil de {{ comment.author.username }}" class="b near-black">{{ comment.author.username }}</a>
                   <time>{{ comment.created_at | timeAgo }}:</time>
