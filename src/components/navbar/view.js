@@ -48,7 +48,7 @@ export function view(effects, account) {
                     user !== false ? 
                         div('.dropdown.dropdown-right', [
                             a('.dropdown-toggle.pointer.link', {attrs: {tabindex: 0, id: 'notifications'}}, [
-                                h('span.badge', {class: {none: user.notifications === 0}, dataset: {badge: user.notifications}}, h('i.icon.icon-message'))
+                                h('span.badge', {attrs: {id: 'notifications'}, class: {none: user.notifications === 0}, dataset: {badge: user.notifications}}, h('i.icon.icon-message'))
                             ]),
                             h('ul.menu.notifications.tl', [
                                 resolving.notifications ? 

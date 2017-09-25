@@ -9,10 +9,7 @@ import storageDriver from '@cycle/storage';
 function ngDriver(ngCallback) {
 	return function(ng$) {
 		ng$.addListener({
-            next: event => {
-                console.log('ng$: ', event);
-                ngCallback(event);
-            },
+            next: event => ngCallback(event),
             error: err => console.error(err),
             complete: () => console.log('location completed'),
         });
@@ -21,7 +18,6 @@ function ngDriver(ngCallback) {
 
 function socketIo() {
 	const token = localStorage.getItem('id_token');
-    //const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNTY4YjA5ZjY3YTQ3ODAyY2EzNmNhMTE0Iiwic2NvcGUiOlsidXNlciIsImRldmVsb3BlciJdLCJleHAiOjE1MDcxOTIyNjYsImlzcyI6InNwYXJ0YW5nZWVrIn0.fjcFKYqFSey0-OPtosvmGI51UNcEnKO39Sd89pw3cus";
     let params = {
         forceNew: true,
     };
