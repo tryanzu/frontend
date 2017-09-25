@@ -76,7 +76,6 @@ export function intent(dom, socket, history$) {
         channel$, 
         idActions$, 
         online$, 
-        fullReload$, 
         videoConfig$, 
         videoLive$
     };

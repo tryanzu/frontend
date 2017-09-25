@@ -20,11 +20,13 @@
     <script type="text/javascript">
       window.dataLayer = [];
       window.Anzu = {
-        layer: 'https://api.buldar.com/v1/'
+        layer: 'https://api.buldar.com/v1/',
+        globalIO: '//localhost:3100',
+        chatIO: '//localhost:3100/chat'
       };
     </script>
 
-    <link type="text/css" rel="stylesheet" href="/css/app.css?v=105">
+    <link type="text/css" rel="stylesheet" href="/css/app.css">
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyARHDveGvdCsoE981eULSFkBtKU-ua4XoQ" async defer></script>
     <script type="text/javascript" src="js/offline.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
@@ -32,12 +34,12 @@
     <script src="https://cdn.firebase.com/libs/angularfire/1.1.1/angularfire.min.js"></script>
     <script type="text/javascript" src="js/config.js"></script>
     <script type="text/javascript" src="dist/core.js"></script>
-    <script type="text/javascript" src="js/main.js?v=105"></script>
+    <script type="text/javascript" src="js/main.js"></script>
 
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"/>
     <link rel="stylesheet" href="https://unpkg.com/tachyons@4.8.0/css/tachyons.min.css"/>
 </head>
-<body ng-controller="MainController">
+<body ng-controller="MainController" class="flex flex-column">
   <!-- Google Tag Manager -->
   <noscript><iframe src="//www.googletagmanager.com/ns.html?id=GTM-MQWXX7"
   height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -57,6 +59,6 @@
   <navbar-header ng-hide="location.path() == '/entrar' || location.path() == '/unete'"></navbar-header>
 
   <!-- this is where content will be injected -->
-  <div ng-view autoscroll="true"></div>
+  <div class="flex flex-column flex-auto" ng-view autoscroll="true"></div>
 </body>
 </html>

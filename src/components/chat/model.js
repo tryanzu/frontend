@@ -1,4 +1,5 @@
 import xs from 'xstream';
+import sampleCombine from 'xstream/extra/sampleCombine';
 
 const CONFIG = {
     serverVersion: '0.1.5',
@@ -45,64 +46,51 @@ const DEFAULT_STATE = {
  * @returns {{state$: *, socket$: (*), history$: Function}}
  */
 export function model(actions) {
-    const currentUser$ = actions.signature$.startWith(GUEST_USER);
-    const remoteConfig$ = actions.config$
-        .map(config => {
-            return state => ({
-                ...state,
-                config: {...state.config, ...config, newVersion: state.config.serverVersion != config.serverVersion}
-            });
-        });
+    const user$ = actions.signature$.startWith(GUEST_USER);
+    const channel$ = actions.channel$.startWith(DEFAULT_STATE.channel);
 
-    const scroll$ = actions.scroll$
+    const configR$ = actions.config$
+        .map(config => state => ({
+            ...state,
+            config: {
+                ...state.config, 
+                ...config, 
+                newVersion: state.config.serverVersion != config.serverVersion
+            }
+        }));
+
+    const scrollR$ = actions.scroll$
         .startWith({lock: true})
-        .map(status => {
-            return state => Object.assign({}, state, {
-                lock: status.lock,
-                missing: status.lock === true ? 0 : state.missing
-            });
-        });
+        .map(status => state => ({
+            ...state,
+            lock: status.lock,
+            missing: status.lock === true ? 0 : state.missing
+        }));
 
-    const channel$ = actions.pathname$
-        .map(path => path == '' ? CONFIG.defaultChannel : path);
+    const channelR$ = channel$
+        .map(channel => state => ({
+            ...state, 
+            channel, 
+            list: [], 
+            lock: true
+        }));
 
-    const channelReducer$ = channel$
-        .map(channel => {
-            return state => ({...state, channel, list: [], lock: true});
-        });
-
-    const userReducer$ = currentUser$.map(user => {
-        return state => ({...state, user});
-    });
-
-    const highlightReducer$ = actions.rhighlighted$.map(item => {
-        return state => ({...state, highlighted: item});
-    })
-
-    const message$ = actions.msg$
-        .map(message => {
-            return state => Object.assign({}, state, {message: message.sent ? '' : message.payload})
-        });
-
-    const onlineUsers$ = actions.online$
-        .map(list => {
-            return state => ({...state, online: list});
-        });
+    const userR$ = user$.map(user => state => ({...state, user}));
+    const highlightR$ = actions.rhighlighted$.map(item => state => ({...state, highlighted: item}));
+    const messageR$ = actions.msg$.map(message => state => ({...state, message: message.sent ? '' : message.payload}));
+    const onlineR$ = actions.online$.map(list => state => ({...state, online: list}));
 
     /**
      * Transform sent messages to packed list of actual commands.
      *
      * @type {Stream<U>|Stream}
      */
-    const sent$ = xs.combine(currentUser$, actions.msg$.filter(m => m.sent))
-        .map(data => {
-            const [user, msg] = data;
+    const sent$ = actions.msg$.filter(message => message.sent)
+        .compose(sampleCombine(user$))
+        .map(([msg, user]) => message(cmessage(user, msg, new Date())));
 
-            return message(cmessage(user, msg, new Date()));
-        });
-
-    const packedSent$ = sent$.map(message => list(message));
-    const messages$ = xs.merge(actions.messages$, packedSent$)
+    const sentLists$ = sent$.map(message => list(message));
+    const messagesR$ = xs.merge(actions.messages$, sentLists$)
         .map(packed => state => {
             const channel = packed.channel || false;
             let list = channel == false || state.channel == channel || channel === 'log' ? state.list.concat(packed.list) : state.list;
@@ -119,21 +107,41 @@ export function model(actions) {
      *
      * @type {*}
      */
-    const state$ = xs.merge(remoteConfig$, userReducer$, channelReducer$, highlightReducer$, messages$, message$, scroll$, onlineUsers$)
-        .fold((state, action) => action(state), DEFAULT_STATE)
-        .startWith(DEFAULT_STATE);
+    const state$ = xs.merge(
+        configR$, 
+        userR$, 
+        channelR$, 
+        highlightR$, 
+        messagesR$, 
+        messageR$, 
+        scrollR$, 
+        onlineR$
+    ).fold((state, action) => action(state), DEFAULT_STATE);
 
-    const socketSend$ = sent$.map(sent => (['send', sent.data.content]));
-    const socketChannel$ = channel$.map(channel => (['chat update-me', channel]));
-    const adminActions$ = actions.idActions$.map(action => ([action.type, action.id]));
-    const videoConfig$ = actions.videoConfig$.map(video => (['chat update-video', video]));
-    const videoLive$ = actions.videoLive$.map(live => (['chat update-live', live]));
-    const socket$ = xs.merge(socketChannel$, socketSend$, adminActions$, videoConfig$, videoLive$);
+    const socket$ = xs.merge(
+
+        // Get user data....
+        xs.of(['user me']),
+
+        // Whenever channel changes we need to write out a socket command to update the list of messages.
+        channel$.map(channel => (['chat update-me', channel])), 
+
+        // User messages that got sent.
+        sent$.map(sent => (['send', sent.data.content])),
+
+        // Direct actions to be written.
+        actions.idActions$.map(action => ([action.type, action.id])),
+        
+        // Live streaming config.
+        actions.videoConfig$.map(video => (['chat update-video', video])), 
+
+        // Live streaming toggle...
+        actions.videoLive$.map(live => (['chat update-live', live]))
+    );
 
     return {
         state$,
-        socket$,
-        history$: actions.channel$
+        socket$
     };
 }
 

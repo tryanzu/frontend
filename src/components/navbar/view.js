@@ -87,7 +87,7 @@ export function view(effects, account) {
                     ]),
                 ]),
                 h('section.navbar-section.hide-sm', {style: {flex: '1 1 auto'}}, [
-                    a('.btn.btn-link', {attrs: {href: '/chat', target: '_blank'}}, 'Chat'),
+                    a('.btn.btn-link.ng-link', {dataset: {href: '/chat'}}, 'Chat'),
                     div('.dropdown', [
                         a('.btn.btn-link.dropdown-toggle', {attrs: {tabindex: 0}}, 'Conoce Buldar'),
                         h('ul.menu', [

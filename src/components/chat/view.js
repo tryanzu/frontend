@@ -1,4 +1,4 @@
-import {main, header, div, h1, h4, input, ul, li, img, span, p, a, b, iframe, nav} from '@cycle/dom';
+import {h, main, header, div, h1, h4, input, ul, li, img, span, p, a, b, iframe, nav} from '@cycle/dom';
 import tippy from 'tippy.js';
 import markdown from 'markdown-it';
 import emoji from 'markdown-it-emoji';
@@ -78,31 +78,8 @@ export function view(state$) {
             }
         }
 
-        return main({style: {height: '100%', paddingTop: '62px'}}, [
-            header('.bg-blue.pv2.ph4.absolute.top-0.left-0.w-100', nav('.mw9.center', [
-                div('.dib.v-mid.w-70', [
-                    a('.dib.v-mid', {attrs: {href: 'https://spartangeek.com/'}}, img('.w4', {
-                        attrs: {
-                            src: 'images/logo.svg',
-                            alt: 'SpartanGeek.com'
-                        }
-                    })),
-                    a('.dib.v-mid.white-80.hover-white.pointer.pl4.link', {attrs: {href: 'https://spartangeek.com/'}}, 'Comunidad'),
-                    a('.dib.v-mid.white-80.hover-white.pointer.pl4.link', {attrs: {href: 'https://www.youtube.com/user/SpartanGeekTV'}}, 'Canal de Youtube'),
-                    a('.dib.v-mid.white-80.hover-white.pointer.pl4.link', {attrs: {href: 'https://spartangeek.com/asistente/'}}, 'Pedir PC Spartana'),
-                ]),
-                div('.dib.v-mid.w-30.tr', state.user._id == false ? [
-                    a('.dib.pa2.white-80.ph3.link', {attrs: {href: 'https://spartangeek.com/'}}, 'Iniciar sesión'),
-                    a('.dib.pa2.white-80.bg-black-80.ph3.br2.ba.b--black-30.ml2.link', {attrs: {href: 'https://spartangeek.com/'}}, 'Unirme')
-                ] : [
-                    a('.dib.v-mid.white-80.pointer.ph3', state.user.username),
-                    img('.dib.v-mid.br-100', {
-                        attrs: {src: state.user.image || 'images/avatar.svg'},
-                        style: {width: '40px', height: '40px'}
-                    })
-                ])
-            ])),
-            div('.mw9.center.sans-serif.cf.flex.flex-column.flex-row-ns', {style: {height: '100%'}}, [
+        return main('.flex.flex-column.flex-auto.bg-near-white', [
+            div('.mw9.w-100.center.sans-serif.flex.flex-auto.flex-column.flex-row-ns', [
                 div('.fade-in.w-100.pl4-ns.pt4-ns.pb4', {class: {dn: channel.youtubePlayer === false, flex: channel.youtubePlayer !== false, 'flex-column': channel.youtubePlayer !== false}}, [
                     channel.youtubePlayer === false ? div() : iframe('.bn.br2.flex-auto', {
                         style: {
@@ -155,20 +132,21 @@ export function view(state$) {
                                 input('.ml2.b--light-gray', {props: {type: 'checkbox', id: 'live', checked: channel.live}}),
                                 span('.ml2', 'Live')
                             ]) : div('.dib'),
-                            a('.dib.v-mid.link.black-60.dark.pointer.ba.b--light-gray.br2.ph2.pv1.ml2', onlineTippy, [
-                                span('.bg-green.br-100.dib.mr2', {style: {width: '10px', height: '10px'}}),
-                                span('.b', state.channel != 'dia-de-hueva' ? String(state.online.length) + ' ' : ''),
-                                span('.dn.dib-m.dib-l', `${state.online.length > 1 ? 'conectados' : 'conectado'}`),
-                                div('#online-users.dn', ul('.list.pa0.ma0.tc.overflow-auto', {style: {maxHeight: '300px'}}, state.online.map(u => {
-                                    return li('.ph2.pv1', [
+                            h('div.dropdown.dib.dropdown-right', [
+                                a('.dropdown-toggle.dib.v-mid.link.black-60.dark.hover-near-black.pointer.ba.b--light-gray.br2.ph2.pv1.ml2', {attrs: {tabindex: 0}}, [
+                                    span('.bg-green.br-100.dib.mr2', {style: {width: '10px', height: '10px'}}),
+                                    span('.dn.dib-m.dib-l', `${String(state.online.length)} ${state.online.length > 1 ? 'conectados' : 'conectado'}`),
+                                ]),
+                                h('ul.menu', state.online.map(u => {
+                                    return li('.menu-item.tl', [
                                         img('.dib.v-mid.br-100', {
-                                            attrs: {src: u.image == null || u.image == '' ? 'images/avatar.svg' : u.image},
+                                            attrs: {src: u.image == null || u.image == '' ? '/images/seal.svg' : u.image},
                                             style: {width: '20px', height: '20px'}
                                         }),
-                                        span('.ml2', u.username)
+                                        span('.dib.v-mid.ml2', u.username)
                                     ])
-                                })))
-                            ]),
+                                }))
+                            ])
                         ]),
                         div('.pv3.h6.overflow-auto.list-container.relative', {style: {flex: '1 1 auto'}}, [
                             ul('.list.pa0.ma0', state.list.map((command, index, list) => {
@@ -233,15 +211,15 @@ function commandView(type, data, list, index, scrollHook, rolePower) {
             const nrole = ROLES[data.role];
             const role = new Array(nrole).fill();
 
-            return li('.dt.hover-bg-near-white.w-100.ph3.pv2', scrollHook, [
-                div('.dtc.v-top.tc', {style: {width: '3rem'}}, simple == false ? img('.br-100.w2', {attrs: {src: data.image ? data.image : 'images/avatar.svg'}}) : span('.f7.light-silver', hour(data.timestamp))),
+            return li('.dt.hover-bg-near-white.w-100.ph3.pv1', scrollHook, [
+                div('.dtc.v-mid.tc', {style: {width: '3rem'}}, simple == false ? img('.br-100.w2', {attrs: {src: data.image ? data.image : 'images/avatar.svg'}}) : h('small.light-silver', hour(data.timestamp))),
                 div('.dtc.v-top.pl3', [
-                    simple == false ? span('.f6.f5-ns.fw6.lh-title.black.db.mb1', [
+                    simple == false ? span('.fw6.lh-title.black.db.mb1', [
                         data.username,
-                        role.length > 0 ? span('.f6.blue.ml1', role.map(i => span('.icon-star-filled'))) : span(),
-                        span('.ml1.f6.fw5.silver', hour(data.timestamp))
+                        role.length > 0 ? span('.blue.ml1', role.map(i => span('.icon-star-filled'))) : span(),
+                        span('.ml1.fw5.silver', hour(data.timestamp))
                     ]) : span(),
-                    p('.f6.fw4.mt0.mb0.mid-gray', virtualize(`<span>${md.renderInline(data.content)}</span>`))
+                    p('.fw4.mt0.mb0.mid-gray', virtualize(`<span>${md.renderInline(data.content)}</span>`))
                 ]),
                 div('.dtc.v-mid.actions', [
                     rolePower > 0 && simple == false ? span('.f6.silver.fr.icon-lock.hover-red.pointer.id-action', {
