@@ -3938,10 +3938,6 @@ pinkie@^2.0.0:
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/pinkie/-/pinkie-2.0.4.tgz#72556b80cfa0d48a974e80e77248e80ed4f7f870"
 
-popper.js@^1.12.4:
-  version "1.12.5"
-  resolved "https://registry.yarnpkg.com/popper.js/-/popper.js-1.12.5.tgz#229e4dea01629e1f1a1e26991ffade5024220fa6"
-
 portscanner@2.1.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/portscanner/-/portscanner-2.1.1.tgz#eabb409e4de24950f5a2a516d35ae769343fbb96"
@@ -4877,12 +4873,6 @@ timers-browserify@~1.4.2:
   resolved "https://registry.yarnpkg.com/timers-browserify/-/timers-browserify-1.4.2.tgz#c9c58b575be8407375cb5e2462dacee74359f41d"
   dependencies:
     process "~0.11.0"
-
-tippy.js@^1.2.1:
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/tippy.js/-/tippy.js-1.2.1.tgz#82bf8594219ef5e786aff045a90ff6943aaacee5"
-  dependencies:
-    popper.js "^1.12.4"
 
 to-array@0.1.4:
   version "0.1.4"

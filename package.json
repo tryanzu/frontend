@@ -31,7 +31,6 @@
     "socket.io-client": "^2.0.3",
     "spectre.css": "^0.3.2",
     "timeago.js": "^3.0.2",
-    "tippy.js": "^1.2.1",
     "xstream": "^10.9.0"
   },
   "devDependencies": {

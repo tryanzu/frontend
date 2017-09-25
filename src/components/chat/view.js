@@ -1,5 +1,4 @@
 import {h, main, header, div, h1, h4, input, ul, li, img, span, p, a, b, iframe, nav} from '@cycle/dom';
-import tippy from 'tippy.js';
 import markdown from 'markdown-it';
 import emoji from 'markdown-it-emoji';
 import mila from 'markdown-it-link-attributes';
@@ -49,34 +48,6 @@ export function view(state$) {
     return state$.map(state => {
         const channel = state.config.channels[state.channel];
         const nrole = ROLES[state.user.role];
-        const onlineTippy = {
-            hook: {
-                insert(vnode) {
-                    const tip = tippy(vnode.elm, {
-                        position: 'bottom-end',
-                        arrow: true,
-                        performance: true,
-                        html: '#online-users',
-                        interactive: true,
-                        popperOptions: {
-                            placement: 'bottom',
-                            modifiers: {
-                                preventOverflow: {
-                                    boundariesElement: 'viewport'
-                                }
-                            }
-                        },
-                        wait(show, event) {
-                            setTimeout(() => {
-                                tip.update(popper);
-                                show();
-                            }, 30);
-                        }
-                    });
-                    const popper = tip.getPopperElement(vnode.elm);
-                }
-            }
-        }
 
         return main('.flex.flex-column.flex-auto.bg-near-white', [
             div('.mw9.w-100.center.sans-serif.flex.flex-auto.flex-column.flex-row-ns', [
