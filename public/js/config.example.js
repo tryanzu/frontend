@@ -1,3 +1,10 @@
+window.dataLayer = [];
+window.Anzu = {
+	layer: 'https://api.buldar.com/v1/',
+	globalIO: '//localhost:3100',
+	chatIO: '//localhost:3100/chat'
+};
+      
 var layer_path = "http://localhost:3000/v1/";
 var firebase_url = 'https://sgeektest.firebaseio.com/'
 var stripe_public_key = 'pk_test_PZL5bopNQEQ1DQ2ybU0AqTPL'

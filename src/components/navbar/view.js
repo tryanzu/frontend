@@ -69,7 +69,7 @@ export function view(effects, account) {
                     h('div.dropdown.dropdown-right', [
                         h('a.dropdown-toggle.btn.btn-link', {attrs: {tabindex: 0}}, h('i.icon.icon-menu')),
                         h('ul.menu.tl', [
-                            h('li.menu-item', a('.link', {attrs: {href: '/chat', target: '_blank'}}, 'Chat')),
+                            h('li.menu-item', h('a.link.ng-link', {dataset: {href: '/chat'}}, 'Chat')),
                             h('li.menu-item', h('a.link.ng-link', {dataset: {href: '/reglamento'}}, 'Reglamento')),
                             h('li.menu-item', h('a.link.ng-link', {dataset: {href: '/terminos-y-condiciones'}}, 'Terminos y cond.')),
                             h('li.menu-item', h('a.link.ng-link', {dataset: {href: '/about'}}, 'Acerca de')),
