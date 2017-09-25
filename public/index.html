@@ -16,7 +16,7 @@
     <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico"/>
     <meta name="msapplication-TileColor" content="#ffffff">
     <meta name="theme-color" content="#ffffff">
-    
+
     <link type="text/css" rel="stylesheet" href="/css/app.css">
     <script type="text/javascript" src="js/offline.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
@@ -49,6 +49,6 @@
   <navbar-header ng-hide="location.path() == '/entrar' || location.path() == '/unete'"></navbar-header>
 
   <!-- this is where content will be injected -->
-  <div class="flex flex-column flex-auto" ng-view autoscroll="true"></div>
+  <div style="max-height: calc(100vh - 60px)" class="flex flex-column flex-auto" ng-view autoscroll="true"></div>
 </body>
 </html>
