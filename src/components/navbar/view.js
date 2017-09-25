@@ -48,7 +48,7 @@ export function view(effects, account) {
                     user !== false ? 
                         div('.dropdown.dropdown-right', [
                             a('.dropdown-toggle.pointer.link', {attrs: {tabindex: 0, id: 'notifications'}}, [
-                                h('span.badge', {class: {none: user.notifications === 0}, dataset: {badge: user.notifications}}, h('i.icon.icon-message'))
+                                h('span.badge', {attrs: {id: 'notifications'}, class: {none: user.notifications === 0}, dataset: {badge: user.notifications}}, h('i.icon.icon-message'))
                             ]),
                             h('ul.menu.notifications.tl', [
                                 resolving.notifications ? 
@@ -69,7 +69,7 @@ export function view(effects, account) {
                     h('div.dropdown.dropdown-right', [
                         h('a.dropdown-toggle.btn.btn-link', {attrs: {tabindex: 0}}, h('i.icon.icon-menu')),
                         h('ul.menu.tl', [
-                            h('li.menu-item', a('.link', {attrs: {href: '/chat', target: '_blank'}}, 'Chat')),
+                            h('li.menu-item', h('a.link.ng-link', {dataset: {href: '/chat'}}, 'Chat')),
                             h('li.menu-item', h('a.link.ng-link', {dataset: {href: '/reglamento'}}, 'Reglamento')),
                             h('li.menu-item', h('a.link.ng-link', {dataset: {href: '/terminos-y-condiciones'}}, 'Terminos y cond.')),
                             h('li.menu-item', h('a.link.ng-link', {dataset: {href: '/about'}}, 'Acerca de')),
@@ -87,7 +87,7 @@ export function view(effects, account) {
                     ]),
                 ]),
                 h('section.navbar-section.hide-sm', {style: {flex: '1 1 auto'}}, [
-                    a('.btn.btn-link', {attrs: {href: '/chat', target: '_blank'}}, 'Chat'),
+                    a('.btn.btn-link.ng-link', {dataset: {href: '/chat'}}, 'Chat'),
                     div('.dropdown', [
                         a('.btn.btn-link.dropdown-toggle', {attrs: {tabindex: 0}}, 'Conoce Buldar'),
                         h('ul.menu', [

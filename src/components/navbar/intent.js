@@ -6,6 +6,8 @@ export function intent(dom, http, storage, socketIO) {
      * DOM intents including:
      * - Signin & signup buttons.
      * - Logout button.
+     * - Angular handled route links.
+     * - Open notifications link.
      */
     const modalLink$ = dom.select('.modal-link').events('click')
         .map(event => ({modal: event.target.dataset.modal, data: event.target.dataset}));
@@ -29,6 +31,8 @@ export function intent(dom, http, storage, socketIO) {
     /**
      * HTTP read effects including: 
      * - Logged user data.
+     * - Incoming notifications response.
+     * - Socket.IO user channel messages.
      */
     const user$ = http.select('me')
         .map(response$ => response$.replaceError(err => xs.of(err)))

@@ -150,16 +150,14 @@ boardApplication.config(['$httpProvider', 'jwtInterceptorProvider', '$routeProvi
         controllerAs: 'vm'
     });
 
+    $routeProvider.when('/chat', {
+        template: '<cycle-chat></cycle-chat>',
+        controller: function() {}
+    })
+
     $routeProvider.when('/', {
         templateUrl: '/app/partials/main.html?v=' + version,
-        controller: 'CategoryListController',
-        resolveRedirectTo: function() {
-            if (!$scope.user.isLogged) {
-                return '/unete';
-            }
-
-            return undefined;
-        }
+        controller: 'CategoryListController'
     });
 
     $routeProvider.otherwise({
@@ -233,6 +231,18 @@ boardApplication.directive('navbarHeader', ['$location', function($location) {
                     });
                 }
             }
+        }
+    };
+}]);
+
+boardApplication.directive('cycleChat', ['$location', function($location) {
+    return {
+        restrict: 'E',
+        template: '<div class="flex flex-column flex-auto"></div>',
+        replace: true,
+        link: function(scope, element, attrs) {
+            var mount = require('src/mount.js');
+            mount.chat(element[0]);
         }
     };
 }]);
