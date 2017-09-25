@@ -10,6 +10,7 @@ export function view(effects, account) {
     return xs.combine(effects.state$, account.DOM).map(([state, accountVNode]) => {
         const {user, modal, resolving} = state;
         const image = user.image || '';
+        
 
         return h('main', [
             accountVNode,

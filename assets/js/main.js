@@ -56,7 +56,6 @@ var boardApplication = angular.module('board', [
     'sg.module.top',
     'sg.module.events',
     'angular-jwt',
-    'firebase',
     'ngFileUpload',
     'monospaced.elastic',
     'mentio',
@@ -424,12 +423,10 @@ boardApplication.controller('MainController', [
     '$http',
     '$uibModal',
     '$timeout',
-    '$firebaseObject',
-    '$firebaseArray',
     'AclService',
     '$location',
     '$q',
-    function($scope, $rootScope, $http, $uibModal, $timeout, $firebaseObject, $firebaseArray, AclService, $location, $q) {
+    function($scope, $rootScope, $http, $uibModal, $timeout, AclService, $location, $q) {
         $scope.user = {
             isLogged: false,
             resolving: false,
@@ -594,26 +591,6 @@ boardApplication.controller('MainController', [
 
         $scope.$on('logout', function(e) {
             $scope.signOut();
-        });
-
-        // Board updates notification
-        var fbRef = new Firebase(firebase_url);
-        var updatesRef = fbRef.child('version');
-        updatesRef.on('value', function(ss) {
-            $scope.$apply(function() {
-                if (parseInt(ss.val()) > parseInt(version)) {
-                    $scope.update.available = true;
-                    $timeout(function() {
-                        $scope.update.show = true;
-                    }, 100);
-                    $timeout(function() {
-                        $scope.reloadPage();
-                    }, 30 * 1000);
-                } else {
-                    $scope.update.show = false;
-                    $scope.update.available = false;
-                }
-            });
         });
 
         // If already signed in, sign in the user
