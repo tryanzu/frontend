@@ -143,10 +143,13 @@ export function model(actions, accountModal) {
         actions.logoutLink$.map(() => ({type: 'token', token: ''}))
     );
 
+    const beep$ = actions.userChan$.filter(ev => ev.fire == 'notification' && ev.count > 0);
+
     return {
         state$,
         http$,
         storage$,
-        ng$
+        ng$,
+        beep$
     };
 }

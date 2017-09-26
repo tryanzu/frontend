@@ -38,7 +38,7 @@ export function intent(dom, socket, history$) {
         .map(e => ({type: 'message', sent: e.keyCode == ENTER_KEY, payload: String(e.target.value)}));
 
     const scroll$ = dom.select('.list-container').events('scroll')
-        .compose(debounce(25))
+        .compose(debounce(60))
         .map(e => ({
             type: 'feed-scroll',
             lock: e.target.scrollHeight - e.target.scrollTop - e.target.clientHeight < 1

@@ -14,6 +14,7 @@ export function navbar(element, ngCallback) {
 		angular: ngDriver(ngCallback),
 		socketIO: makeSocketIODriver(socketIo()),
 		storage: storageDriver,
+		beep: beepDriver
 	});
 };
 
@@ -22,7 +23,7 @@ export function chat(element) {
 		DOM: makeDOMDriver(element),
 		HTTP: makeHTTPDriver(),
 		socketIO: makeSocketIODriver(socketIo(Anzu.chatIO)),
-		storage: storageDriver,
+		storage: storageDriver
 	});
 };
 
@@ -34,6 +35,17 @@ function ngDriver(ngCallback) {
             complete: () => console.log('location completed'),
         });
 	}
+}
+
+function beepDriver(events$) {
+	events$.addListener({
+        next: event => {
+        	const audio = new Audio('/sounds/notification.mp3');
+        	audio.play();
+        },
+        error: err => console.error(err),
+        complete: () => console.log('beep completed'),
+    });
 }
 
 function socketIo(server = Anzu.globalIO) {

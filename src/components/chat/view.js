@@ -127,7 +127,7 @@ export function view(state$) {
                                     hook: {
                                         insert: vnode => {
                                             if (state.lock) {
-                                                vnode.elm.parentElement.parentElement.scrollTop = vnode.elm.parentElement.offsetHeight;
+                                                vnode.elm.parentElement.parentElement.scrollTop = vnode.elm.parentElement.scrollHeight;
                                             }
                                         }
                                     }
