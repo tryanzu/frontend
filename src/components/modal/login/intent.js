@@ -5,6 +5,10 @@ export function intent(dom, http) {
         .map(response$ => response$.replaceError(err => xs.of(err)))
         .flatten();
 
+    const recover$ = http.select('recover-password')
+        .map(response$ => response$.replaceError(err => xs.of(err)))
+        .flatten();
+
     /**
      * DOM intents including:
      *
@@ -20,10 +24,19 @@ export function intent(dom, http) {
         .startWith('');
 
     const sent$ = dom.select('form').events('submit', {preventDefault: true})
+        .map(ev => ev.target.name);
+
+    const forgot$ = dom.select('#forgot').events('click')
         .mapTo(true)
-        .startWith(false);
+        .fold(acc => !acc, false);
 
     const fields$ = xs.combine(email$, password$);
 
-    return {fields$, sent$, token$};
+    return {
+        fields$, 
+        sent$, 
+        token$, 
+        forgot$,
+        recover$
+    };
 }

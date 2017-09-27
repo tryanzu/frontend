@@ -2,6 +2,8 @@ import xs from 'xstream';
 import sampleCombine from 'xstream/extra/sampleCombine';
 
 const DEFAULT_STATE = {
+    showForgotPassword: false,
+    sentRecover: false,
     resolving: false,
     email: '',
     password: '',
@@ -14,7 +16,7 @@ export function model(actions) {
      * HTTP write effects including:
      * - User info from token stream.
      */
-    const requestToken$ = actions.sent$.filter(sent => sent === true)
+    const requestToken$ = actions.sent$.filter(name => name == 'login')
         .compose(sampleCombine(actions.fields$))
         .map(([sent, [email, password]]) => ({
                 method: 'POST',
@@ -23,6 +25,17 @@ export function model(actions) {
                 query: {email, password}
             })
         );
+
+    const requestPassword$ = actions.sent$.filter(name => name == 'forgot')
+        .compose(sampleCombine(actions.fields$))
+        .map(([_, [email]]) => ({
+            method: 'GET',
+            url: Anzu.layer + 'auth/lost-password',
+            category: 'recover-password',
+            query: {email}
+        }));
+
+    const http$ = xs.merge(requestToken$, requestPassword$);
 
     const token$ = actions.token$.filter(res => !(res instanceof Error))
         .map(res => res.body.token);
@@ -33,6 +46,7 @@ export function model(actions) {
      */
      const fieldsR$ = actions.fields$.map(([email, password]) => state => ({...state, email, password}));
      const sentR$ = actions.sent$.map(sent => state => ({...state, resolving: sent, error: false}));
+     const forgotR$ = actions.forgot$.map(show => state => ({...state, showForgotPassword: show}));
      const tokenR$ = actions.token$.map(res => state => {
         return {
             ...state, 
@@ -40,13 +54,19 @@ export function model(actions) {
             error: res instanceof Error ? res : false
         };
      });
+    const recoverR$ = actions.recover$.map(res => state => ({...state, sentRecover: true}));
 
-    const state$ = xs.merge(fieldsR$, sentR$, tokenR$)
-        .fold((state, action) => action(state), DEFAULT_STATE);
+    const state$ = xs.merge(
+        fieldsR$, 
+        sentR$, 
+        tokenR$, 
+        forgotR$, 
+        recoverR$
+    ).fold((state, action) => action(state), DEFAULT_STATE);
 
     return {
         state$,
         token$,
-        HTTP: requestToken$,
+        HTTP: http$,
     };
 }
