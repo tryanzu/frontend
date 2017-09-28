@@ -44,8 +44,7 @@ function forgotPasswordView({error, resolving, email, sentRecover}) {
         h('div', {class: {dn: sentRecover == false}}, [
             h('h6.mb2', 'Recuperar contraseña'),
             h('div.toast.toast-success.mb2', [
-                h('p.lh-copy', 'Tu cuenta fue creada con éxito y en breve recibirás un correo electrónico para confirmar tu cuenta.'),
-                h('p.b.lh-copy.mb0', 'Confirmando tu cuenta tendrás acceso completo a buldar.com')
+                h('p.lh-copy', 'Hemos enviado un correo electrónico con los datos necesarios para restablecer tu contraseña.'),
             ]),
             h('a.db.link.tc.mt2', {attrs: {id: 'forgot'}}, 'Cancelar')
         ]),
