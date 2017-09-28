@@ -654,11 +654,8 @@ boardApplication.run(['$rootScope', '$http', 'AclService', 'AdvancedAcl', '$loca
 
     var location = $location.path();
 
-    if ($location.search().fbToken && $location.search().token) {
-        localStorage.setItem('signed_in', 'true');
+    if ($location.search().token) {
         localStorage.setItem('id_token', $location.search().token);
-        localStorage.setItem('firebase_token', $location.search().fbToken);
-        $location.search('fbToken', null);
         $location.search('token', null);
     }
 
