@@ -80,9 +80,9 @@ export function view(effects, account) {
                             h('li.menu-item', h('a.link.modal-link', {dataset: {modal: 'account', tab: 'login'}}, 'Únete')),
                         ]).concat([
                             li('.divider'),
-                            li('.menu-item', a('.link', {attrs: {href: '/reglamento'}}, 'Canal de Youtube')),
-                            li('.menu-item', a('.link', {attrs: {href: '/terminos-y-condiciones'}}, 'Pedir PC Spartana')),
-                            li('.menu-item', a('.link', {attrs: {href: '/about'}}, 'Workstations')),
+                            li('.menu-item', a('.link', {attrs: {href: 'https://www.youtube.com/user/SpartanGeekTV'}}, 'Canal de Youtube')),
+                            li('.menu-item', a('.link', {attrs: {href: 'https://spartangeek.com'}}, 'Pedir PC Spartana')),
+                            li('.menu-item', a('.link', {attrs: {href: 'https://spartangeek.com/workstations'}}, 'Workstations')),
                             li('.menu-item', a('.link', {attrs: {href: 'https://spartangeek.com'}}, 'SpartanGeek.com'))
                         ]))
                     ]),
@@ -100,9 +100,9 @@ export function view(effects, account) {
                     div('.dropdown', [
                         a('.btn.btn-link.dropdown-toggle', {attrs: {tabindex: 0}}, 'Enlaces SpartanGeek'),
                         h('ul.menu', [
-                            li('.menu-item', a('.link', {attrs: {href: '/reglamento'}}, 'Canal de Youtube')),
-                            li('.menu-item', a('.link', {attrs: {href: '/terminos-y-condiciones'}}, 'Pedir PC Spartana')),
-                            li('.menu-item', a('.link', {attrs: {href: '/about'}}, 'Workstations')),
+                            li('.menu-item', a('.link', {attrs: {href: 'https://www.youtube.com/user/SpartanGeekTV'}}, 'Canal de Youtube')),
+                            li('.menu-item', a('.link', {attrs: {href: 'https://spartangeek.com'}}, 'Pedir PC Spartana')),
+                            li('.menu-item', a('.link', {attrs: {href: 'https://spartangeek.com/workstations'}}, 'Workstations')),
                             li('.divider'),
                             li('.menu-item', a('.link', {attrs: {href: 'https://spartangeek.com'}}, 'SpartanGeek.com'))
                         ])
