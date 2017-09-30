@@ -147,11 +147,11 @@ export function view(effects, account) {
                                 h('li.divider'),
                                 h('li.menu-item.cf', [
                                     h('div.menu-badge', h('label.label.label-primary', user.gaming.swords)),
-                                    h('a', 'Reputación')
+                                    h('a.ng-link', 'Reputación')
                                 ]),
                                 h('li.menu-item.cf', [
                                     h('div.menu-badge', h('label.label.label-primary', user.gaming.tribute)),
-                                    h('a', 'Tributo')
+                                    h('a.ng-link', 'Tributo')
                                 ]),
                                 h('li.divider'),
                                 h('li.menu-item', h('a.pointer', {attrs: {id: 'logout'}}, 'Salir de mi cuenta'))
