@@ -70,10 +70,10 @@ export function view(effects, account) {
                     h('div.dropdown.dropdown-right', [
                         h('a.dropdown-toggle.btn.btn-link', {attrs: {tabindex: 0}}, h('i.icon.icon-menu')),
                         h('ul.menu.tl', [
-                            h('li.menu-item', h('a.link.ng-link', {dataset: {href: '/chat'}}, 'Chat')),
-                            h('li.menu-item', h('a.link.ng-link', {dataset: {href: '/reglamento'}}, 'Reglamento')),
-                            h('li.menu-item', h('a.link.ng-link', {dataset: {href: '/terminos-y-condiciones'}}, 'Terminos y cond.')),
-                            h('li.menu-item', h('a.link.ng-link', {dataset: {href: '/about'}}, 'Acerca de')),
+                            h('li.menu-item', h('a.link.ng-link.pointer', {dataset: {href: '/chat'}}, 'Chat')),
+                            h('li.menu-item', h('a.link.ng-link.pointer', {dataset: {href: '/reglamento'}}, 'Reglamento')),
+                            h('li.menu-item', h('a.link.ng-link.pointer', {dataset: {href: '/terminos-y-condiciones'}}, 'Terminos y cond.')),
+                            h('li.menu-item', h('a.link.ng-link.pointer', {dataset: {href: '/about'}}, 'Acerca de')),
                         ].concat(user !== false ? [] : [
                             li('.divider'),
                             h('li.menu-item', h('a.link.modal-link', {dataset: {modal: 'account', tab: 'login'}}, 'Iniciar sesión')),
@@ -92,9 +92,9 @@ export function view(effects, account) {
                     div('.dropdown', [
                         a('.btn.btn-link.dropdown-toggle', {attrs: {tabindex: 0}}, 'Conoce Buldar'),
                         h('ul.menu', [
-                            h('li.menu-item', h('a.link.ng-link', {dataset: {href: '/reglamento'}}, 'Reglamento')),
-                            h('li.menu-item', h('a.link.ng-link', {dataset: {href: '/terminos-y-condiciones'}}, 'Terminos y cond.')),
-                            h('li.menu-item', h('a.link.ng-link', {dataset: {href: '/about'}}, 'Acerca de'))
+                            h('li.menu-item', h('a.link.ng-link.pointer', {dataset: {href: '/reglamento'}}, 'Reglamento')),
+                            h('li.menu-item', h('a.link.ng-link.pointer', {dataset: {href: '/terminos-y-condiciones'}}, 'Terminos y cond.')),
+                            h('li.menu-item', h('a.link.ng-link.pointer', {dataset: {href: '/about'}}, 'Acerca de'))
                         ])
                     ]),
                     div('.dropdown', [
@@ -141,17 +141,17 @@ export function view(effects, account) {
                                 h('span.white.ml1', [user.username, h('i.icon.icon-caret')])
                             ]),
                             h('ul.menu', [
-                                h('li.menu-item', h('a.link.ng-link', {dataset: {href: `/u/${user.username}/${user.id}`}}, 'Ver mi perfil')),
-                                h('li.menu-item', h('a.link.ng-link', {dataset: {href: '/medallas'}}, 'Medallas')),
-                                h('li.menu-item', h('a.link.ng-link', {dataset: {href: '/top-ranking'}}, 'Ranking de usuarios')),
+                                h('li.menu-item', h('a.link.ng-link.pointer', {dataset: {href: `/u/${user.username}/${user.id}`}}, 'Ver mi perfil')),
+                                h('li.menu-item', h('a.link.ng-link.pointer', {dataset: {href: '/medallas'}}, 'Medallas')),
+                                h('li.menu-item', h('a.link.ng-link.pointer', {dataset: {href: '/top-ranking'}}, 'Ranking de usuarios')),
                                 h('li.divider'),
                                 h('li.menu-item.cf', [
                                     h('div.menu-badge', h('label.label.label-primary', user.gaming.swords)),
-                                    h('a.ng-link', 'Reputación')
+                                    h('a.pointer', 'Reputación')
                                 ]),
                                 h('li.menu-item.cf', [
                                     h('div.menu-badge', h('label.label.label-primary', user.gaming.tribute)),
-                                    h('a.ng-link', 'Tributo')
+                                    h('a.pointer', 'Tributo')
                                 ]),
                                 h('li.divider'),
                                 h('li.menu-item', h('a.pointer', {attrs: {id: 'logout'}}, 'Salir de mi cuenta'))
