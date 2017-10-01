@@ -80,9 +80,9 @@
               </div>
             </div>
             <div class="new-posts" ng-cloak ng-if="status.pending > 0 && !status.show_categories" ng-click="getNewer()" ng-class="{'loading': resolving.newer}">
-              <span ng-if="!resolving.newer">Ver {{ status.pending }} {{ status.pending == 1?'publicación nueva':'publicaciones nuevas' }}</span>
+              <span class="pointer" ng-if="!resolving.newer">Ver {{ status.pending }} {{ status.pending == 1?'publicación nueva':'publicaciones nuevas' }}</span>
               <span ng-if="resolving.newer">Cargando...</span>
-              <span class="new-posts-cancel" ng-click="getNewer(false)"><i class="fa fa-times-circle" aria-hidden="true"></i></span>
+              <span class="new-posts-cancel pointer" ng-click="getNewer(false)"><i class="fa fa-times-circle" aria-hidden="true"></i></span>
             </div>
             <div class="no-feed-error" ng-if="posts.length == 0 && resolving.loaded && category.id != null">
               No hay publicaciones en esta categoría. Sé el primero en <a href="/post/create/{{ category.slug }}">escribir una publicación</a>.
