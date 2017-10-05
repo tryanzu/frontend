@@ -155,9 +155,9 @@ export function view(state$) {
                             }),
                             state.user._id === false ? div('.absolute.top-0.left-0.w-100.tc.bg-near-black.white-90.pv2.h-100', [
                                 div('.dib.v-mid.pv3', [
-                                    a('.link.underline.white', {attrs: {href: 'https://spartangeek.com'}}, 'Únete'),
+                                    a('.link.underline.white', {attrs: {href: 'https://buldar.com'}}, 'Únete'),
                                     ' o ',
-                                    a('.link.underline.white', {attrs: {href: 'https://spartangeek.com'}}, 'Inicia sesión'),
+                                    a('.link.underline.white', {attrs: {href: 'https://buldar.com'}}, 'Inicia sesión'),
                                     ' para escribir en el chat.'
                                 ])
                             ]) : null
