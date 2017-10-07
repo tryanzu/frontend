@@ -4,7 +4,7 @@ import sampleCombine from 'xstream/extra/sampleCombine';
 const CONFIG = {
     serverVersion: '0.1.5',
     newVersion: false,
-    defaultChannel: 'general',
+    defaultChannel: 'dia-de-hueva',
     channels: {
         'general': {
             name: 'General',
@@ -34,7 +34,7 @@ const DEFAULT_STATE = {
     highlighted: false,
     message: '',
     lock: true,
-    channel: 'general',
+    channel: 'dia-de-hueva',
     player: false,
     missing: 0,
     user: GUEST_USER
