@@ -193,15 +193,15 @@ function commandView(type, data, list, index, scrollHook, rolePower) {
                     p('.fw4.mt0.mb0.mid-gray', virtualize(`<span>${md.renderInline(data.content)}</span>`))
                 ]),
                 div('.dtc.v-mid.actions', [
-                    rolePower > 0 && simple == false ? span('.f6.silver.fr.icon-lock.hover-red.pointer.id-action', {
+                    rolePower > 0 && simple == false ? span('.f6.mh1.silver.fr.fa.fa-microphone-slash.hover-red.pointer.id-action', {
                         dataset: {id: data.user_id, type: 'mute'},
                         props: {title: 'Silenciar por 5 minutos'}
                     }) : span(),
-                    rolePower > 1 && simple == false ? span('.f6.silver.fr.icon-block.hover-red.pointer.id-action', {
+                    rolePower > 1 && simple == false ? span('.f6.mh1.silver.fr.fa.fa-ban.hover-red.pointer.id-action', {
                         dataset: {id: data.user_id, type: 'ban'},
                         props: {title: 'Baneo por 1 día'}
                     }) : span(),
-                    rolePower > 2 && '_id' in data ? span('.f6.silver.fr.icon-star.hover-gold.pointer.id-action', {
+                    rolePower > 2 && '_id' in data ? span('.f6.mh1.silver.fr.fa.fa-star.hover-gold.pointer.id-action', {
                         dataset: {id: data._id, type: 'highlight'},
                         props: {title: 'Marcar como mensaje destacado'}
                     }) : span(),
