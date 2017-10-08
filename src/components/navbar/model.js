@@ -129,7 +129,9 @@ export function model(actions, accountModal) {
         token: false
     }));
 
-    const state$ = xs.merge(tokenR$, userR$, logoutR$, modalR$, notificationsR$, openNotificationsR$, incomingNotificationR$)
+    const onlineR$ = actions.online$.map(list => state => ({...state, online: list}));
+
+    const state$ = xs.merge(tokenR$, userR$, logoutR$, modalR$, notificationsR$, openNotificationsR$, incomingNotificationR$, onlineR$)
         .fold((state, action) => action(state), DEFAULT_STATE);
 
     const ng$ = xs.merge(

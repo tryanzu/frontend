@@ -1,6 +1,6 @@
 import xs from 'xstream';
 
-export function intent(dom, http, storage, socketIO) {
+export function intent(dom, http, storage, socketIO, socketIOChat) {
 
     /**
      * DOM intents including:
@@ -50,6 +50,12 @@ export function intent(dom, http, storage, socketIO) {
         .flatten()
         .debug();
 
+    /**
+     * Some initial data will come right outta socket.io.
+     *
+     */
+    const online$ = socketIOChat.get('online-list');
+
     return {
         modalLink$, 
         logoutLink$, 
@@ -58,6 +64,7 @@ export function intent(dom, http, storage, socketIO) {
         notifications$, 
         userChan$, 
         ngLink$, 
-        openNotifications$
+        openNotifications$,
+        online$
     };
 };

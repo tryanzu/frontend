@@ -15,6 +15,7 @@ export function navbar(element, ngCallback) {
 		HTTP: makeHTTPDriver(),
 		angular: ngDriver(ngCallback),
 		socketIO: makeSocketIODriver(socketIo()),
+		socketIOChat: makeSocketIODriver(socketIo(Anzu.chatIO)),
 		storage: storageDriver,
 		beep: beepDriver
 	});
