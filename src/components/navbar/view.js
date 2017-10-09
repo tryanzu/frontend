@@ -8,7 +8,7 @@ const ago = timeago(null, 'es');
 
 export function view(effects, account) {
     return xs.combine(effects.state$, account.DOM).map(([state, accountVNode]) => {
-        const {user, modal, resolving, online} = state;
+        const {user, modal, resolving, connectedCount} = state;
         const image = user.image || '';
         return h('main', [
             accountVNode,
@@ -68,7 +68,10 @@ export function view(effects, account) {
                     h('div.dropdown.dropdown-right', [
                         h('a.dropdown-toggle.btn.btn-link', {attrs: {tabindex: 0}}, h('i.icon.icon-menu')),
                         h('ul.menu.tl', [
-                            online!== undefined ? h('li.menu-item', h('a.link.ng-link.pointer', {dataset: {href: '/chat'}}, ['Chat ',span(".white.bg-navy.user-count",`${online.length}`)])) : h('li.menu-item', h('a.link.ng-link.pointer', {dataset: {href: '/chat'}}, 'Chat')),
+                            h('li.menu-item', h('a.link.ng-link.pointer', {dataset: {href: '/chat'}}, [
+                                'Chat ',
+                                span('.bg-green.ph1.br1', String(connectedCount))
+                            ])) ,
                             h('li.menu-item', h('a.link.ng-link.pointer', {dataset: {href: '/reglamento'}}, 'Reglamento')),
                             h('li.menu-item', h('a.link.ng-link.pointer', {dataset: {href: '/terminos-y-condiciones'}}, 'Terminos y cond.')),
                             h('li.menu-item', h('a.link.ng-link.pointer', {dataset: {href: '/about'}}, 'Acerca de')),
@@ -86,7 +89,7 @@ export function view(effects, account) {
                     ]),
                 ]),
                 h('section.navbar-section.hide-sm', {style: {flex: '1 1 auto'}}, [
-                    online!== undefined ? a('.btn.btn-link.ng-link', {dataset: {href: '/chat'}}, ['Chat ',span(".navy.bg-white.user-count",`${online.length}`)]) : a('.btn.btn-link.ng-link', {dataset: {href: '/chat'}}, 'Chat'),
+                    a('.btn.btn-link.ng-link', {dataset: {href: '/chat'}}, ['Chat ', span('.bg-green.ph1.br1', String(connectedCount))]),
                     div('.dropdown', [
                         a('.btn.btn-link.dropdown-toggle', {attrs: {tabindex: 0}}, 'Conoce Buldar'),
                         h('ul.menu', [

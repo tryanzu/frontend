@@ -51,10 +51,10 @@ export function intent(dom, http, storage, socketIO, socketIOChat) {
         .debug();
 
     /**
-     * Some initial data will come right outta socket.io.
-     *
+     * Socket.IO read effects including: 
+     * - Connected users count.
      */
-    const online$ = socketIOChat.get('online-list');
+    const online$ = socketIOChat.get('connected.count');
 
     return {
         modalLink$, 

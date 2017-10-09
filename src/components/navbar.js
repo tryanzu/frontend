@@ -16,6 +16,7 @@ export function Navbar({DOM, HTTP, storage, socketIO, socketIOChat}) {
         HTTP: effects.http$,
         storage: effects.storage$,
         angular: effects.ng$,
-        beep: effects.beep$
+        beep: effects.beep$,
+        socketIOChat: effects.socket$
     };
 }
