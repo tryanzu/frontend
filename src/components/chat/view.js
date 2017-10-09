@@ -4,18 +4,9 @@ import emoji from 'markdown-it-emoji';
 import mila from 'markdown-it-link-attributes';
 import virtualize from 'snabbdom-virtualize';
 
-var md = markdown({
-    html: false,
-    linkify: true,
-    typographer: false
-}).disable('image');
-
+var md = markdown({html: false, linkify: true, typographer: false}).disable('image');
 md.use(emoji);
-md.use(mila, {
-    target: '_blank',
-    rel: 'noopener',
-    class: 'link blue hover-green'
-});
+md.use(mila, {target: '_blank', rel: 'noopener', class: 'link blue hover-green'});
 
 const ROLES = {
     'guest': 0,
@@ -46,7 +37,7 @@ const Loggers = {
 
 export function view(state$) {
     return state$.map(state => {
-        const channel = state.config.channels[state.channel];
+        const channel = state.config.viewer;
         const nrole = ROLES[state.user.role];
 
         return main('.flex.flex-column.flex-auto.bg-near-white', [
@@ -83,30 +74,33 @@ export function view(state$) {
                 ]),
                 div('.w-100.flex-auto.flex.pa4-ns', [
                     div('.bg-white.br2.flex-auto.shadow.relative.flex.flex-column', [
-                        nav('.pa3.ma0.tc.bb.b--black-05.relative', {class: {tc: !channel.youtubePlayer, tl: channel.youtubePlayer}, style: {flex: '0 1 auto'}}, [
-                            a('.dib.v-mid.link.black-60.channel.ph2.pointer', {
-                                class: {b: state.channel == 'general'},
-                                dataset: {id: 'general'}
-                            }, 'General'),
-                            a('.dib.v-mid.link.black-60.dark.channel.ph2.pointer', {
-                                class: {b: state.channel == 'dia-de-hueva'},
-                                dataset: {id: 'dia-de-hueva'}
-                            }, 'Día de hueva'),
-                            nrole >= 3 && channel.youtubePlayer !== false ? div('.dib.v-mid', [
-                                input('.pa2.input-reset.ba.bg-white.b--light-gray.bw1.near-black.br2.outline-0.w4', {
-                                    props: {
-                                        id: 'videoID',
-                                        type: 'text',
-                                        value: channel.youtubeVideo
-                                    }
-                                }),
-                                input('.ml2.b--light-gray', {props: {type: 'checkbox', id: 'live', checked: channel.live}}),
-                                span('.ml2', 'Live')
-                            ]) : div('.dib'),
-                            h('div.dropdown.dib.dropdown-right', [
+                        nav('.pa3.pb0.ma0.tc.bb.b--black-05.relative', {class: {tc: !channel.youtubePlayer, tl: channel.youtubePlayer}, style: {flex: '0 1 auto'}}, [
+                            h('div', [
+                                h('h2.f6', channel.title),
+                                h('p.ma0', {class: {pb1: channel.youtubePlayer}}, channel.subtitle)
+                            ]),
+                            h('div', {attrs: {class: channel.youtubePlayer ? 'dropdown pb1' : 'dropdown absolute top-1 left-1'}}, [
+                                h('a.dropdown-toggle.dib.v-mid.link.black-60.dark.hover-near-black.pointer.ba.b--light-gray.br2.ph2.pv1', {attrs: {tabindex: 0}}, h('span.fa.fa-cog')),
+                                h('ul.menu.tl', {style: {width: '220px'}}, [
+                                    h('li.menu-item', [
+                                        h('span.db.pb2.b', 'Configuración de video'),
+                                        h('div.pb2', [
+                                            h('input.ml2.b--light-gray', {props: {type: 'checkbox', id: 'videoPlayer', checked: channel.youtubePlayer}}),
+                                            h('span.ml2', 'Activar video')
+                                        ]),
+                                        h('input.pa1.input-reset.ba.bg-white.b--light-gray.near-black.br2.outline-0', {props: {
+                                            id: 'videoId',
+                                            type: 'text',
+                                            value: channel.youtubeVideo,
+                                            placeholder: 'ID de Youtube'
+                                        }})
+                                    ])
+                                ])  
+                            ]),
+                            h('div', {attrs: {class: 'dib dropdown dropdown-right ' + (channel.youtubePlayer ? 'pb1' : 'absolute top-1 right-1')}}, [
                                 a('.dropdown-toggle.dib.v-mid.link.black-60.dark.hover-near-black.pointer.ba.b--light-gray.br2.ph2.pv1.ml2', {attrs: {tabindex: 0}}, [
                                     span('.bg-green.br-100.dib.mr2', {style: {width: '10px', height: '10px'}}),
-                                    span('.dn.dib-m.dib-l', `${String(state.online.length)} ${state.online.length > 1 ? 'conectados' : 'conectado'}`),
+                                    span('.dn.dib-m.dib-l', String(state.online.length) + (channel.youtubePlayer == false ? ` ${state.online.length > 1 ? 'conectados' : 'conectado'}` : '')),
                                 ]),
                                 h('ul.menu', state.online.map(u => {
                                     return li('.menu-item.tl', [

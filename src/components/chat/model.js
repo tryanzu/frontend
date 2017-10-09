@@ -2,21 +2,13 @@ import xs from 'xstream';
 import sampleCombine from 'xstream/extra/sampleCombine';
 
 const CONFIG = {
-    serverVersion: '0.1.5',
+    serverVersion: '0.1.6',
     newVersion: false,
-    defaultChannel: 'dia-de-hueva',
-    channels: {
-        'general': {
-            name: 'General',
-            youtubePlayer: false,
-            youtubeVideo: '',
-            headline: ''
-        },
-        'dia-de-hueva': {
-            name: 'Día de hueva',
-            youtubePlayer: false,
-            youtubeVideo: ''
-        }
+    viewer: {
+        title: 'Charla Buldariana',
+        subtitle: '',
+        youtubePlayer: false,
+        youtubeVideo: '',
     }
 };
 
@@ -34,7 +26,6 @@ const DEFAULT_STATE = {
     highlighted: false,
     message: '',
     lock: true,
-    channel: 'dia-de-hueva',
     player: false,
     missing: 0,
     user: GUEST_USER
@@ -47,8 +38,6 @@ const DEFAULT_STATE = {
  */
 export function model(actions) {
     const user$ = actions.signature$.startWith(GUEST_USER);
-    const channel$ = actions.channel$.startWith(DEFAULT_STATE.channel);
-
     const configR$ = actions.config$
         .map(config => state => ({
             ...state,
@@ -58,21 +47,12 @@ export function model(actions) {
                 newVersion: state.config.serverVersion != config.serverVersion
             }
         }));
-
     const scrollR$ = actions.scroll$
         .startWith({lock: true})
         .map(status => state => ({
             ...state,
             lock: status.lock,
             missing: status.lock === true ? 0 : state.missing
-        }));
-
-    const channelR$ = channel$
-        .map(channel => state => ({
-            ...state, 
-            channel, 
-            list: [], 
-            lock: true
         }));
 
     const userR$ = user$.map(user => state => ({...state, user}));
@@ -110,7 +90,6 @@ export function model(actions) {
     const state$ = xs.merge(
         configR$, 
         userR$, 
-        channelR$, 
         highlightR$, 
         messagesR$, 
         messageR$, 
@@ -124,7 +103,7 @@ export function model(actions) {
         xs.of(['user me']),
 
         // Whenever channel changes we need to write out a socket command to update the list of messages.
-        channel$.map(channel => (['chat update-me', channel])), 
+        xs.of(['chat update-me']), 
 
         // User messages that got sent.
         sent$.map(sent => (['send', sent.data.content])),
@@ -133,10 +112,13 @@ export function model(actions) {
         actions.idActions$.map(action => ([action.type, action.id])),
         
         // Live streaming config.
-        actions.videoConfig$.map(video => (['chat update-video', video])), 
+        actions.videoId$.map(video => (['chat update-video', video])), 
+        
+        // Live streaming config.
+        actions.videoPlayer$.map(active => (['chat video', active])), 
 
         // Live streaming toggle...
-        actions.videoLive$.map(live => (['chat update-live', live]))
+        actions.videoLive$.map(live => (['chat live', live]))
     );
 
     return {

@@ -47,8 +47,14 @@ export function intent(dom, socket, history$) {
     const channel$ = dom.select('.channel').events('click')
         .map(e => (e.target.dataset.id));
 
-    const videoConfig$ = dom.select('#videoID').events('change')
+    /**
+     * Video player options.
+     */
+    const videoId$ = dom.select('#videoId').events('change')
         .map(e => (String(e.target.value)));
+
+    const videoPlayer$ = dom.select('#videoPlayer').events('change')
+        .map(e => (e.target.checked));
 
     const videoLive$ = dom.select('#live').events('change')
         .map(e => (e.target.checked));
@@ -76,7 +82,8 @@ export function intent(dom, socket, history$) {
         channel$, 
         idActions$, 
         online$, 
-        videoConfig$, 
+        videoId$, 
+        videoPlayer$, 
         videoLive$
     };
 }

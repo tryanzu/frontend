@@ -54,7 +54,7 @@ export function intent(dom, http, storage, socketIO, socketIOChat) {
      * Socket.IO read effects including: 
      * - Connected users count.
      */
-    const online$ = socketIOChat.get('connected.count');
+    const online$ = socketIOChat.get('chat.count');
 
     return {
         modalLink$, 
