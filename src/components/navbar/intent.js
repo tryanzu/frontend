@@ -1,6 +1,6 @@
 import xs from 'xstream';
 
-export function intent(dom, http, storage, socketIO) {
+export function intent(dom, http, storage, socketIO, socketIOChat) {
 
     /**
      * DOM intents including:
@@ -50,6 +50,12 @@ export function intent(dom, http, storage, socketIO) {
         .flatten()
         .debug();
 
+    /**
+     * Socket.IO read effects including: 
+     * - Connected users count.
+     */
+    const online$ = socketIOChat.get('connected.count');
+
     return {
         modalLink$, 
         logoutLink$, 
@@ -58,6 +64,7 @@ export function intent(dom, http, storage, socketIO) {
         notifications$, 
         userChan$, 
         ngLink$, 
-        openNotifications$
+        openNotifications$,
+        online$
     };
 };
