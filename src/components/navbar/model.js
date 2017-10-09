@@ -131,9 +131,16 @@ export function model(actions, accountModal) {
     }));
 
     const onlineR$ = actions.online$.map(count => state => ({...state, connectedCount: count}));
-
-    const state$ = xs.merge(tokenR$, userR$, logoutR$, modalR$, notificationsR$, openNotificationsR$, incomingNotificationR$, onlineR$)
-        .fold((state, action) => action(state), DEFAULT_STATE);
+    const state$ = xs.merge(
+        tokenR$, 
+        userR$, 
+        logoutR$, 
+        modalR$, 
+        notificationsR$, 
+        openNotificationsR$, 
+        incomingNotificationR$, 
+        onlineR$
+    ).fold((state, action) => action(state), DEFAULT_STATE);
 
     const ng$ = xs.merge(
         // Links that will be processed by angular's router
