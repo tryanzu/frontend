@@ -79,7 +79,7 @@ export function view(state$) {
                                 h('h2.f6', channel.title),
                                 h('p.ma0', {class: {pb1: channel.youtubePlayer}}, channel.subtitle)
                             ]),
-                            h('div', {attrs: {class: channel.youtubePlayer ? 'dropdown pb1' : 'dropdown absolute top-1 left-1'}}, [
+                            nrole >= 3 ? h('div', {attrs: {class: channel.youtubePlayer ? 'dropdown pb1' : 'dropdown absolute top-1 left-1'}}, [
                                 h('a.dropdown-toggle.dib.v-mid.link.black-60.dark.hover-near-black.pointer.ba.b--light-gray.br2.ph2.pv1', {attrs: {tabindex: 0}}, h('span.fa.fa-cog')),
                                 h('ul.menu.tl', {style: {width: '220px'}}, [
                                     h('li.menu-item', [
@@ -96,7 +96,7 @@ export function view(state$) {
                                         }})
                                     ])
                                 ])  
-                            ]),
+                            ]) : h('div.dn'),
                             h('div', {attrs: {class: 'dib dropdown dropdown-right ' + (channel.youtubePlayer ? 'pb1' : 'absolute top-1 right-1')}}, [
                                 a('.dropdown-toggle.dib.v-mid.link.black-60.dark.hover-near-black.pointer.ba.b--light-gray.br2.ph2.pv1.ml2', {attrs: {tabindex: 0}}, [
                                     span('.bg-green.br-100.dib.mr2', {style: {width: '10px', height: '10px'}}),
