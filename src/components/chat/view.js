@@ -113,7 +113,7 @@ export function view(state$) {
                                 }))
                             ])
                         ]),
-                        div('.pv3.h6.overflow-auto.list-container.relative', {style: {flex: '1 1 auto'}}, [
+                        div('.pv3.h6.overflow-x-hidden.overflow-auto.list-container.relative', {style: {flex: '1 1 auto'}}, [
                             ul('.list.pa0.ma0', state.list.map((command, index, list) => {
                                 const type = command.type;
                                 const data = command.data;
