@@ -1,0 +1,78 @@
+@import "../variables.css";
+
+.feed {
+	padding-bottom: 1rem;
+
+	& .list {
+		background: #f6f9fc;
+		border-radius: 4px;
+		box-shadow: 0 7px 14px 0 rgba(50,50,93,.1), 0 3px 6px 0 rgba(0,0,0,.07);
+		overflow-y: scroll;
+
+		& article {
+			padding: 0.5rem 1rem;
+			border-bottom: 1px solid var(--mainGray);
+
+			&:hover {
+				background: #fff;
+			}
+
+			&:first-child, &:last-child {
+				padding: 1rem;
+			}
+
+			& a.category {
+				color: #6b7c93;
+				display: block;
+				padding-bottom: 0.25rem;
+				font-size: calc(var(--fontSize) * 0.9);
+			}
+
+			& a[rel="author"] {
+				color: #32325d;
+				display: block;
+
+				& > div {
+					display: inline-block;
+					vertical-align: middle;
+
+					& span {
+						display: block;
+					}
+
+					& span.ago {
+						color: #6b7c93;
+					}
+				}
+
+				& img {
+					width: 32px;
+					height: 32px;
+					border-radius: 16px;
+				}
+
+				& > div:nth-child(2) {
+					padding-left: 0.5rem;
+				}
+			}
+
+			& h1 {
+				font-size: calc(var(--fontSize) * 1.2);
+				margin: 0 0 0.25rem;
+
+				& a {
+					color: #32325d;
+				}
+			}
+		}
+	}
+}
+
+.feed-sidebar {
+	border: 0;
+}
+
+.feed-sidebar .category-selector #actions {
+	background-color: transparent;
+    border-bottom: 0;
+}

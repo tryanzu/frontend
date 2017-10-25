@@ -1,0 +1,10 @@
+@import "variables.css";
+
+body {
+	background: #f1f5f9;
+	font-family: system-ui;
+}
+
+a {
+	color: var(--primaryColor);
+}

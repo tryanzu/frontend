@@ -1,4 +1,35 @@
-<main class="main-reader">
+<main class="board flex flex-auto">
+  <section class="flex flex-column" cycle-feed></section>  
+  <section>
+    <div class="current-article">
+      <section>
+        <h1>Bienvenido a la comunidad de Anzu.</h1>
+        <p>Únete a la conversación y aporta ideas para el desarrollo de Anzu, una poderosa plataforma de foros y comunidades enfocada en la discusión e interacción entre usuarios en tiempo real. .</p>
+        <div class="separator"></div>
+        <h2>Si eres nuevo por aquí</h2>
+        <div class="quick-guide">
+          <div>
+              <h3><a href="">Código de conducta <span class="icon icon-arrow-right"></span></a></h3>
+              <p>Si gustas de contribuir te compartimos los lineamientos que está comunidad sigue por el bien de todos.</p>
+          </div>
+          <div>
+              <h3><a href="">Preguntas frecuentes <span class="icon icon-arrow-right"></span></a></h3>
+              <p>Antes de preguntar algo te pedimos consultar está sección para saber si alguien más ya ha resuelto esa duda.</p>
+          </div>
+          <div>
+              <h3><a href="">Desarrollo Libre <span class="icon icon-arrow-right"></span></a></h3>
+              <p>Anzu es una plataforma de código abierto escrita por apasionados del software! Te invitamos a conocer nuestra misión y unirte.</p>
+          </div>
+        </div>
+        <div class="separator"></div>
+        <h2>Mientras estabas ausente</h2>
+
+      </section>
+    </div>
+  </section>
+</main>
+
+<main class="main-reader dn">
   <div class="row row-no-padding">
     <div class="col-md-4 col-sm-12" ng-class="{'hidden-xs': activePostId != null}">
       <div class="row row-no-padding">
@@ -166,7 +197,31 @@
   </div>
   <div class="col-md-8 col-sm-12" ng-class="{'hidden-xs': activePostId == null}">
     <div class="current-article" ng-controller="ReaderViewController" adjust-height>
-      <div class="waiting" ng-show="waiting">
+      <section ng-show="waiting">
+        <h1>Bienvenido a la comunidad de Anzu.</h1>
+        <p>Únete a la conversación y aporta ideas para el desarrollo de Anzu, una poderosa plataforma de foros y comunidades enfocada en la discusión e interacción entre usuarios en tiempo real. .</p>
+        <div class="separator"></div>
+        <h2>Si eres nuevo por aquí</h2>
+        <div class="quick-guide">
+          <div>
+              <h3><a href="">Código de conducta <span class="icon icon-arrow-right"></span></a></h3>
+              <p>Si gustas de contribuir te compartimos los lineamientos que está comunidad sigue por el bien de todos.</p>
+          </div>
+          <div>
+              <h3><a href="">Preguntas frecuentes <span class="icon icon-arrow-right"></span></a></h3>
+              <p>Antes de preguntar algo te pedimos consultar está sección para saber si alguien más ya ha resuelto esa duda.</p>
+          </div>
+          <div>
+              <h3><a href="">Desarrollo Libre <span class="icon icon-arrow-right"></span></a></h3>
+              <p>Anzu es una plataforma de código abierto escrita por apasionados del software! Te invitamos a conocer nuestra misión y unirte.</p>
+          </div>
+        </div>
+        <div class="separator"></div>
+        <h2>Mientras estabas ausente</h2>
+
+      </section>
+
+      <!--<div class="waiting" >
         <section>
           <div class="row">
             <div class="col-md-6 text-left">
@@ -184,7 +239,7 @@
             </div>
           </div>
         </section>
-      </div>
+      </div>-->
       <div ng-hide="waiting">
         <div class="back-to-list visible-xs-block">
           <a href="/" ng-click="activePostId = null"><i class="fa fa-chevron-left"></i> Regresar al listado de publicaciones</a>

@@ -1,6 +1,7 @@
 import io from 'socket.io-client';
 import {Navbar} from './components/navbar';
 import {Chat} from './components/chat';
+import {Feed} from './components/feed';
 import {run} from '@cycle/run';
 import {makeDOMDriver} from '@cycle/dom';
 import {makeHTTPDriver} from '@cycle/http';
@@ -27,6 +28,13 @@ export function chat(element) {
 		HTTP: makeHTTPDriver(),
 		socketIO: makeSocketIODriver(socketIo(Anzu.chatIO)),
 		storage: storageDriver
+	});
+};
+
+export function feed(element) {
+	run(Feed, {
+		DOM: makeDOMDriver(element),
+		HTTP: makeHTTPDriver()
 	});
 };
 

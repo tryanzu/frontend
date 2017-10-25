@@ -3,7 +3,8 @@ exports.files = {
         entryPoints: {
         	'src/mount.js': 'core.js'
         }
-    }
+    },
+    stylesheets: {joinTo: 'core.css', order: {after: path => path.endsWith('root.css')}}
 };
 
 exports.paths = {
@@ -14,5 +15,12 @@ exports.paths = {
 exports.plugins = {
     babel: {
         presets: ['latest']
+    },
+    postcss: {
+        processors: [
+            require('postcss-import')(),
+            require('postcss-cssnext')(),
+            require('lost')()
+        ]
     }
 };

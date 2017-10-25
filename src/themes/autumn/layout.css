@@ -1,0 +1,19 @@
+@import "variables.css";
+
+.main-reader {
+	max-width: var(--layoutSize);
+	margin: 0 auto;
+}
+
+main.board {
+	lost-center: var(--layoutSize);
+	padding: 0 1rem;
+
+	& > section:nth-child(1) {
+		lost-column: 2/6;
+	}
+
+	& > section:nth-child(2) {
+		lost-column: 4/6;
+	}
+}

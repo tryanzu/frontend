@@ -246,6 +246,16 @@ boardApplication.directive('cycleChat', ['$location', function($location) {
     };
 }]);
 
+boardApplication.directive('cycleFeed', ['$location', function($location) {
+    return {
+        restrict: 'A',
+        link: function(scope, element, attrs) {
+            var mount = require('src/mount.js');
+            mount.feed(element[0]);
+        }
+    };
+}]);
+
 boardApplication.controller('SignInController', ['$scope', '$rootScope', '$http', '$uibModalInstance', '$location',
     function($scope, $rootScope, $http, $uibModalInstance, $location) {
         $scope.form = {

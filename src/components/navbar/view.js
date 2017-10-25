@@ -14,7 +14,8 @@ export function view(effects, account) {
             accountVNode,
             h('header.navbar', [
                 h('section.navbar-section', [
-                    h('a', img('.logo.ng-link', {dataset: {href: '/'}, attrs: {src: '/images/header-logo.svg', alt: 'Buldar.com'}}))
+                    //h('a', img('.logo.ng-link', {dataset: {href: '/'}, attrs: {src: '/images/header-logo.svg', alt: 'Buldar.com'}}))
+                    h('a', h('h1.logo', 'Anzu'))
                 ]), 
                 h('section.navbar-section.show-sm.tr', [
                     user !== false ? 
@@ -89,8 +90,12 @@ export function view(effects, account) {
                     ]),
                 ]),
                 h('section.navbar-section.hide-sm', {style: {flex: '1 1 auto'}}, [
-                    a('.btn.btn-link.ng-link', {dataset: {href: '/chat'}}, ['Chat ', span('.bg-green.ph1.br1', String(connectedCount))]),
-                    div('.dropdown', [
+                    a('.btn.btn-link', 'Inicio'),
+                    a('.btn.btn-link', 'Preguntas frecuentes'),
+                    a('.btn.btn-link', 'Lineamientos'),
+                    a('.btn.btn-link', 'Donar'),
+                    //a('.btn.btn-link.ng-link', {dataset: {href: '/chat'}}, ['Chat ', span('.bg-green.ph1.br1', String(connectedCount))]),
+                    /*div('.dropdown', [
                         a('.btn.btn-link.dropdown-toggle', {attrs: {tabindex: 0}}, 'Conoce Buldar'),
                         h('ul.menu', [
                             h('li.menu-item', h('a.link.ng-link.pointer', {dataset: {href: '/reglamento'}}, 'Reglamento')),
@@ -107,7 +112,7 @@ export function view(effects, account) {
                             li('.divider'),
                             li('.menu-item', a('.link', {attrs: {href: 'https://spartangeek.com'}}, 'SpartanGeek.com'))
                         ])
-                    ]),
+                    ]),*/
                     h('a.link.pointer.btn.btn-link.modal-link', {dataset: {modal: 'account', tab: 'login'}, class: {dn: user !== false}}, 'Iniciar sesión'),
                     h('a.link.pointer.btn.btn-link.modal-link', {dataset: {modal: 'account', tab: 'signup'}, class: {dn: user !== false}}, 'Únete'),
                     user !== false ? 
@@ -133,13 +138,13 @@ export function view(effects, account) {
                     : div('.dn'),
                     user !== false ? 
                         div('.dropdown.dropdown-right', [
-                            a('.dropdown-toggle.pointer.link', {attrs: {tabindex: 0}}, [
+                            h('span.dropdown-toggle.pointer.link', {attrs: {tabindex: 0}}, [
+                                h('span.mr1', user.username),
                                 figure('.avatar', {dataset: {initial: user.username.substr(0, 1)}}, [
                                     image.length > 0 ? 
                                         img({attrs: {alt: `Avatar de ${user.username}`, src: image}}) 
                                     : div('.dn')
-                                ]),
-                                h('span.white.ml1', [user.username, h('i.icon.icon-caret')])
+                                ])
                             ]),
                             h('ul.menu', [
                                 h('li.menu-item', h('a.link.ng-link.pointer', {dataset: {href: `/u/${user.username}/${user.id}`}}, 'Ver mi perfil')),
