@@ -45,10 +45,17 @@
 					}
 				}
 
-				& img {
+				& img, & .empty-avatar {
 					width: 32px;
 					height: 32px;
 					border-radius: 16px;
+				}
+
+				& .empty-avatar {
+					background: color(var(--primaryColor) whiteness(40%));
+					color: color(var(--primaryColor) whiteness(100%));
+					line-height: 32px;
+					text-align: center;
 				}
 
 				& > div:nth-child(2) {

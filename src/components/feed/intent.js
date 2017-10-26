@@ -22,6 +22,8 @@ export function intent({DOM, HTTP}) {
             bottom: e.target.scrollHeight - e.target.scrollTop - e.target.clientHeight < 1
         }));
 
+    const router$ = xs.empty();
+
     const fetch$ = scroll$.filter(e => e.bottom === true).map({type: 'next'}).startWith({type: 'bootstrap'});
 
     /**
@@ -49,12 +51,13 @@ export function intent({DOM, HTTP}) {
 
                 return kvmap;
             }, {});
-    }).debug();
+    });
 
     return {
         fetch$,
         posts$,
         categories$,
-        subcategories$
+        subcategories$,
+        router$
     };
 }

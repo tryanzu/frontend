@@ -18,12 +18,15 @@
   "homepage": "https://github.com/RodrigoCR/bakkhos#readme",
   "dependencies": {
     "@cycle/dom": "^18.3.0",
+    "@cycle/history": "^6.7.0",
     "@cycle/http": "^14.3.0",
     "@cycle/isolate": "^3.1.0",
     "@cycle/run": "^3.2.0",
     "@cycle/storage": "^4.1.1",
+    "@types/history": "^4.6.1",
     "babel-preset-stage-2": "^6.24.1",
     "bower": "^1.8.0",
+    "cyclic-router": "^5.1.3",
     "lost": "^8.2.0",
     "markdown-it": "^8.4.0",
     "markdown-it-emoji": "^1.4.0",
@@ -34,6 +37,7 @@
     "snabbdom-virtualize": "^0.7.0",
     "socket.io-client": "^2.0.3",
     "spectre.css": "^0.3.2",
+    "switch-path": "^1.2.0",
     "timeago.js": "^3.0.2",
     "xstream": "^10.9.0"
   },
