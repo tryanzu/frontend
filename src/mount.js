@@ -20,7 +20,12 @@ export function AnzuApp(element) {
     run(mainWithRouting, {
         DOM: makeDOMDriver(element),
         history: captureClicks(makeHistoryDriver()),
-        HTTP: makeHTTPDriver()
+        HTTP: makeHTTPDriver(),
+		angular: ngDriver(x => console.log(x)),
+		storage: storageDriver,
+		beep: beepDriver,
+		socketIO: makeSocketIODriver(socketIo()),
+		socketIOChat: makeSocketIODriver(socketIo(Anzu.chatIO)),
     });
 }
 

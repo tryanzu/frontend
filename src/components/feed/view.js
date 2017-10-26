@@ -25,7 +25,9 @@ export function view(state$) {
                         h('span.pl2.b', post.comments.count)
                     ])
                 ]);
-            }))
+            }).concat([
+                h('div.pv2', h('div.loading'))
+            ]))
         ]);
     });
 }

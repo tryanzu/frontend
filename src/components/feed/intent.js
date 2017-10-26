@@ -15,16 +15,12 @@ export function intent({DOM, HTTP}) {
     /**
      * DOM intents including:
      */
-    const scroll$ = DOM.select('.list-container').events('scroll')
+    const scroll$ = DOM.select('.feed .list').events('scroll')
         .compose(debounce(60))
-        .map(e => ({
-            type: 'feed-scroll',
-            bottom: e.target.scrollHeight - e.target.scrollTop - e.target.clientHeight < 1
-        }));
+        .map(e => ({bottom: e.target.scrollHeight - e.target.scrollTop - e.target.clientHeight < 1}))
+        .debug();
 
-    const router$ = xs.empty();
-
-    const fetch$ = scroll$.filter(e => e.bottom === true).map({type: 'next'}).startWith({type: 'bootstrap'});
+    const fetch$ = scroll$.filter(e => e.bottom === true).mapTo({type: 'next'}).startWith({type: 'bootstrap'});
 
     /**
      * HTTP read effects including: 
@@ -58,6 +54,5 @@ export function intent({DOM, HTTP}) {
         posts$,
         categories$,
         subcategories$,
-        router$
     };
 }

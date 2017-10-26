@@ -13,14 +13,23 @@ export function model(actions) {
 
     /**
      * HTTP write effects including:
-     * - User info from token stream.
+     * - Fetch new posts.
+     * - Categories fetching.
      */
     const fetchPosts$ = actions.fetch$
-        .map(({type}) => ({
+        .fold((offset, event) => {
+            switch (event.type) {
+                default: case 'boostrap':
+                return 0;
+                case 'next':
+                return offset + 8;
+            }
+        }, 0)
+        .map(offset => ({
             method: 'GET',
             url: Anzu.layer + 'feed', 
             category: 'posts',
-            query: {limit: 30, offset: 0}
+            query: {limit: 8, offset}
         })).debug();
 
     const categories$ = xs.of({
@@ -36,7 +45,7 @@ export function model(actions) {
      * Streams mapped to reducer functions.
      */
     const postsLoadingR$ = actions.fetch$.map(res => state => ({...state, loading: true}));
-    const postsR$ = actions.posts$.map(res => state => ({...state, list: res.feed, loading: false}));
+    const postsR$ = actions.posts$.map(res => state => ({...state, list: state.list.concat(res.feed), loading: false}));
     const subcategoriesR$ = actions.subcategories$.map(subcategories => state => ({...state, subcategories}));
     
     /**
