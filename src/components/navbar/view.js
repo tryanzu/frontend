@@ -14,8 +14,8 @@ export function view(effects, account) {
             accountVNode,
             h('header.navbar', [
                 h('section.navbar-section', [
-                    //h('a', img('.logo.ng-link', {dataset: {href: '/'}, attrs: {src: '/images/header-logo.svg', alt: 'Buldar.com'}}))
-                    h('a', h('h1.logo', 'Anzu'))
+                    h('a', img('.logo.ng-link.w3', {dataset: {href: '/'}, attrs: {src: '/images/anzu.png', alt: 'Buldar.com'}}))
+                    //h('a', h('h1.logo', 'Anzu'))
                 ]), 
                 h('section.navbar-section.show-sm.tr', [
                     user !== false ? 

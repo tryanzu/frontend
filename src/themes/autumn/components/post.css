@@ -7,16 +7,16 @@
 	margin: 0 0 0 1rem;
 	padding: 2rem;
 
-	& section h1 {
+	& section h1, & article h1 {
 		color: color(var(--primaryColor) blackness(10%));
 		font-size: calc(var(--fontSize) * 1.6);
 	}
 
-	& section h2 {
+	& section h2, & article h2 {
 		font-size: calc(var(--fontSize) * 1.4);
 	}
 
-	& section h3 {
+	& section h3, & article h3 {
 		font-size: calc(var(--fontSize) * 1.2);
 	}
 

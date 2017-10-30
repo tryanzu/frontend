@@ -10,7 +10,12 @@ const ESC_KEY = 27;
  * @param socket
  * @param history
  */
-export function intent({DOM, HTTP}) {
+export function intent({DOM, HTTP, props$}) {
+
+    /**
+     * Router read effects.
+     */
+    const openPost$ = props$.map(post => post.id);
 
     /**
      * DOM intents including:
@@ -24,6 +29,9 @@ export function intent({DOM, HTTP}) {
 
     /**
      * HTTP read effects including: 
+     * - New requested posts.
+     * - Fetched categories.
+     * - Fetched individual posts.
      */
     const posts$ = HTTP.select('posts')
         .map(response$ => response$.replaceError(err => xs.of(err)))
@@ -32,6 +40,12 @@ export function intent({DOM, HTTP}) {
         .map(res => res.body);
 
     const categories$ = HTTP.select('categories')
+        .map(response$ => response$.replaceError(err => xs.of(err)))
+        .flatten()
+        .filter(res => !(res instanceof Error))
+        .map(res => res.body); 
+
+    const post$ = HTTP.select('post')
         .map(response$ => response$.replaceError(err => xs.of(err)))
         .flatten()
         .filter(res => !(res instanceof Error))
@@ -52,7 +66,9 @@ export function intent({DOM, HTTP}) {
     return {
         fetch$,
         posts$,
+        post$,
         categories$,
         subcategories$,
+        openPost$
     };
 }

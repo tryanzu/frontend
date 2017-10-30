@@ -1,4 +1,7 @@
 import {h} from '@cycle/dom';
+import timeago from 'timeago.js';
+
+const ago = timeago(null, 'es');
 
 export function view(state$) {
     return state$.map(state => {
@@ -16,7 +19,7 @@ export function view(state$) {
                             h('div', author.image ? h('img', {attrs: {src: author.image, alt: `Avatar de ${author.username}`}}) : h('div.empty-avatar', author.username.substr(0, 1))),
                             h('div', [
                                 h('span', author.username),
-                                h('span.ago', 'Publicó hace 20 minutos')
+                                h('span.ago', 'Publicó ' + ago.format(post.created_at))
                             ])
                         ]),
                     ]),

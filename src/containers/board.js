@@ -2,33 +2,34 @@ import xs from 'xstream';
 import {h} from '@cycle/dom';
 import {Feed} from '../components/feed';
 import {Navbar} from '../components/navbar';
-import {Quickstart} from '../components/quickstart';
+import {Post} from '../components/post';
 
 export function Board(sources) {
 	const {DOM, HTTP} = sources;
-    /*const actions = intent(sources);
-    const effects = model(actions);
-    const vtree$ = view(effects.state$);*/
+    const props$ = 'props$' in sources ? sources.props$.debug() : xs.empty();
 
-    const feed = Feed({DOM, HTTP});
+	/**
+     * Child component wiring...
+     * Pass through some read sinks & read some effects.
+     */
+    const feed = Feed({DOM, HTTP, props$});
     const navbar = Navbar(sources);
-    const state$ = xs.of({lastFetch: 0});
+    const post = Post({DOM, HTTP});
 
-    const http$ = xs.merge(navbar.HTTP, feed.HTTP);
+    // Compute merged vdom trees.
+    const vtree$ = xs.combine(feed.DOM, navbar.DOM, post.DOM);
 
     return {
-        DOM: xs.combine(state$, feed.DOM, navbar.DOM).map(([state, feedVNode, navbarVNode]) => {
+        DOM: vtree$.map(([feedVNode, navbarVNode, postVNode]) => {
         	return h('div.flex.flex-column.flex-auto', [
         		h('header', navbarVNode),
         		h('main.board.flex.flex-auto', [
 		    		feedVNode,
-		    		h('section.fade-in.post', [
-		    			Quickstart()
-		    		])
+		    		postVNode,
 		    	])
         	]);
         }),
-        HTTP: http$,
+        HTTP: xs.merge(navbar.HTTP, feed.HTTP),
         router: xs.empty()
     };
 };

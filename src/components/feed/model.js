@@ -6,7 +6,8 @@ const DEFAULT_STATE = {
     offset: 0,
     loading: false,
     error: false,
-    subcategories: false
+    subcategories: false,
+    post: false
 };
 
 export function model(actions) {
@@ -17,28 +18,29 @@ export function model(actions) {
      * - Categories fetching.
      */
     const fetchPosts$ = actions.fetch$
-        .fold((offset, event) => {
-            switch (event.type) {
-                default: case 'boostrap':
-                return 0;
-                case 'next':
-                return offset + 8;
-            }
-        }, 0)
+        .fold((offset, event) => event.type == 'next' ? offset + 8 : 0, 0)
         .map(offset => ({
             method: 'GET',
             url: Anzu.layer + 'feed', 
             category: 'posts',
             query: {limit: 8, offset}
-        })).debug();
+        }));
 
-    const categories$ = xs.of({
+    const fetchPost$ = actions.openPost$.map(id => ({
         method: 'GET',
-        url: Anzu.layer + 'category', 
-        category: 'categories',
-    });
+        url: Anzu.layer + 'posts/' + id, 
+        category: 'post'
+    }));
 
-    const http$ = xs.merge(categories$, fetchPosts$);
+    const http$ = xs.merge(
+        xs.of({
+            method: 'GET',
+            url: Anzu.layer + 'category', 
+            category: 'categories',
+        }), 
+        fetchPosts$, 
+        fetchPost$,
+    );
 
     /**
      * Reducers.
@@ -46,6 +48,7 @@ export function model(actions) {
      */
     const postsLoadingR$ = actions.fetch$.map(res => state => ({...state, loading: true}));
     const postsR$ = actions.posts$.map(res => state => ({...state, list: state.list.concat(res.feed), loading: false}));
+    const postR$ = actions.post$.map(res => state => ({...state, post: res}));
     const subcategoriesR$ = actions.subcategories$.map(subcategories => state => ({...state, subcategories}));
     
     /**
@@ -64,6 +67,7 @@ export function model(actions) {
 
     const state$ = xs.merge(
         postsR$,
+        postR$,
         postsLoadingR$,
         subcategoriesR$
     ).fold((state, action) => action(state), DEFAULT_STATE);
