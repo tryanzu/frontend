@@ -41,7 +41,7 @@ export function model(actions, accountModal) {
             }
         }));
 
-    const http$ = xs.merge(requestUser$, requestNotifications$, accountModal.HTTP);
+    const http$ = xs.merge(requestUser$, requestNotifications$);
 
     /**
      * LocalStorage write effects including:
@@ -158,10 +158,10 @@ export function model(actions, accountModal) {
 
     return {
         state$,
-        http$,
         storage$,
         ng$,
         beep$,
-        socket$
+        socket$,
+        HTTP: http$,
     };
 }

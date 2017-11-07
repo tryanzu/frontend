@@ -13,7 +13,7 @@ export function Navbar({DOM, HTTP, storage, socketIO, socketIOChat}) {
 
     return {
         DOM: vdom$,
-        HTTP: effects.http$,
+        HTTP: xs.merge(effects.HTTP, account.HTTP),
         storage: effects.storage$,
         angular: effects.ng$,
         beep: effects.beep$,
