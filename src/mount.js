@@ -2,9 +2,8 @@ import io from 'socket.io-client';
 import {Navbar} from './components/navbar';
 import {Chat} from './components/chat';
 import {Feed} from './components/feed';
-import {AnzuRouter} from './router';
+import {Board} from './containers/board';
 import {run} from '@cycle/run';
-import {routerify} from 'cyclic-router';
 import {makeDOMDriver} from '@cycle/dom';
 import {makeHistoryDriver, captureClicks} from '@cycle/history';
 import {makeHTTPDriver} from '@cycle/http';
@@ -12,14 +11,11 @@ import {makeSocketIODriver} from './drivers/socket-io';
 import {ngDriver} from './drivers/angular';
 import {beepDriver} from './drivers/beep';
 import storageDriver from '@cycle/storage';	
-import switchPath from 'switch-path';
 
 export function AnzuApp(element) {
-    const mainWithRouting = routerify(AnzuRouter, switchPath);
-
-    run(mainWithRouting, {
+    run(Board, {
         DOM: makeDOMDriver(element),
-        history: captureClicks(makeHistoryDriver()),
+        history: makeHistoryDriver(),
         HTTP: makeHTTPDriver(),
 		angular: ngDriver(x => console.log(x)),
 		storage: storageDriver,

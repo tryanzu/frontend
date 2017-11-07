@@ -7,7 +7,7 @@ const DEFAULT_STATE = {
     post: false
 };
 
-export function Post({DOM, HTTP}) {
+export function Post({DOM, HTTP, props}) {
 
 	// INTENTS...
 	const post$ = HTTP.select('post')
@@ -17,15 +17,16 @@ export function Post({DOM, HTTP}) {
         .map(res => res.body);
 
     // MODEL
-    const postR$ = post$.map(res => state => ({...state, post: res}));
-
+    const postR$ = post$.map(res => state => ({...state, post: res, loading: false}));
+    const postLoadingR$ = props.fetchPost$.map(res => state  => ({...state, loading: true}))
     const state$ = xs.merge(
         postR$,
+        postLoadingR$
     ).fold((state, action) => action(state), DEFAULT_STATE);
 
     //const actions = intent(sources);
     //const effects = model(actions);
-    const vtree$ = view(state$.debug());
+    const vtree$ = view(state$);
     
     return {
         DOM: vtree$,
