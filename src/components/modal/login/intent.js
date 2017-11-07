@@ -30,6 +30,10 @@ export function intent(dom, http) {
         .mapTo(true)
         .fold(acc => !acc, false);
 
+    const rememberMe$ = dom.select('#rememberme').events('change')
+        .mapTo(true)
+        .fold(acc => !acc, false)
+
     const fields$ = xs.combine(email$, password$);
 
     return {
@@ -37,6 +41,7 @@ export function intent(dom, http) {
         sent$, 
         token$, 
         forgot$,
-        recover$
+        recover$,
+        rememberMe$
     };
 }

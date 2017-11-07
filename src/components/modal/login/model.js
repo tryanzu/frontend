@@ -7,6 +7,7 @@ const DEFAULT_STATE = {
     resolving: false,
     email: '',
     password: '',
+    rememberMe: false,
     error: false
 };
 
@@ -47,6 +48,7 @@ export function model(actions) {
      const fieldsR$ = actions.fields$.map(([email, password]) => state => ({...state, email, password}));
      const sentR$ = actions.sent$.map(sent => state => ({...state, resolving: sent, error: false}));
      const forgotR$ = actions.forgot$.map(show => state => ({...state, showForgotPassword: show}));
+     const rememberMeR$ = actions.rememberMe$.map(active => state => ({...state, rememberMe: active}));
      const tokenR$ = actions.token$.map(res => state => {
         return {
             ...state, 
@@ -61,6 +63,7 @@ export function model(actions) {
         sentR$, 
         tokenR$, 
         forgotR$, 
+        rememberMeR$,
         recoverR$
     ).fold((state, action) => action(state), DEFAULT_STATE);
 

@@ -15,24 +15,24 @@ export function view(state$) {
                 'Iniciar sesión con Facebook'
             ])),
             h('div.form-group.tc', 'ó con tu cuenta'),
-            h('form', {attrs: {name: 'login'}}, [
+            h('form', {attrs: {name: 'login', method: 'GET', action: '#'}}, [
                 h('div.black.bg-washed-red.pa2.mb2.f7.fade-in', {class: {dn: error === false}}, [
                     'No pudimos acceder a tu cuenta, verifica tus datos e intenta nuevamente.'
                 ]),
                 h('div.form-group', [
-                    h('input.form-input', {props: {value: email}, attrs: {id: 'email', type: 'email', placeholder: 'Correo electrónico', required: true}})
+                    h('input.form-input', {props: {value: email}, attrs: {id: 'email', type: 'email', placeholder: 'Correo electrónico', required: true, autofocus: true}})
                 ]),
                 h('div.form-group', [
                     h('input.form-input', {props: {value: password}, attrs: {id: 'password', type: 'password', placeholder: 'Contraseña', required: true}})
                 ]),
                 h('div.form-group', [
                     h('label.form-checkbox', [
-                        h('input', {attrs: {type: 'checkbox'}}),
+                        h('input', {attrs: {type: 'checkbox', id: 'rememberme', name: 'rememberme'}, props: {checked: state.rememberMe}}),
                         h('i.form-icon'),
                         ' Recordar mi sesión'
                     ]),
                 ]),
-                h('button.btn.btn-primary.btn-block', {attrs: {type: 'submit'}, class: {loading: resolving}}, 'Iniciar sesión'),
+                h('input.btn.btn-primary.btn-block', {attrs: {type: 'submit', value: 'Iniciar sesión'}, class: {loading: resolving}}),
                 h('a.db.link.tc.mt2', {attrs: {id: 'forgot'}}, '¿Olvidaste tu contraseña?')
             ])
         ]);
