@@ -15,15 +15,19 @@ export function intent({DOM, HTTP, props$}) {
     /**
      * Router read effects.
      */
-    const openPost$ = props$.map(post => post.id);
+    const linkPost$ = DOM.select('.feed .list a').events('click', {preventDefault: true})
+        .map((event) => {
+            const {target} = event;
+            event.preventDefault();
+            return {path: target.getAttribute('href'), id: target.dataset.postId};
+        });
 
     /**
      * DOM intents including:
      */
     const scroll$ = DOM.select('.feed .list').events('scroll')
         .compose(debounce(60))
-        .map(e => ({bottom: e.target.scrollHeight - e.target.scrollTop - e.target.clientHeight < 1}))
-        .debug();
+        .map(e => ({bottom: e.target.scrollHeight - e.target.scrollTop - e.target.clientHeight < 1}));
 
     const fetch$ = scroll$.filter(e => e.bottom === true).mapTo({type: 'next'}).startWith({type: 'bootstrap'});
 
@@ -69,6 +73,6 @@ export function intent({DOM, HTTP, props$}) {
         post$,
         categories$,
         subcategories$,
-        openPost$
+        linkPost$
     };
 }

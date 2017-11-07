@@ -5,12 +5,20 @@ const DEFAULT_STATE = {
     list: [],
     offset: 0,
     loading: false,
+    loadingPost: false,
     error: false,
     subcategories: false,
     post: false
 };
 
 export function model(actions) {
+
+    /**
+     * History write effects including:
+     * - Open new posts url.
+     */
+    const routeTo$ = actions.linkPost$
+        .map(link => link.path);
 
     /**
      * HTTP write effects including:
@@ -23,12 +31,12 @@ export function model(actions) {
             method: 'GET',
             url: Anzu.layer + 'feed', 
             category: 'posts',
-            query: {limit: 8, offset}
+            query: {limit: 15, offset}
         }));
 
-    const fetchPost$ = actions.openPost$.map(id => ({
+    const fetchPost$ = actions.linkPost$.map(link => ({
         method: 'GET',
-        url: Anzu.layer + 'posts/' + id, 
+        url: Anzu.layer + 'posts/' + link.id, 
         category: 'post'
     }));
 
@@ -48,7 +56,7 @@ export function model(actions) {
      */
     const postsLoadingR$ = actions.fetch$.map(res => state => ({...state, loading: true}));
     const postsR$ = actions.posts$.map(res => state => ({...state, list: state.list.concat(res.feed), loading: false}));
-    const postR$ = actions.post$.map(res => state => ({...state, post: res}));
+    const postR$ = actions.post$.map(res => state => ({...state, post: res, loadingPost: false}));
     const subcategoriesR$ = actions.subcategories$.map(subcategories => state => ({...state, subcategories}));
     
     /**
@@ -75,5 +83,7 @@ export function model(actions) {
     return {
         state$,
         HTTP: http$,
+        history: routeTo$,
+        linkPost$: actions.linkPost$  
     };
 }

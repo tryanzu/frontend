@@ -10,6 +10,8 @@ export function Feed(sources) {
     
     return {
         DOM: vtree$,
-        HTTP: effects.HTTP
+        HTTP: effects.HTTP,
+        history: effects.history,
+        linkPost: effects.linkPost$
     };
 };

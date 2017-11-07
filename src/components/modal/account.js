@@ -38,7 +38,7 @@ export function AccountModal({DOM, HTTP, props}) {
      */
     const vdom$ = xs.combine(active$, tab$, login.DOM, signup.DOM).map(([active, tab, loginVNode, signupVNode]) => {
     	if (!active) {
-    		return null;
+    		return h('div');
     	}
 
     	return h('div.modal.active', [
