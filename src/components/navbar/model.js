@@ -21,16 +21,6 @@ export function model(actions, accountModal) {
      * HTTP write effects including:
      * - User info from token stream.
      */
-    const requestUser$ = actions.token$.filter(token => token !== false)
-        .map(token => ({
-                url: Anzu.layer + 'user/my', 
-                category: 'me',
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            })
-        );
-
     const requestNotifications$ = actions.openNotifications$
         .compose(sampleCombine(actions.token$))
         .map(([event, token]) => ({
@@ -40,8 +30,6 @@ export function model(actions, accountModal) {
                 Authorization: `Bearer ${token}`
             }
         }));
-
-    const http$ = xs.merge(requestUser$, requestNotifications$);
 
     /**
      * LocalStorage write effects including:
@@ -162,6 +150,6 @@ export function model(actions, accountModal) {
         ng$,
         beep$,
         socket$,
-        HTTP: http$,
+        HTTP: requestNotifications$,
     };
 }

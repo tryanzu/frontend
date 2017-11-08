@@ -5,6 +5,7 @@ import {view} from './post/view';
 import merge from 'lodash/merge';
 
 const DEFAULT_STATE = {
+    user: false,
     loading: false,
     error: false,
     post: false,
@@ -13,10 +14,17 @@ const DEFAULT_STATE = {
 };
 
 function intent({DOM, HTTP, props}) {
-    const {fetchPost$} = props;
 
     const voting$ = DOM.select('a.vote').events('click')
         .map(({currentTarget}) => ({id: currentTarget.dataset.id, intent: currentTarget.dataset.intent, type: currentTarget.dataset.type}));
+
+    const fetchPost$ = HTTP.select('post').mapTo(true);
+
+    const user$ = HTTP.select('me')
+            .map(response$ => response$.replaceError(err => xs.of(err)))
+            .flatten()
+            .filter(res => !(res instanceof Error))
+            .map(res => res.body);
 
     const post$ = HTTP.select('post')
         .map(response$ => response$.replaceError(err => xs.of(err)))
@@ -29,8 +37,9 @@ function intent({DOM, HTTP, props}) {
         .flatten()
         .map(r => 'err' in r ? r : r.body)
         .debug();
-        
+    
     return {
+        user$,
         post$, 
         fetchPost$, 
         vote$,
@@ -61,6 +70,8 @@ function model(actions) {
      * - Setting loading state accordingly.
      * - Voting loading state.
      */
+    const userR$ = actions.user$.map(user => state => ({...state, user}));
+
     const postR$ = actions.post$
         .map(p => state => {
             const set = p.comments.set.reduce((acc, c) => ({...acc, [c.id]: c}), {});
@@ -82,7 +93,7 @@ function model(actions) {
         ...state, 
         voting: false, 
         toasts: state.toasts.concat([
-            {type: 'error', content: 'No pudimos enviar tu voto, intenta de nuevo más tarde.'}
+            {type: 'error', content: 'Pasados 15 minutos ya no es posible cambiar tu voto en este comentario.'}
         ])
     }));
 
@@ -116,6 +127,7 @@ function model(actions) {
         voteFailR$,
         voteFailDismissR$,
         voteR$,
+        userR$,
     ).fold((state, action) => action(state), DEFAULT_STATE);
 
     return {

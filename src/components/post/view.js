@@ -29,7 +29,7 @@ function authorBlock(item, label = 'Publicó') {
     ]);
 }
 
-function commentBlock(comment, voting) {
+function commentBlock(comment, voting, currentUser = false) {
 
     // Loading vote status helper.
     const voteIcon = (intent, vnode) => voting !== false && intent == voting ? h('div.loading') : vnode;
@@ -49,9 +49,11 @@ function commentBlock(comment, voting) {
                     h('i.fa.fa-mail-reply'), 
                     h('span.pl2', 'Responder')
                 ]),
-                h('a.dib.v-mid.ph2.mid-gray', comment.votes.up - comment.votes.down),
-                h('a', {attrs: {class: 'dib v-mid ph2 vote ' + voteColor('down')}, dataset: {id: comment.id, type: 'comment', intent: 'down'}}, voteIcon('down', h('i.fa.fa-thumbs-o-down'))),
-                h('a', {attrs: {class: 'dib v-mid ph2 vote ' + voteColor('up')}, dataset: {id: comment.id, type: 'comment', intent: 'up'}}, voteIcon('up', h('i.fa.fa-thumbs-o-up'))),
+                h('div.dib.v-mid', [
+                    h('a.dib.v-mid.ph2.mid-gray', comment.votes.up - comment.votes.down),
+                    h('a', {attrs: {class: 'dib v-mid ph2 vote ' + voteColor('down')}, dataset: {id: comment.id, type: 'comment', intent: 'down'}}, voteIcon('down', h('i.fa.fa-thumbs-o-down'))),
+                    h('a', {attrs: {class: 'dib v-mid ph2 vote ' + voteColor('up')}, dataset: {id: comment.id, type: 'comment', intent: 'up'}}, voteIcon('up', h('i.fa.fa-thumbs-o-up'))),
+                ])
             ])
         ]),
         h('div.pt1', virtualize(`<p>${md.renderInline(comment.content)}</p>`),)
@@ -64,7 +66,7 @@ function toastView(toast) {
 
 export function view(state$) {
     return state$.map(state => {
-        const {post, loading, voting, toasts} = state;
+        const {post, loading, voting, toasts, user} = state;
         const {author, comments} = post;
 
         if (loading) {
@@ -84,7 +86,8 @@ export function view(state$) {
                 h('section', comments.list.map(id => {
                     const c = comments.set[id];
                     const isVoting = voting !== false && voting.id == c.id ? voting.intent : false;
-                    return commentBlock(c, isVoting);
+                    const currentUser = user !== false ? c.author.id == user.id : false;
+                    return commentBlock(c, isVoting, currentUser);
                 }))
             ])
         ]);

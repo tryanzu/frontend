@@ -12,9 +12,12 @@ const Routes = {
 };
 
 export function Board(sources) {
-	const {DOM, HTTP, storage, socketIO, socketIOChat, history} = sources;
-    const {routePath$, authToken$} = intent(sources);
-    const effects = model({routePath$, authToken$});
+    const actions = intent(sources);
+    const effects = model(actions);
+
+    // Destructure some sources & read effects to be shared
+    const {DOM, HTTP, storage, socketIO, socketIOChat, history} = sources;
+    const {routePath$, authToken$} = actions;
 
 	/**
      * Child component wiring...
@@ -22,7 +25,7 @@ export function Board(sources) {
      */
     const navbar = Navbar({DOM, HTTP, storage, socketIO, socketIOChat});
     const feed = Feed({DOM, HTTP, props: {authToken$}});
-    const post = Post({DOM, HTTP, props: {fetchPost$: feed.linkPost, authToken$}});
+    const post = Post({DOM, HTTP, props: {authToken$}});
 
     // Compute merged vdom trees.
     const vtree$ = xs.combine(feed.DOM, navbar.DOM, post.DOM).map(([feedVNode, navbarVNode, postVNode]) => {
@@ -74,12 +77,25 @@ function intent({history, storage}) {
 }
 
 function model(actions) {
+    const postRoute$ = actions.routePath$
+        .map(route => route.value)
+        .filter(action => action.page == 'post');
 
     const http$ = xs.merge(
+        actions.authToken$
+            .filter(withAuth => {
+                const headers = {},
+                    x = withAuth(headers);
+                return x != headers;
+            })
+            .map(withAuth => ({
+                url: Anzu.layer + 'user/my', 
+                category: 'me',
+                headers: withAuth({})
+            })),
+
         // Post loading route action transformed into http request.
-        actions.routePath$
-            .map(route => route.value)
-            .filter(action => action.page == 'post')
+        postRoute$
             .compose(sampleCombine(actions.authToken$))
             .map(([action, withAuth]) => ({
                 method: 'GET',
@@ -88,8 +104,12 @@ function model(actions) {
                 headers: withAuth({})
             }))
     );
+
+    const fetchPost$ = xs.create();
+    //fetchPost$.imitate(postRoute$);
         
     return {
-        HTTP: http$
+        HTTP: http$,
+        fetchPost$
     };
 }
