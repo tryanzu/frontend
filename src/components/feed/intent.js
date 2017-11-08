@@ -10,7 +10,7 @@ const ESC_KEY = 27;
  * @param socket
  * @param history
  */
-export function intent({DOM, HTTP, props$}) {
+export function intent({DOM, HTTP, props}) {
 
     /**
      * Router read effects.
@@ -73,6 +73,7 @@ export function intent({DOM, HTTP, props$}) {
         post$,
         categories$,
         subcategories$,
-        linkPost$
+        linkPost$,
+        authToken$: props.authToken$,
     };
 }

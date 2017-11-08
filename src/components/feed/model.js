@@ -34,12 +34,6 @@ export function model(actions) {
             query: {limit: 15, offset}
         }));
 
-    const fetchPost$ = actions.linkPost$.map(link => ({
-        method: 'GET',
-        url: Anzu.layer + 'posts/' + link.id, 
-        category: 'post'
-    }));
-
     const http$ = xs.merge(
         xs.of({
             method: 'GET',
@@ -47,7 +41,6 @@ export function model(actions) {
             category: 'categories',
         }), 
         fetchPosts$, 
-        fetchPost$,
     );
 
     /**
@@ -58,20 +51,6 @@ export function model(actions) {
     const postsR$ = actions.posts$.map(res => state => ({...state, list: state.list.concat(res.feed), loading: false}));
     const postR$ = actions.post$.map(res => state => ({...state, post: res, loadingPost: false}));
     const subcategoriesR$ = actions.subcategories$.map(subcategories => state => ({...state, subcategories}));
-    
-    /**
-     const fieldsR$ = actions.fields$.map(([email, password]) => state => ({...state, email, password}));
-     const sentR$ = actions.sent$.map(sent => state => ({...state, resolving: sent, error: false}));
-     const forgotR$ = actions.forgot$.map(show => state => ({...state, showForgotPassword: show}));
-     const tokenR$ = actions.token$.map(res => state => {
-        return {
-            ...state, 
-            resolving: false,
-            error: res instanceof Error ? res : false
-        };
-     });
-    const recoverR$ = actions.recover$.map(res => state => ({...state, sentRecover: true}));
-    */
 
     const state$ = xs.merge(
         postsR$,

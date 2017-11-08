@@ -8,3 +8,7 @@ body {
 a {
 	color: var(--primaryColor);
 }
+
+.btn.btn-primary {
+	background: var(--primaryColor) !important;
+}

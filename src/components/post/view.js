@@ -29,7 +29,18 @@ function authorBlock(item, label = 'Publicó') {
     ]);
 }
 
-function commentBlock(comment) {
+function commentBlock(comment, voting) {
+
+    // Loading vote status helper.
+    const voteIcon = (intent, vnode) => voting !== false && intent == voting ? h('div.loading') : vnode;
+    const voted = comment.liked || false;
+    const voteColor = (intent) => {
+        if (voted == -1 && intent == 'down') return 'blue';
+        if (voted == 1 && intent == 'up') return 'blue';
+
+        return 'mid-gray';
+    };
+
     return h('div.pb1', [
         h('div.flex', [
             h('div.flex-auto', authorBlock(comment, 'Comentó')),
@@ -38,9 +49,9 @@ function commentBlock(comment) {
                     h('i.fa.fa-mail-reply'), 
                     h('span.pl2', 'Responder')
                 ]),
-                h('a.dib.v-mid.ph2.mid-gray', comment.votes.up + comment.votes.down),
-                h('a.dib.v-mid.ph2.mid-gray', h('i.fa.fa-thumbs-o-down')),
-                h('a.dib.v-mid.ph2.mid-gray', h('i.fa.fa-thumbs-o-up')),
+                h('a.dib.v-mid.ph2.mid-gray', comment.votes.up - comment.votes.down),
+                h('a', {attrs: {class: 'dib v-mid ph2 vote ' + voteColor('down')}, dataset: {id: comment.id, type: 'comment', intent: 'down'}}, voteIcon('down', h('i.fa.fa-thumbs-o-down'))),
+                h('a', {attrs: {class: 'dib v-mid ph2 vote ' + voteColor('up')}, dataset: {id: comment.id, type: 'comment', intent: 'up'}}, voteIcon('up', h('i.fa.fa-thumbs-o-up'))),
             ])
         ]),
         h('div.pt1', virtualize(`<p>${md.renderInline(comment.content)}</p>`),)
@@ -49,7 +60,7 @@ function commentBlock(comment) {
 
 export function view(state$) {
     return state$.map(state => {
-        const {post, loading} = state;
+        const {post, loading, voting} = state;
         const {author, comments} = post;
 
         if (loading) {
@@ -66,7 +77,11 @@ export function view(state$) {
                     virtualize(`<p>${md.renderInline(post.content)}</p>`),
                     h('div.separator.pt2'),
                     h('h3.pb2', `${comments.count} comentarios`),
-                    h('section', comments.set.map(commentBlock))
+                    h('section', comments.list.map(id => {
+                        const c = comments.set[id];
+                        const isVoting = voting !== false && voting.id == c.id ? voting.intent : false;
+                        return commentBlock(c, isVoting);
+                    }))
                 ])
             ])
         ]);
