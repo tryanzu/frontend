@@ -12,3 +12,8 @@ a {
 .btn.btn-primary {
 	background: var(--primaryColor) !important;
 }
+
+.toast.toast-error {
+	background: rgba(232, 0, 30, 0.9);
+	border-color: #c61d31;
+}

@@ -58,9 +58,13 @@ function commentBlock(comment, voting) {
     ]);
 }
 
+function toastView(toast) {
+    return h('div', {attrs: {class: 'mb2 fade-in shadow-4 toast toast-' + toast.type}}, toast.content);
+}
+
 export function view(state$) {
     return state$.map(state => {
-        const {post, loading, voting} = state;
+        const {post, loading, voting, toasts} = state;
         const {author, comments} = post;
 
         if (loading) {
@@ -69,21 +73,25 @@ export function view(state$) {
             ]);
         }
 
-        return h('section.fade-in.post', [
-            post == false ? Quickstart() : h('div.current-article', [
-                h('article', [
-                    authorBlock(post),
-                    h('h1', post.title),
-                    virtualize(`<p>${md.renderInline(post.content)}</p>`),
-                    h('div.separator.pt2'),
-                    h('h3.pb2', `${comments.count} comentarios`),
-                    h('section', comments.list.map(id => {
-                        const c = comments.set[id];
-                        const isVoting = voting !== false && voting.id == c.id ? voting.intent : false;
-                        return commentBlock(c, isVoting);
-                    }))
-                ])
+        const toastsVNode = toasts.length == 0 ? h('div') : h('div.absolute.right-1.top-1.z-1.fade-in', toasts.map(toastView));
+        const postVNode = post == false ? Quickstart() : h('div.current-article', [
+            h('article', [
+                authorBlock(post),
+                h('h1', post.title),
+                virtualize(`<p>${md.renderInline(post.content)}</p>`),
+                h('div.separator.pt2'),
+                h('h3.pb2', `${comments.count} comentarios`),
+                h('section', comments.list.map(id => {
+                    const c = comments.set[id];
+                    const isVoting = voting !== false && voting.id == c.id ? voting.intent : false;
+                    return commentBlock(c, isVoting);
+                }))
             ])
+        ]);
+
+        return h('section.fade-in.post.relative', [
+            toastsVNode,
+            postVNode
         ]);
     });
 }

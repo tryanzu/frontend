@@ -13,17 +13,7 @@ const Routes = {
 
 export function Board(sources) {
 	const {DOM, HTTP, storage, socketIO, socketIOChat, history} = sources;
-
-    const routePath$ = history
-        .map(location => switchPath(location.pathname, Routes))
-        .filter(route => route.value != false)
-        .debug();
-
-    const authToken$ = sources.storage.local.getItem('id_token')
-        .filter(token => token !== null && String(token).length > 0)
-        .startWith(false)
-        .map(token => token != false ? headers => ({...headers, Authorization: 'Bearer ' + token}) : f => f);
-
+    const {routePath$, authToken$} = intent(sources);
     const effects = model({routePath$, authToken$});
 
 	/**
@@ -67,8 +57,24 @@ export function Board(sources) {
     };
 };
 
+function intent({history, storage}) {
+    const routePath$ = history
+        .map(location => switchPath(location.pathname, Routes))
+        .filter(route => route.value != false);
+
+    const authToken$ = storage.local.getItem('id_token')
+        .filter(token => token !== null && String(token).length > 0)
+        .startWith(false)
+        .map(token => token != false ? headers => ({...headers, Authorization: 'Bearer ' + token}) : f => f);
+
+    return {
+        routePath$, 
+        authToken$
+    };
+}
 
 function model(actions) {
+
     const http$ = xs.merge(
         // Post loading route action transformed into http request.
         actions.routePath$

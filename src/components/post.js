@@ -1,5 +1,6 @@
 import xs from 'xstream';
 import sampleCombine from 'xstream/extra/sampleCombine';
+import delay from 'xstream/extra/delay';
 import {view} from './post/view';
 import merge from 'lodash/merge';
 
@@ -8,6 +9,7 @@ const DEFAULT_STATE = {
     error: false,
     post: false,
     voting: false,
+    toasts: []
 };
 
 function intent({DOM, HTTP, props}) {
@@ -23,10 +25,10 @@ function intent({DOM, HTTP, props}) {
         .map(res => res.body);
 
     const vote$ = HTTP.select('vote')
-        .map(response$ => response$.replaceError(err => xs.of(err)))
+        .map(response$ => response$.replaceError(err => xs.of({status: 'error', err})))
         .flatten()
-        .filter(res => !(res instanceof Error))
-        .map(res => res.body);
+        .map(r => 'err' in r ? r : r.body)
+        .debug();
         
     return {
         post$, 
@@ -43,7 +45,6 @@ function model(actions) {
      * Http write effects.
      */
      const http$ = actions.voting$
-        .debug()
         .compose(sampleCombine(actions.authToken$))
         .map(([{type, intent, id}, withAuth]) => ({
             method: 'POST',
@@ -66,11 +67,31 @@ function model(actions) {
             const post = {...p, comments: {...p.comments, list: p.comments.set.map(c => c.id), set}};
             return ({...state, post, loading: false});
         });
+
     const postLoadingR$ = actions.fetchPost$
         .map(_ => state => ({...state, loading: true}))
+
     const votingR$ = actions.voting$
         .map(v => state => ({...state, voting: v}));
+
+    const voteErr$ = actions.vote$
+        .filter(res => res.status == 'error')
+        .debug();
+
+    const voteFailR$ = voteErr$.map(res => state => ({
+        ...state, 
+        voting: false, 
+        toasts: state.toasts.concat([
+            {type: 'error', content: 'No pudimos enviar tu voto, intenta de nuevo más tarde.'}
+        ])
+    }));
+
+    const voteFailDismissR$ = voteErr$
+        .compose(delay(5000))
+        .map(_ => state => ({...state, toasts: state.toasts.length > 0 ? state.toasts.slice(1) : []}));
+
     const voteR$ = actions.vote$
+        .filter(res => res.status == 'okay')
         .compose(sampleCombine(actions.voting$))
         .map(([status, vote]) => state => (merge(state, {
             voting: false, 
@@ -92,6 +113,8 @@ function model(actions) {
         postR$,
         postLoadingR$,
         votingR$,
+        voteFailR$,
+        voteFailDismissR$,
         voteR$,
     ).fold((state, action) => action(state), DEFAULT_STATE);
 
