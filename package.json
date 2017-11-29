@@ -26,8 +26,8 @@
     "@types/history": "^4.6.1",
     "babel-preset-stage-2": "^6.24.1",
     "bower": "^1.8.0",
-    "closure-compiler-brunch": "^0.1.6",
     "cyclic-router": "^5.1.3",
+    "lodash": "^4.17.4",
     "lost": "^8.2.0",
     "markdown-it": "^8.4.0",
     "markdown-it-emoji": "^1.4.0",
@@ -39,6 +39,7 @@
     "socket.io-client": "^2.0.3",
     "spectre.css": "^0.3.2",
     "switch-path": "^1.2.0",
+    "tachyons": "^4.9.0",
     "timeago.js": "^3.0.2",
     "xstream": "^10.9.0"
   },
@@ -51,14 +52,6 @@
     "browser-sync-spa": "^1.0.3",
     "brunch": "^2",
     "clean-css-brunch": "^2",
-    "gulp": "^3.9.1",
-    "gulp-clean": "^0.3.2",
-    "gulp-codekit": "^0.1.3",
-    "gulp-less": "^3.3.0",
-    "gulp-minify-css": "^1.2.4",
-    "gulp-postcss": "^6.4.0",
-    "gulp-sourcemaps": "^1.12.0",
-    "gulp-uglify": "^2.0.0",
-    "uglify-js-brunch": "^2"
+    "uglify-js-brunch": "^2.10.0"
   }
 }

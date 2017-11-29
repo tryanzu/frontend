@@ -20,6 +20,7 @@ export function AnzuRouter(sources) {
     return {
         DOM: page$.map(c => c.DOM).flatten(),
         HTTP: page$.map(c => c.HTTP).flatten(),
+        history: page$.map(c => c.history).flatten(),
         router: page$.map(c => c.router).flatten()
     };
 }

@@ -5,18 +5,27 @@ import {view} from './post/view';
 import merge from 'lodash/merge';
 
 const DEFAULT_STATE = {
+    resolving: {
+        post: false,
+        comments: false
+    },
+    ui: {
+        commentFocus: false 
+    },
     user: false,
     loading: false,
     error: false,
     post: false,
+    comments: false,
     voting: false,
     toasts: []
 };
 
 function intent({DOM, HTTP, props}) {
-
     const voting$ = DOM.select('a.vote').events('click')
         .map(({currentTarget}) => ({id: currentTarget.dataset.id, intent: currentTarget.dataset.intent, type: currentTarget.dataset.type}));
+
+    const commentFocus$ = DOM.select('textarea.replybox').events('focus').map(event => ({focus: true}));
 
     const fetchPost$ = HTTP.select('post').mapTo(true);
 
@@ -37,6 +46,12 @@ function intent({DOM, HTTP, props}) {
         .flatten()
         .map(r => 'err' in r ? r : r.body)
         .debug();
+
+    const comments$ = HTTP.select('comments')
+        .map(response$ => response$.replaceError(err => xs.of({status: 'error', err})))
+        .flatten()
+        .map(r => 'err' in r ? r : r.body)
+        .debug();
     
     return {
         user$,
@@ -44,6 +59,8 @@ function intent({DOM, HTTP, props}) {
         fetchPost$, 
         vote$,
         voting$,
+        comments$,
+        commentFocus$,
         authToken$: props.authToken$
     }; 
 }
@@ -71,16 +88,18 @@ function model(actions) {
      * - Voting loading state.
      */
     const userR$ = actions.user$.map(user => state => ({...state, user}));
+    const commentsR$ = actions.comments$.map(comments => state => ({...state, comments, resolving: {...state.resolving, comments: false}}));
+    const commentFocusR$ = actions.commentFocus$.debug().map(event => state => ({...state, ui: {...state.ui, commentFocus: event.focus}}));
 
     const postR$ = actions.post$
         .map(p => state => {
             const set = p.comments.set.reduce((acc, c) => ({...acc, [c.id]: c}), {});
             const post = {...p, comments: {...p.comments, list: p.comments.set.map(c => c.id), set}};
-            return ({...state, post, loading: false});
+            return ({...state, post, loading: false, resolving: {...state.resolving, post: false}});
         });
 
     const postLoadingR$ = actions.fetchPost$
-        .map(_ => state => ({...state, loading: true}))
+        .map(_ => state => ({...state, loading: true, resolving: {...state.resolving, post: true, comments: true}}));
 
     const votingR$ = actions.voting$
         .map(v => state => ({...state, voting: v}));
@@ -123,6 +142,8 @@ function model(actions) {
     const state$ = xs.merge(
         postR$,
         postLoadingR$,
+        commentsR$,
+        commentFocusR$,
         votingR$,
         voteFailR$,
         voteFailDismissR$,

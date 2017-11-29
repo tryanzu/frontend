@@ -1,5 +1,10 @@
 @import "variables.css";
 
+body, html {
+    height: 100%;
+}
+
+
 body {
 	background: #f1f5f9;
 	font-family: system-ui;
@@ -16,4 +21,31 @@ a {
 .toast.toast-error {
 	background: rgba(232, 0, 30, 0.9);
 	border-color: #c61d31;
+}
+
+.btn-icon {
+	border: 1px solid #caced7;
+	border-radius: .125rem;
+	padding: .25rem;
+	cursor: pointer;
+
+	&:hover {
+		border-color: var(--primaryColor);
+		color: #777777;
+		text-decoration: none;		
+	}
+}
+
+.gray {
+	color: #657187 !important;
+}
+
+.fade-in {animation:fade-in 0.5s;}
+@keyframes fade-in {
+    from {opacity:0;}
+    to {opacity:1;}
+}
+
+.shadow {
+    box-shadow: 0 0 0 .5px rgba(49,49,93,.03),0 2px 5px 0 rgba(49,49,93,.1),0 1px 2px 0 rgba(0,0,0,.08) !important;
 }

@@ -8,6 +8,7 @@ import {makeDOMDriver} from '@cycle/dom';
 import {makeHistoryDriver, captureClicks} from '@cycle/history';
 import {makeHTTPDriver} from '@cycle/http';
 import {makeSocketIODriver} from './drivers/socket-io';
+import {makeGlueDriver} from './drivers/glue';
 import {ngDriver} from './drivers/angular';
 import {beepDriver} from './drivers/beep';
 import storageDriver from '@cycle/storage';	
@@ -21,6 +22,7 @@ export function AnzuApp(element) {
 		storage: storageDriver,
 		beep: beepDriver,
 		socketIO: makeSocketIODriver(socketIo()),
+		glue: makeGlueDriver(),
 		socketIOChat: makeSocketIODriver(socketIo(Anzu.chatIO)),
     });
 }

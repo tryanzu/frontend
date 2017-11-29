@@ -11,7 +11,7 @@ const md = markdown({html: true, linkify: true, typographer: false}).disable('im
 md.use(emoji);
 md.use(mila, {target: '_blank', rel: 'noopener', class: 'link blue hover-green'});
 
-function authorBlock(item, label = 'Publicó') {
+function author(item, label = 'Publicó') {
     const {author} = item;
 
     return h('a', {attrs: {href: '/', rel: 'author'}}, [
@@ -20,8 +20,8 @@ function authorBlock(item, label = 'Publicó') {
             h('span.b', author.username),
             h('span', [
                 h('small.bg-light-gray.br1.gray', {style: {padding: '2px 5px'}}, [
-                    h('i.fa.fa-star.gold'),
-                    h('span.ml1.b', String(author.gaming.swords))
+                    h('i.icon-star-filled.gold'),
+                    h('span.b', ' ' + String(author.gaming.swords))
                 ])
             ])
         ]),
@@ -29,11 +29,13 @@ function authorBlock(item, label = 'Publicó') {
     ]);
 }
 
-function commentBlock(comment, voting, currentUser = false) {
+function commentBlock(comment, voting, currentUser = false, noPadding = false) {
 
     // Loading vote status helper.
-    const voteIcon = (intent, vnode) => voting !== false && intent == voting ? h('div.loading') : vnode;
     const voted = comment.liked || false;
+    const replies = comment.replies || {};
+    const repliesCount = replies.count || 0;
+    const voteIcon = (intent, vnode) => voting !== false && intent == voting ? h('div.loading') : vnode;
     const voteColor = (intent) => {
         if (voted == -1 && intent == 'down') return 'blue';
         if (voted == 1 && intent == 'up') return 'blue';
@@ -41,22 +43,25 @@ function commentBlock(comment, voting, currentUser = false) {
         return 'mid-gray';
     };
 
-    return h('div.pb1', [
+    return h('div', {class: {pb3: noPadding == false}}, [
         h('div.flex', [
-            h('div.flex-auto', authorBlock(comment, 'Comentó')),
+            h('div.flex-auto', author(comment, 'Comentó')),
             h('div', [
                 h('a.dib.v-mid.btn.btn-link', [
-                    h('i.fa.fa-mail-reply'), 
+                    h('i.icon-reply-outline'), 
                     h('span.pl2', 'Responder')
                 ]),
                 h('div.dib.v-mid', [
                     h('a.dib.v-mid.ph2.mid-gray', comment.votes.up - comment.votes.down),
-                    h('a', {attrs: {class: 'dib v-mid ph2 vote ' + voteColor('down')}, dataset: {id: comment.id, type: 'comment', intent: 'down'}}, voteIcon('down', h('i.fa.fa-thumbs-o-down'))),
-                    h('a', {attrs: {class: 'dib v-mid ph2 vote ' + voteColor('up')}, dataset: {id: comment.id, type: 'comment', intent: 'up'}}, voteIcon('up', h('i.fa.fa-thumbs-o-up'))),
+                    h('a', {attrs: {class: 'dib v-mid ph2 vote ' + voteColor('down')}, dataset: {id: comment.id, type: 'comment', intent: 'down'}}, voteIcon('down', h('i.icon-thumbs-down'))),
+                    h('a', {attrs: {class: 'dib v-mid ph2 vote ' + voteColor('up')}, dataset: {id: comment.id, type: 'comment', intent: 'up'}}, voteIcon('up', h('i.icon-thumbs-up'))),
                 ])
             ])
         ]),
-        h('div.pt1', virtualize(`<p>${md.renderInline(comment.content)}</p>`),)
+        h('div.pt1', virtualize(`<p class="ma0">${md.renderInline(comment.content)}</p>`)),
+        repliesCount > 0 
+            ? h('div.pt2.pl4', replies.list.map(c => commentBlock(c, false, false, true)))
+            : h('div')
     ]);
 }
 
@@ -66,10 +71,10 @@ function toastView(toast) {
 
 export function view(state$) {
     return state$.map(state => {
-        const {post, loading, voting, toasts, user} = state;
-        const {author, comments} = post;
+        const {post, resolving, voting, toasts, user, comments, ui} = state;
+        const _comments = post.comments;
 
-        if (loading) {
+        if (resolving.post) {
             return h('section.post', [
                 h('div.current-article', h('div.pv2', h('div.loading')))
             ]);
@@ -78,23 +83,56 @@ export function view(state$) {
         const toastsVNode = toasts.length == 0 ? h('div') : h('div.absolute.right-1.top-1.z-1.fade-in', toasts.map(toastView));
         const postVNode = post == false ? Quickstart() : h('div.current-article', [
             h('article', [
-                authorBlock(post),
+                h('div.flex', [
+                    h('div.flex-auto', author(post)),
+                    h('div', [
+                        h('a.dib.btn-icon.gray', [
+                            h('i.icon-warning-empty'),
+                            h('span.ml1', 'reportar')
+                        ])
+                    ])
+                ]),
                 h('h1', post.title),
                 virtualize(`<p>${md.renderInline(post.content)}</p>`),
                 h('div.separator.pt2'),
-                h('h3.pb2', `${comments.count} comentarios`),
-                h('section', comments.list.map(id => {
-                    const c = comments.set[id];
-                    const isVoting = voting !== false && voting.id == c.id ? voting.intent : false;
-                    const currentUser = user !== false ? c.author.id == user.id : false;
-                    return commentBlock(c, isVoting, currentUser);
-                }))
+                h('div.flex.items-center.mb3', [
+                    h('h3.flex-auto', `${_comments.count} comentarios`),
+                    h('div', h('small', 'Ordenar comentarios por')),
+                    h('div.form-group.mb0.ml2', h('select.form-select.select-sm', [
+                         h('option', 'Recomendaciones')
+                    ]))
+                ]),
+                user !== false ? h('div.comment.flex.pb3', [
+                    h('a', {attrs: {href: '/', rel: 'author'}}, [
+                        h('div', user.image ? h('img', {attrs: {src: user.image, alt: `Avatar de ${user.username}`}}) : h('div.empty-avatar', user.username.substr(0, 1))),
+                    ]),
+                    h('div.pl2.flex-auto', [
+                        h('textarea.form-input.replybox.mb2', {attrs: {rows: 1}}),
+                        h('div.tr.fade-in', {class: {dn: ui.commentFocus == false}}, [
+                            h('button.btn.mr2', {attrs: {}}, 'Cancelar'),
+                            h('button.btn.btn-primary', {attrs: {}}, 'Publicar comentario')
+                        ])
+                    ])
+                ]) : h('div'),
+                h('section', 
+                    comments !== false && resolving.comments == false
+                        ? comments.map(c => {
+                            //const c = comments.set[id];
+                            const isVoting = voting !== false && voting.id == c.id ? voting.intent : false;
+                            const currentUser = user !== false ? c.author.id == user.id : false;
+                            return commentBlock(c, isVoting, currentUser);
+                        }) 
+                        : (resolving.comments ? h('div.pv2', h('div.loading')) : [])
+                )
             ])
         ]);
 
         return h('section.fade-in.post.relative', [
             toastsVNode,
-            postVNode
+            postVNode,
+            h('footer.pa3.pt4', [
+                h('small.silver', 'Powered by Anzu community software v0.1 alpha')
+            ])
         ]);
     });
 }

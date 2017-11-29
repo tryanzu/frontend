@@ -46,7 +46,7 @@ export function Board(sources) {
     const http$ = xs.merge(effects.HTTP, navbar.HTTP, feed.HTTP, post.HTTP);
     const history$ = feed.history;
     const beep$ = navbar.beep;
-    const storage$ = navbar.storage;
+    const storage$ = xs.merge(effects.storage, navbar.storage).debug();
     const socketIO$ = navbar.socketIOChat; 
 
     return {
@@ -60,7 +60,7 @@ export function Board(sources) {
     };
 };
 
-function intent({history, storage}) {
+function intent({history, storage, HTTP}) {
     const routePath$ = history
         .map(location => switchPath(location.pathname, Routes))
         .filter(route => route.value != false);
@@ -68,20 +68,40 @@ function intent({history, storage}) {
     const authToken$ = storage.local.getItem('id_token')
         .filter(token => token !== null && String(token).length > 0)
         .startWith(false)
-        .map(token => token != false ? headers => ({...headers, Authorization: 'Bearer ' + token}) : f => f);
+        .map(token => {
+            if (token != false) {
+                return headers => ({...headers, Authorization: 'Bearer ' + token});
+            }
+
+            return f => f
+        });
+
+    const unauthorized$ = HTTP
+        .filter(req => {
+            return 'headers' in req && 'Authorization' in req.headers;
+        })
+        .select() // This fetches all happening requests having the Auth header present.
+        .map(response$ => response$.replaceError(err => xs.of(err)))
+        .flatten()
+        .filter(res => res instanceof Error && res.message == 'Unauthorized');
 
     return {
         routePath$, 
-        authToken$
+        authToken$,
+        unauthorized$
     };
 }
 
 function model(actions) {
     const postRoute$ = actions.routePath$
         .map(route => route.value)
-        .filter(action => action.page == 'post');
+        .filter(action => action.page == 'post')
+        .compose(sampleCombine(actions.authToken$));
+
+    const storage$ = actions.unauthorized$.map(res => ({key: 'id_token', action: 'removeItem'}));
 
     const http$ = xs.merge(
+        // Fetch fresh user data whenever authToken$ gets a value.
         actions.authToken$
             .filter(withAuth => {
                 const headers = {},
@@ -94,15 +114,21 @@ function model(actions) {
                 headers: withAuth({})
             })),
 
-        // Post loading route action transformed into http request.
-        postRoute$
-            .compose(sampleCombine(actions.authToken$))
-            .map(([action, withAuth]) => ({
+        // Post loading route action transformed into http requests.
+        postRoute$.map(([action, withAuth]) => xs.of(
+            {
                 method: 'GET',
                 url: Anzu.layer + 'posts/' + action.post.id, 
                 category: 'post',
                 headers: withAuth({})
-            }))
+            },
+            {
+                method: 'GET',
+                url: Anzu.layer + 'comments/' + action.post.id, 
+                category: 'comments',
+                headers: withAuth({})
+            }
+        )).flatten(),
     );
 
     const fetchPost$ = xs.create();
@@ -110,6 +136,7 @@ function model(actions) {
         
     return {
         HTTP: http$,
+        storage: storage$,
         fetchPost$
     };
 }

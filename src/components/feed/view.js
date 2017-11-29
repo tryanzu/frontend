@@ -11,7 +11,7 @@ export function view(state$) {
             h('section.tabs', [
                 h('div.categories.flex.items-center', [
                     h('h2.flex-auto', 'Todas las categorias'),
-                    h('div', h('button.btn.btn-sm.btn-action.circle', h('i.icon.icon-arrow-down')))
+                    h('div', h('a.dib.btn-icon', h('span.icon-down-open')))
                 ]),
                 h('div.filters.flex', [
                     h('div.flex-auto', [
@@ -41,7 +41,7 @@ export function view(state$) {
                         ]),
                     ]),
                     h('div.tc', {style: {minWidth: '50px'}}, [
-                        h('span.icon.icon-message'),
+                        h('span.icon-chat-alt'),
                         h('span.pl2.b', post.comments.count)
                     ])
                 ]);
