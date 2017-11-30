@@ -66,16 +66,6 @@ export function model(actions, accountModal) {
         },
         token
     }));
-
-    const userR$ = actions.user$.map(data => state => ({
-        ...state, 
-        resolving: {
-            ...state.resolving,
-            user: false
-        },
-        user: data
-    }));
-
     const openNotificationsR$ = requestNotifications$
         .map(r => state => ({
             ...state, 
@@ -118,38 +108,21 @@ export function model(actions, accountModal) {
         token: false
     }));
 
-    const onlineR$ = actions.online$.map(count => state => ({...state, connectedCount: count}));
     const state$ = xs.merge(
         tokenR$, 
-        userR$, 
         logoutR$, 
         modalR$, 
         notificationsR$, 
         openNotificationsR$, 
         incomingNotificationR$, 
-        onlineR$
     ).fold((state, action) => action(state), DEFAULT_STATE);
 
-    const ng$ = xs.merge(
-        // Links that will be processed by angular's router
-        actions.ngLink$.map(path => ({type: 'location', path})),
-
-        // User has logged in
-        accountModal.token.map(token => ({type: 'token', token})),
-
-        // User has logged out
-        actions.logoutLink$.map(() => ({type: 'token', token: ''}))
-    );
-
     const beep$ = actions.userChan$.filter(ev => ev.fire == 'notification' && ev.count > 0);
-    const socket$ = actions.ngLink$.filter(href => href !== '/chat').map(path => (['chat disconnect']));
 
     return {
         state$,
         storage$,
-        ng$,
         beep$,
-        socket$,
         HTTP: requestNotifications$,
     };
 }

@@ -1,6 +1,6 @@
 import xs from 'xstream';
 
-export function intent(dom, http, storage, socketIO, socketIOChat) {
+export function intent(dom, http, storage) {
 
     /**
      * DOM intents including:
@@ -13,10 +13,6 @@ export function intent(dom, http, storage, socketIO, socketIOChat) {
         .map(event => ({modal: event.target.dataset.modal, data: event.target.dataset}));
 
     const logoutLink$ = dom.select('#logout').events('click').mapTo(true);
-    
-    const ngLink$ = dom.select('.ng-link').events('click')
-        .map(ev => ev.currentTarget.dataset.href)
-        .debug();
 
     const openNotifications$ = dom.select('#notifications').events('click');
 
@@ -46,15 +42,10 @@ export function intent(dom, http, storage, socketIO, socketIOChat) {
         .filter(res => !(res instanceof Error))
         .map(res => res.body);
 
-    const userChan$ = user$.map(user => socketIO.get(`user ${user.id} notification`))
-        .flatten()
-        .debug();
-
-    /**
-     * Socket.IO read effects including: 
-     * - Connected users count.
-     */
-    const online$ = socketIOChat.get('chat.count');
+    //const userChan$ = user$.map(user => socketIO.get(`user ${user.id} notification`))
+    //    .flatten()
+    //    .debug();
+    const userChan$ = xs.empty();
 
     return {
         modalLink$, 
@@ -63,8 +54,6 @@ export function intent(dom, http, storage, socketIO, socketIOChat) {
         user$, 
         notifications$, 
         userChan$, 
-        ngLink$, 
-        openNotifications$,
-        online$
+        openNotifications$
     };
 };

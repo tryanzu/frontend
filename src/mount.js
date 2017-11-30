@@ -18,12 +18,9 @@ export function AnzuApp(element) {
         DOM: makeDOMDriver(element),
         history: makeHistoryDriver(),
         HTTP: makeHTTPDriver(),
-		angular: ngDriver(x => console.log(x)),
 		storage: storageDriver,
 		beep: beepDriver,
-		socketIO: makeSocketIODriver(socketIo()),
-		glue: makeGlueDriver(),
-		socketIOChat: makeSocketIODriver(socketIo(Anzu.chatIO)),
+		glue: makeGlueDriver()
     });
 }
 

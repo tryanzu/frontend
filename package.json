@@ -1,16 +1,12 @@
 {
-  "name": "bakkhos",
-  "version": "0.8.0",
-  "description": "Frontend for SpartanGeek project",
-  "main": "gulpfile.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "name": "anzu",
+  "version": "0.1.0",
+  "description": "Anzu forums system frontend.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/RodrigoCR/bakkhos.git"
   },
-  "author": "RodrigoCR",
+  "author": "fernandez14",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/RodrigoCR/bakkhos/issues"
@@ -26,7 +22,9 @@
     "@types/history": "^4.6.1",
     "babel-preset-stage-2": "^6.24.1",
     "bower": "^1.8.0",
+    "cycle-onionify": "^5.0.0",
     "cyclic-router": "^5.1.3",
+    "install": "^0.10.2",
     "lodash": "^4.17.4",
     "lost": "^8.2.0",
     "markdown-it": "^8.4.0",
@@ -48,8 +46,6 @@
     "autoprefixer": "^7.1.6",
     "babel-brunch": "~6.0",
     "babel-preset-latest": "^6",
-    "browser-sync": "^2.18.8",
-    "browser-sync-spa": "^1.0.3",
     "brunch": "^2",
     "clean-css-brunch": "^2",
     "uglify-js-brunch": "^2.10.0"

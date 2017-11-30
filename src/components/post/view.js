@@ -18,7 +18,7 @@ function author(item, label = 'Publicó') {
         h('div', author.image ? h('img', {attrs: {src: author.image, alt: `Avatar de ${author.username}`}}) : h('div.empty-avatar', author.username.substr(0, 1))),
         h('div', [
             h('span.b', author.username),
-            h('span', [
+            h('span.mt1', [
                 h('small.bg-light-gray.br1.gray', {style: {padding: '2px 5px'}}, [
                     h('i.icon-star-filled.gold'),
                     h('span.b', ' ' + String(author.gaming.swords))
@@ -29,7 +29,7 @@ function author(item, label = 'Publicó') {
     ]);
 }
 
-function commentBlock(comment, voting, currentUser = false, noPadding = false) {
+function commentView(comment, voting, currentUser = false, noPadding = false, ui) {
 
     // Loading vote status helper.
     const voted = comment.liked || false;
@@ -47,21 +47,39 @@ function commentBlock(comment, voting, currentUser = false, noPadding = false) {
         h('div.flex', [
             h('div.flex-auto', author(comment, 'Comentó')),
             h('div', [
-                h('a.dib.v-mid.btn.btn-link', [
+                h('a.dib.v-mid.pointer.reply-to', {dataset: {id: comment.id}}, [
                     h('i.icon-reply-outline'), 
                     h('span.pl2', 'Responder')
                 ]),
                 h('div.dib.v-mid', [
                     h('a.dib.v-mid.ph2.mid-gray', comment.votes.up - comment.votes.down),
-                    h('a', {attrs: {class: 'dib v-mid ph2 vote ' + voteColor('down')}, dataset: {id: comment.id, type: 'comment', intent: 'down'}}, voteIcon('down', h('i.icon-thumbs-down'))),
-                    h('a', {attrs: {class: 'dib v-mid ph2 vote ' + voteColor('up')}, dataset: {id: comment.id, type: 'comment', intent: 'up'}}, voteIcon('up', h('i.icon-thumbs-up'))),
+                    h('a', {attrs: {class: 'dib v-mid btn-icon vote ' + voteColor('down')}, dataset: {id: comment.id, type: 'comment', intent: 'down'}}, voteIcon('down', h('i.icon-thumbs-down'))),
+                    h('a', {attrs: {class: 'dib v-mid btn-icon ph2 ml2 vote ' + voteColor('up')}, dataset: {id: comment.id, type: 'comment', intent: 'up'}}, voteIcon('up', h('i.icon-thumbs-up'))),
                 ])
             ])
         ]),
         h('div.pt1', virtualize(`<p class="ma0">${md.renderInline(comment.content)}</p>`)),
+        ui.replyTo === comment.id 
+            ? replyView(comment.author, ui, true)
+            : h('div'),
         repliesCount > 0 
-            ? h('div.pt2.pl4', replies.list.map(c => commentBlock(c, false, false, true)))
-            : h('div')
+            ? h('div.pt3.pl4', replies.list.map(c => commentView(c, false, false, true, ui)))
+            : h('div'),
+    ]);
+}
+
+function replyView(user, ui, nested = false) {
+    return h('div.comment.flex.fade-in', {class: {pb3: nested == false, pt3: nested}}, [
+        h('a', {attrs: {href: '/', rel: 'author'}}, [
+            h('div', user.image ? h('img', {attrs: {src: user.image, alt: `Avatar de ${user.username}`}}) : h('div.empty-avatar', user.username.substr(0, 1))),
+        ]),
+        h('div.pl2.flex-auto', [
+            h('textarea.form-input.replybox.mb2', {attrs: {rows: 1, placeholder: 'Escribe aquí tu respuesta...', autofocus: nested}}),
+            h('div.tr.fade-in', {class: {dn: ui.commentFocus == false}}, [
+                h('button#cc.btn.mr2', {attrs: {}}, 'Cancelar'),
+                h('button.btn.btn-primary', {attrs: {}}, 'Publicar comentario')
+            ])
+        ])
     ]);
 }
 
@@ -71,10 +89,13 @@ function toastView(toast) {
 
 export function view(state$) {
     return state$.map(state => {
-        const {post, resolving, voting, toasts, user, comments, ui} = state;
+        const {user} = state.shared;
+        const {post, resolving, voting, toasts, comments, ui} = state.own;
         const _comments = post.comments;
 
-        if (resolving.post) {
+        console.log(resolving);
+        
+        if (resolving) {
             return h('section.post', [
                 h('div.current-article', h('div.pv2', h('div.loading')))
             ]);
@@ -102,37 +123,26 @@ export function view(state$) {
                          h('option', 'Recomendaciones')
                     ]))
                 ]),
-                user !== false ? h('div.comment.flex.pb3', [
-                    h('a', {attrs: {href: '/', rel: 'author'}}, [
-                        h('div', user.image ? h('img', {attrs: {src: user.image, alt: `Avatar de ${user.username}`}}) : h('div.empty-avatar', user.username.substr(0, 1))),
-                    ]),
-                    h('div.pl2.flex-auto', [
-                        h('textarea.form-input.replybox.mb2', {attrs: {rows: 1}}),
-                        h('div.tr.fade-in', {class: {dn: ui.commentFocus == false}}, [
-                            h('button.btn.mr2', {attrs: {}}, 'Cancelar'),
-                            h('button.btn.btn-primary', {attrs: {}}, 'Publicar comentario')
-                        ])
-                    ])
-                ]) : h('div'),
+                user !== false ? replyView(user, ui) : h('div'),
                 h('section', 
-                    comments !== false && resolving.comments == false
-                        ? comments.map(c => {
+                    comments.list !== false && comments.resolving == false
+                        ? comments.list.map(c => {
                             //const c = comments.set[id];
                             const isVoting = voting !== false && voting.id == c.id ? voting.intent : false;
                             const currentUser = user !== false ? c.author.id == user.id : false;
-                            return commentBlock(c, isVoting, currentUser);
+                            return commentView(c, isVoting, currentUser, false, ui);
                         }) 
-                        : (resolving.comments ? h('div.pv2', h('div.loading')) : [])
+                        : (comments.resolving ? h('div.pv2', h('div.loading')) : [])
                 )
             ])
         ]);
 
-        return h('section.fade-in.post.relative', [
+        return h('section.fade-in.post.relative.flex.flex-column.pb3', h('div.h-100.overflow-y-scroll', [
             toastsVNode,
             postVNode,
             h('footer.pa3.pt4', [
                 h('small.silver', 'Powered by Anzu community software v0.1 alpha')
             ])
-        ]);
+        ]));
     });
 }

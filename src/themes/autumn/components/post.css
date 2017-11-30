@@ -40,8 +40,12 @@
 
 	& textarea.form-input {
 		box-shadow: 0 0 0 0.5px rgba(50,50,93,.27), 0 0 0 0.5px rgba(50,151,211,0), 0 0 0 2px rgba(50,151,211,0), 0 0.5px 1px rgba(0,0,0,.08);
-		border: 0;
+		border: 1px solid #e5e5e5;
 		border-radius: 2px;
+
+		&:focus {
+			border-color: color(var(--primaryColor) whiteness(25%));
+		}
 	}
 }
 

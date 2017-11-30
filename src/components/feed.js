@@ -6,12 +6,13 @@ import {view} from './feed/view';
 export function Feed(sources) {
     const actions = intent(sources);
     const effects = model(actions);
-    const vtree$ = view(effects.state$);
+    const vtree$ = view(sources.fractal.state$);
     
     return {
         DOM: vtree$,
         HTTP: effects.HTTP,
         history: effects.history,
-        linkPost: effects.linkPost$
+        linkPost: effects.linkPost$,
+        fractal: effects.fractal
     };
 };

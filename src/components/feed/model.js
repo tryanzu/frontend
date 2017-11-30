@@ -52,17 +52,18 @@ export function model(actions) {
     const postR$ = actions.post$.map(res => state => ({...state, post: res, loadingPost: false}));
     const subcategoriesR$ = actions.subcategories$.map(subcategories => state => ({...state, subcategories}));
 
-    const state$ = xs.merge(
+    const reducers$ = xs.merge(
+        xs.of(state => DEFAULT_STATE),
         postsR$,
         postR$,
         postsLoadingR$,
         subcategoriesR$
-    ).fold((state, action) => action(state), DEFAULT_STATE);
+    );
     
     return {
-        state$,
         HTTP: http$,
         history: routeTo$,
+        fractal: reducers$,
         linkPost$: actions.linkPost$  
     };
 }

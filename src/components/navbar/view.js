@@ -6,16 +6,18 @@ import timeagoES from 'timeago.js/locales/es';
 timeago.register('es', timeagoES);
 const ago = timeago(null, 'es');
 
-export function view(effects, account) {
-    return xs.combine(effects.state$, account.DOM).map(([state, accountVNode]) => {
-        const {user, modal, resolving, connectedCount} = state;
+export function view(effects, account, fractal) {
+    return xs.combine(effects.state$, account.DOM, fractal.state$).map(([state, accountVNode, fstate]) => {
+        const {modal, resolving, connectedCount} = state;
+        const _user = fstate.user;
+        const {user} = _user;
         const image = user.image || '';
+
         return h('main', [
             accountVNode,
             h('header.navbar', [
                 h('section.navbar-section', [
                     h('a', img('.logo.ng-link.w3', {dataset: {href: '/'}, attrs: {src: '/images/anzu.svg', alt: 'Buldar.com'}}))
-                    //h('a', h('h1.logo', 'Anzu'))
                 ]), 
                 h('section.navbar-section.show-sm.tr', [
                     user !== false ? 
@@ -89,7 +91,7 @@ export function view(effects, account) {
                         ]))
                     ]),
                 ]),
-                h('section.navbar-section.hide-sm', {style: {flex: '1 1 auto'}}, [
+                h('section.navbar-section.hide-sm', [
                     a('.btn.btn-link', 'Inicio'),
                     a('.btn.btn-link', 'Preguntas frecuentes'),
                     a('.btn.btn-link', 'Lineamientos'),
@@ -165,10 +167,8 @@ export function view(effects, account) {
                         ]) 
                     : div('.dn')
                 ]),
-                state.resolving.user === true ?
-                    section('.navbar-section', [
-                        div('.loading')
-                    ]) 
+                _user.resolving === true ?
+                    div('.loading') 
                 : null,
             ])
         ]);
