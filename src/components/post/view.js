@@ -1,4 +1,5 @@
 import {h} from '@cycle/dom';
+import debounce from 'lodash/debounce';
 import timeago from 'timeago.js';
 import {Quickstart} from '../quickstart';
 import markdown from 'markdown-it';
@@ -60,22 +61,22 @@ function commentView(comment, voting, currentUser = false, noPadding = false, ui
         ]),
         h('div.pt1', virtualize(`<p class="ma0">${md.renderInline(comment.content)}</p>`)),
         ui.replyTo === comment.id 
-            ? replyView(comment.author, ui, true)
+            ? replyView(currentUser, ui, 'comment', comment.id, true)
             : h('div'),
         repliesCount > 0 
-            ? h('div.pt3.pl4', replies.list.map(c => commentView(c, false, false, true, ui)))
+            ? h('div.pt3.pl4', replies.list.map(c => commentView(c, false, currentUser, true, ui)))
             : h('div'),
     ]);
 }
 
-function replyView(user, ui, nested = false) {
+function replyView(user, ui, type, id, nested = false) {
     return h('div.comment.flex.fade-in', {class: {pb3: nested == false, pt3: nested}}, [
         h('a', {attrs: {href: '/', rel: 'author'}}, [
             h('div', user.image ? h('img', {attrs: {src: user.image, alt: `Avatar de ${user.username}`}}) : h('div.empty-avatar', user.username.substr(0, 1))),
         ]),
-        h('div.pl2.flex-auto', [
-            h('textarea.form-input.replybox.mb2', {attrs: {rows: 1, placeholder: 'Escribe aquí tu respuesta...', autofocus: nested}}),
-            h('div.tr.fade-in', {class: {dn: ui.commentFocus == false}}, [
+        h('div.pl2.flex-auto.fade-in', [
+            h('textarea.form-input.replybox.mb2', {hook: {insert: nested ? debounce(vnode => vnode.elm.focus(), 100) : () => {}}, dataset: {type, id}, attrs: {rows: 1, placeholder: 'Escribe aquí tu respuesta...', autofocus: nested}}),
+            h('div.tr', {class: {dn: ui.commenting == false || ui.commentingType !== type || ui.commentingId != id}}, [
                 h('button#cc.btn.mr2', {attrs: {}}, 'Cancelar'),
                 h('button.btn.btn-primary', {attrs: {}}, 'Publicar comentario')
             ])
@@ -93,8 +94,6 @@ export function view(state$) {
         const {post, resolving, voting, toasts, comments, ui} = state.own;
         const _comments = post.comments;
 
-        console.log(resolving);
-        
         if (resolving) {
             return h('section.post', [
                 h('div.current-article', h('div.pv2', h('div.loading')))
@@ -123,14 +122,14 @@ export function view(state$) {
                          h('option', 'Recomendaciones')
                     ]))
                 ]),
-                user !== false ? replyView(user, ui) : h('div'),
+                user !== false ? replyView(user, ui, 'post', post.id) : h('div'),
                 h('section', 
                     comments.list !== false && comments.resolving == false
                         ? comments.list.map(c => {
                             //const c = comments.set[id];
                             const isVoting = voting !== false && voting.id == c.id ? voting.intent : false;
-                            const currentUser = user !== false ? c.author.id == user.id : false;
-                            return commentView(c, isVoting, currentUser, false, ui);
+
+                            return commentView(c, isVoting, user, false, ui);
                         }) 
                         : (comments.resolving ? h('div.pv2', h('div.loading')) : [])
                 )

@@ -4,25 +4,30 @@ import delay from 'xstream/extra/delay';
 import {view} from './post/view';
 import merge from 'lodash/merge';
 
-const DEFAULT_STATE = {
+export const DEFAULT_STATE = {
+    resolving: false,
+    post: false,
+    error: false,
+    voting: false,
+    comments: {
+        resolving: false,
+        list: false
+    },
+    ui: {
+        replyTo: false,
+        commenting: false,
+        commentingType: false,
+        commentingId: false
+    },
+    toasts: []
+};
+
+export const LENSED_STATE = {
     shared: {
         user: false
     },
     own: {
-        resolving: false,
-        post: false,
-        error: false,
-        voting: false,
-        comments: {
-            resolving: false,
-            list: false
-        },
-        ui: {
-            commenting: false,
-            commentingType: false,
-            commentingId: false
-        },
-        toasts: []
+        ...DEFAULT_STATE
     }
 };
 
@@ -31,7 +36,7 @@ function intent({DOM, HTTP, props}) {
         .map(({currentTarget}) => ({id: currentTarget.dataset.id, intent: currentTarget.dataset.intent, type: currentTarget.dataset.type}));
 
     const commentFocus$ = xs.merge(
-        DOM.select('textarea.replybox').events('focus').map(event => ({focus: true})),
+        DOM.select('textarea.replybox').events('focus').map(event => ({focus: true, type: event.target.dataset.type, id: event.target.dataset.id})),
         DOM.select('button#cc').events('click').map(event => ({focus: false}))
     );
 
@@ -102,13 +107,14 @@ function model(actions) {
     const commentsR$ = actions.comments$.map(comments => state => update(state, {comments: {list: comments, resolving: false}}));
     const commentFocusR$ = actions.commentFocus$.debug().map(event => state => update(state, {
         ui: {
-            ...state.ui, 
             commenting: event.focus, 
-            replyTo: event.focus == false ? false : state.ui.replyTo
+            commentingType: 'type' in event ? event.type : state.own.ui.commentingType,
+            commentingId: 'id' in event ? event.id : state.own.ui.commentingId,
+            replyTo: event.focus == false ? false : state.own.ui.replyTo
         }
     }));
 
-    const replyToR$ = actions.replyTo$.map(c => state => update(state, {ui: {replyTo: c.id}}));
+    const replyToR$ = actions.replyTo$.map(c => state => update(state, {ui: {replyTo: c.id, commenting: false}}));
     const postR$ = actions.post$
         .map(p => state => {
             const set = p.comments.set.reduce((acc, c) => ({...acc, [c.id]: c}), {});
@@ -161,7 +167,7 @@ function model(actions) {
         })));
 
     const reducers$ = xs.merge(
-        xs.of(state => merge(DEFAULT_STATE, state)),
+        xs.of(state => merge(LENSED_STATE, state)),
         postR$,
         postLoadingR$,
         commentsR$,
