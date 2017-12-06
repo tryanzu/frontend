@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="manifest" href="/manifest.json">
+    <title>Anzu static frontend</title>
+
+    <base href="/">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/dist/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/dist/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/dist/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/dist/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/dist/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/dist/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/dist/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/dist/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/dist/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="/assets/dist/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/dist/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/assets/dist/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/dist/favicon-16x16.png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="/assets/dist/ms-icon-144x144.png">
+    <meta content="#131d3a" name="theme-color" />
+    <meta name="theme-color" content="#ffffff">
+
+    <link type="text/css" rel="stylesheet" href="/core.css">
+</head>
+<body class="flex">
+    <main class="flex flex-auto" id="anzu">
+    </main>
+
+    
+    <script type="text/javascript">
+    window.dataLayer = [];
+    window.Anzu = {
+        layer: '//localhost:3200/v1/',
+        globalIO: '//localhost:3100',
+        chatIO: '//localhost:3100/chat'
+    };
+
+    //var layer_path = "http://localhost:3000/v1/";
+    //var firebase_url = 'https://sgeektest.firebaseio.com/'
+    var stripe_public_key = 'pk_test_PZL5bopNQEQ1DQ2ybU0AqTPL'
+    var socketio_url = "//localhost:3100";
+    var layer_path = "//localhost:3200/v1/";
+    var firebase_url = 'https://spartangeek.firebaseio.com/'
+    //var stripe_public_key = 'pk_live_bVc6ytCOondqEoFFHg6r10y3'
+    //var socketio_url = "http://transmit.spartangeek.com/"
+    var ss_key = "6a6369fb40";
+    </script>
+    <script type="text/javascript" src="/core.vendor.js"></script>
+    <script type="text/javascript" src="/core.js"></script>
+
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            var mount = require('src/mount.js');
+            mount.AnzuApp(document.getElementById('anzu'));
+        })
+    </script>
+</body>
+</html>
