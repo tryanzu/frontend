@@ -27,7 +27,9 @@ export function model(actions) {
     const update = (state, fields) => ({...state, own: merge(state.own, fields)});
 
     /**
-     * Http write effects.
+     * Http write effects, including:
+     * - votes requests
+     * - comments requests
      */
      const http$ = actions.voting$
         .compose(sampleCombine(actions.authToken$))
@@ -40,6 +42,15 @@ export function model(actions) {
             headers: withAuth({})
         }));
 
+    const http2$ = actions.reply$
+        .compose(sampleCombine(actions.replyContent$, actions.authToken$));
+
+    http2$.addListener({
+      next: i => console.log(i),
+      error: err => console.error(err),
+      complete: () => console.log('completed')
+    })
+
     /**
      * Set of reducers based on happening actions, including:
      * - Loading latest post into state.
@@ -47,7 +58,7 @@ export function model(actions) {
      * - Voting loading state.
      */
     const commentsR$ = actions.comments$.map(comments => state => update(state, {comments: {list: comments, resolving: false}}));
-    const commentFocusR$ = actions.commentFocus$.debug().map(event => state => update(state, {
+    const commentFocusR$ = actions.commentFocus$.map(event => state => update(state, {
         ui: {
             commenting: event.focus, 
             commentingType: 'type' in event ? event.type : state.own.ui.commentingType,

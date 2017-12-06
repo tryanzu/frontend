@@ -40,7 +40,12 @@ a {
 	color: #657187 !important;
 }
 
+.bg-near-white {
+	background-color: var(--mainGray) !important;
+}
+
 .fade-in {animation:fade-in 0.5s;}
+
 @keyframes fade-in {
     from {opacity:0;}
     to {opacity:1;}

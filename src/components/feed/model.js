@@ -12,7 +12,8 @@ const DEFAULT_STATE = {
 
 export const LENSED_STATE = {
     shared: {
-        user: false
+        user: false,
+        postId: false
     },
     own: {
         ...DEFAULT_STATE

@@ -5,7 +5,8 @@ const ago = timeago(null, 'es');
 
 export function view(state$) {
     return state$.map(state => {
-        const {loading, list, error, subcategories} = state.own;
+        const { loading, list, error, subcategories } = state.own
+        const { postId } = state.shared
 
         return h('section.fade-in.feed.flex.flex-column', [
             h('section.tabs', [
@@ -26,9 +27,9 @@ export function view(state$) {
                 ])
             ]),
             h('section.list.flex-auto', list.map(post => {
-                const {author} = post;
+                const {author} = post
 
-                return h('article.post.flex.items-center', [
+                return h('article.post.flex.items-center', {class: {active: postId == post.id}}, [
                     h('div.flex-auto', [
                         h('a.category', subcategories != false ? subcategories[post.category].name : h('span.loading')),
                         h('h1', h('a.link', {attrs: {href: `/p/${post.slug}/${post.id}`}, dataset: {postId: post.id}}, post.title)),
@@ -44,7 +45,7 @@ export function view(state$) {
                         h('span.icon-chat-alt'),
                         h('span.pl2.b', post.comments.count)
                     ])
-                ]);
+                ])
             }).concat([
                 h('div.pv2', h('div.loading'))
             ]))

@@ -44,11 +44,13 @@ function commentView(comment, voting, currentUser = false, noPadding = false, ui
         return 'mid-gray';
     };
 
+    const isCurrentUsersComment = currentUser.id == comment.user_id;
+
     return h('div', {class: {pb3: noPadding == false}}, [
         h('div.flex', [
             h('div.flex-auto', author(comment, 'Comentó')),
             h('div', [
-                h('a.dib.v-mid.pointer.reply-to', {dataset: {id: comment.id}}, [
+                h('a.v-mid.pointer.reply-to', {class: {dn: isCurrentUsersComment, dib: !isCurrentUsersComment}, dataset: {id: comment.id}}, [
                     h('i.icon-reply-outline'), 
                     h('span.pl2', 'Responder')
                 ]),
@@ -74,11 +76,21 @@ function replyView(user, ui, type, id, nested = false) {
         h('a', {attrs: {href: '/', rel: 'author'}}, [
             h('div', user.image ? h('img', {attrs: {src: user.image, alt: `Avatar de ${user.username}`}}) : h('div.empty-avatar', user.username.substr(0, 1))),
         ]),
-        h('div.pl2.flex-auto.fade-in', [
-            h('textarea.form-input.replybox.mb2', {hook: {insert: nested ? debounce(vnode => vnode.elm.focus(), 100) : () => {}}, dataset: {type, id}, attrs: {rows: 1, placeholder: 'Escribe aquí tu respuesta...', autofocus: nested}}),
+        h('form.pl2.flex-auto.fade-in.reply-form', {dataset: {type, id}}, [
+            h('textarea.form-input.replybox.mb2', {
+                hook: {
+                    insert: nested ? debounce(vnode => vnode.elm.focus(), 100) : () => {}
+                }, 
+                dataset: {type, id}, 
+                attrs: {
+                    rows: 1, 
+                    placeholder: 'Escribe aquí tu respuesta...', 
+                    autofocus: nested
+                }
+            }),
             h('div.tr', {class: {dn: ui.commenting == false || ui.commentingType !== type || ui.commentingId != id}}, [
                 h('button#cc.btn.mr2', {attrs: {}}, 'Cancelar'),
-                h('button.btn.btn-primary', {attrs: {}}, 'Publicar comentario')
+                h('button.btn.btn-primary', {attrs: {type: 'submit'}}, 'Publicar comentario')
             ])
         ])
     ]);
@@ -106,10 +118,11 @@ export function view(state$) {
                 h('div.flex', [
                     h('div.flex-auto', author(post)),
                     h('div', [
-                        h('a.dib.btn-icon.gray', [
+                        user.id != post.user_id ? h('a.dib.btn-icon.gray', [
                             h('i.icon-warning-empty'),
                             h('span.ml1', 'reportar')
-                        ])
+                        ]) : null,
+                        user.id == post.user_id ? h('a.dib.btn-icon.gray', h('i.icon-edit')) : null
                     ])
                 ]),
                 h('h1', post.title),
@@ -124,9 +137,8 @@ export function view(state$) {
                 ]),
                 user !== false ? replyView(user, ui, 'post', post.id) : h('div'),
                 h('section', 
-                    comments.list !== false && comments.resolving == false
-                        ? comments.list.map(c => {
-                            //const c = comments.set[id];
+                    comments.list !== false && comments.resolving == false ? 
+                        comments.list.map(c => {
                             const isVoting = voting !== false && voting.id == c.id ? voting.intent : false;
 
                             return commentView(c, isVoting, user, false, ui);
