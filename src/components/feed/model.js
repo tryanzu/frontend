@@ -1,17 +1,26 @@
 import xs from 'xstream';
 import sampleCombine from 'xstream/extra/sampleCombine';
+import merge from 'lodash/merge';
 
 const DEFAULT_STATE = {
     list: [],
     offset: 0,
     loading: false,
-    loadingPost: false,
     error: false,
     subcategories: false,
-    post: false
+};
+
+export const LENSED_STATE = {
+    shared: {
+        user: false
+    },
+    own: {
+        ...DEFAULT_STATE
+    }
 };
 
 export function model(actions) {
+    const update = (state, fields) => ({...state, own: merge(state.own, fields)});
 
     /**
      * History write effects including:
@@ -47,15 +56,13 @@ export function model(actions) {
      * Reducers.
      * Streams mapped to reducer functions.
      */
-    const postsLoadingR$ = actions.fetch$.map(res => state => ({...state, loading: true}));
-    const postsR$ = actions.posts$.map(res => state => ({...state, list: state.list.concat(res.feed), loading: false}));
-    const postR$ = actions.post$.map(res => state => ({...state, post: res, loadingPost: false}));
-    const subcategoriesR$ = actions.subcategories$.map(subcategories => state => ({...state, subcategories}));
+    const postsLoadingR$ = actions.fetch$.map(res => state => update(state, {loading: true}));
+    const postsR$ = actions.posts$.map(res => state => update(state, {list: state.own.list.concat(res.feed), loading: false}));
+    const subcategoriesR$ = actions.subcategories$.map(subcategories => state => update(state, {subcategories}));
 
     const reducers$ = xs.merge(
-        xs.of(state => DEFAULT_STATE),
+        xs.of(state => merge(LENSED_STATE, state)),
         postsR$,
-        postR$,
         postsLoadingR$,
         subcategoriesR$
     );

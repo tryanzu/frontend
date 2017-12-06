@@ -1,3 +1,4 @@
+import xs from 'xstream';
 import switchPath from 'switch-path';
 
 const Routes = {
@@ -45,10 +46,10 @@ export function intent({history, storage, HTTP}) {
         .debug();
 
     const user$ = HTTP.select('me')
-            .map(response$ => response$.replaceError(err => xs.of(err)))
-            .flatten()
-            .filter(res => !(res instanceof Error))
-            .map(res => res.body);
+        .map(response$ => response$.replaceError(err => xs.of(err)))
+        .flatten()
+        .filter(res => !(res instanceof Error))
+        .map(res => res.body);
 
     const unauthorized$ = HTTP
         .filter(req => {

@@ -1,5 +1,6 @@
 import xs from 'xstream';
 import sampleCombine from 'xstream/extra/sampleCombine';
+import merge from 'lodash/fp/merge';
 
 const DEFAULT_STATE = {
     user: {
@@ -8,11 +9,21 @@ const DEFAULT_STATE = {
     },
     post: {
         resolving: false,
+        postId: false,
         post: false,
         comments: {
             resolving: false,
             list: false
         }
+    },
+    feed: {
+        list: [],
+        offset: 0,
+        loading: false,
+        loadingPost: false,
+        error: false,
+        subcategories: false,
+        post: false
     }
 };
 
@@ -59,11 +70,16 @@ export function model(actions) {
         xs.of(state => DEFAULT_STATE),
 
         // Mapping some reducers into the main chain.
-        fetchUser$.mapTo(state => ({...state, user: {...state.user, user: false, resolving: true}})),
-        postRoute$.mapTo(state => ({...state, post: {...state.post, resolving: true, comments: {...state.post.comments, resolving: true}}})),
-        actions.user$.map(user => state => ({...state, user: {...state.user, user, resolving: false}})),
-        actions.post$.map(post => state => ({...state, post: {...state.post, post, resolving: false}})),
-        actions.comments$.map(comments => state => ({...state, post: {...state.post, comments: {...state.post.comments, list: comments, resolving: false}}})),
+        fetchUser$
+            .mapTo(state => merge(state)({user: {user: false, resolving: true}})),
+        postRoute$
+            .map(([action]) => state => merge(state)({post: {resolving: true, postId: action.post.id, comments: {resolving: true}}})),
+        actions.user$
+            .map(user => state => merge(state)({user: {user, resolving: false}})),
+        actions.post$
+            .map(post => state => merge(state)({post: {post, resolving: false}})),
+        actions.comments$
+            .map(list => state => merge(state)({post: {comments: {list, resolving: false}}})),
     );
         
     return {

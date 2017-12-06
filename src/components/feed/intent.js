@@ -49,12 +49,6 @@ export function intent({DOM, HTTP, fractal, props}) {
         .filter(res => !(res instanceof Error))
         .map(res => res.body); 
 
-    const post$ = HTTP.select('post')
-        .map(response$ => response$.replaceError(err => xs.of(err)))
-        .flatten()
-        .filter(res => !(res instanceof Error))
-        .map(res => res.body);
-
     const subcategories$ = categories$.map(list => {
         return list
             .map(category => category.subcategories)
@@ -70,7 +64,6 @@ export function intent({DOM, HTTP, fractal, props}) {
     return {
         fetch$,
         posts$,
-        post$,
         categories$,
         subcategories$,
         linkPost$,

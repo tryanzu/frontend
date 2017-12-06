@@ -5,7 +5,7 @@ const ago = timeago(null, 'es');
 
 export function view(state$) {
     return state$.map(state => {
-        const {loading, list, error, subcategories} = state;
+        const {loading, list, error, subcategories} = state.own;
 
         return h('section.fade-in.feed.flex.flex-column', [
             h('section.tabs', [

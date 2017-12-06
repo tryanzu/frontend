@@ -31,8 +31,13 @@ function board(sources) {
         set: (state, child) => ({...state, post: child.own})
     };
 
+    const feedLens = {
+        get: ({feed, user, post}) => ({own: feed, shared: {user: user.user, postId: post.postId}}),
+        set: (state, child) => ({...state, feed: child.own})
+    };
+
     const navbar = Navbar({DOM, HTTP, storage, fractal});
-    const feed = isolate(Feed, 'feed')({DOM, HTTP, fractal, props: {authToken$}});
+    const feed = isolate(Feed, {fractal: feedLens})({DOM, HTTP, fractal, props: {authToken$}});
     const post = isolate(Post, {fractal: postLens})({DOM, HTTP, fractal, props: {authToken$}});
 
     // Compute merged vdom trees.
