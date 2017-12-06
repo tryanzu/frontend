@@ -42,8 +42,7 @@ export function intent({history, storage, HTTP}) {
         .map(response$ => response$.replaceError(err => xs.of({status: 'error', err})))
         .flatten()
         .filter(r => !('err' in r))
-        .map(r => 'err' in r ? r : r.body)
-        .debug();
+        .map(r => 'err' in r ? r : r.body);
 
     const user$ = HTTP.select('me')
         .map(response$ => response$.replaceError(err => xs.of(err)))

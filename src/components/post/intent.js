@@ -1,7 +1,6 @@
 import xs from 'xstream'
 
 export function intent({DOM, HTTP, props}) {
-
     /**
      * DOM read effects including:
      */
@@ -51,6 +50,11 @@ export function intent({DOM, HTTP, props}) {
         .map(response$ => response$.replaceError(err => xs.of({status: 'error', err})))
         .flatten()
         .map(r => 'err' in r ? r : r.body)
+
+    const sentReply$ = HTTP.select('reply')
+        .map(response$ => response$.replaceError(err => xs.of({status: 'error', err})))
+        .flatten()
+        .map(r => 'err' in r ? r : r.body)
     
     return {
         user$,
@@ -63,6 +67,7 @@ export function intent({DOM, HTTP, props}) {
         replyTo$,
         replyContent$,
         reply$,
+        sentReply$,
         authToken$: props.authToken$
     } 
 }

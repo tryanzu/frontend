@@ -2,6 +2,7 @@ import xs from 'xstream';
 import sampleCombine from 'xstream/extra/sampleCombine';
 import delay from 'xstream/extra/delay';
 import merge from 'lodash/merge';
+import mergeWith from 'lodash/mergeWith';
 
 export const DEFAULT_STATE = {
     resolving: false,
@@ -24,14 +25,14 @@ export const DEFAULT_STATE = {
 export const LENSED_STATE = {shared: {user: false}, own: {...DEFAULT_STATE}};
 
 export function model(actions) {   
-    const update = (state, fields) => ({...state, own: merge(state.own, fields)});
+    const update = (state, fields) => ({...state, own: mergeWith(state.own, fields, (obj, source) => Array.isArray(obj) ? source : undefined)});
 
     /**
      * Http write effects, including:
      * - votes requests
      * - comments requests
      */
-     const http$ = actions.voting$
+     const voteRequest$ = actions.voting$
         .compose(sampleCombine(actions.authToken$))
         .map(([{type, intent, id}, withAuth]) => ({
             method: 'POST',
@@ -42,14 +43,21 @@ export function model(actions) {
             headers: withAuth({})
         }));
 
-    const http2$ = actions.reply$
-        .compose(sampleCombine(actions.replyContent$, actions.authToken$));
+    const commentRequest$ = actions.reply$
+        .compose(sampleCombine(actions.replyContent$, actions.authToken$))
+        .map(([{type, id}, content, withAuth]) => ({
+            method: 'POST',
+            type: 'application/json',
+            url: `${Anzu.layer}post/comment/${id}`, 
+            category: 'reply',
+            send: {content},
+            headers: withAuth({})
+        }));
 
-    http2$.addListener({
-      next: i => console.log(i),
-      error: err => console.error(err),
-      complete: () => console.log('completed')
-    })
+    const http$ = xs.merge(
+        voteRequest$,
+        commentRequest$,
+    );
 
     /**
      * Set of reducers based on happening actions, including:
@@ -57,7 +65,8 @@ export function model(actions) {
      * - Setting loading state accordingly.
      * - Voting loading state.
      */
-    const commentsR$ = actions.comments$.map(comments => state => update(state, {comments: {list: comments, resolving: false}}));
+    const commentsR$ = actions.comments$.map(comments => state => update(state, {comments: {list: comments, resolving: false}}))
+
     const commentFocusR$ = actions.commentFocus$.map(event => state => update(state, {
         ui: {
             commenting: event.focus, 
@@ -65,9 +74,13 @@ export function model(actions) {
             commentingId: 'id' in event ? event.id : state.own.ui.commentingId,
             replyTo: event.focus == false ? false : state.own.ui.replyTo
         }
-    }));
+    }))
 
-    const replyToR$ = actions.replyTo$.map(c => state => update(state, {ui: {replyTo: c.id, commenting: false}}));
+    const replyR$ = actions.sentReply$.filter(res => res.status == 'okay')
+        .map(res => state => update(state, {comments: {list: [{...res.comment, author: {...state.shared.user}}].concat(state.own.comments.list)}}))
+
+    const replyToR$ = actions.replyTo$.map(c => state => update(state, {ui: {replyTo: c.id, commenting: false}}))
+
     const postR$ = actions.post$
         .map(p => state => {
             const set = p.comments.set.reduce((acc, c) => ({...acc, [c.id]: c}), {});
@@ -130,6 +143,7 @@ export function model(actions) {
         voteFailDismissR$,
         voteR$,
         replyToR$,
+        replyR$,
     );
 
     return {

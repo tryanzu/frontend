@@ -79,7 +79,7 @@ export function model(actions) {
         actions.post$
             .map(post => state => merge(state)({post: {post, resolving: false}})),
         actions.comments$
-            .map(list => state => merge(state)({post: {comments: {list, resolving: false}}})),
+            .map(list => state => ({...state, post: {...state.post, comments: {...state.post.comments, list, resolving: false}}})),
     );
         
     return {

@@ -46,7 +46,7 @@ function commentView(comment, voting, currentUser = false, noPadding = false, ui
 
     const isCurrentUsersComment = currentUser.id == comment.user_id;
 
-    return h('div', {class: {pb3: noPadding == false}}, [
+    return h('div', {class: {pb3: noPadding == false}, key: comment.id}, [
         h('div.flex', [
             h('div.flex-auto', author(comment, 'Comentó')),
             h('div', [
