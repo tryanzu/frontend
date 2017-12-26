@@ -1,13 +1,16 @@
 import {glue} from './ext/glue';
 import xs from 'xstream';
 import {adapt} from '@cycle/run/lib/adapt';
+import { arch } from 'os';
 
 function makeOn(client) {
     return function (event) {
         const stream$ = xs.createWithMemory({
             eventListener: null,
             start(listener) {
-                this.eventListener = client.on(event, args => listener.next(args));
+                this.eventListener = client.onMessage(args => {
+                    listener.next(JSON.parse(args))
+                });
             },
             stop() {
                 client.removeListener(event, this.eventListener)

@@ -6,15 +6,14 @@ import timeagoES from 'timeago.js/locales/es';
 timeago.register('es', timeagoES);
 const ago = timeago(null, 'es');
 
-export function view(effects, account, fractal) {
-    return xs.combine(effects.state$, account.DOM, fractal.state$).map(([state, accountVNode, fstate]) => {
+export function view(effects, fractal) {
+    return xs.combine(effects.state$, fractal.state$).map(([state, fstate]) => {
         const {modal, resolving, connectedCount} = state;
         const _user = fstate.user;
         const {user} = _user;
         const image = user.image || '';
 
         return h('main', [
-            accountVNode,
             h('header.navbar', [
                 h('section.navbar-section', [
                     h('a', img('.logo.ng-link.w3', {dataset: {href: '/'}, attrs: {src: '/images/anzu.svg', alt: 'Buldar.com'}}))

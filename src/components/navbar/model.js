@@ -15,7 +15,7 @@ const DEFAULT_STATE = {
     }
 };
 
-export function model(actions, accountModal) {
+export function model(actions) {
 
     /**
      * HTTP write effects including:
@@ -38,9 +38,6 @@ export function model(actions, accountModal) {
      */
     const storage$ = xs.merge(
 
-        // Received new token from login dataflow.
-        accountModal.token.map(token => ({key: 'id_token', value: token})),
-
         // Logout link.
         actions.logoutLink$.map(() => ({key: 'id_token', value: ''}))
     ); 
@@ -50,22 +47,6 @@ export function model(actions, accountModal) {
      * 
      * Intent translated to state using reducers.
      */
-    const modalR$ = actions.modalLink$.map(ev => state => ({
-        ...state,
-        modal: {
-            ...state.modal,
-            [ev.modal]: !state.modal[ev.modal]
-        }
-    }));
-
-    const tokenR$ = actions.token$.map(token => state => ({
-        ...state, 
-        resolving: {
-            ...state.resolving,
-            user: token !== false
-        },
-        token
-    }));
     const openNotificationsR$ = requestNotifications$
         .map(r => state => ({
             ...state, 
@@ -109,20 +90,23 @@ export function model(actions, accountModal) {
     }));
 
     const state$ = xs.merge(
-        tokenR$, 
         logoutR$, 
-        modalR$, 
         notificationsR$, 
         openNotificationsR$, 
         incomingNotificationR$, 
     ).fold((state, action) => action(state), DEFAULT_STATE);
 
+    const reducers$ = xs.merge(
+        actions.modalLink$.map(action => state => ({...state, modal: {...state.modal, active: true, modal: 'account'}}))
+    )
+    
     const beep$ = actions.userChan$.filter(ev => ev.fire == 'notification' && ev.count > 0);
 
     return {
         state$,
         storage$,
         beep$,
+        fractal: reducers$,
         HTTP: requestNotifications$,
     };
 }

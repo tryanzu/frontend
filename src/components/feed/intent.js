@@ -10,10 +10,11 @@ const ESC_KEY = 27;
  * @param socket
  * @param history
  */
-export function intent({DOM, HTTP, fractal, props}) {
+export function intent({DOM, HTTP, fractal, props, glue}) {
 
     /**
-     * Router read effects.
+     * Router read effects including:
+     * - Feed post links
      */
     const linkPost$ = DOM.select('.feed .list a').events('click', {preventDefault: true})
         .map((event) => {
@@ -60,6 +61,14 @@ export function intent({DOM, HTTP, fractal, props}) {
                 return kvmap;
             }, {});
     });
+
+    const feedGlue$ = glue.get('feed');
+    
+    feedGlue$.addListener({
+        next: i => console.log(i),
+        error: err => console.error(err),
+        complete: () => console.log('completed'),
+    })
 
     return {
         fetch$,

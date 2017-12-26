@@ -13,7 +13,7 @@ export function intent(dom, http, storage) {
         .map(event => ({modal: event.target.dataset.modal, data: event.target.dataset}));
 
     const logoutLink$ = dom.select('#logout').events('click').mapTo(true);
-
+    
     const openNotifications$ = dom.select('#notifications').events('click');
 
     /**
