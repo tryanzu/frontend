@@ -80,6 +80,8 @@ export function model(actions) {
             .map(post => state => merge(state)({post: {post, resolving: false}})),
         actions.comments$
             .map(list => state => ({...state, post: {...state.post, comments: {...state.post.comments, list, resolving: false}}})),
+        actions.logout$
+            .mapTo(state => merge(state)({user: {user: false, resolving: false}})),
     );
         
     return {

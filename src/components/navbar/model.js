@@ -2,8 +2,6 @@ import xs from 'xstream';
 import sampleCombine from 'xstream/extra/sampleCombine';
 
 const DEFAULT_STATE = {
-    user: false,
-    token: false,
     notifications: [],
     connectedCount: 0,
     resolving: {
@@ -22,13 +20,11 @@ export function model(actions) {
      * - User info from token stream.
      */
     const requestNotifications$ = actions.openNotifications$
-        .compose(sampleCombine(actions.token$))
-        .map(([event, token]) => ({
+        .compose(sampleCombine(actions.authToken$))
+        .map(([event, withAuth]) => ({
             url: Anzu.layer + 'notifications',
             category: 'notifications',
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
+            headers: withAuth({})
         }));
 
     /**
@@ -36,11 +32,7 @@ export function model(actions) {
      * - Auth token reset
      * - New auth token persistence 
      */
-    const storage$ = xs.merge(
-
-        // Logout link.
-        actions.logoutLink$.map(() => ({key: 'id_token', value: ''}))
-    ); 
+    const storage$ = actions.logoutLink$.map(() => ({key: 'id_token', action: 'removeItem'})); 
 
     /**
      * Reducers.

@@ -3,8 +3,9 @@ import {model} from './navbar/model'
 import {view} from './navbar/view'
 import xs from 'xstream'
 
-export function Navbar({DOM, HTTP, storage, fractal}) {
-    const actions = intent(DOM, HTTP, storage)
+export function Navbar(sources) {
+    const { DOM, HTTP, storage, fractal, props } = sources
+    const actions = intent(sources)
     const effects = model(actions)
     const vdom$ = view(effects, fractal)
 

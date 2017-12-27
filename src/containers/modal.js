@@ -1,17 +1,28 @@
 import { h } from '@cycle/dom'
 import xs from 'xstream'
 import dropRepeats from 'xstream/extra/dropRepeats'
-import flattenSequentially from 'xstream/extra/flattenSequentially'
+import flattenConcurrently from 'xstream/extra/flattenConcurrently'
 import { AccountModal } from '../components/modal/account'
 
-// Helper to get child streams.
-const childSink = name => component => (name in component ? component[name] : xs.never())
+function intent({ DOM, fractal }) {
 
-export function Modal({ DOM, HTTP, fractal, glue, storage }) {
+    // DOM read effects.
     const overlayClick$ = DOM.select('.modal-link').events('click')
 
-    const child$ = fractal.state$
+    // Compute a stream that holds the recent modal put into state. (outside world side effect)
+    const modal$ = fractal.state$
         .compose(dropRepeats((a, b) => (a.active === b.active && a.modal === b.modal)))
+
+    return {
+        overlayClick$,
+        modal$
+    }
+}
+
+function model(sources, actions) {
+
+    // Stream of current modal component instance.
+    const modal$ = actions.modal$
         .map(({ active, modal }) => {
             if (active == false) {
                 return { DOM: xs.of({}) }
@@ -19,15 +30,53 @@ export function Modal({ DOM, HTTP, fractal, glue, storage }) {
 
             switch (modal) {
                 case 'account':
-                    return AccountModal({ DOM, HTTP, fractal, glue, storage })
+                    return AccountModal(sources)
                 default:
                     return { DOM: xs.never() }
             }
         })
         .remember()
+     
+    // Helper to get child streams.
+    const sink = (modal$, name) => {
+        return modal$
+            .map(m => name in m ? m[name] : xs.never())
+            .compose(flattenConcurrently)
+    }
 
-    const childVTree$ = child$.map(childSink('DOM')).flatten()
-    const vtree$ = xs.combine(fractal.state$, childVTree$).map(([state, childVNode]) => {
+    const childSinks = (source, ...left) => {
+        if (left.length > 0) {
+            const name = left[0]
+            return childSinks({...source, [name]: sink(source.modal$, name)}, ...left.slice(1))
+        }
+
+        return source
+    } 
+
+    /**
+     * Modal container state.
+     */ 
+    const reducers$ = xs.merge(
+        xs.of(state => ({ active: false, modal: false, params: {} })),
+
+        // Close modal overlay clicks
+        actions.overlayClick$.mapTo(state => ({ ...state, active: false })),
+
+        // Child components reducers
+        sink(modal$, 'fractal'),
+    )
+
+    return childSinks(
+        { modal$, fractal: reducers$ }, 
+        'DOM',
+        'HTTP',
+        'storage',
+        'glue',
+    )
+}
+
+function view(state$, childVTree$) {
+    return xs.combine(state$, childVTree$).map(([state, childVNode]) => {
             if (state.active == false) {
                 return h('div')
             }
@@ -38,22 +87,20 @@ export function Modal({ DOM, HTTP, fractal, glue, storage }) {
             ])
         }
     )
+}
+export function Modal(sources) {
+    const { DOM, HTTP, fractal, glue, storage } = sources
 
-    const reducers$ = xs.merge(
-        xs.of(state => ({ active: false, modal: false, params: {} })),
-
-        // Close modal overlay clicks
-        overlayClick$.mapTo(state => ({ ...state, active: false })),
-
-        // Child components reducers
-        child$.map(childSink('fractal')).flatten(),
-    )
+    // Mental note: sources are mostly needed on child modals.
+    const actions = intent({ DOM, fractal })
+    const effects = model(sources, actions)
+    const vtree$ = view(fractal.state$, effects.DOM)
 
     return {
         DOM: vtree$,
-        HTTP: child$.map(childSink('HTTP')).flatten(),
-        storage: child$.map(childSink('storage')).flatten().debug(),
-        glue: child$.map(childSink('glue')).flatten(),
-        fractal: reducers$,
+        HTTP: effects.HTTP,
+        storage: effects.storage,
+        glue: effects.glue,
+        fractal: effects.fractal,
     }
 }

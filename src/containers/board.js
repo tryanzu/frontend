@@ -38,12 +38,17 @@ function board(sources) {
     }
 
     const modal = isolate(Modal, 'modal')({ DOM, HTTP, storage, fractal, glue })
-    const navbar = Navbar({ DOM, HTTP, storage, fractal, glue })
+    const navbar = Navbar({ DOM, HTTP, storage, fractal, glue, props: {authToken$} })
     const feed = isolate(Feed, { fractal: feedLens })({ DOM, HTTP, fractal, glue, props: {authToken$} })
     const post = isolate(Post, { fractal: postLens })({ DOM, HTTP, fractal, glue, props: {authToken$} })
 
     // Compute merged vdom trees.
-    const vtree$ = xs.combine(feed.DOM, navbar.DOM, post.DOM, modal.DOM).map(([feedVNode, navbarVNode, postVNode, modalVNode]) => {
+    const vtree$ = xs.combine(
+        feed.DOM, 
+        navbar.DOM, 
+        post.DOM, 
+        modal.DOM,
+    ).map(([feedVNode, navbarVNode, postVNode, modalVNode]) => {
         return h('div.flex.flex-column.flex-auto', [
             modalVNode,
             h('header', navbarVNode),
@@ -63,7 +68,7 @@ function board(sources) {
     const http$ = xs.merge(effects.HTTP, navbar.HTTP, feed.HTTP, post.HTTP, modal.HTTP)
     const history$ = feed.history
     const beep$ = navbar.beep
-    const storage$ = xs.merge(effects.storage, modal.storage)
+    const storage$ = xs.merge(effects.storage, modal.storage, navbar.storage).debug()
 
     return {
         DOM: vtree$,
