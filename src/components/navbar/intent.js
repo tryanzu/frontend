@@ -1,6 +1,6 @@
 import xs from 'xstream';
 
-export function intent({DOM, HTTP, storage, props}) {
+export function intent({DOM, HTTP, storage, glue, props}) {
 
     /**
      * DOM intents including:

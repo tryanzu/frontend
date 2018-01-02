@@ -13,13 +13,13 @@ export function intent({DOM, HTTP, props}) {
     )
 
     const replyTo$ = DOM.select('.reply-to').events('click')
-        .map(({currentTarget}) => ({id: currentTarget.dataset.id}))
+        .map(({ currentTarget }) => ({ id: currentTarget.dataset.id }))
 
     const replyContent$ = DOM.select('form.reply-form textarea').events('input')
-        .map(({target}) => target.value)
+        .map(({ target }) => target.value)
 
-    const reply$ = DOM.select('form.reply-form').events('submit', {preventDefault: true})
-        .map(({target}) => ({type: target.dataset.type, id: target.dataset.id}))
+    const reply$ = DOM.select('form.reply-form').events('submit', { preventDefault: true })
+        .map(({ target }) => ({ type: target.dataset.type, id: target.dataset.id }))
 
     /**
      * HTTP read effects including: 
@@ -30,10 +30,10 @@ export function intent({DOM, HTTP, props}) {
     const fetchPost$ = HTTP.select('post').mapTo(true)
 
     const user$ = HTTP.select('me')
-            .map(response$ => response$.replaceError(err => xs.of(err)))
-            .flatten()
-            .filter(res => !(res instanceof Error))
-            .map(res => res.body)
+        .map(response$ => response$.replaceError(err => xs.of(err)))
+        .flatten()
+        .filter(res => !(res instanceof Error))
+        .map(res => res.body)
 
     const post$ = HTTP.select('post')
         .map(response$ => response$.replaceError(err => xs.of(err)))

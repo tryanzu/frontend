@@ -40,6 +40,15 @@ export function model(actions) {
      * Compute HTTP & storage write effects.
      */
     const storage$ = actions.unauthorized$.map(res => ({key: 'id_token', action: 'removeItem'}));
+
+    const glue$ = actions.rawToken$.map(token => {
+        if (token) {
+            return {event: 'auth', params}
+        }
+
+        return 'auth:clean'
+    })
+
     const http$ = xs.merge(
         // Fetch fresh user data whenever authToken$ gets a value.
         fetchUser$.map(withAuth => ({
@@ -87,6 +96,7 @@ export function model(actions) {
     return {
         HTTP: http$,
         storage: storage$,
-        fractal: reducers$
+        fractal: reducers$,
+        glue: glue$
     };
 }

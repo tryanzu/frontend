@@ -102,9 +102,9 @@ function toastView(toast) {
 
 export function view(state$) {
     return state$.map(state => {
-        const {user} = state.shared;
-        const {post, resolving, voting, toasts, comments, ui} = state.own;
-        const _comments = post.comments;
+        const { user, modal } = state.shared
+        const { post, resolving, voting, toasts, comments, ui } = state.own
+        const _comments = post.comments
 
         if (resolving) {
             return h('section.post', [

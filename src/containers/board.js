@@ -28,8 +28,8 @@ function board(sources) {
      * Pass through some read sinks & read some effects.
      */
     const postLens = {
-        get: ({ post, user }) => ({ own: post, shared: { user: user.user } }),
-        set: (state, child) => ({ ...state, post: child.own })
+        get: ({ post, user, modal }) => ({ own: post, shared: { user: user.user, modal } }),
+        set: (state, child) => ({ ...state, post: child.own, modal: child.shared.modal })
     }
 
     const feedLens = {
@@ -38,9 +38,9 @@ function board(sources) {
     }
 
     const modal = isolate(Modal, 'modal')({ DOM, HTTP, storage, fractal, glue })
-    const navbar = Navbar({ DOM, HTTP, storage, fractal, glue, props: {authToken$} })
-    const feed = isolate(Feed, { fractal: feedLens })({ DOM, HTTP, fractal, glue, props: {authToken$} })
-    const post = isolate(Post, { fractal: postLens })({ DOM, HTTP, fractal, glue, props: {authToken$} })
+    const navbar = Navbar({ DOM, HTTP, storage, fractal, glue, props: { authToken$ } })
+    const feed = isolate(Feed, { fractal: feedLens })({ DOM, HTTP, fractal, glue, props: { authToken$ } })
+    const post = isolate(Post, { fractal: postLens })({ DOM, HTTP, fractal, glue, props: { authToken$ } })
 
     // Compute merged vdom trees.
     const vtree$ = xs.combine(
@@ -76,6 +76,7 @@ function board(sources) {
         HTTP: http$,
         history: history$,
         storage: storage$,
-        fractal: reducers$
+        fractal: reducers$,
+        glue: effects.glue,
     }
 }

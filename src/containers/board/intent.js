@@ -11,10 +11,11 @@ export function intent({history, storage, HTTP}) {
         .map(location => switchPath(location.pathname, Routes))
         .filter(route => route.value != false)
 
-    const authToken$ = storage.local.getItem('id_token')
+    const rawToken$ = storage.local.getItem('id_token')
         .map(token => token !== undefined && token !== null && String(token).length > 0 ? token : false)
         .startWith(false)
-        .map(token => {
+
+    const authToken$ = rawToken$.map(token => {
             if (token != false) {
                 return headers => ({...headers, Authorization: 'Bearer ' + token})
             }
@@ -63,5 +64,5 @@ export function intent({history, storage, HTTP}) {
         .flatten()
         .filter(res => res instanceof Error && res.message == 'Unauthorized')
 
-    return { routePath$, authToken$, unauthorized$, user$, post$, comments$, fetchUser$, logout$ }
+    return { routePath$, authToken$, unauthorized$, user$, post$, comments$, fetchUser$, logout$, rawToken$ }
 }
