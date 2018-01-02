@@ -43,10 +43,10 @@ export function model(actions) {
 
     const glue$ = actions.rawToken$.map(token => {
         if (token) {
-            return {event: 'auth', params}
+            return {event: 'auth', params: {token}}
         }
 
-        return 'auth:clean'
+        return {event: 'auth:clean', params: {}}
     })
 
     const http$ = xs.merge(

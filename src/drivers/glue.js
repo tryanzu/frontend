@@ -27,7 +27,7 @@ export function makeGlueDriver(host = '', options = {}) {
     return function glueDriver(outgoing$) {
         outgoing$.addListener({
             next: event => {
-                socket.send(event)
+                socket.send(JSON.stringify(event))
             },
             error: err => console.error(err),
             complete: () => console.log('completed'),

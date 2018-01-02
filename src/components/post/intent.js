@@ -8,8 +8,14 @@ export function intent({DOM, HTTP, props}) {
         .map(({currentTarget}) => ({id: currentTarget.dataset.id, intent: currentTarget.dataset.intent, type: currentTarget.dataset.type}))
 
     const commentFocus$ = xs.merge(
-        DOM.select('textarea.replybox').events('focus').map(event => ({focus: true, type: event.target.dataset.type, id: event.target.dataset.id})),
-        DOM.select('button#cc').events('click').map(event => ({focus: false}))
+        DOM
+            .select('textarea.replybox')
+            .events('focus')
+            .map(event => ({focus: true, type: event.target.dataset.type, id: event.target.dataset.id})),
+        DOM
+            .select('button#cc')
+            .events('click')
+            .map(event => ({focus: false}))
     )
 
     const replyTo$ = DOM.select('.reply-to').events('click')

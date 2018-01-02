@@ -36,6 +36,10 @@ a {
 	}
 }
 
+.empty {
+	background: none;
+}
+
 .gray {
 	color: #657187 !important;
 }
