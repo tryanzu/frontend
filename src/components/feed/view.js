@@ -1,4 +1,4 @@
-import {h} from '@cycle/dom';
+import {h, span} from '@cycle/dom';
 import timeago from 'timeago.js';
 
 const ago = timeago(null, 'es');
@@ -41,9 +41,10 @@ export function view(state$) {
                             ])
                         ]),
                     ]),
-                    h('div.tc', {style: {minWidth: '50px'}}, [
+                    h('div.tc', {style: {minWidth: '50px', flexShrink: 0}}, [
                         h('span.icon-chat-alt'),
-                        h('span.pl2.b', post.comments.count)
+                        h('span.pl2.b', post.comments.count),
+                        'newComments' in post ? span('.new-comments', `+${post.newComments}`) : null
                     ])
                 ])
             }).concat([

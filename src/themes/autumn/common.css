@@ -23,6 +23,11 @@ a {
 	border-color: #c61d31;
 }
 
+.toast.toast-primary {
+	background: var(--primaryColor);
+	border-color: var(--primaryColor);
+}
+
 .btn-icon {
 	border: 1px solid #caced7;
 	border-radius: .125rem;

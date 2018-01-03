@@ -60,12 +60,24 @@ export function model(actions) {
     const postsLoadingR$ = actions.fetch$.map(res => state => update(state, {loading: true}));
     const postsR$ = actions.posts$.map(res => state => update(state, {list: state.own.list.concat(res.feed), loading: false}));
     const subcategoriesR$ = actions.subcategories$.map(subcategories => state => update(state, {subcategories}));
+    const newCommentsR$ = actions.feedGlue$
+        .filter(event => (event.fire == 'new-comment'))
+        .map(event => state => {
+            const list = state.own.list.map(post => 
+                post.id != event.id 
+                    ? post 
+                    : { ...post, newComments: (post.newComments || 0) + 1 }
+            ) 
+
+            return update(state, { list })
+        })
 
     const reducers$ = xs.merge(
         xs.of(state => merge(LENSED_STATE, state)),
         postsR$,
         postsLoadingR$,
-        subcategoriesR$
+        subcategoriesR$,
+        newCommentsR$,
     );
     
     return {
