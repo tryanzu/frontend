@@ -46,7 +46,7 @@ export function view(state$) {
                     div('.tc', {style: {minWidth: '50px', flexShrink: 0}}, [
                         span('.icon-chat-alt'),
                         span('.pl2.b', post.comments.count),
-                        'newComments' in post ? span('.new-comments', `+${post.newComments}`) : null
+                        'newCount' in post.comments ? span('.new-comments', `+${post.comments.newCount}`) : null
                     ])
                 ])
             }).concat([

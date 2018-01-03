@@ -63,10 +63,11 @@ export function model(actions) {
     const newCommentsR$ = actions.feedGlue$
         .filter(event => (event.fire == 'new-comment'))
         .map(event => state => {
+            const key = state.shared.postId == event.id ? 'count' : 'newCount'
             const list = state.own.list.map(post => 
                 post.id != event.id 
                     ? post 
-                    : { ...post, newComments: (post.newComments || 0) + 1 }
+                    : { ...post, comments: { ...post.comments, [key]: parseInt(post.comments[key] || 0) + 1} }
             ) 
 
             return update(state, { list })

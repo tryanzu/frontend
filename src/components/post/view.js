@@ -8,7 +8,7 @@ import {
 } from '@cycle/dom';
 import debounce from 'lodash/debounce';
 import timeago from 'timeago.js';
-import {Quickstart} from '../quickstart';
+import { Quickstart } from '../quickstart';
 import markdown from 'markdown-it';
 import emoji from 'markdown-it-emoji';
 import mila from 'markdown-it-link-attributes';

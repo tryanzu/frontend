@@ -71,6 +71,28 @@
 	}
 }
 
+.subscribe {
+	lost-utility: clearfix;
+
+	& > div {
+		lost-column: 1/2;
+	}
+
+	& h3 {
+		font-size: var(--fontSize);
+		margin-bottom: 0.4rem;
+	}
+
+	& p {
+		font-size: calc(var(--fontSize) * 0.9);
+		line-height: 18px;
+
+		&:last-child {
+			margin-bottom: 0;
+		}
+	}
+}
+
 textarea {
 	overflow: hidden
 }
