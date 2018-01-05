@@ -10,10 +10,7 @@ export function view(state$) {
 
         return section('.fade-in.feed.flex.flex-column', [
             section('.tabs', [
-                div('.categories.flex.items-center', [
-                    h2('.flex-auto', 'Todas las categorias'),
-                    div(a('.dib.btn-icon', span('.icon-down-open')))
-                ]),
+                categories(state),
                 div('.filters.flex', [
                     div('.flex-auto', [
                         nav([
@@ -54,4 +51,11 @@ export function view(state$) {
             ]))
         ]);
     });
+}
+
+function categories(state) {
+    return div('.categories.flex.items-center', [
+        h2('.flex-auto', 'Todas las categorias'),
+        div(a('.dib.btn-icon', span('.icon-down-open')))
+    ])
 }

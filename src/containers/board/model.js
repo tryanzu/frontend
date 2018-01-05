@@ -4,16 +4,11 @@ import merge from 'lodash/fp/merge'
 
 const DEFAULT_STATE = {
     page: 'board',
-    publish: {
-        active: false,
-        category: false,
-        title: '',
-        content: '',
-    },
     user: {
         resolving: false,
         user: false
     },
+    categories: false,
     post: {
         resolving: false,
         postId: false,
@@ -51,7 +46,6 @@ export function model(actions) {
      * Compute HTTP & storage write effects.
      */
     const storage$ = actions.unauthorized$.map(res => ({key: 'id_token', action: 'removeItem'}))
-
     const glue$ = actions.rawToken$.map(token => {
         if (token) {
             return {event: 'auth', params: {token}}
@@ -60,7 +54,15 @@ export function model(actions) {
         return {event: 'auth:clean', params: {}}
     })
 
+    // HTTP write effects.
     const http$ = xs.merge(
+        // Fetch categories data first.
+        xs.of({
+            method: 'GET',
+            url: Anzu.layer + 'category',
+            category: 'categories',
+        }),
+
         // Fetch fresh user data whenever authToken$ gets a value.
         fetchUser$.map(withAuth => ({
             url: Anzu.layer + 'user/my', 
@@ -96,6 +98,8 @@ export function model(actions) {
             .map(([action]) => state => merge(state)({page: 'board', post: {resolving: true, postId: action.post.id, comments: {resolving: true}}})),
         publishRoute$
             .map(() => state => merge(state)({page: 'publish'})),
+        actions.categories$
+            .map(categories => state => merge(state)({categories, feed: {subcategories: subcategories(categories)}})),  
         actions.user$
             .map(user => state => merge(state)({user: {user, resolving: false}})),
         actions.post$
@@ -112,4 +116,16 @@ export function model(actions) {
         fractal: reducers$,
         glue: glue$
     }
+}
+
+function subcategories(categories) {
+    return categories
+        .map(category => category.subcategories)
+        .reduce((kvmap, subcategories) => {
+            for (let k in subcategories) {
+                kvmap[subcategories[k].id] = subcategories[k]
+            }
+
+            return kvmap
+        }, {})
 }

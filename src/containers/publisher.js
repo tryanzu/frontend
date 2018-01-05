@@ -41,7 +41,7 @@ function model(actions) {
 }
 
 function view(state$) {
-    return state$.debug().map(state => {
+    return state$.map(state => {
         const { title, isQuestion, disabledComments, pinned } = state
 
         return main('.publish.flex.flex-auto', [

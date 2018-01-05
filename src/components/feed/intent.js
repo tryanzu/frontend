@@ -44,31 +44,11 @@ export function intent({DOM, HTTP, fractal, props, glue}) {
         .filter(res => !(res instanceof Error))
         .map(res => res.body)
 
-    const categories$ = HTTP.select('categories')
-        .map(response$ => response$.replaceError(err => xs.of(err)))
-        .flatten()
-        .filter(res => !(res instanceof Error))
-        .map(res => res.body) 
-
-    const subcategories$ = categories$.map(list => {
-        return list
-            .map(category => category.subcategories)
-            .reduce((kvmap, subcategories) => {
-                for (let k in subcategories) {
-                    kvmap[subcategories[k].id] = subcategories[k]
-                }
-
-                return kvmap
-            }, {})
-    })
-
     const feedGlue$ = glue.get('feed').map(event => event.p)
     
     return {
         fetch$,
         posts$,
-        categories$,
-        subcategories$,
         linkPost$,
         feedGlue$,
         authToken$: props.authToken$,

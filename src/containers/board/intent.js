@@ -42,7 +42,12 @@ export function intent({ history, storage, HTTP, fractal }) {
         .compose(dropRepeats())
 
     /**
-     * HTTP read effects.
+     * HTTP read effects including:
+     * 
+     * - Post fetch data.
+     * - New comments
+     * - User data
+     * - Unauthorized api calls.
      */
     const post$ = HTTP.select('post')
         .map(response$ => response$.replaceError(err => xs.of(err)))
@@ -61,6 +66,12 @@ export function intent({ history, storage, HTTP, fractal }) {
         .flatten()
         .filter(res => !(res instanceof Error))
         .map(res => res.body)
+    
+    const categories$ = HTTP.select('categories')
+        .map(response$ => response$.replaceError(err => xs.of(err)))
+        .flatten()
+        .filter(res => !(res instanceof Error))
+        .map(res => res.body)
 
     const unauthorized$ = HTTP
         .filter(req => {
@@ -71,5 +82,5 @@ export function intent({ history, storage, HTTP, fractal }) {
         .flatten()
         .filter(res => res instanceof Error && res.message == 'Unauthorized')
 
-    return { page$, routePath$, authToken$, unauthorized$, user$, post$, comments$, fetchUser$, logout$, rawToken$ }
+    return { page$, routePath$, authToken$, unauthorized$, user$, post$, comments$, categories$, fetchUser$, logout$, rawToken$ }
 }
