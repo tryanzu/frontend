@@ -58,6 +58,10 @@
 
 		& .categories {
 			padding-bottom: 0.8rem;
+
+			& ul.menu {
+				width: 360px;
+			}
 		}
 
 		& h2 {

@@ -19,7 +19,6 @@ main.board {
 	}
 }
 
-
 main.publish {
 	lost-center: var(--layoutSize);
 	width: 100%;
@@ -32,4 +31,20 @@ main.publish {
 	& > section:nth-child(2) {
 		lost-column: 3/7;
 	}
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+ 
+/* Track */
+::-webkit-scrollbar-track {
+	background: var(--mainGray);
+    border-radius: 10px;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background: #c6ceda;
 }

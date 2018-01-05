@@ -1,4 +1,4 @@
-import {h, span, section, h2, a, div, nav, button, article, img, h1} from '@cycle/dom';
+import {h, span, section, h2, a, div, nav, button, article, img, h1, ul, li, h3} from '@cycle/dom';
 import timeago from 'timeago.js';
 
 const ago = timeago(null, 'es');
@@ -54,8 +54,20 @@ export function view(state$) {
 }
 
 function categories(state) {
+    const { categories } = state.shared
+    
+    const list = categories || []
+    const menu = list.reduce((all, current) => {
+        return all
+            .concat(li('.divider', { dataset: { content: current.name } }))
+            .concat(current.subcategories.map(s => li('.menu-item', a(s.name))))
+    }, [])
+
     return div('.categories.flex.items-center', [
         h2('.flex-auto', 'Todas las categorias'),
-        div(a('.dib.btn-icon', span('.icon-down-open')))
+        div('.dropdown.dropdown-right', [
+            a('.dib.btn-icon.dropdown-toggle', { attrs: {tabindex: 0} }, span('.icon-down-open')),
+            ul('.menu', menu)
+        ])
     ])
 }

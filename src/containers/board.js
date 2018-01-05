@@ -34,7 +34,7 @@ function board(sources) {
     }
 
     const feedLens = {
-        get: ({ feed, user, post }) => ({ own: feed, shared: { user: user.user, postId: post.postId } }),
+        get: ({ feed, user, post, categories }) => ({ own: feed, shared: { categories, user: user.user, postId: post.postId } }),
         set: (state, child) => ({ ...state, feed: child.own })
     }
 
