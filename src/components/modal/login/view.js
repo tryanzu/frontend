@@ -20,10 +20,10 @@ export function view(state$) {
                     'No pudimos acceder a tu cuenta, verifica tus datos e intenta nuevamente.'
                 ]),
                 h('div.form-group', [
-                    h('input.form-input', {props: {value: email}, attrs: {id: 'email', type: 'email', placeholder: 'Correo electrónico', required: true, autofocus: true}})
+                    h('input.form-input', {props: {value: email}, attrs: {id: 'email', type: 'email', autocomplete: 'username', placeholder: 'Correo electrónico', required: true, autofocus: true}})
                 ]),
                 h('div.form-group', [
-                    h('input.form-input', {props: {value: password}, attrs: {id: 'password', type: 'password', placeholder: 'Contraseña', required: true}})
+                    h('input.form-input', {props: {value: password}, attrs: {id: 'password', type: 'password', autocomplete: 'current-password', placeholder: 'Contraseña', required: true}})
                 ]),
                 h('div.form-group', [
                     h('label.form-checkbox', [

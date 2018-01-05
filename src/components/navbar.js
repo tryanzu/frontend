@@ -1,20 +1,19 @@
-import {LoginModal} from './modal/login';
-import {AccountModal} from './modal/account';
-import {intent} from './navbar/intent';
-import {model} from './navbar/model';
-import {view} from './navbar/view';
-import xs from 'xstream';
+import {intent} from './navbar/intent'
+import {model} from './navbar/model'
+import {view} from './navbar/view'
+import xs from 'xstream'
 
-export function Navbar({DOM, HTTP, storage, fractal}) {
-    const actions = intent(DOM, HTTP, storage);
-    const account = AccountModal({DOM, HTTP, props: {openLink$: actions.modalLink$}})
-    const effects = model(actions, account);
-    const vdom$ = view(effects, account, fractal);
+export function Navbar(sources) {
+    const { DOM, HTTP, storage, fractal, props } = sources
+    const actions = intent(sources)
+    const effects = model(actions)
+    const vdom$ = view(effects, fractal)
 
     return {
         DOM: vdom$,
-        HTTP: xs.merge(effects.HTTP, account.HTTP),
+        HTTP: effects.HTTP,
         storage: effects.storage$,
-        beep: effects.beep$
-    };
+        beep: effects.beep$,
+        fractal: effects.fractal,
+    }
 }

@@ -1,0 +1,11 @@
+@import "../variables.css";
+
+main.publish {
+    & .editor form  {
+        padding: 2rem;
+		background: #FFF;
+		outline: 1px solid #e3e9ef;
+        border-radius: 4px;
+		box-shadow: 0 7px 14px 0 rgba(50,50,93,.1), 0 3px 6px 0 rgba(0,0,0,.07);
+    }
+}

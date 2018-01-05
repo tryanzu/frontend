@@ -14,7 +14,7 @@ exports.paths = {
 };
 
 exports.npm = {
-    styles: {'spectre.css': ['dist/spectre.min.css'], 'tachyons': ['css/tachyons.min.css']}
+    styles: { 'spectre.css': ['dist/spectre.min.css', 'dist/spectre-exp.min.css'], 'tachyons': ['css/tachyons.min.css']}
 };
 
 exports.plugins = {

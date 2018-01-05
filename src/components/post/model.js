@@ -48,7 +48,7 @@ export function model(actions) {
         .map(([{type, id}, content, withAuth]) => ({
             method: 'POST',
             type: 'application/json',
-            url: `${Anzu.layer}post/comment/${id}`, 
+            url: `${Anzu.layer}comments/${id}?type=${type}`, 
             category: 'reply',
             send: {content},
             headers: withAuth({})
@@ -76,10 +76,19 @@ export function model(actions) {
         }
     }))
 
-    const replyR$ = actions.sentReply$.filter(res => res.status == 'okay')
-        .map(res => state => update(state, {comments: {list: [{...res.comment, author: {...state.shared.user}}].concat(state.own.comments.list)}}))
+    const replyR$ = actions.sentReply$.filter(res => 'id' in res)
+        .map(res => state => update(state, {comments: {list: [{...res, author: {...state.shared.user}}].concat(state.own.comments.list)}}))
 
-    const replyToR$ = actions.replyTo$.map(c => state => update(state, {ui: {replyTo: c.id, commenting: false}}))
+    const replyToR$ = actions.replyTo$.map(c => state => { 
+        const { shared, owned } = state
+        
+        // Check if user is authenticated.
+        if (shared.user === false) {
+            return {...state, shared: {...shared, modal: {...shared.modal, active: true, modal: 'account'}}}
+        }
+        
+        return update(state, { ui: { replyTo: c.id, commenting: false } })
+    })
 
     const postR$ = actions.post$
         .map(p => state => {

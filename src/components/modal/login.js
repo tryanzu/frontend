@@ -4,12 +4,12 @@ import {view} from './login/view';
 
 export function LoginModal({DOM, HTTP}) {
     const actions = intent(DOM, HTTP);
-    const model$ = model(actions);
-    const view$ = view(model$.state$);
+    const effects = model(actions);
+    const view$ = view(effects.state$);
 
     return {
         DOM: view$,
-        HTTP: model$.HTTP,
-        token: model$.token$
+        HTTP: effects.HTTP,
+        token: effects.token$
     };
 };

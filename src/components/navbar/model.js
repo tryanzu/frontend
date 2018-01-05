@@ -2,8 +2,6 @@ import xs from 'xstream';
 import sampleCombine from 'xstream/extra/sampleCombine';
 
 const DEFAULT_STATE = {
-    user: false,
-    token: false,
     notifications: [],
     connectedCount: 0,
     resolving: {
@@ -15,20 +13,18 @@ const DEFAULT_STATE = {
     }
 };
 
-export function model(actions, accountModal) {
+export function model(actions) {
 
     /**
      * HTTP write effects including:
      * - User info from token stream.
      */
     const requestNotifications$ = actions.openNotifications$
-        .compose(sampleCombine(actions.token$))
-        .map(([event, token]) => ({
+        .compose(sampleCombine(actions.authToken$))
+        .map(([event, withAuth]) => ({
             url: Anzu.layer + 'notifications',
             category: 'notifications',
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
+            headers: withAuth({})
         }));
 
     /**
@@ -36,36 +32,13 @@ export function model(actions, accountModal) {
      * - Auth token reset
      * - New auth token persistence 
      */
-    const storage$ = xs.merge(
-
-        // Received new token from login dataflow.
-        accountModal.token.map(token => ({key: 'id_token', value: token})),
-
-        // Logout link.
-        actions.logoutLink$.map(() => ({key: 'id_token', value: ''}))
-    ); 
+    const storage$ = actions.logoutLink$.map(() => ({key: 'id_token', action: 'removeItem'})); 
 
     /**
      * Reducers.
      * 
      * Intent translated to state using reducers.
      */
-    const modalR$ = actions.modalLink$.map(ev => state => ({
-        ...state,
-        modal: {
-            ...state.modal,
-            [ev.modal]: !state.modal[ev.modal]
-        }
-    }));
-
-    const tokenR$ = actions.token$.map(token => state => ({
-        ...state, 
-        resolving: {
-            ...state.resolving,
-            user: token !== false
-        },
-        token
-    }));
     const openNotificationsR$ = requestNotifications$
         .map(r => state => ({
             ...state, 
@@ -109,20 +82,23 @@ export function model(actions, accountModal) {
     }));
 
     const state$ = xs.merge(
-        tokenR$, 
         logoutR$, 
-        modalR$, 
         notificationsR$, 
         openNotificationsR$, 
         incomingNotificationR$, 
     ).fold((state, action) => action(state), DEFAULT_STATE);
 
+    const reducers$ = xs.merge(
+        actions.modalLink$.map(action => state => ({...state, modal: {...state.modal, active: true, modal: 'account'}}))
+    )
+    
     const beep$ = actions.userChan$.filter(ev => ev.fire == 'notification' && ev.count > 0);
 
     return {
         state$,
         storage$,
         beep$,
+        fractal: reducers$,
         HTTP: requestNotifications$,
     };
 }

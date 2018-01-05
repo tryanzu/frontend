@@ -44,28 +44,36 @@ export function model(actions) {
             query: {limit: 15, offset}
         }));
 
-    const http$ = xs.merge(
-        xs.of({
-            method: 'GET',
-            url: Anzu.layer + 'category', 
-            category: 'categories',
-        }), 
-        fetchPosts$, 
-    );
+    const http$ = fetchPosts$
 
     /**
      * Reducers.
      * Streams mapped to reducer functions.
      */
-    const postsLoadingR$ = actions.fetch$.map(res => state => update(state, {loading: true}));
-    const postsR$ = actions.posts$.map(res => state => update(state, {list: state.own.list.concat(res.feed), loading: false}));
-    const subcategoriesR$ = actions.subcategories$.map(subcategories => state => update(state, {subcategories}));
-
     const reducers$ = xs.merge(
         xs.of(state => merge(LENSED_STATE, state)),
-        postsR$,
-        postsLoadingR$,
-        subcategoriesR$
+        
+        // Post loading
+        actions.fetch$
+            .map(res => state => update(state, { loading: true })),
+        
+        // Posts fetch loaded
+        actions.posts$
+            .map(res => state => update(state, { list: state.own.list.concat(res.feed), loading: false })),
+
+        // New remote comments on feed posts.
+        actions.feedGlue$
+            .filter(event => (event.fire == 'new-comment'))
+            .map(event => state => {
+                const key = state.shared.postId == event.id ? 'count' : 'newCount'
+                const list = state.own.list.map(post =>
+                    post.id != event.id
+                        ? post
+                        : { ...post, comments: { ...post.comments, [key]: parseInt(post.comments[key] || 0) + 1 } }
+                )
+
+                return update(state, { list })
+            })
     );
     
     return {

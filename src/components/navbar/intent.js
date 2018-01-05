@@ -1,6 +1,6 @@
 import xs from 'xstream';
 
-export function intent(dom, http, storage) {
+export function intent({DOM, HTTP, storage, glue, props}) {
 
     /**
      * DOM intents including:
@@ -9,20 +9,12 @@ export function intent(dom, http, storage) {
      * - Angular handled route links.
      * - Open notifications link.
      */
-    const modalLink$ = dom.select('.modal-link').events('click')
+    const modalLink$ = DOM.select('.modal-link').events('click')
         .map(event => ({modal: event.target.dataset.modal, data: event.target.dataset}));
 
-    const logoutLink$ = dom.select('#logout').events('click').mapTo(true);
-
-    const openNotifications$ = dom.select('#notifications').events('click');
-
-    /**
-     * LocalStorage read effects including:
-     * - auth token stream.
-     */
-    const token$ = storage.local.getItem('id_token')
-        .filter(token => token !== null && String(token).length > 0)
-        .startWith(false);
+    const logoutLink$ = DOM.select('#logout').events('click').mapTo(true);
+    
+    const openNotifications$ = DOM.select('#notifications').events('click');
 
     /**
      * HTTP read effects including: 
@@ -30,13 +22,7 @@ export function intent(dom, http, storage) {
      * - Incoming notifications response.
      * - Socket.IO user channel messages.
      */
-    const user$ = http.select('me')
-        .map(response$ => response$.replaceError(err => xs.of(err)))
-        .flatten()
-        .filter(res => !(res instanceof Error))
-        .map(res => res.body);
-
-    const notifications$ = http.select('notifications')
+    const notifications$ = HTTP.select('notifications')
         .map(response$ => response$.replaceError(err => xs.of(err)))
         .flatten()
         .filter(res => !(res instanceof Error))
@@ -50,10 +36,9 @@ export function intent(dom, http, storage) {
     return {
         modalLink$, 
         logoutLink$, 
-        token$, 
-        user$, 
         notifications$, 
         userChan$, 
-        openNotifications$
+        openNotifications$,
+        authToken$: props.authToken$,
     };
 };

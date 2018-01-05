@@ -18,3 +18,33 @@ main.board {
 		lost-column: 2/3;
 	}
 }
+
+main.publish {
+	lost-center: var(--layoutSize);
+	width: 100%;
+	padding: 0 0 1rem;
+
+	& > section:nth-child(1) {
+		lost-column: 4/7;
+	}
+
+	& > section:nth-child(2) {
+		lost-column: 3/7;
+	}
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+ 
+/* Track */
+::-webkit-scrollbar-track {
+	background: var(--mainGray);
+    border-radius: 10px;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background: #c6ceda;
+}
