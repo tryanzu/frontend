@@ -27,8 +27,8 @@ export function view(effects, fractal) {
 }
 
 function logoSection() {
-    return h('section.navbar-section', [
-        h('a', img('.logo.ng-link.w3', { dataset: { href: '/' }, attrs: { src: '/images/anzu.svg', alt: 'Buldar.com' } }))
+    return section('.navbar-section', [
+        a({ attrs: { href: '/' } }, img('.logo.ng-link.w3', { dataset: { href: '/' }, attrs: { src: '/images/anzu.svg', alt: 'Buldar.com' } }))
     ])
 }
 
@@ -165,11 +165,6 @@ function desktopVersion({ user, resolving, connectedCount, image, state }) {
                             : div('.dn')
                     ])
                 ]),
-                user.validated == false ? div('.absolute.top-2.z-1.w5.right-0.toast.shadow', [
-                    span('.b', 'Acción necesaria'),
-                    p('.mb1', 'Enviamos a tu correo las instrucciones necesarias para validar tu cuenta. Obtén acceso completo al sitio y únete a la conversación.'),
-                    a('Reenviar correo electrónico')
-                ]) : null,
                 h('ul.menu', [
                     h('li.menu-item', h('a.link.ng-link.pointer', { dataset: { href: `/u/${user.username}/${user.id}` } }, 'Ver mi perfil')),
                     h('li.menu-item', h('a.link.ng-link.pointer', { dataset: { href: '/medallas' } }, 'Medallas')),
@@ -185,7 +180,12 @@ function desktopVersion({ user, resolving, connectedCount, image, state }) {
                     ]),
                     h('li.divider'),
                     h('li.menu-item', h('a.pointer', { attrs: { id: 'logout' } }, 'Salir de mi cuenta'))
-                ])
+                ]),
+                user.validated == false ? div('.absolute.top-2.z-1.w5.right-0.toast.shadow', [
+                    span('.b', 'Acción necesaria'),
+                    p('.mb1', 'Enviamos a tu correo las instrucciones necesarias para validar tu cuenta. Obtén acceso completo al sitio y únete a la conversación.'),
+                    a('Reenviar correo electrónico')
+                ]) : null,
             ])
             : div('.dn')
     ])

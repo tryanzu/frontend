@@ -1,15 +1,18 @@
 import xs from 'xstream'
 import switchPath from 'switch-path'
+import dropRepeats from 'xstream/extra/dropRepeats'
 
 const Routes = {
     '/': false,
-    '/p/:slug/:id': (slug, id) => ({type: 'goTo', page: 'post', post: {id, slug}})
+    '/p/:slug/:id': (slug, id) => ({ type: 'goTo', page: 'post', post: { id, slug } }),
+    '/publicar': { type: 'goTo', page: 'publish' }
 }
 
-export function intent({history, storage, HTTP}) {
+export function intent({ history, storage, HTTP, fractal }) {
     const routePath$ = history
         .map(location => switchPath(location.pathname, Routes))
         .filter(route => route.value != false)
+        .remember()
 
     const rawToken$ = storage.local.getItem('id_token')
         .map(token => token !== undefined && token !== null && String(token).length > 0 ? token : false)
@@ -33,6 +36,10 @@ export function intent({history, storage, HTTP}) {
                 x = withAuth(headers)
             return x != headers
         })
+
+    const page$ = fractal.state$
+        .map(state => state.page)
+        .compose(dropRepeats())
 
     /**
      * HTTP read effects.
@@ -64,5 +71,5 @@ export function intent({history, storage, HTTP}) {
         .flatten()
         .filter(res => res instanceof Error && res.message == 'Unauthorized')
 
-    return { routePath$, authToken$, unauthorized$, user$, post$, comments$, fetchUser$, logout$, rawToken$ }
+    return { page$, routePath$, authToken$, unauthorized$, user$, post$, comments$, fetchUser$, logout$, rawToken$ }
 }

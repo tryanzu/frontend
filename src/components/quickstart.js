@@ -32,7 +32,7 @@ export function Quickstart() {
 				]),
 				div([
 					h3(a(['Desarrollo de Anzu', span('.icon.icon-arrow-right')])),
-					p('Enterate del proceso de desarrollo de Anzu como tal.'),
+					p('Suscribete si deseas participar o estar informado sobre el desarrollo de Anzu como tal.'),
 					input('.form-input', { attrs: { type: 'email', placeholder: 'Correo electrónico' } })
 				])
 			])

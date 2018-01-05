@@ -22,7 +22,7 @@ export function view(state$) {
                         ])
                     ]),
                     div('.pl3', [
-                        button('.btn.btn-sm.btn-primary', 'Crear publicación'),
+                        a('.btn.btn-sm.btn-primary', { attrs: { href: '/publicar' } }, 'Crear publicación'),
                     ])
                 ])
             ]),

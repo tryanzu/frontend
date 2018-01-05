@@ -6,7 +6,6 @@ import {run} from '@cycle/run';
 import {makeDOMDriver} from '@cycle/dom';
 import {makeHistoryDriver, captureClicks} from '@cycle/history';
 import {makeHTTPDriver} from '@cycle/http';
-import {makeSocketIODriver} from './drivers/socket-io';
 import {makeGlueDriver} from './drivers/glue';
 import {ngDriver} from './drivers/angular';
 import {beepDriver} from './drivers/beep';

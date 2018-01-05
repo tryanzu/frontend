@@ -16,11 +16,11 @@ export function intent({DOM, HTTP, fractal, props, glue}) {
      * Router read effects including:
      * - Feed post links
      */
-    const linkPost$ = DOM.select('.feed .list a').events('click', {preventDefault: true})
+    const linkPost$ = DOM.select('.feed a').events('click', {preventDefault: true})
         .map((event) => {
             const {target} = event
             event.preventDefault()
-            return {path: target.getAttribute('href'), id: target.dataset.postId}
+            return {path: target.getAttribute('href')}
         })
 
     /**

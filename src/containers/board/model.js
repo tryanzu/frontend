@@ -1,8 +1,15 @@
-import xs from 'xstream';
-import sampleCombine from 'xstream/extra/sampleCombine';
-import merge from 'lodash/fp/merge';
+import xs from 'xstream'
+import sampleCombine from 'xstream/extra/sampleCombine'
+import merge from 'lodash/fp/merge'
 
 const DEFAULT_STATE = {
+    page: 'board',
+    publish: {
+        active: false,
+        category: false,
+        title: '',
+        content: '',
+    },
     user: {
         resolving: false,
         user: false
@@ -25,21 +32,25 @@ const DEFAULT_STATE = {
         subcategories: false,
         post: false
     }
-};
+}
 
 export function model(actions) {
     const postRoute$ = actions.routePath$
         .map(route => route.value)
         .filter(action => action.page == 'post')
         .compose(sampleCombine(actions.authToken$))
-        .remember();
+        .remember()
+    
+    const publishRoute$ = actions.routePath$
+        .map(route => route.value)
+        .filter(action => action.page == 'publish')
 
-    const fetchUser$ = actions.fetchUser$.remember();
+    const fetchUser$ = actions.fetchUser$.remember()
 
     /**
      * Compute HTTP & storage write effects.
      */
-    const storage$ = actions.unauthorized$.map(res => ({key: 'id_token', action: 'removeItem'}));
+    const storage$ = actions.unauthorized$.map(res => ({key: 'id_token', action: 'removeItem'}))
 
     const glue$ = actions.rawToken$.map(token => {
         if (token) {
@@ -72,7 +83,7 @@ export function model(actions) {
                 headers: withAuth({})
             }
         )).flatten(),
-    );
+    )
 
     const reducers$ = xs.merge(
         // Default root state.
@@ -82,7 +93,9 @@ export function model(actions) {
         fetchUser$
             .mapTo(state => merge(state)({user: {user: false, resolving: true}})),
         postRoute$
-            .map(([action]) => state => merge(state)({post: {resolving: true, postId: action.post.id, comments: {resolving: true}}})),
+            .map(([action]) => state => merge(state)({page: 'board', post: {resolving: true, postId: action.post.id, comments: {resolving: true}}})),
+        publishRoute$
+            .map(() => state => merge(state)({page: 'publish'})),
         actions.user$
             .map(user => state => merge(state)({user: {user, resolving: false}})),
         actions.post$
@@ -91,12 +104,12 @@ export function model(actions) {
             .map(list => state => ({...state, post: {...state.post, comments: {...state.post.comments, list, resolving: false}}})),
         actions.logout$
             .mapTo(state => merge(state)({user: {user: false, resolving: false}})),
-    );
+    )
         
     return {
         HTTP: http$,
         storage: storage$,
         fractal: reducers$,
         glue: glue$
-    };
+    }
 }
