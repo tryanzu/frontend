@@ -8,6 +8,7 @@ const DEFAULT_STATE = {
     loading: false,
     error: false,
     subcategories: false,
+    category: false
 };
 
 export const LENSED_STATE = {

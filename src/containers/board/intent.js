@@ -5,7 +5,8 @@ import dropRepeats from 'xstream/extra/dropRepeats'
 const Routes = {
     '/': false,
     '/p/:slug/:id': (slug, id) => ({ type: 'goTo', page: 'post', post: { id, slug } }),
-    '/publicar': { type: 'goTo', page: 'publish' }
+    '/publicar': { type: 'goTo', page: 'publish' },
+    '/c/:slug': slug => ({ type: 'goTo', page: 'category', category: { slug } }),
 }
 
 export function intent({ history, storage, HTTP, fractal }) {

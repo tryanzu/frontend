@@ -2,7 +2,7 @@ import xs from 'xstream'
 import onionify from 'cycle-onionify'
 import isolate from '@cycle/isolate'
 import sampleCombine from 'xstream/extra/sampleCombine'
-import { h, h2, div, header, main, h1, section, ul, li, a, form, option, select, label, input, p, small, i } from '@cycle/dom'
+import { div, header, main } from '@cycle/dom'
 import { Feed } from '../components/feed'
 import { Navbar } from '../components/navbar'
 import { Post } from '../components/post'
@@ -34,7 +34,7 @@ function board(sources) {
     }
 
     const feedLens = {
-        get: ({ feed, user, post, categories }) => ({ own: feed, shared: { categories, user: user.user, postId: post.postId } }),
+        get: ({ feed, user, post, categories, page }) => ({ own: feed, shared: { page, categories, user: user.user, postId: post.postId } }),
         set: (state, child) => ({ ...state, feed: child.own })
     }
 

@@ -19,6 +19,7 @@ const DEFAULT_STATE = {
         }
     },
     feed: {
+        category: false,
         list: [],
         offset: 0,
         loading: false,
@@ -39,6 +40,10 @@ export function model(actions) {
     const publishRoute$ = actions.routePath$
         .map(route => route.value)
         .filter(action => action.page == 'publish')
+    
+    const categoryRoute$ = actions.routePath$
+        .map(route => route.value)
+        .filter(action => action.page == 'category')
 
     const fetchUser$ = actions.fetchUser$.remember()
 
@@ -98,8 +103,16 @@ export function model(actions) {
             .map(([action]) => state => merge(state)({page: 'board', post: {resolving: true, postId: action.post.id, comments: {resolving: true}}})),
         publishRoute$
             .map(() => state => merge(state)({page: 'publish'})),
+        categoryRoute$
+            .map(action => state => merge(state)({ feed: { category: action.category.slug } })),
         actions.categories$
-            .map(categories => state => merge(state)({categories, feed: {subcategories: subcategories(categories)}})),  
+            .map(categories => state => merge(state)({ 
+                categories, 
+                feed: { 
+                    subcategories: subcategoriesBy(categories, 'id'), 
+                    subcategoriesBySlug: subcategoriesBy(categories, 'slug')
+                }
+            })),  
         actions.user$
             .map(user => state => merge(state)({user: {user, resolving: false}})),
         actions.post$
@@ -118,12 +131,12 @@ export function model(actions) {
     }
 }
 
-function subcategories(categories) {
+function subcategoriesBy(categories, field) {
     return categories
         .map(category => category.subcategories)
         .reduce((kvmap, subcategories) => {
             for (let k in subcategories) {
-                kvmap[subcategories[k].id] = subcategories[k]
+                kvmap[subcategories[k][field]] = subcategories[k]
             }
 
             return kvmap

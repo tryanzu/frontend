@@ -14,7 +14,7 @@ export function intent({DOM, HTTP, fractal, props, glue}) {
 
     /**
      * Router read effects including:
-     * - Feed post links
+     * - Feed links
      */
     const linkPost$ = DOM.select('.feed a').events('click', {preventDefault: true})
         .map((event) => {
@@ -27,10 +27,13 @@ export function intent({DOM, HTTP, fractal, props, glue}) {
      * DOM intents including:
      */
     const scroll$ = DOM.select('.feed .list').events('scroll')
-        .compose(debounce(60))
+        .compose(debounce(120))
         .map(e => ({bottom: e.target.scrollHeight - e.target.scrollTop - e.target.clientHeight < 1}))
 
-    const fetch$ = scroll$.filter(e => e.bottom === true).mapTo({type: 'next'}).startWith({type: 'bootstrap'})
+    const fetch$ = scroll$
+        .filter(event => (event.bottom === true))
+        .mapTo({ type: 'next' })
+        .startWith({ type: 'bootstrap' })
 
     /**
      * HTTP read effects including: 

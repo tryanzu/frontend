@@ -55,16 +55,21 @@ export function view(state$) {
 
 function categories(state) {
     const { categories } = state.shared
+    const { subcategories, category } = state.own
     
+    const slugs = state.own.subcategoriesBySlug || {}
     const list = categories || []
     const menu = list.reduce((all, current) => {
         return all
             .concat(li('.divider', { dataset: { content: current.name } }))
-            .concat(current.subcategories.map(s => li('.menu-item', a(s.name))))
+            .concat(current.subcategories.map(s => li('.menu-item', a({attrs: {href: '/c/' + s.slug}}, s.name))))
     }, [])
 
     return div('.categories.flex.items-center', [
-        h2('.flex-auto', 'Todas las categorias'),
+        h2('.flex-auto', category !== false && category in slugs
+            ? 'Navegar otras categorias'
+            : 'Todas las categorias'
+        ),
         div('.dropdown.dropdown-right', [
             a('.dib.btn-icon.dropdown-toggle', { attrs: {tabindex: 0} }, span('.icon-down-open')),
             ul('.menu', menu)
