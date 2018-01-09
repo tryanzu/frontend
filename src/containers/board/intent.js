@@ -39,8 +39,9 @@ export function intent({ history, storage, HTTP, fractal }) {
         })
 
     const page$ = fractal.state$
-        .map(state => state.page)
-        .compose(dropRepeats())
+        .map(state => ({ current: state.page, post: state.post.post }))
+        .compose(dropRepeats((a, b) => (a.current == b.current && a.post == b.post)))
+        .debug()
 
     /**
      * HTTP read effects including:

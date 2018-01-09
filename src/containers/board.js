@@ -56,8 +56,8 @@ function board(sources) {
         return div('.flex.flex-column.flex-auto', [
             modalVNode,
             header(navbarVNode),
-            main('.board.flex.flex-auto', 
-                page == 'board' 
+            main(`.board.flex.flex-auto${page.post !== false ? '.post-active' : ''}`, 
+                page.current == 'board' 
                     ? [
                         feedVNode,
                         postVNode,
@@ -83,7 +83,7 @@ function board(sources) {
     const http$ = xs.merge(effects.HTTP, navbar.HTTP, feed.HTTP, post.HTTP, modal.HTTP)
     const history$ = feed.history
     const beep$ = navbar.beep
-    const storage$ = xs.merge(effects.storage, modal.storage, navbar.storage).debug()
+    const storage$ = xs.merge(effects.storage, modal.storage, navbar.storage)
 
     return {
         DOM: vtree$,

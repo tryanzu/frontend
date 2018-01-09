@@ -20,21 +20,6 @@ export function Quickstart() {
 					h3(a(['Desarrollo Libre ', span('.icon.icon-arrow-right')])),
 					p('Anzu es una plataforma de código abierto escrita por apasionados del software! Te invitamos a conocer nuestra misión y unirte.')
 				])
-			]),
-			div('.separator'),
-			h2('Mantente enterado'),
-			p('Suscribete a las listas de distribución para mantenerte al tanto de lo que sucede con Anzu.'),
-			div('.subscribe', [
-				div([
-					h3(a(['Utilizar Anzu', span('.icon.icon-arrow-right')])),
-					p('Recibe novedades y recomendaciones para tu comunidad usando Anzu.'),
-					input('.form-input', { attrs: { type: 'email', placeholder: 'Correo electrónico' } }),
-				]),
-				div([
-					h3(a(['Desarrollo de Anzu', span('.icon.icon-arrow-right')])),
-					p('Suscribete si deseas participar o estar informado sobre el desarrollo de Anzu como tal.'),
-					input('.form-input', { attrs: { type: 'email', placeholder: 'Correo electrónico' } })
-				])
 			])
 		])
 	])

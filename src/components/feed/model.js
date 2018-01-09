@@ -9,6 +9,7 @@ const DEFAULT_STATE = {
     error: false,
     subcategories: false,
     subcategoriesBySlug: false,
+    endReached: false,
     category: false
 };
 
@@ -46,7 +47,7 @@ export function model(actions) {
             category: 'posts',
             query: {
                 limit: 15, 
-                category: category !== false ? category.id : '', 
+                category: category !== false ? category : '', 
                 offset
             }
         }))
@@ -66,7 +67,7 @@ export function model(actions) {
         
         // Posts fetch loaded
         actions.posts$
-            .map(res => state => update(state, { list: state.own.list.concat(res.feed), loading: false })),
+            .map(res => state => update(state, { list: state.own.list.concat(res.feed), endReached: res.feed.length === 0, loading: false })),
 
         // New remote comments on feed posts.
         actions.feedGlue$

@@ -18,7 +18,7 @@ export function intent({DOM, HTTP, fractal, props, glue}) {
         .map(state => {
             const { category, subcategoriesBySlug } = state.own
             return category !== false && subcategoriesBySlug !== false
-                ? subcategoriesBySlug[category]
+                ? subcategoriesBySlug[category].id
                 : false
         })
         .compose(dropRepeats())
@@ -31,7 +31,6 @@ export function intent({DOM, HTTP, fractal, props, glue}) {
     const linkPost$ = DOM.select('.feed a').events('click', {preventDefault: true})
         .map((event) => {
             const {currentTarget} = event
-            event.preventDefault()
             return {path: currentTarget.getAttribute('href')}
         })
 
@@ -48,7 +47,7 @@ export function intent({DOM, HTTP, fractal, props, glue}) {
             .mapTo({ type: 'next' })
             .startWith({ type: 'bootstrap' }),
 
-        feedCategory$.map(category => ({ type: 'category' }))
+        feedCategory$.mapTo({ type: 'category' })
     )
 
     /**

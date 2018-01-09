@@ -1,11 +1,11 @@
-import {h, span, section, h2, a, div, nav, button, article, img, h1, ul, li, h3} from '@cycle/dom';
+import {h, p, span, section, h2, a, div, nav, button, article, img, h1, ul, li, h3} from '@cycle/dom';
 import timeago from 'timeago.js';
 
 const ago = timeago(null, 'es');
 
 export function view(state$) {
     return state$.map(state => {
-        const { loading, list, error, subcategories } = state.own
+        const { loading, list, error, subcategories, endReached } = state.own
         const { postId } = state.shared
 
         return section('.fade-in.feed.flex.flex-column', [
@@ -28,7 +28,9 @@ export function view(state$) {
 
                 return article('.post.flex.items-center', {class: {active: postId == post.id}}, [
                     div('.flex-auto', [
-                        a('.category', subcategories != false ? subcategories[post.category].name : h('span.loading')),
+                        subcategories != false
+                        ? a('.category', { attrs: {href: `/c/${subcategories[post.category].slug}`} }, subcategories[post.category].name)
+                        : a('.category', h('span.loading')),
                         h1(
                             a('.link', {attrs: {href: `/p/${post.slug}/${post.id}`}, dataset: {postId: post.id}}, post.title)
                         ),
@@ -46,9 +48,15 @@ export function view(state$) {
                         'newCount' in post.comments ? span('.new-comments', `+${post.comments.newCount}`) : null
                     ])
                 ])
-            }).concat([
-                div('.pv2', div ('.loading'))
-            ]))
+            }).concat(
+                endReached
+                ? [
+                    div('.pv2', p('.measure.center.ph2.gray.lh-copy.tc', 'No encontramos más publicaciones por cargar.'))
+                ]
+                : [
+                    div('.pv2', div('.loading', {class: {dn: !loading}}))
+                ]
+            ))
         ]);
     });
 }
