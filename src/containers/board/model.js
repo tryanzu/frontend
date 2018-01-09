@@ -31,6 +31,9 @@ const DEFAULT_STATE = {
 }
 
 export function model(actions) {
+    const router$ = actions.routePath$
+        .map(route => route.value)
+
     const postRoute$ = actions.routePath$
         .map(route => route.value)
         .filter(action => action.page == 'post')
@@ -99,6 +102,9 @@ export function model(actions) {
         // Mapping some reducers into the main chain.
         fetchUser$
             .mapTo(state => merge(state)({user: {user: false, resolving: true}})),
+        router$
+            .filter(action => (action.page == 'board'))
+            .map(action => state => merge(state)({ page: 'board', feed: { category: action.category } })),
         postRoute$
             .map(([action]) => state => merge(state)({page: 'board', post: {resolving: true, postId: action.post.id, comments: {resolving: true}}})),
         publishRoute$

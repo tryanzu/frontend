@@ -1,4 +1,5 @@
 import xs from 'xstream'
+import dropRepeats from 'xstream/extra/dropRepeats'
 import debounce from 'xstream/extra/debounce'
 
 const ENTER_KEY = 13
@@ -12,15 +13,26 @@ const ESC_KEY = 27
  */
 export function intent({DOM, HTTP, fractal, props, glue}) {
 
+    // Category fetch posts
+    const feedCategory$ = fractal.state$
+        .map(state => {
+            const { category, subcategoriesBySlug } = state.own
+            return category !== false && subcategoriesBySlug !== false
+                ? subcategoriesBySlug[category]
+                : false
+        })
+        .compose(dropRepeats())
+        .remember()
+
     /**
      * Router read effects including:
      * - Feed links
      */
     const linkPost$ = DOM.select('.feed a').events('click', {preventDefault: true})
         .map((event) => {
-            const {target} = event
+            const {currentTarget} = event
             event.preventDefault()
-            return {path: target.getAttribute('href')}
+            return {path: currentTarget.getAttribute('href')}
         })
 
     /**
@@ -30,10 +42,14 @@ export function intent({DOM, HTTP, fractal, props, glue}) {
         .compose(debounce(120))
         .map(e => ({bottom: e.target.scrollHeight - e.target.scrollTop - e.target.clientHeight < 1}))
 
-    const fetch$ = scroll$
-        .filter(event => (event.bottom === true))
-        .mapTo({ type: 'next' })
-        .startWith({ type: 'bootstrap' })
+    const fetch$ = xs.merge(
+        scroll$
+            .filter(event => (event.bottom === true))
+            .mapTo({ type: 'next' })
+            .startWith({ type: 'bootstrap' }),
+
+        feedCategory$.map(category => ({ type: 'category' }))
+    )
 
     /**
      * HTTP read effects including: 
@@ -54,6 +70,7 @@ export function intent({DOM, HTTP, fractal, props, glue}) {
         posts$,
         linkPost$,
         feedGlue$,
+        feedCategory$,
         authToken$: props.authToken$,
     }
 }

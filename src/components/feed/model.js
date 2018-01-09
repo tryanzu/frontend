@@ -8,6 +8,7 @@ const DEFAULT_STATE = {
     loading: false,
     error: false,
     subcategories: false,
+    subcategoriesBySlug: false,
     category: false
 };
 
@@ -29,7 +30,7 @@ export function model(actions) {
      * - Open new posts url.
      */
     const routeTo$ = actions.linkPost$
-        .map(link => link.path);
+        .map(link => ({type: 'push', pathname: link.path, state: {}}));
 
     /**
      * HTTP write effects including:
@@ -37,13 +38,18 @@ export function model(actions) {
      * - Categories fetching.
      */
     const fetchPosts$ = actions.fetch$
-        .fold((offset, event) => event.type == 'next' ? offset + 8 : 0, 0)
-        .map(offset => ({
+        .fold((offset, event) => (event.type == 'next' ? offset + 8 : 0), 0)
+        .compose(sampleCombine(actions.feedCategory$))
+        .map(([offset, category]) => ({
             method: 'GET',
             url: Anzu.layer + 'feed', 
             category: 'posts',
-            query: {limit: 15, offset}
-        }));
+            query: {
+                limit: 15, 
+                category: category !== false ? category.id : '', 
+                offset
+            }
+        }))
 
     const http$ = fetchPosts$
 
@@ -79,7 +85,7 @@ export function model(actions) {
     
     return {
         HTTP: http$,
-        history: routeTo$,
+        history: routeTo$.debug(),
         fractal: reducers$,
         linkPost$: actions.linkPost$  
     };

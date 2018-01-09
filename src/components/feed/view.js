@@ -15,7 +15,7 @@ export function view(state$) {
                     div('.flex-auto', [
                         nav([
                             a('.active', 'Recientes'),
-                            a('Más populares'),
+                            a('Populares'),
                         ])
                     ]),
                     div('.pl3', [
@@ -65,14 +65,18 @@ function categories(state) {
             .concat(current.subcategories.map(s => li('.menu-item', a({attrs: {href: '/c/' + s.slug}}, s.name))))
     }, [])
 
-    return div('.categories.flex.items-center', [
-        h2('.flex-auto', category !== false && category in slugs
-            ? 'Navegar otras categorias'
-            : 'Todas las categorias'
-        ),
-        div('.dropdown.dropdown-right', [
-            a('.dib.btn-icon.dropdown-toggle', { attrs: {tabindex: 0} }, span('.icon-down-open')),
-            ul('.menu', menu)
-        ])
-    ])
+    return div('.categories.flex.items-center', 
+        category !== false && category in slugs 
+        ? [
+            a('.dib.btn-icon', { attrs: { href: '/', tabindex: 0 } }, span('.icon-left-open')),
+            h2('.pl2.flex-auto.fade-in', slugs[category].name),
+        ]
+        : [
+            h2('.flex-auto.fade-in', 'Todas las categorias'),
+            div('.dropdown.dropdown-right.fade-in', [
+                a('.dib.btn-icon.dropdown-toggle', { attrs: {tabindex: 0} }, span('.icon-down-open')),
+                ul('.menu', menu)
+            ])
+        ]
+    )
 }
