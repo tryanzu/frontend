@@ -13,17 +13,6 @@ const ESC_KEY = 27
  */
 export function intent({DOM, HTTP, fractal, props, glue}) {
 
-    // Category fetch posts
-    const feedCategory$ = fractal.state$
-        .map(state => {
-            const { category, subcategoriesBySlug } = state.own
-            return category !== false && subcategoriesBySlug !== false
-                ? subcategoriesBySlug[category].id
-                : false
-        })
-        .compose(dropRepeats())
-        .remember()
-
     /**
      * Router read effects including:
      * - Feed links
@@ -41,13 +30,25 @@ export function intent({DOM, HTTP, fractal, props, glue}) {
         .compose(debounce(120))
         .map(e => ({bottom: e.target.scrollHeight - e.target.scrollTop - e.target.clientHeight < 1}))
 
-    const fetch$ = props.router$
-        .filter(action => (action.page == 'board' || action.page == 'category'))
-        .map(action => ({
-            type: 'reload',
-            category: 'category' in action && action.category !== false ? action.category.slug : false
-        }))
-        .remember()
+    const fetch$ = xs.merge(
+
+        // Router fetch effects.
+        props.router$
+            .filter(action => (action.page == 'board' || action.page == 'category'))
+            .map(action => ({
+                type: 'reload',
+                category: 'category' in action && action.category !== false ? action.category.slug : false
+            })),
+
+        // Fetch effect when starting from post page.
+        props.router$
+            .take(1)
+            .filter(action => (action.page == 'post'))
+            .map(action => ({
+                type: 'bootsrap'
+            })), 
+    ).remember()
+
     /**
      * HTTP read effects including: 
      * - New requested posts.
@@ -67,8 +68,7 @@ export function intent({DOM, HTTP, fractal, props, glue}) {
         posts$,
         scroll$,
         linkPost$,
-        feedGlue$,
-        feedCategory$,
+        feedGlue$, 
         authToken$: props.authToken$,
     }
 }
