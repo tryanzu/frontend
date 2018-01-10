@@ -102,15 +102,10 @@ export function model(actions) {
         // Mapping some reducers into the main chain.
         fetchUser$
             .mapTo(state => merge(state)({user: {user: false, resolving: true}})),
-        router$
-            .filter(action => (action.page == 'board'))
-            .map(action => state => merge(state)({ page: 'board', feed: { category: action.category, list: [] } })),
         postRoute$
             .map(([action]) => state => merge(state)({page: 'board', post: {resolving: true, postId: action.post.id, comments: {resolving: true}}})),
         publishRoute$
             .map(() => state => merge(state)({page: 'publish'})),
-        categoryRoute$
-            .map(action => state => merge(state)({ page: 'board', feed: { category: action.category.slug, list: [] } })),
         actions.categories$
             .map(categories => state => merge(state)({ 
                 categories, 
@@ -130,10 +125,11 @@ export function model(actions) {
     )
         
     return {
+        router$,
         HTTP: http$,
         storage: storage$,
         fractal: reducers$,
-        glue: glue$
+        glue: glue$,
     }
 }
 

@@ -41,15 +41,13 @@ export function intent({DOM, HTTP, fractal, props, glue}) {
         .compose(debounce(120))
         .map(e => ({bottom: e.target.scrollHeight - e.target.scrollTop - e.target.clientHeight < 1}))
 
-    const fetch$ = xs.merge(
-        scroll$
-            .filter(event => (event.bottom === true))
-            .mapTo({ type: 'next' })
-            .startWith({ type: 'bootstrap' }),
-
-        feedCategory$.mapTo({ type: 'category' })
-    )
-
+    const fetch$ = props.router$
+        .filter(action => (action.page == 'board' || action.page == 'category'))
+        .map(action => ({
+            type: 'reload',
+            category: 'category' in action && action.category !== false ? action.category.slug : false
+        }))
+        .remember()
     /**
      * HTTP read effects including: 
      * - New requested posts.
@@ -67,6 +65,7 @@ export function intent({DOM, HTTP, fractal, props, glue}) {
     return {
         fetch$,
         posts$,
+        scroll$,
         linkPost$,
         feedGlue$,
         feedCategory$,

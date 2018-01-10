@@ -24,7 +24,7 @@ export const LENSED_STATE = {
 };
 
 export function model(actions) {
-    const update = (state, fields) => ({...state, own: merge(state.own, fields)});
+    const update = (state, fields) => ({...state, own: {...state.own, ...fields}});
 
     /**
      * History write effects including:
@@ -38,19 +38,32 @@ export function model(actions) {
      * - Fetch new posts.
      * - Categories fetching.
      */
-    const fetchPosts$ = actions.fetch$
-        .fold((offset, event) => (event.type == 'next' ? offset + 8 : 0), 0)
-        .compose(sampleCombine(actions.feedCategory$))
-        .map(([offset, category]) => ({
+
+    const paginate$ = xs.merge(
+
+        // Bottom scroll will acumulate the offset.
+        actions.scroll$
+            .filter(event => (event.bottom === true))
+            .mapTo({ type: 'next' }),
+        
+        // New page fetch requests will reset the offset.
+        actions.fetch$.mapTo({ type: 'reload' })
+
+    ).fold((offset, event) => (event.type == 'next' ? offset + 8 : 0), 0).drop(1)
+
+    const fetchPosts$ = paginate$
+        .compose(sampleCombine(actions.fetch$))
+        .map(([offset, event]) => ({
             method: 'GET',
             url: Anzu.layer + 'feed', 
             category: 'posts',
             query: {
                 limit: 15, 
-                category: category !== false ? category : '', 
+                category: 'category' in event ? event.category : '',
                 offset
             }
         }))
+        .remember()
 
     const http$ = fetchPosts$
 
@@ -63,7 +76,7 @@ export function model(actions) {
         
         // Post loading
         actions.fetch$
-            .map(res => state => update(state, { loading: true })),
+            .map(event => state => update(state, { loading: true, list: [], category: 'category' in event ? event.category : state.category})),
         
         // Posts fetch loaded
         actions.posts$
@@ -86,7 +99,7 @@ export function model(actions) {
     
     return {
         HTTP: http$,
-        history: routeTo$.debug(),
+        history: routeTo$,
         fractal: reducers$,
         linkPost$: actions.linkPost$  
     };
