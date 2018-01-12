@@ -20,6 +20,7 @@
     "@cycle/run": "^3.2.0",
     "@cycle/storage": "^4.1.1",
     "@types/history": "^4.6.1",
+    "autosize": "^4.0.0",
     "babel-preset-stage-2": "^6.24.1",
     "cycle-onionify": "^5.0.0",
     "cyclic-router": "^5.1.3",

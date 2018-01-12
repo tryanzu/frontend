@@ -49,7 +49,7 @@ export function model(actions) {
         // New page fetch requests will reset the offset.
         actions.fetch$.mapTo({ type: 'reload' })
 
-    ).fold((offset, event) => (event.type == 'next' ? offset + 8 : 0), 0).drop(1)
+    ).fold((offset, event) => (event.type == 'next' ? offset + 15 : 0), 0).drop(1)
 
     const fetchPosts$ = paginate$
         .compose(sampleCombine(actions.fetch$))

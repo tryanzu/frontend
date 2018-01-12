@@ -1,5 +1,7 @@
 import xs from 'xstream'
-import { main, section, ul, li, h1, h2, form, label, input, div, select, option, p, small, i, a } from '@cycle/dom';
+import { main, section, ul, li, h1, h2, form, label, input, div, select, option, optgroup, textarea, p, small, i, a } from '@cycle/dom';
+import autosize from 'autosize'
+import sampleCombine from 'xstream/extra/sampleCombine';
 
 const defaultState = {
     draft: true,
@@ -8,22 +10,37 @@ const defaultState = {
     pinned: false,
     hideGuidelines: false,
     title: '',
-    content: ''
+    content: '',
+    category: false,
+    step: 0
 }
 
-function intent({ DOM }) {
+function intent({ DOM, fractal, props }) {
     const title$ = DOM.select('form input#title').events('input')
         .map(event => ({ field: 'title', value: event.target.value }))
+
+    const category$ = DOM.select('form select#category').events('change')
+        .map(event => ({ field: 'category', value: event.target.value }))
     
     const checkboxes$ = DOM.select('form input[type="checkbox"]').events('change')
         .map(event => ({ field: event.target.getAttribute('name'), value: event.target.checked }))
 
+    const submit$ = DOM.select('form').events('submit', { preventDefault: true })
+        .map(event => (event.currentTarget))
+
+    const routeState$ = props.router$
+        .filter(action => (action.page == 'publish'))
+        .debug('publisher::intent')
+
     const form$ = xs.merge(
         title$,
+        category$,
         checkboxes$,
     )
+
+    const state$ = fractal.state$.map(state => (state.publisher))
     
-    return { form$ }
+    return { form$, submit$, state$, routeState$ }
 }
 
 function model(actions) {
@@ -31,67 +48,55 @@ function model(actions) {
         // Default state reducer
         xs.of(state => (defaultState)),
 
+        // Route state
+        actions.routeState$.map(action => ({ publisher }) => ({ ...publisher, ...action.location.state})),
+
         // Map form changes to reducers.
-        actions.form$.map(f => state => ({...state, [f.field]: f.value}))
+        actions.form$.map(f => ({ publisher }) => ({ ...publisher, [f.field]: f.value })),
+
+        // Next step submits
+        actions.submit$.map(e => ({ publisher }) => ({ ...publisher, step: publisher.step + 1 }))
     )
 
+    const history$ = actions.submit$
+        .compose(sampleCombine(actions.state$))
+        .map(([event, state]) => ({
+            type: 'push',
+            pathname: '/publicar',
+            state
+        }))
+        .debug()
+
     return {
-        fractal: reducers$
+        fractal: reducers$,
+        history: history$
     }
 }
 
 function view(state$) {
     return state$.map(state => {
-        const { title, isQuestion, disabledComments, pinned } = state
+        const { publisher } = state
+        const { title, isQuestion, disabledComments, pinned, step, category } = publisher
+        const categories = state.categories || []
+        const ready = title.length > 0 && category !== false
 
         return main('.publish.flex.flex-auto', [
             section('.fade-in.editor.flex.flex-column', [
                 ul('.step', [
                     li('.step-item.active', a('Publicación')),
-                    li('.step-item.active', a('Contenido')),
-                    li('.step-item.active', a('Revisión final'))
+                    li('.step-item', {class: {active: step > 0}}, a('Contenido')),
+                    li('.step-item', {class: {active: step > 1}}, a('Revisión final'))
                 ]),
-                h1('.ma0.pv3.tc', 'Escribir nueva publicación'),
-                form('.pv3', { attrs: { id: 'step1' } }, [
-                    div('.form-group.pb2', [
-                        label('.b.form-label', 'Titulo de la publicación'),
-                        input('#title.form-input', { attrs: { type: 'text', value: title, placeholder: 'Escribe el titulo de tu publicación o pregunta...', required: true } })
-                    ]),
-                    div('.form-group.pb2', [
-                        label('.b.form-label.pb0', '¿Es una pregunta?'),
-                        p('.ma0', small('De esta forma decidimos a quien mostrar tu publicación, a usuarios que responden o a usuarios que buscan respuestas.')),
-                        div('.form-group',
-                            label('.form-switch.normal', [
-                                input({ attrs: { type: 'checkbox', name: 'isQuestion', checked: isQuestion } }),
-                                i('.form-icon'),
-                                'Mi publicación es una pregunta'
-                            ]),
-                        ),
-                        div('.form-group',
-                            label('.form-switch.normal', [
-                                input({ attrs: { type: 'checkbox', name: 'disabledComments', checked: disabledComments } }),
-                                i('.form-icon'),
-                                'No permitir comentarios en esta publicación'
-                            ]),
-                        ),
-                        div('.form-group',
-                            label('.form-switch.normal', [
-                                input({ attrs: { type: 'checkbox', name: 'pinned', checked: pinned } }),
-                                i('.form-icon'),
-                                'Publicar como importante'
-                            ]),
-                        )
-                    ]),
-                    div('.form-group.pb2', [
-                        label('.b.form-label', 'Categoría principal'),
-                        select('.form-select', { attrs: { required: true } }, [
-                            option('Selecciona una categoría para tu publicación')
-                        ])
-                    ]),
-                    input('.btn.btn-primary.btn-block', { attrs: { type: 'submit', value: 'Continuar', disabled: true } })
-                ])
+                (state => {
+                    switch (state.publisher.step) {
+                        case 0:
+                            return postInfo(state)
+                        case 1:
+                            return postContent(state)
+                    }
+                })(state),
             ]),
-            section('.fade-in.guidelines.flex.flex-column', [
+            section('.fade-in.guidelines.flex.flex-column', {style: {display: 'none'}}, [
                 h2('.f4', 'Recuerda estas reglas básicas'),
                 div('.timeline', [
                     div('.timeline-item', [
@@ -132,14 +137,95 @@ function view(state$) {
     })
 }
 
-export function Publisher(sources) {
+function postInfo({ categories, publisher }) {
+    const { title, isQuestion, disabledComments, pinned, step, category } = publisher
+    const ready = title.length > 0 && category !== false
 
+    // Categories are async loaded.
+    categories = categories || []
+
+    return div([
+        h1('.ma0.pv3.tc', 'Escribir nueva publicación'),
+        form('.pv3', { attrs: { id: 'step1' } }, [
+            div('.form-group.pb2', [
+                label('.b.form-label', 'Titulo de la publicación'),
+                input('#title.form-input', { attrs: { type: 'text', value: title, placeholder: 'Escribe el titulo de tu publicación o pregunta...', required: true } })
+            ]),
+            div('.form-group.pb2', [
+                label('.b.form-label.pb0', '¿Es una pregunta?'),
+                p('.ma0', small('De esta forma decidimos a quien mostrar tu publicación, a usuarios que responden o a usuarios que buscan respuestas.')),
+                div('.form-group',
+                    label('.form-switch.normal', [
+                        input({ attrs: { type: 'checkbox', name: 'isQuestion', checked: isQuestion } }),
+                        i('.form-icon'),
+                        'Mi publicación es una pregunta'
+                    ]),
+                ),
+                div('.form-group',
+                    label('.form-switch.normal', [
+                        input({ attrs: { type: 'checkbox', name: 'disabledComments', checked: disabledComments } }),
+                        i('.form-icon'),
+                        'No permitir comentarios en esta publicación'
+                    ]),
+                ),
+                div('.form-group',
+                    label('.form-switch.normal', [
+                        input({ attrs: { type: 'checkbox', name: 'pinned', checked: pinned } }),
+                        i('.form-icon'),
+                        'Publicar como importante'
+                    ]),
+                )
+            ]),
+            div('.form-group.pb2', [
+                label('.b.form-label', 'Categoría principal'),
+                select('.form-select', { attrs: { id: 'category', required: true } },
+                    [
+                        option('Selecciona una categoría para tu publicación')
+                    ].concat(categories.map(c =>
+                        optgroup({ attrs: { label: c.name } },
+                            c.subcategories.map(s => option({ attrs: { value: s.id } }, s.name))
+                        )
+                    ))
+                )
+            ]),
+            input('.btn.btn-primary.btn-block', { attrs: { type: 'submit', value: 'Continuar', disabled: !ready } })
+        ])
+    ])
+}
+
+function postContent({ categories, publisher }) {
+    const { title, category } = publisher
+    const ready = title.length > 0 && category !== false
+
+    return div([
+        h1('.ma0.pv3.tc', 'Escribir nueva publicación'),
+        form('.pv3.mt3', { attrs: { id: 'step2' } }, [
+            h2('.mt0.mb3', title),
+            div('.form-group.pb2', [
+                textarea('#content.form-input', { 
+                    attrs: { 
+                        placeholder: 'Escribe aquí el contenido de tu publicación', 
+                        required: true,
+                        rows: 8
+                    },
+                    hook: {
+                        insert: vnode => (autosize(vnode.elm))
+                    }
+                })
+            ]),
+            input('.btn.btn-primary.btn-block', { attrs: { type: 'submit', value: 'Continuar', disabled: !ready } })
+        ])
+    ])
+}
+
+export function Publisher(sources) {
     const actions = intent(sources)
     const effects = model(actions)
     const vtree$ = view(sources.fractal.state$)
 
     return {
         fractal: effects.fractal,
+        history: effects.history,
         DOM: vtree$
     }
 }

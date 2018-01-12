@@ -24,12 +24,9 @@ main.publish {
 	width: 100%;
 	padding: 0 0 1rem;
 
-	& > section:nth-child(1) {
-		lost-column: 4/7;
-	}
-
-	& > section:nth-child(2) {
-		lost-column: 3/7;
+	& > section {
+		width: 40rem;
+		margin: 0 auto;
 	}
 }
 

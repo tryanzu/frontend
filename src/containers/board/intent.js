@@ -11,9 +11,10 @@ const Routes = {
 
 export function intent({ history, storage, HTTP, fractal }) {
     const routePath$ = history
-        .map(location => switchPath(location.pathname, Routes))
-        .filter(route => route.value != false)
+        .map(location => ({ location, route: switchPath(location.pathname, Routes) }))
+        .filter(({ route }) => route.value != false)
         .remember()
+        .debug()
 
     const rawToken$ = storage.local.getItem('id_token')
         .map(token => token !== undefined && token !== null && String(token).length > 0 ? token : false)

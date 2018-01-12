@@ -32,20 +32,20 @@ const DEFAULT_STATE = {
 
 export function model(actions) {
     const router$ = actions.routePath$
-        .map(route => route.value)
+        .map(({ route, location }) => ({ ...route.value, location}))
 
     const postRoute$ = actions.routePath$
-        .map(route => route.value)
+        .map(({ route }) => route.value)
         .filter(action => action.page == 'post')
         .compose(sampleCombine(actions.authToken$))
         .remember()
     
     const publishRoute$ = actions.routePath$
-        .map(route => route.value)
+        .map(({ route }) => route.value)
         .filter(action => action.page == 'publish')
     
     const categoryRoute$ = actions.routePath$
-        .map(route => route.value)
+        .map(({ route }) => route.value)
         .filter(action => action.page == 'category')
 
     const fetchUser$ = actions.fetchUser$.remember()

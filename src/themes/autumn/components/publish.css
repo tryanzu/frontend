@@ -6,6 +6,11 @@ main.publish {
 		background: #FFF;
 		outline: 1px solid #e3e9ef;
         border-radius: 4px;
-		box-shadow: 0 7px 14px 0 rgba(50,50,93,.1), 0 3px 6px 0 rgba(0,0,0,.07);
+        box-shadow: 0 7px 14px 0 rgba(50,50,93,.1), 0 3px 6px 0 rgba(0,0,0,.07);
+        
+        & h1, & h2 {
+            color: color(var(--primaryColor) blackness(10%));
+            font-size: calc(var(--fontSize) * 1.6);
+        }
     }
 }

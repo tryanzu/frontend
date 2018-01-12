@@ -20,6 +20,8 @@ export function intent({DOM, HTTP, fractal, props, glue}) {
     const linkPost$ = DOM.select('.feed a').events('click', {preventDefault: true})
         .map((event) => {
             const {currentTarget} = event
+            event.preventDefault()
+            
             return {path: currentTarget.getAttribute('href')}
         })
 
@@ -30,6 +32,12 @@ export function intent({DOM, HTTP, fractal, props, glue}) {
         .compose(debounce(120))
         .map(e => ({bottom: e.target.scrollHeight - e.target.scrollTop - e.target.clientHeight < 1}))
 
+    /**
+     * Router read effects, including:
+     * - Category listing route.
+     * - General listing route.
+     * - Post route (first page load only).
+     */
     const fetch$ = xs.merge(
 
         // Router fetch effects.
