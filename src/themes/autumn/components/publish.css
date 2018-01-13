@@ -1,6 +1,12 @@
 @import "../variables.css";
 
 main.publish {
+    & .editor hr {
+        height: 1px; 
+        border: 0;
+        background: var(--mainGray);
+    }
+
     & .editor form  {
         padding: 2rem;
 		background: #FFF;
@@ -8,9 +14,23 @@ main.publish {
         border-radius: 4px;
         box-shadow: 0 7px 14px 0 rgba(50,50,93,.1), 0 3px 6px 0 rgba(0,0,0,.07);
         
-        & h1, & h2 {
+        & > h1, & > h2 {
             color: color(var(--primaryColor) blackness(10%));
             font-size: calc(var(--fontSize) * 1.6);
+        }
+    }
+
+    & .editor .post-preview {
+        & h1 {
+            font-size: calc(var(--fontSize) * 1.6);
+        }
+
+        & h2 {
+            font-size: calc(var(--fontSize) * 1.4);
+        }
+
+        & h3 {
+            font-size: calc(var(--fontSize) * 1.2);
         }
     }
 }

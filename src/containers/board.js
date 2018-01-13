@@ -29,26 +29,11 @@ function board(sources) {
      * Child component wiring...
      * Pass through some read sinks & read some effects.
      */
-    const postLens = {
-        get: ({ post, user, modal }) => ({ own: post, shared: { user: user.user, modal } }),
-        set: (state, child) => ({ ...state, post: child.own, modal: child.shared.modal })
-    }
-
-    const feedLens = {
-        get: ({ feed, user, post, categories, page }) => ({ own: feed, shared: { page, categories, user: user.user, postId: post.postId } }),
-        set: (state, child) => ({ ...state, feed: child.own })
-    }
-
-    const publisherLens = {
-        get: ({ publisher, categories }) => ({ publisher, categories }),
-        set: (state, updated) => ({ ...state, publisher: {...updated} })
-    }
-
     const modal = isolate(Modal, 'modal')({ DOM, HTTP, storage, fractal, glue })
     const navbar = Navbar({ DOM, HTTP, storage, fractal, glue, props: { authToken$ } })
-    const feed = isolate(Feed, { fractal: feedLens })({ DOM, HTTP, fractal, glue, props: { authToken$, router$ } })
-    const post = isolate(Post, { fractal: postLens })({ DOM, HTTP, fractal, glue, props: { authToken$ } })
-    const publisher = isolate(Publisher, { fractal: publisherLens })({ DOM, HTTP, storage, fractal, glue, props: { router$ } })
+    const feed = isolate(Feed, { fractal: feedLens() })({ DOM, HTTP, fractal, glue, props: { authToken$, router$ } })
+    const post = isolate(Post, { fractal: postLens() })({ DOM, HTTP, fractal, glue, props: { authToken$ } })
+    const publisher = isolate(Publisher, { fractal: publisherLens() })({ DOM, HTTP, storage, fractal, glue, props: { router$ } })
     
     // Compute merged vdom trees.
     const vtree$ = xs.combine(
@@ -99,5 +84,31 @@ function board(sources) {
         storage: storage$,
         fractal: reducers$,
         glue: effects.glue,
+    }
+}
+
+/**
+ * Fractal state lenses. 
+ * 
+ * Some child components need some lenses to "see" through other parts of the state.
+ */
+function postLens() {
+    return {
+        get: ({ post, user, modal }) => ({ own: post, shared: { user: user.user, modal } }),
+        set: (state, child) => ({ ...state, post: child.own, modal: child.shared.modal })
+    }
+}
+
+function feedLens() {
+    return {
+        get: ({ feed, user, post, categories, page }) => ({ own: feed, shared: { page, categories, user: user.user, postId: post.postId } }),
+        set: (state, child) => ({ ...state, feed: child.own })
+    }
+}
+
+function publisherLens() {
+    return {
+        get: ({ publisher, categories, feed }) => ({ publisher, categories, subcategories: feed.subcategories }),
+        set: (state, updated) => ({ ...state, publisher: { ...updated } })
     }
 }

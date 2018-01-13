@@ -1,7 +1,15 @@
 import xs from 'xstream'
-import { main, section, ul, li, h1, h2, form, label, input, div, select, option, optgroup, textarea, p, small, i, a } from '@cycle/dom';
+import { main, section, ul, li, h1, h2, form, label, input, div, select, option, optgroup, textarea, p, small, i, a, span, h3, sub, hr } from '@cycle/dom'
 import autosize from 'autosize'
-import sampleCombine from 'xstream/extra/sampleCombine';
+import sampleCombine from 'xstream/extra/sampleCombine'
+import markdown from 'markdown-it'
+import emoji from 'markdown-it-emoji'
+import mila from 'markdown-it-link-attributes'
+import virtualize from 'snabbdom-virtualize'
+
+const md = markdown({ html: false, linkify: true, typographer: false })
+md.use(emoji)
+md.use(mila, { target: '_blank', rel: 'noopener', class: 'link blue hover-green' })
 
 const defaultState = {
     draft: true,
@@ -15,12 +23,30 @@ const defaultState = {
     step: 0
 }
 
+export function Publisher(sources) {
+    const actions = intent(sources)
+    const effects = model(actions)
+    const vtree$ = view(sources.fractal.state$)
+
+    return {
+        fractal: effects.fractal,
+        history: effects.history,
+        DOM: vtree$
+    }
+}
+
 function intent({ DOM, fractal, props }) {
     const title$ = DOM.select('form input#title').events('input')
         .map(event => ({ field: 'title', value: event.target.value }))
 
+    const content$ = DOM.select('form textarea#content').events('input')
+        .map(event => ({ field: 'content', value: event.target.value }))
+
     const category$ = DOM.select('form select#category').events('change')
         .map(event => ({ field: 'category', value: event.target.value }))
+
+    const step$ = DOM.select('.step .step-item').events('click')
+        .map(event => parseInt(event.currentTarget.dataset.step))
     
     const checkboxes$ = DOM.select('form input[type="checkbox"]').events('change')
         .map(event => ({ field: event.target.getAttribute('name'), value: event.target.checked }))
@@ -30,17 +56,17 @@ function intent({ DOM, fractal, props }) {
 
     const routeState$ = props.router$
         .filter(action => (action.page == 'publish'))
-        .debug('publisher::intent')
 
     const form$ = xs.merge(
         title$,
+        content$,
         category$,
         checkboxes$,
     )
 
     const state$ = fractal.state$.map(state => (state.publisher))
     
-    return { form$, submit$, state$, routeState$ }
+    return { form$, step$, submit$, state$, routeState$ }
 }
 
 function model(actions) {
@@ -55,7 +81,10 @@ function model(actions) {
         actions.form$.map(f => ({ publisher }) => ({ ...publisher, [f.field]: f.value })),
 
         // Next step submits
-        actions.submit$.map(e => ({ publisher }) => ({ ...publisher, step: publisher.step + 1 }))
+        actions.submit$.map(e => ({ publisher }) => ({ ...publisher, step: publisher.step + 1 })),
+    
+        // Manual step change
+        actions.step$.map(step => ({ publisher }) => ({ ...publisher, step: publisher.step > step ? step : publisher.step }))
     )
 
     const history$ = actions.submit$
@@ -65,7 +94,6 @@ function model(actions) {
             pathname: '/publicar',
             state
         }))
-        .debug()
 
     return {
         fractal: reducers$,
@@ -83,9 +111,9 @@ function view(state$) {
         return main('.publish.flex.flex-auto', [
             section('.fade-in.editor.flex.flex-column', [
                 ul('.step', [
-                    li('.step-item.active', a('Publicación')),
-                    li('.step-item', {class: {active: step > 0}}, a('Contenido')),
-                    li('.step-item', {class: {active: step > 1}}, a('Revisión final'))
+                    li('.step-item', { class: { active: step == 0 }, dataset: { step: 0 } }, a('Publicación')),
+                    li('.step-item', { class: { active: step == 1 }, dataset: { step: 1 } }, a('Contenido')),
+                    li('.step-item', { class: { active: step == 2 }, dataset: { step: 2 } }, a('Revisión final'))
                 ]),
                 (state => {
                     switch (state.publisher.step) {
@@ -93,6 +121,8 @@ function view(state$) {
                             return postInfo(state)
                         case 1:
                             return postContent(state)
+                        case 2:
+                            return postReview(state)
                     }
                 })(state),
             ]),
@@ -193,39 +223,64 @@ function postInfo({ categories, publisher }) {
     ])
 }
 
-function postContent({ categories, publisher }) {
-    const { title, category } = publisher
-    const ready = title.length > 0 && category !== false
+function postContent(state) {
+    const { publisher } = state
+    const { title, category, content } = publisher
+    const subcategories = state.subcategories || {}
+    const ready = content.length > 120
+
+    // Categories are async loaded.
+    const subcategory = subcategories[category] || {}
 
     return div([
         h1('.ma0.pv3.tc', 'Escribir nueva publicación'),
         form('.pv3.mt3', { attrs: { id: 'step2' } }, [
+            h3('.mt0.f6', [subcategory.name, span('.icon-right-open.silver')]),
             h2('.mt0.mb3', title),
             div('.form-group.pb2', [
-                textarea('#content.form-input', { 
-                    attrs: { 
-                        placeholder: 'Escribe aquí el contenido de tu publicación', 
+                textarea('#content.form-input', {
+                    attrs: {
+                        placeholder: 'Escribe aquí el contenido de tu publicación',
                         required: true,
                         rows: 8
                     },
                     hook: {
-                        insert: vnode => (autosize(vnode.elm))
+                        insert: vnode => {
+                            vnode.elm.value = content
+                            autosize(vnode.elm)
+                        }
                     }
                 })
             ]),
-            input('.btn.btn-primary.btn-block', { attrs: { type: 'submit', value: 'Continuar', disabled: !ready } })
+            input('.btn.btn-primary.btn-block', { attrs: { type: 'submit', value: 'Continuar', disabled: !ready } }),
+            div('.mt3', [
+                h3('.f5', 'A tener en cuenta:'),
+                p('.lh-copy.mb0', [
+                    span('.b', 'Explica y escribe bien tu tema, pregunta o aportación: '),
+                    'Haz un esfuerzo por leer una vez más el texto donde describes tu pregunta o comentario ANTES DE PUBLICAR. Procura que esté lo mejor explicado que puedas, que no esté incompleto, y que sea fácil de comprender. Todo eso ayuda a que los demás contribuyan y a que aumentes tu reputación en la comunidad.'
+                ])
+            ])
         ])
     ])
 }
 
-export function Publisher(sources) {
-    const actions = intent(sources)
-    const effects = model(actions)
-    const vtree$ = view(sources.fractal.state$)
+function postReview(state) {
+    const { publisher } = state
+    const { title, category, content } = publisher
+    const subcategories = state.subcategories || {}
+    const ready = content.length > 120
 
-    return {
-        fractal: effects.fractal,
-        history: effects.history,
-        DOM: vtree$
-    }
+    // Categories are async loaded.
+    const subcategory = subcategories[category] || {}
+
+    return div([
+        h1('.ma0.pv3.tc', 'Un último vistazo antes de publicar'),
+        form('.pv3.mt3', { attrs: { id: 'step2' } }, [
+            h3('.mt0.f6', [subcategory.name, span('.icon-right-open.silver')]),
+            h2('.mt0.mb3', title),
+            hr(),
+            virtualize(`<div class="post-preview pb2">${md.render(content)}</div>`),
+            input('.btn.btn-primary.btn-block', { attrs: { type: 'submit', value: 'Publicar ahora', disabled: !ready } })
+        ])
+    ])
 }

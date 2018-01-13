@@ -41,6 +41,10 @@ a {
 	}
 }
 
+.modal.active .modal-container, .modal:target .modal-container {
+	padding: 0
+}
+
 .empty {
 	background: none;
 }

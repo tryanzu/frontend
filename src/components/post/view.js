@@ -5,28 +5,28 @@ import {
     i,
     p,
     button
-} from '@cycle/dom';
-import debounce from 'lodash/debounce';
-import timeago from 'timeago.js';
-import { Quickstart } from '../quickstart';
-import markdown from 'markdown-it';
-import emoji from 'markdown-it-emoji';
-import mila from 'markdown-it-link-attributes';
-import virtualize from 'snabbdom-virtualize';
+} from '@cycle/dom'
+import debounce from 'lodash/debounce'
+import timeago from 'timeago.js'
+import { Quickstart } from '../quickstart'
+import markdown from 'markdown-it'
+import emoji from 'markdown-it-emoji'
+import mila from 'markdown-it-link-attributes'
+import virtualize from 'snabbdom-virtualize'
 
 export function view(state$) {
     return state$.map(state => {
-        const {user} = state.shared;
-        const {post, resolving, voting, toasts, comments, ui} = state.own;
-        const _comments = post.comments;
+        const {user} = state.shared
+        const {post, resolving, voting, toasts, comments, ui} = state.own
+        const _comments = post.comments
 
         if (resolving) {
             return section('.post', [
                 div('.current-article', div('.pv2', div('.loading')))
-            ]);
+            ])
         }
 
-        const toastsVNode = toasts.length == 0 ? h('div') : h('div.absolute.right-1.top-1.z-1.fade-in', toasts.map(toastView));
+        const toastsVNode = toasts.length == 0 ? h('div') : h('div.absolute.right-1.top-1.z-1.fade-in', toasts.map(toastView))
         const postVNode = post == false ? Quickstart() : h('div.current-article', [
             h('article', [
                 h('div.flex', [
@@ -61,14 +61,14 @@ export function view(state$) {
                 section(
                     comments.list !== false && comments.resolving == false ? 
                         comments.list.map(c => {
-                            const isVoting = voting !== false && voting.id == c.id ? voting.intent : false;
+                            const isVoting = voting !== false && voting.id == c.id ? voting.intent : false
 
-                            return commentView(c, isVoting, user, false, ui);
+                            return commentView(c, isVoting, user, false, ui)
                         }) 
                         : (comments.resolving ? h('div.pv2', h('div.loading')) : [])
                 )
             ])
-        ]);
+        ])
 
         return h('section.fade-in.post.relative.flex.flex-column.pb3', h('div.h-100.overflow-y-scroll', [
             toastsVNode,
@@ -76,13 +76,13 @@ export function view(state$) {
             h('footer.pa3.pt4', [
                 h('small.silver', 'Powered by Anzu community software v0.1 alpha')
             ])
-        ]));
-    });
+        ]))
+    })
 }
-const ago = timeago(null, 'es');
-const md = markdown({html: true, linkify: true, typographer: false}).disable('image');
-md.use(emoji);
-md.use(mila, {target: '_blank', rel: 'noopener', class: 'link blue hover-green'});
+const ago = timeago(null, 'es')
+const md = markdown({html: true, linkify: true, typographer: false}).disable('image')
+md.use(emoji)
+md.use(mila, {target: '_blank', rel: 'noopener', class: 'link blue hover-green'})
 
 function author(item, label = 'Publicó') {
     const {author} = item;
