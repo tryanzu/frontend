@@ -53,8 +53,17 @@ export function intent({DOM, HTTP, fractal, props, glue}) {
             .take(1)
             .filter(action => (action.page == 'post'))
             .map(action => ({
-                type: 'bootsrap'
-            })), 
+                type: 'bootstrap'
+            })),
+        
+        // Fetch effect from location state.
+        props.router$
+            .drop(1)
+            .filter(action => ('reloadPosts' in action.location.state && action.location.state.reloadPosts === true))
+            .map(action => ({
+                type: 'bootstrap'
+            }))
+            
     ).remember()
 
     /**

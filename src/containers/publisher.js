@@ -20,7 +20,8 @@ const defaultState = {
     title: '',
     content: '',
     category: false,
-    step: 0
+    step: 0,
+    saving: false
 }
 
 export function Publisher(sources) {
@@ -31,11 +32,12 @@ export function Publisher(sources) {
     return {
         fractal: effects.fractal,
         history: effects.history,
+        HTTP: effects.HTTP,
         DOM: vtree$
     }
 }
 
-function intent({ DOM, fractal, props }) {
+function intent({ DOM, HTTP, fractal, props }) {
     const title$ = DOM.select('form input#title').events('input')
         .map(event => ({ field: 'title', value: event.target.value }))
 
@@ -46,13 +48,23 @@ function intent({ DOM, fractal, props }) {
         .map(event => ({ field: 'category', value: event.target.value }))
 
     const step$ = DOM.select('.step .step-item').events('click')
-        .map(event => parseInt(event.currentTarget.dataset.step))
+        .map(event => parseInt(event.currentTarget.dataset.step || 0))
     
     const checkboxes$ = DOM.select('form input[type="checkbox"]').events('change')
         .map(event => ({ field: event.target.getAttribute('name'), value: event.target.checked }))
 
     const submit$ = DOM.select('form').events('submit', { preventDefault: true })
         .map(event => (event.currentTarget))
+
+    const publish$ = DOM.select('a#publish').events('click')
+        .map(event => (event.currentTarget))
+        .remember()
+
+    const published$ = HTTP.select('publish')
+        .map(response$ => response$.replaceError(err => xs.of(err)))
+        .flatten()
+        .filter(res => !(res instanceof Error))
+        .map(res => res.body)
 
     const routeState$ = props.router$
         .filter(action => (action.page == 'publish'))
@@ -66,7 +78,7 @@ function intent({ DOM, fractal, props }) {
 
     const state$ = fractal.state$.map(state => (state.publisher))
     
-    return { form$, step$, submit$, state$, routeState$ }
+    return { form$, step$, submit$, state$, routeState$, publish$, published$, authToken$: props.authToken$ }
 }
 
 function model(actions) {
@@ -81,23 +93,56 @@ function model(actions) {
         actions.form$.map(f => ({ publisher }) => ({ ...publisher, [f.field]: f.value })),
 
         // Next step submits
-        actions.submit$.map(e => ({ publisher }) => ({ ...publisher, step: publisher.step + 1 })),
+        actions.submit$.map(e => ({ publisher }) => ({ ...publisher, step: publisher.step <= 1 ? publisher.step + 1 : 2 })),
     
         // Manual step change
-        actions.step$.map(step => ({ publisher }) => ({ ...publisher, step: publisher.step > step ? step : publisher.step }))
+        actions.step$.map(step => ({ publisher }) => ({ ...publisher, step: publisher.step >= step ? step : publisher.step })),
+    
+        // Loading state (block actions)
+        actions.publish$.map(e => ({ publisher }) => ({ ...publisher, saving: true })),
     )
 
-    const history$ = actions.submit$
-        .compose(sampleCombine(actions.state$))
-        .map(([event, state]) => ({
-            type: 'push',
-            pathname: '/publicar',
-            state
+    const http$ = actions.publish$
+        .compose(sampleCombine(actions.authToken$, actions.state$))
+        .map(([event, withAuth, state]) => ({
+            method: 'POST',
+            type: 'application/json',
+            url: `${Anzu.layer}post`,
+            category: 'publish',
+            send: { 
+                kind: 'category-post',
+                content: state.content,
+                name: state.title,
+                category: state.category,
+                locked: state.disabledComments,
+                is_question: state.isQuestion,
+                pinned: state.pinned,
+             },
+            headers: withAuth({})
         }))
+
+    const history$ = xs.merge(
+        actions.submit$
+            .compose(sampleCombine(actions.state$))
+            .map(([event, state]) => ({
+                type: 'push',
+                pathname: '/publicar',
+                state
+            })),
+        actions.published$
+            .map(({ post }) => ({
+                type: 'push',
+                pathname: `/p/${post.slug}/${post.id}`,
+                state: {
+                    reloadPosts: true
+                }
+            }))
+    )
 
     return {
         fractal: reducers$,
-        history: history$
+        history: history$,
+        HTTP: http$,
     }
 }
 
@@ -111,16 +156,16 @@ function view(state$) {
         return main('.publish.flex.flex-auto', [
             section('.fade-in.editor.flex.flex-column', [
                 ul('.step', [
-                    li('.step-item', { class: { active: step == 0 }, dataset: { step: 0 } }, a('Publicación')),
-                    li('.step-item', { class: { active: step == 1 }, dataset: { step: 1 } }, a('Contenido')),
-                    li('.step-item', { class: { active: step == 2 }, dataset: { step: 2 } }, a('Revisión final'))
+                    li('.step-item.pointer', { class: { active: step == 0 }, dataset: { step: 0 } }, a('Publicación')),
+                    li('.step-item.pointer', { class: { active: step == 1 }, dataset: { step: 1 } }, a('Contenido')),
+                    li('.step-item.pointer', { class: { active: step == 2 }, dataset: { step: 2 } }, a('Revisión final'))
                 ]),
                 (state => {
                     switch (state.publisher.step) {
                         case 0:
-                            return postInfo(state)
-                        case 1:
                             return postContent(state)
+                        case 1:
+                            return postInfo(state)
                         case 2:
                             return postReview(state)
                     }
@@ -175,7 +220,7 @@ function postInfo({ categories, publisher }) {
     categories = categories || []
 
     return div([
-        h1('.ma0.pv3.tc', 'Escribir nueva publicación'),
+        h1('.ma0.pv3.tc', 'Completar publicación'),
         form('.pv3', { attrs: { id: 'step1' } }, [
             div('.form-group.pb2', [
                 label('.b.form-label', 'Titulo de la publicación'),
@@ -235,13 +280,11 @@ function postContent(state) {
     return div([
         h1('.ma0.pv3.tc', 'Escribir nueva publicación'),
         form('.pv3.mt3', { attrs: { id: 'step2' } }, [
-            h3('.mt0.f6', [subcategory.name, span('.icon-right-open.silver')]),
-            h2('.mt0.mb3', title),
+            h2('.mt0.mb3', 'Desarrolla tu tema más abajo'),
             div('.form-group.pb2', [
                 textarea('#content.form-input', {
                     attrs: {
                         placeholder: 'Escribe aquí el contenido de tu publicación',
-                        required: true,
                         rows: 8
                     },
                     hook: {
@@ -275,12 +318,12 @@ function postReview(state) {
 
     return div([
         h1('.ma0.pv3.tc', 'Un último vistazo antes de publicar'),
-        form('.pv3.mt3', { attrs: { id: 'step2' } }, [
+        form('.pv3.mt3', [
             h3('.mt0.f6', [subcategory.name, span('.icon-right-open.silver')]),
             h2('.mt0.mb3', title),
             hr(),
             virtualize(`<div class="post-preview pb2">${md.render(content)}</div>`),
-            input('.btn.btn-primary.btn-block', { attrs: { type: 'submit', value: 'Publicar ahora', disabled: !ready } })
+            a('.btn.btn-primary.btn-block', { attrs: { id: 'publish' } }, 'Publicar ahora')
         ])
     ])
 }

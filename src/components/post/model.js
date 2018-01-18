@@ -1,8 +1,8 @@
-import xs from 'xstream';
-import sampleCombine from 'xstream/extra/sampleCombine';
-import delay from 'xstream/extra/delay';
-import merge from 'lodash/merge';
-import mergeWith from 'lodash/mergeWith';
+import xs from 'xstream'
+import sampleCombine from 'xstream/extra/sampleCombine'
+import delay from 'xstream/extra/delay'
+import merge from 'lodash/merge'
+import mergeWith from 'lodash/mergeWith'
 
 export const DEFAULT_STATE = {
     resolving: false,
@@ -20,12 +20,12 @@ export const DEFAULT_STATE = {
         commentingId: false
     },
     toasts: []
-};
+}
 
-export const LENSED_STATE = {shared: {user: false}, own: {...DEFAULT_STATE}};
+export const LENSED_STATE = {shared: {user: false}, own: {...DEFAULT_STATE}}
 
 export function model(actions) {   
-    const update = (state, fields) => ({...state, own: mergeWith(state.own, fields, (obj, source) => Array.isArray(obj) ? source : undefined)});
+    const update = (state, fields) => ({...state, own: mergeWith(state.own, fields, (obj, source) => Array.isArray(obj) ? source : undefined)})
 
     /**
      * Http write effects, including:
@@ -41,7 +41,7 @@ export function model(actions) {
             category: 'vote',
             send: {direction: intent},
             headers: withAuth({})
-        }));
+        }))
 
     const commentRequest$ = actions.reply$
         .compose(sampleCombine(actions.replyContent$, actions.authToken$))
@@ -52,12 +52,12 @@ export function model(actions) {
             category: 'reply',
             send: {content},
             headers: withAuth({})
-        }));
+        }))
 
     const http$ = xs.merge(
         voteRequest$,
         commentRequest$,
-    );
+    )
 
     /**
      * Set of reducers based on happening actions, including:
