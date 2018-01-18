@@ -109,7 +109,7 @@
 
 			& a.category {
 				color: #6b7c93;
-				display: block;
+				display: inline-block;
 				padding-bottom: 0.25rem;
 				font-size: calc(var(--fontSize) * 0.9);
 			}

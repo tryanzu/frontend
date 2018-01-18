@@ -17,13 +17,20 @@ export function intent({DOM, HTTP, fractal, props, glue}) {
      * Router read effects including:
      * - Feed links
      */
-    const linkPost$ = DOM.select('.feed a').events('click', {preventDefault: true})
-        .map((event) => {
-            const {currentTarget} = event
-            event.preventDefault()
-            
-            return {path: currentTarget.getAttribute('href')}
-        })
+    const linkPost$ = xs.merge(
+        DOM.select('.feed a')
+            .events('click', { preventDefault: true, stopPropagation: true })
+            .map(event => {
+                const { currentTarget } = event
+                event.preventDefault()
+
+                return { path: currentTarget.getAttribute('href') }
+            }),
+
+        DOM.select('article.post')
+            .events('click')
+            .map(event => ({ path: event.currentTarget.dataset.href }))
+    )
 
     /**
      * DOM intents including:
@@ -63,7 +70,7 @@ export function intent({DOM, HTTP, fractal, props, glue}) {
             .map(action => ({
                 type: 'bootstrap'
             }))
-            
+
     ).remember()
 
     /**

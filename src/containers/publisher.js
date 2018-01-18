@@ -1,5 +1,5 @@
 import xs from 'xstream'
-import { main, section, ul, li, h1, h2, form, label, input, div, select, option, optgroup, textarea, p, small, i, a, span, h3, sub, hr } from '@cycle/dom'
+import { main, section, ul, li, h1, h2, form, label, input, div, select, option, optgroup, textarea, p, small, i, a, span, h3, sub, hr, ol } from '@cycle/dom'
 import autosize from 'autosize'
 import sampleCombine from 'xstream/extra/sampleCombine'
 import markdown from 'markdown-it'
@@ -156,8 +156,8 @@ function view(state$) {
         return main('.publish.flex.flex-auto', [
             section('.fade-in.editor.flex.flex-column', [
                 ul('.step', [
-                    li('.step-item.pointer', { class: { active: step == 0 }, dataset: { step: 0 } }, a('Publicación')),
-                    li('.step-item.pointer', { class: { active: step == 1 }, dataset: { step: 1 } }, a('Contenido')),
+                    li('.step-item.pointer', { class: { active: step == 0 }, dataset: { step: 0 } }, a('Contenido')),
+                    li('.step-item.pointer', { class: { active: step == 1 }, dataset: { step: 1 } }, a('Publicación')),
                     li('.step-item.pointer', { class: { active: step == 2 }, dataset: { step: 2 } }, a('Revisión final'))
                 ]),
                 (state => {
@@ -280,7 +280,7 @@ function postContent(state) {
     return div([
         h1('.ma0.pv3.tc', 'Escribir nueva publicación'),
         form('.pv3.mt3', { attrs: { id: 'step2' } }, [
-            h2('.mt0.mb3', 'Desarrolla tu tema más abajo'),
+            h2('.mt0.mb3', 'Explica tu tema o pregunta:'),
             div('.form-group.pb2', [
                 textarea('#content.form-input', {
                     attrs: {
@@ -297,10 +297,11 @@ function postContent(state) {
             ]),
             input('.btn.btn-primary.btn-block', { attrs: { type: 'submit', value: 'Continuar', disabled: !ready } }),
             div('.mt3', [
-                h3('.f5', 'A tener en cuenta:'),
-                p('.lh-copy.mb0', [
-                    span('.b', 'Explica y escribe bien tu tema, pregunta o aportación: '),
-                    'Haz un esfuerzo por leer una vez más el texto donde describes tu pregunta o comentario ANTES DE PUBLICAR. Procura que esté lo mejor explicado que puedas, que no esté incompleto, y que sea fácil de comprender. Todo eso ayuda a que los demás contribuyan y a que aumentes tu reputación en la comunidad.'
+                h3('.f5.fw6', 'Sugerencias para obtener más y mejores respuestas y comentarios:'),
+                ol('.pa0.ma0.measure.lh-copy', [
+                    li('Lee nuevamente tu publicación antes de enviarla. Procura que sea clara y entendible.'),
+                    li('Si son varias preguntas, trata de empezar por las más importantes. Evita abrumar con mucha info y ve al punto.'),
+                    li('Gana reputación agradeciendo a los que te ayuden o contribuyan a tu tema.')
                 ])
             ])
         ])
