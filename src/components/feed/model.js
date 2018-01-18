@@ -1,6 +1,6 @@
-import xs from 'xstream';
-import sampleCombine from 'xstream/extra/sampleCombine';
-import merge from 'lodash/merge';
+import xs from 'xstream'
+import sampleCombine from 'xstream/extra/sampleCombine'
+import merge from 'lodash/merge'
 
 const DEFAULT_STATE = {
     list: [],
@@ -10,8 +10,13 @@ const DEFAULT_STATE = {
     subcategories: false,
     subcategoriesBySlug: false,
     endReached: false,
-    category: false
-};
+    category: false,
+    counters: {
+        posts: 0,
+        recent: {}, // Recent new comments.
+        missed: {}, // Comments in other posts. 
+    }
+}
 
 export const LENSED_STATE = {
     shared: {
@@ -21,17 +26,17 @@ export const LENSED_STATE = {
     own: {
         ...DEFAULT_STATE
     }
-};
+}
 
 export function model(actions) {
-    const update = (state, fields) => ({...state, own: {...state.own, ...fields}});
+    const update = (state, fields) => ({ ...state, own: { ...state.own, ...fields } })
 
     /**
      * History write effects including:
      * - Open new posts url.
      */
     const routeTo$ = actions.linkPost$
-        .map(link => ({type: 'push', pathname: link.path, state: {}}));
+        .map(link => ({ type: 'push', pathname: link.path, state: {} }))
 
     /**
      * HTTP write effects including:
@@ -45,7 +50,7 @@ export function model(actions) {
         actions.scroll$
             .filter(event => (event.bottom === true))
             .mapTo({ type: 'next' }),
-        
+
         // New page fetch requests will reset the offset.
         actions.fetch$.mapTo({ type: 'reload' })
 
@@ -55,10 +60,10 @@ export function model(actions) {
         .compose(sampleCombine(actions.fetch$))
         .map(([offset, event]) => ({
             method: 'GET',
-            url: Anzu.layer + 'feed', 
+            url: Anzu.layer + 'feed',
             category: 'posts',
             query: {
-                limit: 15, 
+                limit: 15,
                 category: 'category' in event ? event.category : '',
                 offset
             }
@@ -73,11 +78,11 @@ export function model(actions) {
      */
     const reducers$ = xs.merge(
         xs.of(state => merge(LENSED_STATE, state)),
-        
+
         // Post loading
         actions.fetch$
-            .map(event => state => update(state, { loading: true, list: [], category: 'category' in event ? event.category : state.category})),
-        
+            .map(event => state => update(state, { loading: true, list: [], category: 'category' in event ? event.category : state.category })),
+
         // Posts fetch loaded
         actions.posts$
             .map(res => state => update(state, { list: state.own.list.concat(res.feed), endReached: res.feed.length === 0, loading: false })),
@@ -86,21 +91,26 @@ export function model(actions) {
         actions.feedGlue$
             .filter(event => (event.fire == 'new-comment'))
             .map(event => state => {
-                const key = state.shared.postId == event.id ? 'count' : 'newCount'
-                const list = state.own.list.map(post =>
-                    post.id != event.id
-                        ? post
-                        : { ...post, comments: { ...post.comments, [key]: parseInt(post.comments[key] || 0) + 1 } }
-                )
+                const { counters } = state.own
+                const key = state.shared.postId == event.id ? 'recent' : 'missed'
 
-                return update(state, { list })
+                return update(state, { counters: { ...counters, [key]: { ...counters[key], [event.id]: parseInt(counters[key][event.id] || 0) + 1 } } })
+            }),
+
+        // New remote posts on feed.
+        actions.feedGlue$
+            .filter(event => (event.fire == 'new-post'))
+            .map(event => state => {
+                const { counters } = state.own
+
+                return update(state, { counters: { ...counters, posts: counters.posts + 1 } })
             })
-    );
-    
+    )
+
     return {
         HTTP: http$,
         history: routeTo$,
         fractal: reducers$,
-        linkPost$: actions.linkPost$  
-    };
+        linkPost$: actions.linkPost$
+    }
 }

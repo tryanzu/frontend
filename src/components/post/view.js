@@ -13,6 +13,7 @@ import markdown from 'markdown-it'
 import emoji from 'markdown-it-emoji'
 import mila from 'markdown-it-link-attributes'
 import virtualize from 'snabbdom-virtualize'
+import autosize from 'autosize'
 
 export function view(state$) {
     return state$.map(state => {
@@ -40,7 +41,7 @@ export function view(state$) {
                     ])
                 ]),
                 h('h1', post.title),
-                virtualize(`<p>${md.renderInline(post.content)}</p>`),
+                virtualize(`<p>${md.render(post.content)}</p>`),
                 h('div.separator.pt2'),
                 h('div.flex.items-center.mb3', [
                     h('h3.flex-auto', `${_comments.count} comentarios`),
@@ -133,7 +134,7 @@ function commentView(comment, voting, currentUser = false, noPadding = false, ui
                 ])
             ])
         ]),
-        h('div.pt1', virtualize(`<p class="ma0">${md.renderInline(comment.content)}</p>`)),
+        h('div.pt1', virtualize(`<p class="ma0">${md.render(comment.content)}</p>`)),
         ui.replyTo === comment.id 
             ? replyView(currentUser, ui, 'comment', comment.id, true)
             : h('div'),
@@ -151,7 +152,10 @@ function replyView(user, ui, type, id, nested = false) {
         h('form.pl2.flex-auto.fade-in.reply-form', {dataset: {type, id}}, [
             h('textarea.form-input.replybox.mb2', {
                 hook: {
-                    insert: nested ? debounce(vnode => vnode.elm.focus(), 100) : () => {}
+                    insert: vnode => {
+                        debounce(vnode => vnode.elm.focus(), 100)(vnode)
+                        autosize(vnode.elm)
+                    }
                 }, 
                 dataset: {type, id}, 
                 attrs: {
