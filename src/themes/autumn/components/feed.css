@@ -137,6 +137,10 @@
 				margin-left: .5rem;
 			}
 
+			& .pinned-post {
+				color: #e85600
+			}
+
 			& h1 {
 				font-size: calc(var(--fontSize) * 1.2);
 				font-weight: 600;

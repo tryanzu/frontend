@@ -33,26 +33,34 @@ export function view(state$) {
                 const recent = counters.recent[post.id] || 0
                 const missed = counters.missed[post.id] || 0
 
-                return article('.post.flex.items-center', { class: { active: postId == post.id }, dataset: { href } }, [
-                    div('.flex-auto', [
-                        subcategories != false
-                            ? a('.category', { attrs: { href: `/c/${subcategories[post.category].slug}` } }, subcategories[post.category].name)
-                            : a('.category', span('.loading')),
-                        h1(
-                            a('.link', { attrs: { href }, dataset: { postId: post.id } }, post.title)
+                return article('.post', { class: { active: postId == post.id }, dataset: { href } }, [
+                    div('.flex.items-center', [
+                        div('.flex-auto', 
+                            subcategories != false
+                                ? a('.category', { attrs: { href: `/c/${subcategories[post.category].slug}` } }, subcategories[post.category].name)
+                                : a('.category', span('.loading'))
                         ),
-                        a({ attrs: { rel: 'author' } }, [
-                            div(author.image ? img({ attrs: { src: author.image, alt: `Avatar de ${author.username}` } }) : div('.empty-avatar', author.username.substr(0, 1))),
-                            div([
-                                span(author.username),
-                                span('.ago', 'Publicó ' + ago.format(post.created_at))
-                            ])
-                        ]),
+                        post.pinned ? span('.icon-pin.pinned-post') : null
                     ]),
-                    div('.tc', { style: { minWidth: '50px', flexShrink: 0 } }, [
-                        span('.icon-chat-alt'),
-                        span('.pl2.b', post.comments.count + recent),
-                        missed > 0 ? span('.new-comments', `+${missed}`) : null
+
+                    div('.flex.items-center', [
+                        div('.flex-auto', [
+                            h1(
+                                a('.link', { attrs: { href }, dataset: { postId: post.id } }, post.title),
+                            ),
+                            a({ attrs: { rel: 'author' } }, [
+                                div(author.image ? img({ attrs: { src: author.image, alt: `Avatar de ${author.username}` } }) : div('.empty-avatar', author.username.substr(0, 1))),
+                                div([
+                                    span(author.username),
+                                    span('.ago', 'Publicó ' + ago.format(post.created_at))
+                                ])
+                            ]),
+                        ]),
+                        div('.tc', { style: { minWidth: '50px', flexShrink: 0 } }, [
+                            span('.icon-chat-alt'),
+                            span('.pl2.b', post.comments.count + recent),
+                            missed > 0 ? span('.new-comments', `+${missed}`) : null
+                        ])
                     ])
                 ])
             }).concat(
