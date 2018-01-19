@@ -104,7 +104,11 @@ export function model(actions) {
                 const { counters } = state.own
 
                 return update(state, { counters: { ...counters, posts: counters.posts + 1 } })
-            })
+            }),
+        
+        // Restart new remote psots feed counter.
+        actions.loadNewPosts$
+            .map(event => state => update(state, { counters: { ...state.own.counters, posts: 0 } }))
     )
 
     return {

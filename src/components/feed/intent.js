@@ -20,6 +20,7 @@ export function intent({DOM, HTTP, fractal, props, glue}) {
     const linkPost$ = xs.merge(
         DOM.select('.feed a')
             .events('click', { preventDefault: true, stopPropagation: true })
+            .filter(event => (event.currentTarget.hasAttribute('href')))
             .map(event => {
                 const { currentTarget } = event
                 event.preventDefault()
@@ -38,6 +39,13 @@ export function intent({DOM, HTTP, fractal, props, glue}) {
     const scroll$ = DOM.select('.feed .list').events('scroll')
         .compose(debounce(120))
         .map(e => ({bottom: e.target.scrollHeight - e.target.scrollTop - e.target.clientHeight < 1}))
+
+    const loadNewPosts$ = DOM.select('a.load-more')
+        .events('click')
+        .map(event => ({
+            type: 'reload'
+        }))
+        .remember()
 
     /**
      * Router read effects, including:
@@ -69,7 +77,10 @@ export function intent({DOM, HTTP, fractal, props, glue}) {
             .filter(action => ('reloadPosts' in action.location.state && action.location.state.reloadPosts === true))
             .map(action => ({
                 type: 'bootstrap'
-            }))
+            })),
+
+        // Fetch effect from new posts link.
+        loadNewPosts$
 
     ).remember()
 
@@ -93,6 +104,7 @@ export function intent({DOM, HTTP, fractal, props, glue}) {
         scroll$,
         linkPost$,
         feedGlue$, 
+        loadNewPosts$,
         authToken$: props.authToken$,
     }
 }
