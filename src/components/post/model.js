@@ -32,31 +32,43 @@ export function model(actions) {
      * - votes requests
      * - comments requests
      */
-     const voteRequest$ = actions.voting$
-        .compose(sampleCombine(actions.authToken$))
-        .map(([{type, intent, id}, withAuth]) => ({
-            method: 'POST',
-            type: 'application/json',
-            url: `${Anzu.layer}vote/${type}/${id}`, 
-            category: 'vote',
-            send: {direction: intent},
-            headers: withAuth({})
-        }))
-
-    const commentRequest$ = actions.reply$
-        .compose(sampleCombine(actions.replyContent$, actions.authToken$))
-        .map(([{type, id}, content, withAuth]) => ({
-            method: 'POST',
-            type: 'application/json',
-            url: `${Anzu.layer}comments/${id}?type=${type}`, 
-            category: 'reply',
-            send: {content},
-            headers: withAuth({})
-        }))
-
     const http$ = xs.merge(
-        voteRequest$,
-        commentRequest$,
+        
+        // New votes
+        actions.voting$
+            .compose(sampleCombine(actions.authToken$))
+            .map(([{ type, intent, id }, withAuth]) => ({
+                method: 'POST',
+                type: 'application/json',
+                url: `${Anzu.layer}vote/${type}/${id}`,
+                category: 'vote',
+                send: { direction: intent },
+                headers: withAuth({})
+            })),
+        
+        // Replies sent
+        actions.reply$
+            .compose(sampleCombine(actions.replyContent$, actions.authToken$))
+            .map(([{ type, id }, content, withAuth]) => ({
+                method: 'POST',
+                type: 'application/json',
+                url: `${Anzu.layer}comments/${id}?type=${type}`,
+                category: 'reply',
+                send: { content },
+                headers: withAuth({})
+            })),
+        
+        // Post actions.
+        actions.postActions$
+            .filter(({ action }) => (action === 'delete'))
+            .compose(sampleCombine(actions.authToken$))
+            .map(([{ id },  withAuth]) => ({
+                method: 'DELETE',
+                type: 'application/json',
+                url: `${Anzu.layer}posts/${id}`,
+                category: 'post.delete',
+                headers: withAuth({})
+            }))
     )
 
     /**

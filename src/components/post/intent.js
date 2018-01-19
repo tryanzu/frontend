@@ -8,12 +8,10 @@ export function intent({DOM, HTTP, props}) {
         .map(({currentTarget}) => ({id: currentTarget.dataset.id, intent: currentTarget.dataset.intent, type: currentTarget.dataset.type}))
 
     const commentFocus$ = xs.merge(
-        DOM
-            .select('textarea.replybox')
+        DOM.select('textarea.replybox')
             .events('focus')
             .map(event => ({focus: true, type: event.target.dataset.type, id: event.target.dataset.id})),
-        DOM
-            .select('button#cc')
+        DOM.select('button#cc')
             .events('click')
             .map(event => ({focus: false}))
     )
@@ -26,6 +24,10 @@ export function intent({DOM, HTTP, props}) {
 
     const reply$ = DOM.select('form.reply-form').events('submit', { preventDefault: true })
         .map(({ target }) => ({ type: target.dataset.type, id: target.dataset.id }))
+
+    const postActions$ = DOM.select('.post-action')
+        .events('click')
+        .map(event => ({action: event.currentTarget.dataset.action, id: event.currentTarget.dataset.id}))
 
     /**
      * HTTP read effects including: 
@@ -74,6 +76,7 @@ export function intent({DOM, HTTP, props}) {
         replyContent$,
         reply$,
         sentReply$,
+        postActions$,
         authToken$: props.authToken$
     } 
 }

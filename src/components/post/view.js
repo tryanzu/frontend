@@ -4,7 +4,11 @@ import {
     section,
     i,
     p,
-    button
+    button,
+    a,
+    span,
+    ul,
+    li
 } from '@cycle/dom'
 import debounce from 'lodash/debounce'
 import timeago from 'timeago.js'
@@ -32,13 +36,17 @@ export function view(state$) {
             h('article', [
                 h('div.flex', [
                     h('div.flex-auto', author(post)),
-                    h('div', [
-                        user.id != post.user_id ? h('a.dib.btn-icon.gray', [
-                            h('i.icon-warning-empty'),
-                            h('span.ml1', 'reportar')
-                        ]) : null,
-                        user.id == post.user_id ? h('a.dib.btn-icon.gray', h('i.icon-edit')) : null
-                    ])
+                    user.id == post.user_id 
+                        ? div('.dropdown.dropdown-right', [
+                            a('.dib.btn-icon.gray.ml2.dropdown-toggle', { attrs: {tabindex: 0} }, i('.icon-cog')),
+                            ul('.menu', {style: {width: '200px'}}, [
+                                    li('.menu-item', a('.pointer.post-action', { dataset: { action: 'update', id: post.id } }, [i('.icon-edit'), 'Editar publicación'])),
+                                li('.menu-item', a('.pointer.post-action', { dataset: { action: 'delete', id: post.id } }, [i('.icon-trash'), 'Borrar publicación'])),
+                            ])
+                        ]) 
+                        : div([
+                            a('.dib.btn-icon.gray', [i('.icon-warning-empty'), span('.ml1', 'reportar')]),
+                        ])
                 ]),
                 h('h1', post.title),
                 virtualize(`<p>${md.render(post.content)}</p>`),
