@@ -54,7 +54,7 @@ export function model(actions) {
         // New page fetch requests will reset the offset.
         actions.fetch$.mapTo({ type: 'reload' })
 
-    ).fold((offset, event) => (event.type == 'next' ? offset + 15 : 0), 0).drop(1)
+    ).fold((offset, event) => (event.type == 'next' ? offset + 10 : 0), 0).drop(1)
 
     const fetchPosts$ = paginate$
         .compose(sampleCombine(actions.fetch$))
@@ -63,7 +63,7 @@ export function model(actions) {
             url: Anzu.layer + 'feed',
             category: 'posts',
             query: {
-                limit: 15,
+                limit: 10,
                 category: 'category' in event ? event.category : '',
                 offset
             }
@@ -85,7 +85,7 @@ export function model(actions) {
 
         // Posts fetch loaded
         actions.posts$
-            .map(res => state => update(state, { list: state.own.list.concat(res.feed), endReached: res.feed.length === 0, loading: false })),
+            .map(res => state => update(state, { list: state.own.list.concat(res.feed), endReached: res.feed.length < 10, loading: false })),
 
         // New remote comments on feed posts.
         actions.feedGlue$
@@ -106,9 +106,25 @@ export function model(actions) {
                 return update(state, { counters: { ...counters, posts: counters.posts + 1 } })
             }),
         
-        // Restart new remote psots feed counter.
+        // Restart new remote posts feed counter.
         actions.loadNewPosts$
-            .map(event => state => update(state, { counters: { ...state.own.counters, posts: 0 } }))
+            .map(event => state => update(state, { counters: { ...state.own.counters, posts: 0 } })),
+
+
+        // Create post without authentication
+        actions.linkPost$
+            .debug()
+            .filter(link => (link.path == '/publicar'))
+            .map(c => state => {
+                const { shared, owned } = state
+
+                // Check if user is authenticated.
+                if (shared.user === false) {
+                    return { ...state, shared: { ...shared, modal: { ...shared.modal, active: true, modal: 'account' } } }
+                }
+
+                return state
+            })
     )
 
     return {

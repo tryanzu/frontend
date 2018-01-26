@@ -64,7 +64,7 @@ export function view(state$) {
                         div('.empty-icon', i('.f4.icon-chat-alt')),
                         p('.empty-title.f5.fw5', 'Nadie ha respondido aún'),
                         p('.empty-subtitle', 'Únete a la conversación y sé el primero en contestar.'),
-                        div('.empty-action', button('.btn.btn-primary', 'Escribir respuesta'))
+                        div('.empty-action', button('.reply-to.btn.btn-primary', { dataset: {id: post.id} }, 'Escribir respuesta'))
                     ])  
                     : null,
                 section(
@@ -173,8 +173,8 @@ function replyView(user, ui, type, id, nested = false) {
                 }
             }),
             h('div.tr', {class: {dn: ui.commenting == false || ui.commentingType !== type || ui.commentingId != id}}, [
+                h('button.btn.btn-primary', {attrs: {type: 'submit'}}, 'Publicar comentario'),
                 h('button#cc.btn.mr2', {attrs: {}}, 'Cancelar'),
-                h('button.btn.btn-primary', {attrs: {type: 'submit'}}, 'Publicar comentario')
             ])
         ])
     ]);

@@ -101,8 +101,8 @@ function postLens() {
 
 function feedLens() {
     return {
-        get: ({ feed, user, post, categories, page }) => ({ own: feed, shared: { page, categories, user: user.user, postId: post.postId } }),
-        set: (state, child) => ({ ...state, feed: child.own })
+        get: ({ feed, user, post, categories, page, modal }) => ({ own: feed, shared: { page, categories, user: user.user, postId: post.postId, modal } }),
+        set: (state, child) => ({ ...state, feed: child.own, modal: child.shared.modal })
     }
 }
 

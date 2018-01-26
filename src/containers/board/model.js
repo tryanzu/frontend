@@ -26,7 +26,12 @@ const DEFAULT_STATE = {
         loadingPost: false,
         error: false,
         subcategories: false,
-        post: false
+        post: false,
+        counters: {
+            posts: 0,
+            recent: {}, // Recent new comments.
+            missed: {}, // Comments in other posts. 
+        }
     }
 }
 
@@ -103,7 +108,30 @@ export function model(actions) {
         fetchUser$
             .mapTo(state => merge(state)({user: {user: false, resolving: true}})),
         postRoute$
-            .map(([action]) => state => merge(state)({page: 'board', post: {resolving: true, postId: action.post.id, comments: {resolving: true}}})),
+            .map(([action]) => state => {
+                const { id } = action.post
+                const recent = state.feed.counters.recent[id] || 0
+                const missed = state.feed.counters.missed[id] || 0
+
+                return merge(state)({
+                    page: 'board',
+                    post: {
+                        resolving: true,
+                        postId: id,
+                        comments: { resolving: true }
+                    },
+                    feed: {
+                        counters: {
+                            recent: {
+                                [id]: recent + missed
+                            },
+                            missed: {
+                                [id]: 0
+                            }
+                        }
+                    }
+                })
+            }),
         publishRoute$
             .map(() => state => merge(state)({page: 'publish'})),
         actions.categories$

@@ -122,6 +122,7 @@ function model(actions) {
         }))
 
     const history$ = xs.merge(
+        // Keep step state in history.
         actions.submit$
             .compose(sampleCombine(actions.state$))
             .map(([event, state]) => ({
@@ -129,6 +130,7 @@ function model(actions) {
                 pathname: '/publicar',
                 state
             })),
+        // Once published go to the post page.
         actions.published$
             .map(({ post }) => ({
                 type: 'push',
@@ -223,7 +225,7 @@ function postInfo({ categories, publisher }) {
         h1('.ma0.pv3.tc', 'Completar publicación'),
         form('.pv3', { attrs: { id: 'step1' } }, [
             div('.form-group.pb2', [
-                label('.b.form-label', 'Titulo de la publicación'),
+                label('.b.form-label', 'Título de la publicación'),
                 input('#title.form-input', { attrs: { type: 'text', value: title, placeholder: 'Escribe el titulo de tu publicación o pregunta...', required: true } })
             ]),
             div('.form-group.pb2', [
