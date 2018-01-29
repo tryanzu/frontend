@@ -161,11 +161,16 @@ function replyView(user, ui, type, id, nested = false) {
             h('textarea.form-input.replybox.mb2', {
                 hook: {
                     insert: vnode => {
-                        debounce(vnode => vnode.elm.focus(), 100)(vnode)
+                        if (nested) {
+                            debounce(vnode => vnode.elm.focus(), 100)(vnode)
+                        }    
                         autosize(vnode.elm)
                     }
                 }, 
                 dataset: {type, id}, 
+                props: {
+                    value: ui.reply
+                },
                 attrs: {
                     rows: 1, 
                     placeholder: 'Escribe aquí tu respuesta...', 
@@ -173,8 +178,8 @@ function replyView(user, ui, type, id, nested = false) {
                 }
             }),
             h('div.tr', {class: {dn: ui.commenting == false || ui.commentingType !== type || ui.commentingId != id}}, [
-                h('button.btn.btn-primary', {attrs: {type: 'submit'}}, 'Publicar comentario'),
-                h('button#cc.btn.mr2', {attrs: {}}, 'Cancelar'),
+                h('button.btn.btn-primary.mr2', {attrs: {type: 'submit'}}, 'Publicar comentario'),
+                h('button#cc.btn', {attrs: {type: 'reset'}}, 'Cancelar'),
             ])
         ])
     ]);

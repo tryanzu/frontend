@@ -14,6 +14,7 @@ export const DEFAULT_STATE = {
         list: false
     },
     ui: {
+        reply: '',
         replyTo: false,
         commenting: false,
         commentingType: false,
@@ -89,8 +90,8 @@ export function model(actions) {
     }))
 
     const replyR$ = actions.sentReply$.filter(res => 'id' in res)
-        .map(res => state => update(state, {comments: {list: [{...res, author: {...state.shared.user}}].concat(state.own.comments.list)}}))
-
+        .map(res => state => update(state, {ui: {reply: ''}, comments: {list: [{...res, author: {...state.shared.user}}].concat(state.own.comments.list)}}))
+ 
     const replyToR$ = actions.replyTo$.map(c => state => { 
         const { shared, owned } = state
         
@@ -121,12 +122,11 @@ export function model(actions) {
 
     const voteErr$ = actions.vote$
         .filter(res => res.status == 'error')
-        .debug();
 
-    const voteFailR$ = voteErr$.map(res => state => update(state, {
+    const voteFailR$ = voteErr$.map(({ err }) => state => update(state, {
         voting: false, 
         toasts: state.own.toasts.concat([
-            {type: 'error', content: 'Pasados 15 minutos ya no es posible cambiar tu voto en este comentario.'}
+            { type: 'error', content: err.status === 412 ? 'No cuentas con tributo suficiente para calificar =(' : 'Pasados 15 minutos ya no es posible cambiar tu voto en este comentario.'}
         ])
     }));
 
@@ -165,6 +165,9 @@ export function model(actions) {
         voteR$,
         replyToR$,
         replyR$,
+
+        // Reply content.
+        actions.replyContent$.map(reply => state => update(state, { ui: { reply } }))
     );
 
     return {

@@ -96,6 +96,11 @@ export function model(actions) {
 
                 return update(state, { counters: { ...counters, [key]: { ...counters[key], [event.id]: parseInt(counters[key][event.id] || 0) + 1 } } })
             }),
+        
+        // Remote delete posts on feed.
+        actions.feedGlue$
+            .filter(event => (event.fire == 'delete-post'))
+            .map(event => state => update(state, { list: state.own.list.filter(post => (post.id !== event.id)) })),
 
         // New remote posts on feed.
         actions.feedGlue$
@@ -113,7 +118,6 @@ export function model(actions) {
 
         // Create post without authentication
         actions.linkPost$
-            .debug()
             .filter(link => (link.path == '/publicar'))
             .map(c => state => {
                 const { shared, owned } = state
