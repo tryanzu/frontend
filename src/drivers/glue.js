@@ -7,13 +7,16 @@ function makeOn(client) {
         const stream$ = xs.createWithMemory({
             eventListener: null,
             start(listener) {
-                const channel = client.channel(event)
-                this.eventListener = channel.onMessage(args => {
+                client.send(JSON.stringify({event: 'listen', params: {chan: event}}))
+                this.channel = client.channel(event)
+                this.eventListener = this.channel.onMessage(args => {
                     listener.next(JSON.parse(args))
                 })
             },
             stop() {
-                client.removeListener(event, this.eventListener)
+                client.send(JSON.stringify({ event: 'unlisten', params: { chan: event } }))
+                this.channel = null
+                this.eventListener = null
             }
         })
 

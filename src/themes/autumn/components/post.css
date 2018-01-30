@@ -47,6 +47,15 @@
 			border-color: color(var(--primaryColor) whiteness(25%));
 		}
 	}
+
+	& .new-comments {
+		margin-bottom: 1rem;
+		text-decoration: underline;
+		text-align: center;
+		& a {
+			cursor: pointer;
+		}
+	}
 }
 
 .quick-guide {

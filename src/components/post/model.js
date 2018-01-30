@@ -10,6 +10,7 @@ export const DEFAULT_STATE = {
     error: false,
     voting: false,
     comments: {
+        missing: 0,
         resolving: false,
         list: false
     },
@@ -27,6 +28,10 @@ export const LENSED_STATE = {shared: {user: false}, own: {...DEFAULT_STATE}}
 
 export function model(actions) {   
     const update = (state, fields) => ({...state, own: mergeWith(state.own, fields, (obj, source) => Array.isArray(obj) ? source : undefined)})
+    const lastSentReply$ = actions.sentReply$
+        .filter(res => ('id' in res))
+        .map(res => (res.id))
+        .startWith(false)
 
     /**
      * Http write effects, including:
@@ -63,11 +68,25 @@ export function model(actions) {
         actions.postActions$
             .filter(({ action }) => (action === 'delete'))
             .compose(sampleCombine(actions.authToken$))
-            .map(([{ id },  withAuth]) => ({
+            .map(([{ id }, withAuth]) => ({
                 method: 'DELETE',
                 type: 'application/json',
                 url: `${Anzu.layer}posts/${id}`,
                 category: 'post.delete',
+                headers: withAuth({})
+            })),
+        
+        // Load more comments
+        actions.loadMore$
+            .compose(sampleCombine(actions.authToken$, actions.state$))
+            .map(([count, withAuth, state]) => ({
+                method: 'GET',
+                url: Anzu.layer + 'comments/' + state.own.post.id,
+                category: 'comments.recent',
+                query: {
+                    limit: count,
+                    offset: 0
+                },
                 headers: withAuth({})
             }))
     )
@@ -79,6 +98,7 @@ export function model(actions) {
      * - Voting loading state.
      */
     const commentsR$ = actions.comments$.map(comments => state => update(state, {comments: {list: comments, resolving: false}}))
+    const recentCommentsR$ = actions.recentComments$.map(comments => state => update(state, {comments: {missing: 0, list: comments.concat(state.own.comments.list), resolving: false}}))
 
     const commentFocusR$ = actions.commentFocus$.map(event => state => update(state, {
         ui: {
@@ -158,6 +178,7 @@ export function model(actions) {
         postR$,
         postLoadingR$,
         commentsR$,
+        recentCommentsR$,
         commentFocusR$,
         votingR$,
         voteFailR$,
@@ -167,8 +188,15 @@ export function model(actions) {
         replyR$,
 
         // Reply content.
-        actions.replyContent$.map(reply => state => update(state, { ui: { reply } }))
-    );
+        actions.replyContent$.map(reply => state => update(state, { ui: { reply } })),
+
+        // Incoming comments from remote.
+        actions.postGlue$
+            .filter(event => (event.action == 'new-comment'))
+            .compose(sampleCombine(lastSentReply$))
+            .filter(([event, lastSent]) => (lastSent === false || event.comment_id !== lastSent))
+            .map(event => state => update(state, { comments: { missing: state.own.comments.missing + 1 } }))
+    )
 
     return {
         fractal: reducers$,

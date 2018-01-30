@@ -32,7 +32,7 @@ function board(sources) {
     const modal = isolate(Modal, 'modal')({ DOM, HTTP, storage, fractal, glue })
     const navbar = Navbar({ DOM, HTTP, storage, fractal, glue, props: { authToken$ } })
     const feed = isolate(Feed, { fractal: feedLens() })({ DOM, HTTP, fractal, glue, props: { authToken$, router$ } })
-    const post = isolate(Post, { fractal: postLens() })({ DOM, HTTP, fractal, glue, props: { authToken$ } })
+    const post = isolate(Post, { fractal: postLens() })({ DOM, HTTP, fractal, glue, props: { authToken$, router$ } })
     const publisher = isolate(Publisher, { fractal: publisherLens() })({ DOM, HTTP, storage, fractal, glue, props: { authToken$, router$ } })
     
     // Compute merged vdom trees.

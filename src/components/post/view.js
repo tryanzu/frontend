@@ -59,6 +59,10 @@ export function view(state$) {
                     ]))
                 ]),
                 user !== false ? replyView(user, ui, 'post', post.id) : h('div'),
+                div('.new-comments.shadow.toast.toast-success', { class: { dn: comments.missing == 0 } }, [
+                    a('.load-more', {dataset: {count: comments.missing}}, `Cargar ${comments.missing} ${comments.missing > 1 ? 'nuevos comentarios' : 'nuevo comentario'}`),
+                    span('.icon-cancel.fr')
+                ]),
                 comments.list !== false && comments.list.length == 0
                     ? div('.empty', [
                         div('.empty-icon', i('.f4.icon-chat-alt')),

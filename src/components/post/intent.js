@@ -1,6 +1,6 @@
 import xs from 'xstream'
 
-export function intent({DOM, HTTP, props}) {
+export function intent({DOM, HTTP, glue, fractal, props}) {
     /**
      * DOM read effects including:
      */
@@ -29,6 +29,10 @@ export function intent({DOM, HTTP, props}) {
         .events('click')
         .map(event => ({action: event.currentTarget.dataset.action, id: event.currentTarget.dataset.id}))
 
+    const loadMore$ = DOM.select('a.load-more')
+        .events('click')
+        .map(event => (event.currentTarget.dataset.count))
+
     /**
      * HTTP read effects including: 
      * - new posts data
@@ -55,7 +59,12 @@ export function intent({DOM, HTTP, props}) {
         .map(r => 'err' in r ? r : r.body)
 
     const comments$ = HTTP.select('comments')
-        .map(response$ => response$.replaceError(err => xs.of({status: 'error', err})))
+        .map(response$ => response$.replaceError(err => xs.of({ status: 'error', err })))
+        .flatten()
+        .map(r => 'err' in r ? r : r.body)
+    
+    const recentComments$ = HTTP.select('comments.recent')
+        .map(response$ => response$.replaceError(err => xs.of({ status: 'error', err })))
         .flatten()
         .map(r => 'err' in r ? r : r.body)
 
@@ -63,6 +72,12 @@ export function intent({DOM, HTTP, props}) {
         .map(response$ => response$.replaceError(err => xs.of({status: 'error', err})))
         .flatten()
         .map(r => 'err' in r ? r : r.body)
+
+    const postGlue$ = props.router$
+        .filter(action => action.page == 'post')
+        .map(action => (glue.get(`post.${action.post.id}`)))
+        .flatten()
+        .map(event => (event.p))
     
     return {
         user$,
@@ -77,6 +92,10 @@ export function intent({DOM, HTTP, props}) {
         reply$,
         sentReply$,
         postActions$,
+        postGlue$,
+        loadMore$,
+        recentComments$,
+        state$: fractal.state$,
         authToken$: props.authToken$
     } 
 }
