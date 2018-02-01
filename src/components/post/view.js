@@ -24,8 +24,8 @@ export function view(state$) {
         const {user} = state.shared
         const {post, resolving, voting, toasts, comments, ui} = state.own
         const _comments = post.comments
-        const older = resolving === false ? _comments.count - comments.list.length : 0
-        const firstCommentID = comments.list !== false ? comments.list[0].id : false
+        const older = resolving === false && post !== false ? _comments.count - comments.list.length : 0
+        const firstCommentID = comments.list !== false && comments.list.length > 0 ? comments.list[0].id : false
 
         if (resolving) {
             return section('.post', [
@@ -54,7 +54,7 @@ export function view(state$) {
                 virtualize(`<p>${md.render(post.content)}</p>`),
                 h('div.separator.pt2'),
                 h('div.flex.items-center.mb3', [
-                    h('h3.flex-auto', `${_comments.count} comentarios`),
+                    h('h3.flex-auto', `${_comments.count} respuestas a la publicación`),
                     h('div', h('small', 'Ordenar comentarios por')),
                     h('div.form-group.mb0.ml2', h('select.form-select.select-sm', [
                          h('option', 'Recomendaciones')
@@ -140,7 +140,7 @@ function commentView(comment, voting, currentUser = false, noPadding = false, ui
         h('div.flex', [
             h('div.flex-auto', author(comment, 'Comentó')),
             h('div', [
-                h('a.v-mid.pointer.reply-to', {class: {dn: isCurrentUsersComment, dib: !isCurrentUsersComment}, dataset: {id: comment.id}}, [
+                h('a.v-mid.pointer.reply-to', { class: { dn: isCurrentUsersComment, dib: !isCurrentUsersComment }, dataset: { id: noPadding ? comment.reply_to : comment.id}}, [
                     h('i.icon-reply-outline'), 
                     h('span.pl2', 'Responder')
                 ]),
@@ -152,16 +152,23 @@ function commentView(comment, voting, currentUser = false, noPadding = false, ui
             ])
         ]),
         h('div.pt1', virtualize(`<p class="ma0">${md.render(comment.content)}</p>`)),
-        ui.replyTo === comment.id 
-            ? replyView(currentUser, ui, 'comment', comment.id, true)
-            : h('div'),
         repliesCount > 0 
-            ? h('div.pt3.pl4', replies.list.map(c => commentView(c, false, currentUser, true, ui)))
-            : h('div'),
+            ? div('.pt2.nested-replies', replies.list.map(c => commentView(c, false, currentUser, true, ui)))
+            : div(),
+        ui.replyTo === comment.id
+            ? div(comment.reply_type == 'post' ? '.pl4' : '.pl0', replyView(currentUser, ui, 'comment', comment.id, true))
+            : div(),
     ]);
 }
 
 function replyView(user, ui, type, id, nested = false) {
+    let props = {value: ''}
+
+    const inactive = ui.commenting == false || ui.commentingType !== type || ui.commentingId != id
+    if (!inactive) {
+        props.value = ui.reply
+    }
+
     return h('div.comment.flex.fade-in', {class: {pb3: nested == false, pt3: nested}}, [
         h('a', {attrs: {href: '/', rel: 'author'}}, [
             h('div', user.image ? h('img', {attrs: {src: user.image, alt: `Avatar de ${user.username}`}}) : h('div.empty-avatar', user.username.substr(0, 1))),
@@ -177,9 +184,7 @@ function replyView(user, ui, type, id, nested = false) {
                     }
                 }, 
                 dataset: {type, id}, 
-                props: {
-                    value: ui.reply
-                },
+                props,
                 attrs: {
                     rows: 1, 
                     placeholder: 'Escribe aquí tu respuesta...', 

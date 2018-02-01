@@ -4,6 +4,14 @@ import delay from 'xstream/extra/delay'
 import merge from 'lodash/merge'
 import mergeWith from 'lodash/mergeWith'
 
+const CLEARED_UI = {
+    reply: '',
+    replyTo: false,
+    commenting: false,
+    commentingType: false,
+    commentingId: false
+}
+
 export const DEFAULT_STATE = {
     resolving: false,
     post: false,
@@ -14,13 +22,7 @@ export const DEFAULT_STATE = {
         resolving: false,
         list: false
     },
-    ui: {
-        reply: '',
-        replyTo: false,
-        commenting: false,
-        commentingType: false,
-        commentingId: false
-    },
+    ui: CLEARED_UI,
     toasts: []
 }
 
@@ -82,7 +84,7 @@ export function model(actions) {
             .map(([params, withAuth, state]) => ({
                 method: 'GET',
                 url: Anzu.layer + 'comments/' + state.own.post.id,
-                category: 'before' in params ? 'comments.before' : 'comments.recent',
+                category: params.before ? 'comments.before' : 'comments.recent',
                 query: {
                     limit: params.count,
                     offset: 0,
@@ -108,10 +110,7 @@ export function model(actions) {
         }
     }))
 
-    const replyR$ = actions.sentReply$.filter(res => 'id' in res)
-        .map(res => state => update(state, { ui: { reply: '' }, comments: { list: state.own.comments.list.concat([{ ...res, author: { ...state.shared.user } }])}}))
- 
-    const replyToR$ = actions.replyTo$.map(c => state => { 
+    const replyToR$ = actions.replyTo$.map(event => state => { 
         const { shared, owned } = state
         
         // Check if user is authenticated.
@@ -119,7 +118,7 @@ export function model(actions) {
             return {...state, shared: {...shared, modal: {...shared.modal, active: true, modal: 'account'}}}
         }
         
-        return update(state, { ui: { replyTo: c.id, commenting: false } })
+        return update(state, { ui: { replyTo: event.id, commenting: false } })
     })
 
     const postR$ = actions.post$
@@ -182,7 +181,34 @@ export function model(actions) {
         voteFailDismissR$,
         voteR$,
         replyToR$,
-        replyR$,
+
+        // Root sent reply virtual appending...
+        actions.sentReply$
+            .filter(res => ('id' in res && res.reply_type == 'post'))
+            .map(res => state => update(state, { ui: { ...CLEARED_UI }, comments: { list: state.own.comments.list.concat([{ ...res, author: { ...state.shared.user } }]) } })),
+        
+        // Nested sent reply virtual appending...
+        actions.sentReply$
+            .filter(res => ('id' in res && res.reply_type == 'comment'))
+            .map(res => state => {
+                const reply = {...res, author: { ...state.shared.user }}
+
+                return update(state, { 
+                    ui: { ...CLEARED_UI }, 
+                    comments: { 
+                        list: state.own.comments.list.map(comment => {
+                            if (comment.id !== res.reply_to) {
+                                return comment
+                            }
+                            const replies = comment.replies || {}
+                            const list = replies.list || []
+                            const count = replies.count || 0
+
+                            return { ...comment, replies: { ...replies, list: list.concat(reply), count: count + 1 }}
+                        })
+                    }
+                })
+            }),
 
         // New list of comments.
         actions.comments$

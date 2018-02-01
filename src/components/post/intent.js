@@ -17,7 +17,7 @@ export function intent({DOM, HTTP, glue, fractal, props}) {
     )
 
     const replyTo$ = DOM.select('.reply-to').events('click')
-        .map(({ currentTarget }) => ({ id: currentTarget.dataset.id }))
+        .map(({ currentTarget }) => ({ id: currentTarget.dataset.id, nested: String(currentTarget.dataset.nested).toLowerCase() == 'true' }))
 
     const replyContent$ = DOM.select('form.reply-form textarea').events('input')
         .map(({ target }) => target.value)
