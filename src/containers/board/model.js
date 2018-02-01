@@ -95,6 +95,10 @@ export function model(actions) {
                 method: 'GET',
                 url: Anzu.layer + 'comments/' + action.post.id, 
                 category: 'comments',
+                query: {
+                    limit: 10,
+                    sort: 'reverse'
+                },
                 headers: withAuth({})
             }
         )).flatten(),
@@ -146,8 +150,10 @@ export function model(actions) {
             .map(user => state => merge(state)({user: {user, resolving: false}})),
         actions.post$
             .map(post => state => merge(state)({post: {post, resolving: false}})),
+        
+        // Comment list stream events. Reverse is needed for because of UI reversed order (asc comments) 
         actions.comments$
-            .map(list => state => ({...state, post: {...state.post, comments: {...state.post.comments, list, resolving: false}}})),
+            .map(list => state => ({...state, post: {...state.post, comments: {...state.post.comments, list: list.reverse(), resolving: false}}})),
         actions.logout$
             .mapTo(state => merge(state)({user: {user: false, resolving: false}})),
     )

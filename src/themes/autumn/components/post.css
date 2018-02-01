@@ -8,7 +8,7 @@
 	padding: 2rem;
 
 	& section h1, & article h1 {
-		color: color(var(--primaryColor) blackness(10%));
+		color: color(var(--primaryColor) blackness(25%));
 		font-size: calc(var(--fontSize) * 1.6);
 	}
 
@@ -49,7 +49,7 @@
 	}
 
 	& .new-comments {
-		margin-bottom: 1rem;
+		margin-bottom: 2rem;
 		text-decoration: underline;
 		text-align: center;
 		& a {

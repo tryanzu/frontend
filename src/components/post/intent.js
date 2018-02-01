@@ -31,7 +31,7 @@ export function intent({DOM, HTTP, glue, fractal, props}) {
 
     const loadMore$ = DOM.select('a.load-more')
         .events('click')
-        .map(event => (event.currentTarget.dataset.count))
+        .map(event => ({ count: event.currentTarget.dataset.count, before: event.currentTarget.dataset.before || false }))
 
     /**
      * HTTP read effects including: 
@@ -58,15 +58,26 @@ export function intent({DOM, HTTP, glue, fractal, props}) {
         .flatten()
         .map(r => 'err' in r ? r : r.body)
 
-    const comments$ = HTTP.select('comments')
-        .map(response$ => response$.replaceError(err => xs.of({ status: 'error', err })))
-        .flatten()
-        .map(r => 'err' in r ? r : r.body)
-    
-    const recentComments$ = HTTP.select('comments.recent')
-        .map(response$ => response$.replaceError(err => xs.of({ status: 'error', err })))
-        .flatten()
-        .map(r => 'err' in r ? r : r.body)
+    const comments$ = xs.merge(
+
+        // Post first shown comments.
+        HTTP.select('comments')
+            .map(response$ => response$.replaceError(err => xs.of({ status: 'error', err })))
+            .flatten()
+            .map(r => ({ type: 'initial', list: 'err' in r ? r : r.body })),
+        
+        // Recent comments (loaded on demand and appended)
+        HTTP.select('comments.recent')
+            .map(response$ => response$.replaceError(err => xs.of({ status: 'error', err })))
+            .flatten()
+            .map(r => ({ type: 'recent', list: 'err' in r ? r : r.body })),
+
+        // Before comments (loaded on demand and prepended)
+        HTTP.select('comments.before')
+            .map(response$ => response$.replaceError(err => xs.of({ status: 'error', err })))
+            .flatten()
+            .map(r => ({ type: 'before', list: 'err' in r ? r : r.body }))
+    )
 
     const sentReply$ = HTTP.select('reply')
         .map(response$ => response$.replaceError(err => xs.of({status: 'error', err})))
@@ -94,7 +105,6 @@ export function intent({DOM, HTTP, glue, fractal, props}) {
         postActions$,
         postGlue$,
         loadMore$,
-        recentComments$,
         state$: fractal.state$,
         authToken$: props.authToken$
     } 

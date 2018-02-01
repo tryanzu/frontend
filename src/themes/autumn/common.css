@@ -16,6 +16,10 @@ a {
 
 .btn.btn-primary {
 	background: var(--primaryColor) !important;
+	border-color: color(var(--primaryColor) blackness(50%)) !important;
+	&:hover {
+		background: color(var(--primaryColor) lightness(45%)) !important;
+	}
 }
 
 .toast.toast-error {

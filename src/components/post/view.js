@@ -24,13 +24,15 @@ export function view(state$) {
         const {user} = state.shared
         const {post, resolving, voting, toasts, comments, ui} = state.own
         const _comments = post.comments
+        const older = resolving === false ? _comments.count - comments.list.length : 0
+        const firstCommentID = comments.list !== false ? comments.list[0].id : false
 
         if (resolving) {
             return section('.post', [
                 div('.current-article', div('.pv2', div('.loading')))
             ])
         }
-
+        
         const toastsVNode = toasts.length == 0 ? h('div') : h('div.absolute.right-1.top-1.z-1.fade-in', toasts.map(toastView))
         const postVNode = post == false ? Quickstart() : h('div.current-article', [
             h('article', [
@@ -58,11 +60,6 @@ export function view(state$) {
                          h('option', 'Recomendaciones')
                     ]))
                 ]),
-                user !== false ? replyView(user, ui, 'post', post.id) : h('div'),
-                div('.new-comments.shadow.toast.toast-success', { class: { dn: comments.missing == 0 } }, [
-                    a('.load-more', {dataset: {count: comments.missing}}, `Cargar ${comments.missing} ${comments.missing > 1 ? 'nuevos comentarios' : 'nuevo comentario'}`),
-                    span('.icon-cancel.fr')
-                ]),
                 comments.list !== false && comments.list.length == 0
                     ? div('.empty', [
                         div('.empty-icon', i('.f4.icon-chat-alt')),
@@ -70,6 +67,9 @@ export function view(state$) {
                         p('.empty-subtitle', 'Únete a la conversación y sé el primero en contestar.'),
                         div('.empty-action', button('.reply-to.btn.btn-primary', { dataset: {id: post.id} }, 'Escribir respuesta'))
                     ])  
+                    : null,
+                older > 0 
+                    ? div('.mb3.tc', a('.btn.btn-sm.btn-primary.load-more', { dataset: { count: older, before: firstCommentID }}, `Cargar ${older} comentarios anteriores.`))
                     : null,
                 section(
                     comments.list !== false && comments.resolving == false ? 
@@ -79,7 +79,12 @@ export function view(state$) {
                             return commentView(c, isVoting, user, false, ui)
                         }) 
                         : (comments.resolving ? h('div.pv2', h('div.loading')) : [])
-                )
+                ),
+                div('.new-comments.shadow.toast.toast-success', { class: { dn: comments.missing == 0 } }, [
+                    a('.load-more', { dataset: { count: comments.missing } }, `Cargar ${comments.missing} ${comments.missing > 1 ? 'nuevos comentarios' : 'nuevo comentario'}`),
+                    span('.icon-cancel.fr')
+                ]),
+                user !== false ? replyView(user, ui, 'post', post.id) : h('div'),
             ])
         ])
 

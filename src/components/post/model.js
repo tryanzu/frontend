@@ -79,13 +79,15 @@ export function model(actions) {
         // Load more comments
         actions.loadMore$
             .compose(sampleCombine(actions.authToken$, actions.state$))
-            .map(([count, withAuth, state]) => ({
+            .map(([params, withAuth, state]) => ({
                 method: 'GET',
                 url: Anzu.layer + 'comments/' + state.own.post.id,
-                category: 'comments.recent',
+                category: 'before' in params ? 'comments.before' : 'comments.recent',
                 query: {
-                    limit: count,
-                    offset: 0
+                    limit: params.count,
+                    offset: 0,
+                    sort: 'reverse',
+                    before: 'before' in params ? params.before : ''
                 },
                 headers: withAuth({})
             }))
@@ -97,9 +99,6 @@ export function model(actions) {
      * - Setting loading state accordingly.
      * - Voting loading state.
      */
-    const commentsR$ = actions.comments$.map(comments => state => update(state, {comments: {list: comments, resolving: false}}))
-    const recentCommentsR$ = actions.recentComments$.map(comments => state => update(state, {comments: {missing: 0, list: comments.concat(state.own.comments.list), resolving: false}}))
-
     const commentFocusR$ = actions.commentFocus$.map(event => state => update(state, {
         ui: {
             commenting: event.focus, 
@@ -110,7 +109,7 @@ export function model(actions) {
     }))
 
     const replyR$ = actions.sentReply$.filter(res => 'id' in res)
-        .map(res => state => update(state, {ui: {reply: ''}, comments: {list: [{...res, author: {...state.shared.user}}].concat(state.own.comments.list)}}))
+        .map(res => state => update(state, { ui: { reply: '' }, comments: { list: state.own.comments.list.concat([{ ...res, author: { ...state.shared.user } }])}}))
  
     const replyToR$ = actions.replyTo$.map(c => state => { 
         const { shared, owned } = state
@@ -177,8 +176,6 @@ export function model(actions) {
         xs.of(state => merge(LENSED_STATE, state)),
         postR$,
         postLoadingR$,
-        commentsR$,
-        recentCommentsR$,
         commentFocusR$,
         votingR$,
         voteFailR$,
@@ -187,8 +184,24 @@ export function model(actions) {
         replyToR$,
         replyR$,
 
+        // New list of comments.
+        actions.comments$
+            .filter(comments => (comments.type == 'initial'))
+            .map(comments => state => update(state, { comments: { list: comments.list, resolving: false } })),
+
+        // Recent comments append.
+        actions.comments$
+            .filter(comments => (comments.type == 'recent'))
+            .map(comments => state => update(state, { comments: { missing: 0, list: state.own.comments.list.concat(comments.list.reverse()), resolving: false } })),
+
+        // Recent comments prepend.
+        actions.comments$
+            .filter(comments => (comments.type == 'before'))
+            .map(comments => state => update(state, { comments: { missing: 0, list: comments.list.reverse().concat(state.own.comments.list), resolving: false } })),
+
         // Reply content.
-        actions.replyContent$.map(reply => state => update(state, { ui: { reply } })),
+        actions.replyContent$
+            .map(reply => state => update(state, { ui: { reply } })),
 
         // Incoming comments from remote.
         actions.postGlue$
