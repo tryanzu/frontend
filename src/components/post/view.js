@@ -1,15 +1,4 @@
-import {
-    h,
-    div,
-    section,
-    i,
-    p,
-    button,
-    a,
-    span,
-    ul,
-    li
-} from '@cycle/dom'
+import {h, div, section, i, p, button, a, span, ul, li, article, h3, h1} from '@cycle/dom'
 import debounce from 'lodash/debounce'
 import timeago from 'timeago.js'
 import { Quickstart } from '../quickstart'
@@ -18,11 +7,12 @@ import emoji from 'markdown-it-emoji'
 import mila from 'markdown-it-link-attributes'
 import virtualize from 'snabbdom-virtualize'
 import autosize from 'autosize'
+import classNames from 'classnames'
 
 export function view(state$) {
     return state$.map(state => {
         const {user} = state.shared
-        const {post, resolving, voting, toasts, comments, ui} = state.own
+        const {post, resolving, voting, toasts, comments, ui, votes} = state.own
         const _comments = post.comments
         const older = resolving === false && post !== false ? _comments.count - comments.list.length : 0
         const firstCommentID = comments.list !== false && comments.list.length > 0 ? comments.list[0].id : false
@@ -35,9 +25,9 @@ export function view(state$) {
         
         const toastsVNode = toasts.length == 0 ? h('div') : h('div.absolute.right-1.top-1.z-1.fade-in', toasts.map(toastView))
         const postVNode = post == false ? Quickstart() : h('div.current-article', [
-            h('article', [
-                h('div.flex', [
-                    h('div.flex-auto', author(post)),
+            article([
+                div('.flex', [
+                    div('.flex-auto', author(post)),
                     user.id == post.user_id 
                         ? div('.dropdown.dropdown-right', [
                             a('.dib.btn-icon.gray.ml2.dropdown-toggle', { attrs: {tabindex: 0} }, i('.icon-cog')),
@@ -50,7 +40,8 @@ export function view(state$) {
                             a('.dib.btn-icon.gray', [i('.icon-warning-empty'), span('.ml1', 'reportar')]),
                         ])
                 ]),
-                h('h1', post.title),
+                h3('.f6.mt3', ['Bar spartano', span('.icon-right-open.silver')]),
+                h1(post.title),
                 virtualize(`<p>${md.render(post.content)}</p>`),
                 h('div.separator.pt2'),
                 h('div.flex.items-center.mb3', [
@@ -76,7 +67,7 @@ export function view(state$) {
                         comments.list.map(c => {
                             const isVoting = voting !== false && voting.id == c.id ? voting.intent : false
 
-                            return commentView(c, isVoting, user, false, ui)
+                            return commentView(c, isVoting, user, false, ui, votes)
                         }) 
                         : (comments.resolving ? h('div.pv2', h('div.loading')) : [])
                 ),
@@ -120,16 +111,16 @@ function author(item, label = 'Publicó') {
     ]);
 }
 
-function commentView(comment, voting, currentUser = false, noPadding = false, ui) {
+function commentView(comment, voting, currentUser = false, noPadding = false, ui, votes = {}) {
 
     // Loading vote status helper.
-    const voted = comment.liked || false;
+    const voted = votes[comment.id] || false;
     const replies = comment.replies || {};
     const repliesCount = replies.count || 0;
     const voteIcon = (intent, vnode) => voting !== false && intent == voting ? h('div.loading') : vnode;
     const voteColor = (intent) => {
-        if (voted == -1 && intent == 'down') return 'blue';
-        if (voted == 1 && intent == 'up') return 'blue';
+        if (voted === -1 && intent == 'down') return 'blue';
+        if (voted === 1 && intent == 'up') return 'blue';
 
         return 'mid-gray';
     };
@@ -137,23 +128,28 @@ function commentView(comment, voting, currentUser = false, noPadding = false, ui
     const isCurrentUsersComment = currentUser.id == comment.user_id;
 
     return h('div', {class: {pb3: noPadding == false}, key: comment.id}, [
-        h('div.flex', [
+        h('div.flex', [ 
             h('div.flex-auto', author(comment, 'Comentó')),
             h('div', [
                 h('a.v-mid.pointer.reply-to', { class: { dn: isCurrentUsersComment, dib: !isCurrentUsersComment }, dataset: { id: noPadding ? comment.reply_to : comment.id}}, [
                     h('i.icon-reply-outline'), 
                     h('span.pl2', 'Responder')
-                ]),
-                h('div.dib.v-mid', [
-                    h('a.dib.v-mid.ph2.mid-gray', comment.votes.up - comment.votes.down),
-                    h('a', {attrs: {class: 'dib v-mid btn-icon vote ' + voteColor('down')}, dataset: {id: comment.id, type: 'comment', intent: 'down'}}, voteIcon('down', h('i.icon-thumbs-down'))),
-                    h('a', {attrs: {class: 'dib v-mid btn-icon ph2 ml2 vote ' + voteColor('up')}, dataset: {id: comment.id, type: 'comment', intent: 'up'}}, voteIcon('up', h('i.icon-thumbs-up'))),
+                ]), 
+                div('.dib.v-mid', [
+                    a({ attrs: { class: classNames('dib', 'v-mid', 'mh2', 'btn-icon', 'vote', { active: voted === -1 })}, dataset: { id: comment.id, type: 'comment', intent: 'down' } }, [
+                        span(String(comment.votes.down)),
+                        voteIcon('down', h('i.icon-thumbs-down'))
+                    ]),
+                    a({ attrs: { class: classNames('dib', 'v-mid', 'btn-icon', 'vote', { active: voted === 1 }) }, dataset: { id: comment.id, type: 'comment', intent: 'up' } }, [
+                        span(String(comment.votes.up)),
+                        voteIcon('up', h('i.icon-thumbs-up'))
+                    ]),
                 ])
             ])
         ]),
         h('div.pt1', virtualize(`<p class="ma0">${md.render(comment.content)}</p>`)),
         repliesCount > 0 
-            ? div('.pt2.nested-replies', replies.list.map(c => commentView(c, false, currentUser, true, ui)))
+            ? div('.pt2.nested-replies', replies.list.map(c => commentView(c, false, currentUser, true, ui, votes)))
             : div(),
         ui.replyTo === comment.id
             ? div(comment.reply_type == 'post' ? '.pl4' : '.pl0', replyView(currentUser, ui, 'comment', comment.id, true))

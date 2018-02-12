@@ -23,7 +23,8 @@ export const DEFAULT_STATE = {
         list: false
     },
     ui: CLEARED_UI,
-    toasts: []
+    toasts: [],
+    votes: {}
 }
 
 export const LENSED_STATE = {shared: {user: false}, own: {...DEFAULT_STATE}}

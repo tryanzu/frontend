@@ -16,7 +16,10 @@ const DEFAULT_STATE = {
         comments: {
             resolving: false,
             list: false
-        }
+        },
+
+        // Current user votes map with values.
+        votes: {} 
     },
     feed: {
         category: false,
@@ -153,7 +156,7 @@ export function model(actions) {
         
         // Comment list stream events. Reverse is needed for because of UI reversed order (asc comments) 
         actions.comments$
-            .map(list => state => ({...state, post: {...state.post, comments: {...state.post.comments, list: list.reverse(), resolving: false}}})),
+            .map(stuff => state => ({ ...state, post: { ...state.post, votes: stuff.votes, comments: { ...state.post.comments, list: stuff.comments.reverse(), resolving: false}}})),
         actions.logout$
             .mapTo(state => merge(state)({user: {user: false, resolving: false}})),
     )

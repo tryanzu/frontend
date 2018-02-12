@@ -35,8 +35,25 @@ a {
 .btn-icon {
 	border: 1px solid #caced7;
 	border-radius: .125rem;
-	padding: .25rem;
+	padding: 0.15rem 0.25rem;
 	cursor: pointer;
+
+	&.vote {
+		color: #777777;
+	}
+
+	&.active {
+		background: var(--primaryColor);
+		border-color: color(var(--primaryColor) blackness(50%));
+		text-decoration: none;
+		color: #FFF;
+		color: rgba(255, 255, 255, 0.9);
+
+		&:hover {
+			color: #FFF;
+			border-color: color(var(--primaryColor) blackness(60%));
+		}
+	}
 
 	&:hover {
 		border-color: var(--primaryColor);
