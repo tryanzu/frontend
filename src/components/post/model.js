@@ -125,19 +125,19 @@ export function model(actions) {
     const postR$ = actions.post$
         .map(p => state => {
             const set = p.comments.set.reduce((acc, c) => ({...acc, [c.id]: c}), {});
-            const post = {...p, comments: {...p.comments, list: p.comments.set.map(c => c.id), set}};
+            const post = {...p, comments: {...p.comments, list: p.comments.set.map(c => c.id), set}}
             return update(state, {
                 post, 
                 resolving: false, 
                 ui: {commentFocus: false}
-            });
-        });
+            })
+        })
 
     const postLoadingR$ = actions.fetchPost$
-        .map(_ => state => update(state, {resolving: true, comments: {resolving: true}}));
+        .map(_ => state => update(state, {resolving: true, comments: {resolving: true}}))
 
     const votingR$ = actions.voting$
-        .map(v => state => update(state, {voting: v}));
+        .map(v => state => update(state, {voting: v}))
 
     const voteErr$ = actions.vote$
         .filter(res => res.status == 'error')
@@ -147,30 +147,37 @@ export function model(actions) {
         toasts: state.own.toasts.concat([
             { type: 'error', content: err.status === 412 ? 'No cuentas con tributo suficiente para calificar =(' : 'Pasados 15 minutos ya no es posible cambiar tu voto en este comentario.'}
         ])
-    }));
+    }))
 
     const voteFailDismissR$ = voteErr$
         .compose(delay(5000))
-        .map(_ => state => update(state, {toasts: state.own.toasts.length > 0 ? state.own.toasts.slice(1) : []}));
+        .map(_ => state => update(state, {toasts: state.own.toasts.length > 0 ? state.own.toasts.slice(1) : []}))
 
     const voteR$ = actions.vote$
-        .filter(res => res.status == 'okay')
+        .filter(res => ('action' in res))
         .compose(sampleCombine(actions.voting$))
-        .map(([status, vote]) => state => (update(state, {
-            voting: false, 
-            post: {
+        .map(([status, vote]) => state => {
+            return update(state, {
+                voting: false,
                 comments: {
+                    list: state.own.comments.list.map(comment => {
+                        if (comment.id !== res.reply_to) {
+                            return comment
+                        }
+
+                        return { ...comment, replies: { ...replies, list: list.concat(reply), count: count + 1 } }
+                    }),
                     set: {
                         [vote.id]: {
                             votes: {
-                                up: state.own.post.comments.set[vote.id].votes.up + (vote.intent == 'up' ? 1 : 0),
+                                up: state.own.comments.set[vote.id].votes.up + (vote.intent == 'up' ? 1 : 0),
                                 down: state.own.post.comments.set[vote.id].votes.down + (vote.intent == 'down' ? 1 : 0)
                             }
                         }
                     }
                 }
-            }
-        })));
+            })
+        })
 
     const reducers$ = xs.merge(
         xs.of(state => merge(LENSED_STATE, state)),

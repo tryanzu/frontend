@@ -117,7 +117,7 @@ function commentView(comment, voting, currentUser = false, noPadding = false, ui
     const voted = votes[comment.id] || false;
     const replies = comment.replies || {};
     const repliesCount = replies.count || 0;
-    const voteIcon = (intent, vnode) => voting !== false && intent == voting ? h('div.loading') : vnode;
+    const voteIcon = (intent, vnode) => voting !== false && intent == voting ? div('.dib.loading') : vnode;
     const voteColor = (intent) => {
         if (voted === -1 && intent == 'down') return 'blue';
         if (voted === 1 && intent == 'up') return 'blue';
