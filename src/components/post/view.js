@@ -15,7 +15,7 @@ export function view(state$) {
         const {post, resolving, voting, toasts, comments, ui, votes} = state.own
         const _comments = post.comments
         const older = resolving === false && post !== false ? _comments.count - comments.list.length : 0
-        const firstCommentID = comments.list !== false && comments.list.length > 0 ? comments.list[0].id : false
+        const firstCommentID = comments.list !== false && comments.list.length > 0 ? comments.list[0] : false
 
         if (resolving) {
             return section('.post', [
@@ -64,7 +64,8 @@ export function view(state$) {
                     : null,
                 section(
                     comments.list !== false && comments.resolving == false ? 
-                        comments.list.map(c => {
+                        comments.list.map(id => {
+                            const c = comments.map[id]
                             const isVoting = voting !== false && voting.id == c.id ? voting.intent : false
 
                             return commentView(c, isVoting, user, false, ui, votes)

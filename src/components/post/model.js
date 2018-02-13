@@ -20,7 +20,8 @@ export const DEFAULT_STATE = {
     comments: {
         missing: 0,
         resolving: false,
-        list: false
+        list: false,
+        map: {}
     },
     ui: CLEARED_UI,
     toasts: [],
@@ -157,24 +158,22 @@ export function model(actions) {
         .filter(res => ('action' in res))
         .compose(sampleCombine(actions.voting$))
         .map(([status, vote]) => state => {
+            const value = status.action == 'create' ? 1 : -1
+
             return update(state, {
                 voting: false,
                 comments: {
-                    list: state.own.comments.list.map(comment => {
-                        if (comment.id !== res.reply_to) {
-                            return comment
-                        }
-
-                        return { ...comment, replies: { ...replies, list: list.concat(reply), count: count + 1 } }
-                    }),
-                    set: {
+                    map: {
                         [vote.id]: {
                             votes: {
-                                up: state.own.comments.set[vote.id].votes.up + (vote.intent == 'up' ? 1 : 0),
-                                down: state.own.post.comments.set[vote.id].votes.down + (vote.intent == 'down' ? 1 : 0)
+                                up: state.own.comments.map[vote.id].votes.up + (vote.intent == 'up' ? value : 0),
+                                down: state.own.comments.map[vote.id].votes.down + (vote.intent == 'down' ? value : 0)
                             }
                         }
                     }
+                },
+                votes: {
+                    [vote.id]: status.action == 'create' ? (vote.intent == 'up' ? 1 : -1) : false
                 }
             })
         })

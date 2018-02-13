@@ -75,7 +75,7 @@ function mobileSection({ user, resolving, connectedCount, image, state }) {
                                 return h('li.menu-item', h('a.pointer.ng-link', { dataset: { href: n.target } }, [
                                     h('span.db.clean-styles', n.title),
                                     h('span.db.gray', n.subtitle),
-                                    h('span.db.mid-gray.b', ago.format(n.createdAt)),
+                                    h('span.db.mid-gray', ago.format(n.createdAt)),
                                 ]));
                             })
                         )

@@ -57,7 +57,6 @@ export function intent({DOM, HTTP, glue, fractal, props}) {
         .map(response$ => response$.replaceError(err => xs.of({status: 'error', err})))
         .flatten()
         .map(r => 'err' in r ? r : r.body)
-        .debug()
 
     const comments$ = xs.merge(
 
