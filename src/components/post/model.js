@@ -230,11 +230,14 @@ export function model(actions) {
                         return { id, replies: { count: count + 1, list: list.concat(reply) } }
                     })
                     .reduce((map, comment) => ({...map, [comment.id]: comment }), {})
-
+                
                 return update(state, { 
                     ui: { ...CLEARED_UI }, 
                     comments: { 
-                        map: changes
+                        map: {
+                            ...changes,
+                            [reply.id]: reply
+                        }
                     }
                 })
             }),

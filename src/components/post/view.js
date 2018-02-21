@@ -167,7 +167,7 @@ function commentView(props) {
             ? div('.pt2.nested-replies', replies.list.map(comment => commentView({ comment: state.own.comments.map[comment.id], state, noPadding: true })))
             : div(),
         ui.replyTo === comment.id
-            ? div(comment.reply_type == 'post' ? '.pl4' : '.pl0', replyView(currentUser, ui, 'comment', comment.id, true))
+            ? div(comment.reply_type == 'post' ? '.pl4' : '.pl0', replyView(user, ui, 'comment', comment.id, true))
             : div(),
     ]);
 }
