@@ -123,6 +123,18 @@ export function model(actions) {
         return update(state, { ui: { replyTo: event.id, commenting: false } })
     })
 
+    const votingR$ = actions.voting$
+        .map(voting => state => {
+            const { shared, owned } = state
+
+            // Check if user is authenticated.
+            if (shared.user === false) {
+                return { ...state, shared: { ...shared, modal: { ...shared.modal, active: true, modal: 'account' } } }
+            }
+
+            return update(state, { voting })
+        })
+
     const postR$ = actions.post$
         .map(p => state => {
             const set = p.comments.set.reduce((acc, c) => ({...acc, [c.id]: c}), {});
@@ -137,46 +149,17 @@ export function model(actions) {
     const postLoadingR$ = actions.fetchPost$
         .map(_ => state => update(state, {resolving: true, comments: {resolving: true}}))
 
-    const votingR$ = actions.voting$
-        .map(v => state => update(state, {voting: v}))
-
     const voteErr$ = actions.vote$
         .filter(res => res.status == 'error')
 
     const voteFailR$ = voteErr$.map(({ err }) => state => update(state, {
         voting: false, 
-        toasts: state.own.toasts.concat([
-            { type: 'error', content: err.status === 412 ? 'No cuentas con tributo suficiente para calificar =(' : 'Pasados 15 minutos ya no es posible cambiar tu voto en este comentario.'}
-        ])
+        toasts: state.own.toasts.concat([{ type: 'error', content: traduceErr(err)}])
     }))
 
     const voteFailDismissR$ = voteErr$
         .compose(delay(5000))
         .map(_ => state => update(state, {toasts: state.own.toasts.length > 0 ? state.own.toasts.slice(1) : []}))
-
-    const voteR$ = actions.vote$
-        .filter(res => ('action' in res))
-        .compose(sampleCombine(actions.voting$))
-        .map(([status, vote]) => state => {
-            const value = status.action == 'create' ? 1 : -1
-
-            return update(state, {
-                voting: false,
-                comments: {
-                    map: {
-                        [vote.id]: {
-                            votes: {
-                                up: state.own.comments.map[vote.id].votes.up + (vote.intent == 'up' ? value : 0),
-                                down: state.own.comments.map[vote.id].votes.down + (vote.intent == 'down' ? value : 0)
-                            }
-                        }
-                    }
-                },
-                votes: {
-                    [vote.id]: status.action == 'create' ? (vote.intent == 'up' ? 1 : -1) : false
-                }
-            })
-        })
 
     const reducers$ = xs.merge(
         xs.of(state => merge(LENSED_STATE, state)),
@@ -186,13 +169,50 @@ export function model(actions) {
         votingR$,
         voteFailR$,
         voteFailDismissR$,
-        voteR$,
         replyToR$,
+
+        // Incoming vote effects.
+        actions.vote$
+            .filter(res => ('action' in res))
+            .compose(sampleCombine(actions.voting$))
+            .compose(delay(500))
+            .map(([status, vote]) => state => {
+                const value = status.action == 'create' ? 1 : -1
+
+                return update(state, {
+                    voting: false,
+                    comments: {
+                        map: {
+                            [vote.id]: {
+                                votes: {
+                                    up: state.own.comments.map[vote.id].votes.up + (vote.intent == 'up' ? value : 0),
+                                    down: state.own.comments.map[vote.id].votes.down + (vote.intent == 'down' ? value : 0)
+                                }
+                            }
+                        }
+                    },
+                    votes: {
+                        [vote.id]: status.action == 'create' ? (vote.intent == 'up' ? 1 : -1) : false
+                    }
+                })
+            }),
 
         // Root sent reply virtual appending...
         actions.sentReply$
             .filter(res => ('id' in res && res.reply_type == 'post'))
-            .map(res => state => update(state, { ui: { ...CLEARED_UI }, comments: { list: state.own.comments.list.concat([{ ...res, author: { ...state.shared.user } }]) } })),
+            .map(res => state => {
+                const { id } = res
+                const list = state.own.comments.list.concat(id) 
+                return update(state, { 
+                    ui: { ...CLEARED_UI }, 
+                    comments: { 
+                        list, 
+                        map: {
+                            [id]: { ...res, author: { ...state.shared.user } }
+                        }
+                    } 
+                })
+            }),
         
         // Nested sent reply virtual appending...
         actions.sentReply$
@@ -230,7 +250,14 @@ export function model(actions) {
         // Recent comments prepend.
         actions.comments$
             .filter(comments => (comments.type == 'before'))
-            .map(comments => state => update(state, { comments: { missing: 0, list: comments.list.reverse().concat(state.own.comments.list), resolving: false } })),
+            .map(({ res }) => state => update(state, { 
+                comments: { 
+                    missing: 0, 
+                    list: res.list.reverse().concat(state.own.comments.list), 
+                    resolving: false,
+                    map: merge(state.own.comments, res.hashtables.comments)
+                } 
+            })),
 
         // Reply content.
         actions.replyContent$
@@ -248,4 +275,15 @@ export function model(actions) {
         fractal: reducers$,
         HTTP: http$
     };
+}
+
+function traduceErr(err) {
+    switch (err.status) {
+        case 401:
+            return 'Necesitas iniciar sesión en tu cuenta para calificar.'
+        case 412: 
+            return 'No cuentas con tributo suficiente para calificar =('
+        default:
+            return 'Pasados 15 minutos ya no es posible cambiar tu voto en este comentario.'
+    }
 }

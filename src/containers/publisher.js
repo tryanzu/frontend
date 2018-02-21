@@ -157,11 +157,13 @@ function view(state$) {
 
         return main('.publish.flex.flex-auto', [
             section('.fade-in.editor.flex.flex-column', [
-                ul('.step', [
-                    li('.step-item.pointer', { class: { active: step == 0 }, dataset: { step: 0 } }, a('Contenido')),
-                    li('.step-item.pointer', { class: { active: step == 1 }, dataset: { step: 1 } }, a('Publicación')),
-                    li('.step-item.pointer', { class: { active: step == 2 }, dataset: { step: 2 } }, a('Revisión final'))
-                ]),
+                div(
+                    ul('.step', [
+                        li('.step-item.pointer', { class: { active: step == 0 }, dataset: { step: 0 } }, a('Contenido')),
+                        li('.step-item.pointer', { class: { active: step == 1 }, dataset: { step: 1 } }, a('Publicación')),
+                        li('.step-item.pointer', { class: { active: step == 2 }, dataset: { step: 2 } }, a('Revisión final'))
+                    ])
+                ),
                 (state => {
                     switch (state.publisher.step) {
                         case 0:
