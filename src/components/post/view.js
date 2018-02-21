@@ -22,23 +22,29 @@ export function view(state$) {
                 div('.current-article', div('.pv2', div('.loading')))
             ])
         }
-        
+
+        function ownerTools() {
+            return div('.dropdown.dropdown-right', [
+                a('.dib.btn-icon.gray.ml2.dropdown-toggle', { attrs: { tabindex: 0 } }, i('.icon-cog')),
+                ul('.menu', { style: { width: '200px' } }, [
+                    li('.menu-item', a('.pointer.post-action', { dataset: { action: 'update', id: post.id } }, [i('.icon-edit'), 'Editar publicación'])),
+                    li('.menu-item', a('.pointer.post-action', { dataset: { action: 'delete', id: post.id } }, [i('.icon-trash'), 'Borrar publicación'])),
+                ])
+            ]) 
+        }
+
+        function guestTools() {
+            return div([
+                a('.dib.btn-icon.gray', [i('.icon-warning-empty'), span('.ml1', 'reportar')]),
+            ])
+        }
+
         const toastsVNode = toasts.length == 0 ? h('div') : h('div.absolute.right-1.top-1.z-1.fade-in', toasts.map(toastView))
         const postVNode = post == false ? Quickstart() : h('div.current-article', [
             article([
                 div('.flex', [
                     div('.flex-auto', author(post)),
-                    user.id == post.user_id 
-                        ? div('.dropdown.dropdown-right', [
-                            a('.dib.btn-icon.gray.ml2.dropdown-toggle', { attrs: {tabindex: 0} }, i('.icon-cog')),
-                            ul('.menu', {style: {width: '200px'}}, [
-                                    li('.menu-item', a('.pointer.post-action', { dataset: { action: 'update', id: post.id } }, [i('.icon-edit'), 'Editar publicación'])),
-                                li('.menu-item', a('.pointer.post-action', { dataset: { action: 'delete', id: post.id } }, [i('.icon-trash'), 'Borrar publicación'])),
-                            ])
-                        ]) 
-                        : div([
-                            a('.dib.btn-icon.gray', [i('.icon-warning-empty'), span('.ml1', 'reportar')]),
-                        ])
+                    user.id == post.user_id ? ownerTools() : guestTools()
                 ]),
                 h3('.f6.mt3', ['Bar spartano', span('.icon-right-open.silver')]),
                 h1(post.title),
@@ -66,9 +72,11 @@ export function view(state$) {
                     comments.list !== false && comments.resolving == false ? 
                         comments.list.map(id => {
                             const c = comments.map[id]
-                            const isVoting = voting !== false && voting.id == c.id ? voting.intent : false
 
-                            return commentView(c, isVoting, user, false, ui, votes)
+                            return commentView({
+                                comment: c, 
+                                state
+                            })
                         }) 
                         : (comments.resolving ? h('div.pv2', h('div.loading')) : [])
                 ),
@@ -112,21 +120,27 @@ function author(item, label = 'Publicó') {
     ]);
 }
 
-function commentView(comment, voting, currentUser = false, noPadding = false, ui, votes = {}) {
+function commentView(props) {
+    const { comment, state } = props
+    const { user } = state.shared
+    const { post, resolving, voting, toasts, comments, ui, votes } = state.own
+
+    const isVoting = voting !== false && voting.id == comment.id ? voting.intent : false
+    const noPadding = props.noPadding || false
 
     // Loading vote status helper.
-    const voted = votes[comment.id] || false;
-    const replies = comment.replies || {};
-    const repliesCount = replies.count || 0;
-    const voteIcon = (intent, vnode) => voting !== false && intent == voting ? div('.dib.loading') : vnode;
+    const voted = votes[comment.id] || false
+    const replies = comment.replies || {}
+    const repliesCount = replies.count || 0
+    const voteIcon = (intent, vnode) => (isVoting !== false && intent == isVoting ? div('.dib.loading') : vnode)
     const voteColor = (intent) => {
-        if (voted === -1 && intent == 'down') return 'blue';
-        if (voted === 1 && intent == 'up') return 'blue';
+        if (voted === -1 && intent == 'down') return 'blue'
+        if (voted === 1 && intent == 'up') return 'blue'
 
         return 'mid-gray';
-    };
+    }
 
-    const isCurrentUsersComment = currentUser.id == comment.user_id;
+    const isCurrentUsersComment = user.id == comment.user_id;
 
     return h('div', {class: {pb3: noPadding == false}, key: comment.id}, [
         h('div.flex', [ 
@@ -150,7 +164,7 @@ function commentView(comment, voting, currentUser = false, noPadding = false, ui
         ]),
         h('div.pt1', virtualize(`<p class="ma0">${md.render(comment.content)}</p>`)),
         repliesCount > 0 
-            ? div('.pt2.nested-replies', replies.list.map(c => commentView(c, false, currentUser, true, ui, votes)))
+            ? div('.pt2.nested-replies', replies.list.map(comment => commentView({ comment: state.own.comments.map[comment.id], state, noPadding: true })))
             : div(),
         ui.replyTo === comment.id
             ? div(comment.reply_type == 'post' ? '.pl4' : '.pl0', replyView(currentUser, ui, 'comment', comment.id, true))

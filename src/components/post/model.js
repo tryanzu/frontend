@@ -219,20 +219,22 @@ export function model(actions) {
             .filter(res => ('id' in res && res.reply_type == 'comment'))
             .map(res => state => {
                 const reply = {...res, author: { ...state.shared.user }}
+                const changes = state.own.comments.list
+                    .filter(id => (id == res.reply_to))
+                    .map(id => {
+                        const comment = state.own.comments.map[id]
+                        const replies = comment.replies || {}
+                        const list = replies.list || []
+                        const count = replies.count || 0
+
+                        return { id, replies: { count: count + 1, list: list.concat(reply) } }
+                    })
+                    .reduce((map, comment) => ({...map, [comment.id]: comment }), {})
 
                 return update(state, { 
                     ui: { ...CLEARED_UI }, 
                     comments: { 
-                        list: state.own.comments.list.map(comment => {
-                            if (comment.id !== res.reply_to) {
-                                return comment
-                            }
-                            const replies = comment.replies || {}
-                            const list = replies.list || []
-                            const count = replies.count || 0
-
-                            return { ...comment, replies: { ...replies, list: list.concat(reply), count: count + 1 }}
-                        })
+                        map: changes
                     }
                 })
             }),
@@ -255,7 +257,7 @@ export function model(actions) {
                     missing: 0, 
                     list: res.list.reverse().concat(state.own.comments.list), 
                     resolving: false,
-                    map: merge(state.own.comments, res.hashtables.comments)
+                    map: res.hashtables.comments
                 } 
             })),
 
