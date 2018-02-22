@@ -183,6 +183,13 @@ function commentView(props) {
     ]);
 }
 
+const mentions = new Tribute({
+    values: [
+        { key: 'Phil Heartman', value: 'pheartman' },
+        { key: 'Gordon Ramsey', value: 'gramsey' }
+    ]
+})
+
 function replyView(user, ui, type, id, nested = false) {
     let props = {value: ''}
 
@@ -203,6 +210,7 @@ function replyView(user, ui, type, id, nested = false) {
                             debounce(vnode => vnode.elm.focus(), 100)(vnode)
                         }    
                         autosize(vnode.elm)
+                        mentions.attach(vnode.elm)
                     }
                 }, 
                 dataset: {type, id}, 
@@ -215,7 +223,7 @@ function replyView(user, ui, type, id, nested = false) {
             }),
             h('div.tr', {class: {dn: ui.commenting == false || ui.commentingType !== type || ui.commentingId != id}}, [
                 h('button.btn.btn-primary.mr2', { attrs: { type: 'submit' } }, t`Publicar comentario`),
-                h('button#cc.btn', {attrs: {type: 'reset'}}, 'Cancelar'),
+                h('button#cc.btn', { attrs: { type: 'reset' } }, t`Cancelar`),
             ])
         ])
     ]);

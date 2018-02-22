@@ -14,13 +14,18 @@ exports.paths = {
 };
 
 exports.npm = {
-    styles: { 'spectre.css': ['dist/spectre.min.css', 'dist/spectre-exp.min.css'], 'tachyons': ['css/tachyons.min.css']}
+    styles: { 
+        'spectre.css': ['dist/spectre.min.css', 'dist/spectre-exp.min.css'], 
+        'tachyons': ['css/tachyons.min.css'],
+        'tributejs': ['dist/tribute.css']
+    }
 };
 
 exports.plugins = {
     babel: {
-        presets: ['latest']
+        presets: ['env']
     },
+    npm: ['babel-brunch'],
     uglify: {
       mangle: true,
       compress: {
