@@ -1,7 +1,8 @@
-import {h, div, section, i, p, button, a, span, ul, li, article, h3, h1} from '@cycle/dom'
+import { h, div, section, i, p, button, a, span, ul, li, article, h3, h1 } from '@cycle/dom'
+import { Quickstart } from '../quickstart'
+import { t, i18n } from '../../i18n'
 import debounce from 'lodash/debounce'
 import timeago from 'timeago.js'
-import { Quickstart } from '../quickstart'
 import markdown from 'markdown-it'
 import emoji from 'markdown-it-emoji'
 import mila from 'markdown-it-link-attributes'
@@ -27,15 +28,15 @@ export function view(state$) {
             return div('.dropdown.dropdown-right', [
                 a('.dib.btn-icon.gray.ml2.dropdown-toggle', { attrs: { tabindex: 0 } }, i('.icon-cog')),
                 ul('.menu', { style: { width: '200px' } }, [
-                    li('.menu-item', a('.pointer.post-action', { dataset: { action: 'update', id: post.id } }, [i('.icon-edit'), 'Editar publicación'])),
-                    li('.menu-item', a('.pointer.post-action', { dataset: { action: 'delete', id: post.id } }, [i('.icon-trash'), 'Borrar publicación'])),
+                    li('.menu-item', a('.pointer.post-action', { dataset: { action: 'update', id: post.id } }, [i('.icon-edit'), t`Editar publicación`])),
+                    li('.menu-item', a('.pointer.post-action', { dataset: { action: 'delete', id: post.id } }, [i('.icon-trash'), t`Borrar publicación`])),
                 ])
             ]) 
         }
 
         function guestTools() {
             return div([
-                a('.dib.btn-icon.gray', [i('.icon-warning-empty'), span('.ml1', 'reportar')]),
+                a('.dib.btn-icon.gray', [i('.icon-warning-empty'), span('.ml1', t`Reportar`)]),
             ])
         }
 
@@ -51,22 +52,32 @@ export function view(state$) {
                 virtualize(`<p>${md.render(post.content)}</p>`),
                 h('div.separator.pt2'),
                 h('div.flex.items-center.mb3', [
-                    h('h3.flex-auto', `${_comments.count} respuestas a la publicación`),
-                    h('div', h('small', 'Ordenar comentarios por')),
+                    h('h3.flex-auto', 
+                        i18n.translate('%d respuesta a la publicación')
+                            .ifPlural(parseInt(_comments.count), '%d respuestas a la publicación')
+                            .fetch(_comments.count)
+                    ),
+                    h('div', h('small', t`Ordenar comentarios por`)),
                     h('div.form-group.mb0.ml2', h('select.form-select.select-sm', [
-                         h('option', 'Recomendaciones')
+                        h('option', t`Recomendaciones`)
                     ]))
                 ]),
                 comments.list !== false && comments.list.length == 0
                     ? div('.empty', [
                         div('.empty-icon', i('.f4.icon-chat-alt')),
-                        p('.empty-title.f5.fw5', 'Nadie ha respondido aún'),
-                        p('.empty-subtitle', 'Únete a la conversación y sé el primero en contestar.'),
-                        div('.empty-action', button('.reply-to.btn.btn-primary', { dataset: {id: post.id} }, 'Escribir respuesta'))
+                        p('.empty-title.f5.fw5', t`Nadie ha respondido aún`),
+                        p('.empty-subtitle', t`Únete a la conversación y sé el primero en contestar.`),
+                        div('.empty-action', button('.reply-to.btn.btn-primary', { dataset: { id: post.id } }, t`Escribir respuesta`))
                     ])  
                     : null,
                 older > 0 
-                    ? div('.mb3.tc', a('.btn.btn-sm.btn-primary.load-more', { dataset: { count: older, before: firstCommentID }}, `Cargar ${older} comentarios anteriores.`))
+                    ? div('.mb3.tc', 
+                        a('.btn.btn-sm.btn-primary.load-more', { dataset: { count: older, before: firstCommentID }}, 
+                            i18n.translate('Cargar %d comentario anterior.')
+                                .ifPlural(older, 'Cargar %d comentarios anteriores.')
+                                .fetch(older)
+                        )
+                    )
                     : null,
                 section(
                     comments.list !== false && comments.resolving == false ? 
@@ -198,12 +209,12 @@ function replyView(user, ui, type, id, nested = false) {
                 props,
                 attrs: {
                     rows: 1, 
-                    placeholder: 'Escribe aquí tu respuesta...', 
+                    placeholder: t`Escribe aquí tu respuesta...`, 
                     autofocus: nested
                 }
             }),
             h('div.tr', {class: {dn: ui.commenting == false || ui.commentingType !== type || ui.commentingId != id}}, [
-                h('button.btn.btn-primary.mr2', {attrs: {type: 'submit'}}, 'Publicar comentario'),
+                h('button.btn.btn-primary.mr2', { attrs: { type: 'submit' } }, t`Publicar comentario`),
                 h('button#cc.btn', {attrs: {type: 'reset'}}, 'Cancelar'),
             ])
         ])
