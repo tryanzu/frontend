@@ -5,8 +5,8 @@ const ago = timeago(null, 'es');
 
 export function view(state$) {
     return state$.map(state => {
-        const { loading, list, error, counters, subcategories, endReached } = state.own
-        const { postId } = state.shared
+        const { loading, list, error, counters, endReached } = state.own
+        const { postId, subcategories } = state.shared
 
         return section('.fade-in.feed.flex.flex-column', [
             section('.tabs', [
@@ -32,12 +32,13 @@ export function view(state$) {
                 const href = `/p/${post.slug}/${post.id}`
                 const recent = counters.recent[post.id] || 0
                 const missed = counters.missed[post.id] || 0
+                const category = subcategories.id[post.category] || false
 
                 return article('.post', { class: { active: postId == post.id }, dataset: { href } }, [
                     div('.flex.items-center', [
                         div('.flex-auto', 
-                            subcategories != false
-                                ? a('.category', { attrs: { href: `/c/${subcategories[post.category].slug}` } }, subcategories[post.category].name)
+                            category != false
+                                ? a('.category', { attrs: { href: `/c/${category.slug}` } }, category.name)
                                 : a('.category', span('.loading'))
                         ),
                         post.pinned ? span('.icon-pin.pinned-post') : null
@@ -80,7 +81,7 @@ function categories(state) {
     const { categories } = state.shared
     const { subcategories, category } = state.own
 
-    const slugs = state.own.subcategoriesBySlug || {}
+    const slugs = state.shared.subcategories.slug || {}
     const list = categories || []
     const menu = list.reduce((all, current) => {
         return all

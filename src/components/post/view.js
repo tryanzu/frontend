@@ -12,7 +12,7 @@ import classNames from 'classnames'
 
 export function view(state$) {
     return state$.map(state => {
-        const {user} = state.shared
+        const {user, subcategories} = state.shared
         const {post, resolving, voting, toasts, comments, ui, votes} = state.own
         const _comments = post.comments
         const older = resolving === false && post !== false ? _comments.count - comments.list.length : 0
@@ -47,7 +47,7 @@ export function view(state$) {
                     div('.flex-auto', author(post)),
                     user.id == post.user_id ? ownerTools() : guestTools()
                 ]),
-                h3('.f6.mt3', ['Bar spartano', span('.icon-right-open.silver')]),
+                h3('.f6.mt3', [subcategories.id[post.category].name, span('.icon-right-open.silver')]),
                 h1(post.title),
                 virtualize(`<p>${md.render(post.content)}</p>`),
                 h('div.separator.pt2'),
@@ -183,13 +183,6 @@ function commentView(props) {
     ]);
 }
 
-const mentions = new Tribute({
-    values: [
-        { key: 'Phil Heartman', value: 'pheartman' },
-        { key: 'Gordon Ramsey', value: 'gramsey' }
-    ]
-})
-
 function replyView(user, ui, type, id, nested = false) {
     let props = {value: ''}
 
@@ -210,6 +203,14 @@ function replyView(user, ui, type, id, nested = false) {
                             debounce(vnode => vnode.elm.focus(), 100)(vnode)
                         }    
                         autosize(vnode.elm)
+
+                        const mentions = new Tribute({
+                            values: [
+                                { key: 'nobody', value: 'nobody' },
+                                { key: 'TestUser1', value: 'testuser1' }
+                            ]
+                        })
+
                         mentions.attach(vnode.elm)
                     }
                 }, 

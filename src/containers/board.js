@@ -94,14 +94,14 @@ function board(sources) {
  */
 function postLens() {
     return {
-        get: ({ post, user, modal }) => ({ own: post, shared: { user: user.user, modal } }),
+        get: ({ post, user, modal, subcategories }) => ({ own: post, shared: { user: user.user, modal, subcategories } }),
         set: (state, child) => ({ ...state, post: child.own, modal: child.shared.modal })
     }
 }
 
 function feedLens() {
     return {
-        get: ({ feed, user, post, categories, page, modal }) => ({ own: feed, shared: { page, categories, user: user.user, postId: post.postId, modal } }),
+        get: ({ feed, user, post, categories, page, modal, subcategories }) => ({ own: feed, shared: { page, categories, user: user.user, postId: post.postId, modal, subcategories } }),
         set: (state, child) => ({ ...state, feed: child.own, modal: child.shared.modal })
     }
 }

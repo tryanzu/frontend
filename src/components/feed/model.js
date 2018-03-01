@@ -7,8 +7,6 @@ const DEFAULT_STATE = {
     offset: 0,
     loading: false,
     error: false,
-    subcategories: false,
-    subcategoriesBySlug: false,
     endReached: false,
     category: false,
     counters: {
@@ -21,7 +19,11 @@ const DEFAULT_STATE = {
 export const LENSED_STATE = {
     shared: {
         user: false,
-        postId: false
+        postId: false,
+        subcategories: {
+            id: {},
+            slug: {}
+        }
     },
     own: {
         ...DEFAULT_STATE

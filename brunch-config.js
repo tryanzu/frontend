@@ -17,7 +17,6 @@ exports.npm = {
     styles: { 
         'spectre.css': ['dist/spectre.min.css', 'dist/spectre-exp.min.css'], 
         'tachyons': ['css/tachyons.min.css'],
-        'tributejs': ['dist/tribute.css']
     }
 };
 
@@ -25,7 +24,6 @@ exports.plugins = {
     babel: {
         presets: ['env']
     },
-    npm: ['babel-brunch'],
     uglify: {
       mangle: true,
       compress: {
@@ -38,7 +36,7 @@ exports.plugins = {
         processors: [
             require('postcss-import')(),
             require('postcss-cssnext')(),
-            require('lost')()
+            require('lost')(),
         ]
     }
 };

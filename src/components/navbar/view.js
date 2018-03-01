@@ -2,6 +2,7 @@ import {figure, div, section, label, header, input, img, a, ul, li, h1, h, span,
 import xs from 'xstream'
 import timeago from 'timeago.js'
 import timeagoES from 'timeago.js/locales/es'
+import { adminTools } from '../../acl';
 
 timeago.register('es', timeagoES)
 const ago = timeago(null, 'es')
@@ -155,6 +156,16 @@ function desktopVersion({ user, resolving, connectedCount, image, state }) {
                 ])
             ])
             : div('.dn'),
+        adminTools({ user }) ? 
+            div('.dropdown.dropdown-right.flex-shrink-0.mh3', [
+                a('.dropdown-toggle.pointer.link', [
+                    '0 reportes'
+                ]),
+                h('ul.menu.notifications.tl', [
+                    
+                ])
+            ])
+            : null,
         user !== false ?
             div('.dropdown.dropdown-right', [
                 h('span.dropdown-toggle.pointer.link', { attrs: { tabindex: 0 } }, [

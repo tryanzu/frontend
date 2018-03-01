@@ -9,6 +9,10 @@ const DEFAULT_STATE = {
         user: false
     },
     categories: false,
+    subcategories: {
+        id: {},
+        slug: {}
+    },
     post: {
         resolving: false,
         postId: false,
@@ -29,7 +33,6 @@ const DEFAULT_STATE = {
         loading: false,
         loadingPost: false,
         error: false,
-        subcategories: false,
         post: false,
         counters: {
             posts: 0,
@@ -145,9 +148,9 @@ export function model(actions) {
         actions.categories$
             .map(categories => state => merge(state)({ 
                 categories, 
-                feed: { 
-                    subcategories: subcategoriesBy(categories, 'id'), 
-                    subcategoriesBySlug: subcategoriesBy(categories, 'slug')
+                subcategories: {
+                    id: subcategoriesBy(categories, 'id'),
+                    slug: subcategoriesBy(categories, 'slug')
                 }
             })),  
         actions.user$
