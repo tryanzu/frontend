@@ -245,12 +245,12 @@ export function model(actions) {
         // New list of comments.
         actions.comments$
             .filter(comments => (comments.type == 'initial'))
-            .map(comments => state => update(state, { comments: { list: comments.list, resolving: false } })),
+            .map(({ res }) => state => update(state, { comments: { list: res.list, resolving: false, map: res.hashtables.comments } })),
 
         // Recent comments append.
         actions.comments$
             .filter(comments => (comments.type == 'recent'))
-            .map(comments => state => update(state, { comments: { missing: 0, list: state.own.comments.list.concat(comments.list.reverse()), resolving: false } })),
+            .map(({ res }) => state => update(state, { comments: { missing: 0, list: state.own.comments.list.concat(res.list.reverse()), map: res.hashtables.comments, resolving: false } })),
 
         // Recent comments prepend.
         actions.comments$
