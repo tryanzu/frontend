@@ -9,7 +9,9 @@ const CLEARED_UI = {
     replyTo: false,
     commenting: false,
     commentingType: false,
-    commentingId: false
+    commentingId: false,
+    updating: false,
+    post: false
 }
 
 export const DEFAULT_STATE = {
@@ -267,6 +269,11 @@ export function model(actions) {
         // Reply content.
         actions.replyContent$
             .map(reply => state => update(state, { ui: { reply } })),
+
+        // Post editing
+        actions.postActions$
+            .filter(({ action }) => (action === 'update' || action === 'cancel'))
+            .map(({ action }) => state => update(state, { ui: { updating: action === 'update', post: state.own.post } })),
 
         // Incoming comments from remote.
         actions.postGlue$

@@ -94,7 +94,7 @@ function board(sources) {
  */
 function postLens() {
     return {
-        get: ({ post, user, modal, subcategories }) => ({ own: post, shared: { user: user.user, modal, subcategories } }),
+        get: ({ post, user, modal, subcategories, categories }) => ({ own: post, shared: { user: user.user, modal, subcategories, categories } }),
         set: (state, child) => ({ ...state, post: child.own, modal: child.shared.modal })
     }
 }

@@ -1,8 +1,7 @@
 exports.files = {
     javascripts: {
         joinTo: {
-            'core.js': /^src/,
-            'core.vendor.js': /^(?!src)/
+            'core.js': /^(src|node_modules)/,
         }
     },
     stylesheets: {joinTo: 'core.css', order: {after: path => path.endsWith('root.css')}}
