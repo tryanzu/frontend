@@ -1,4 +1,6 @@
 import Jed from 'jed'
+import es from 'date-fns/locale/es'
+import { format, distanceInWordsToNow } from 'date-fns'
 
 export const i18n = new Jed({ 
     locale_data: {
@@ -23,3 +25,11 @@ export const i18n = new Jed({
  export function t(str, ...values) {
      return i18n.translate(String.raw(str, ...values)).fetch()
  }
+
+export function dateToString(date, body = 'dddd, D MMMM YYYY') {
+    return format(date, body, { locale: es })
+}
+
+export function ago(date, options = {}) {
+    return distanceInWordsToNow(date, { locale: es, ...options })
+}

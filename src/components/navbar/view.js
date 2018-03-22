@@ -1,4 +1,4 @@
-import {figure, div, section, label, header, input, img, a, ul, li, h1, h, span, makeDOMDriver, p} from '@cycle/dom'
+import {figure, div, section, label, header, input, img, a, ul, li, h1, h, span, makeDOMDriver, p, main} from '@cycle/dom'
 import xs from 'xstream'
 import timeago from 'timeago.js'
 import timeagoES from 'timeago.js/locales/es'
@@ -14,14 +14,14 @@ export function view(effects, fractal) {
         const { user } = _user
         const image = user.image || ''
 
-        return h('main', [
-            h('header.navbar', [
+        return main([
+            header('.navbar', [
                 logoSection(), 
                 mobileSection({ user, resolving, connectedCount, image, state }),
                 desktopVersion({ user, resolving, connectedCount, image, state }),
-                _user.resolving === true ?
-                    div('.loading') 
-                : null,
+                _user.resolving === true
+                    ? div('.loading') 
+                    : null,
             ])
         ]);
     });
@@ -156,16 +156,6 @@ function desktopVersion({ user, resolving, connectedCount, image, state }) {
                 ])
             ])
             : div('.dn'),
-        adminTools({ user }) ? 
-            div('.dropdown.dropdown-right.flex-shrink-0.mh3', [
-                a('.dropdown-toggle.pointer.link', [
-                    '0 reportes'
-                ]),
-                h('ul.menu.notifications.tl', [
-                    
-                ])
-            ])
-            : null,
         user !== false ?
             div('.dropdown.dropdown-right', [
                 h('span.dropdown-toggle.pointer.link', { attrs: { tabindex: 0 } }, [
