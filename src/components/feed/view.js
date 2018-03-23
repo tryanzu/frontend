@@ -1,7 +1,5 @@
-import { p, span, section, h2, a, div, nav, button, article, img, h1, ul, li, h3 } from '@cycle/dom';
-import timeago from 'timeago.js';
-
-const ago = timeago(null, 'es');
+import { p, span, section, h2, a, div, nav, button, article, img, h1, ul, li, h3 } from '@cycle/dom'
+import { ago } from '../../i18n';
 
 export function view(state$) {
     return state$.map(state => {
@@ -53,7 +51,7 @@ export function view(state$) {
                                 div(author.image ? img({ attrs: { src: author.image, alt: `Avatar de ${author.username}` } }) : div('.empty-avatar', author.username.substr(0, 1))),
                                 div([
                                     span(author.username),
-                                    span('.ago', 'Publicó ' + ago.format(post.created_at))
+                                    span('.ago', 'Publicó hace ' + ago(post.created_at))
                                 ])
                             ]),
                         ]),

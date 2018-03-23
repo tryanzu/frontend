@@ -156,12 +156,10 @@
 
 a[rel="author"] {
 	color: #32325d;
-	display: block;
-
+	display: flex;
+	align-items: center;
+	
 	& > div {
-		display: inline-block;
-		vertical-align: middle;
-
 		&.top {
 			vertical-align: top;
 		}

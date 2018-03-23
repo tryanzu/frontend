@@ -1,5 +1,29 @@
 @import "../variables.css";
 
+header.navbar-tools {
+	background: #191E38;
+
+	& > nav {
+    	display: flex;
+		max-width: var(--layoutSize);
+		margin: 0 auto;
+		padding: 0.5rem 1rem;
+		color: #FFF;
+		color: rgba(255, 255, 255, 0.8);
+		font-size: 14px;
+
+		& a {
+			color: #FFF;
+			color: rgba(255, 255, 255, 0.8);
+		}
+
+		& .badge:not([data-badge])::after, & .badge[data-badge]::after {
+			background: #38C172;
+			box-shadow: 0 0 0 0.1rem #191E38;
+		}
+	}
+}
+
 header.navbar {
 	background-color: transparent;
 	border-bottom: transparent;

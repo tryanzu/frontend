@@ -1,11 +1,7 @@
-import {figure, div, section, label, header, input, img, a, ul, li, h1, h, span, makeDOMDriver, p, main} from '@cycle/dom'
 import xs from 'xstream'
-import timeago from 'timeago.js'
-import timeagoES from 'timeago.js/locales/es'
-import { adminTools } from '../../acl';
-
-timeago.register('es', timeagoES)
-const ago = timeago(null, 'es')
+import {figure, div, section, label, header, input, img, a, ul, li, h1, h, span, makeDOMDriver, p, main, nav} from '@cycle/dom'
+import { adminTools } from '../../acl'
+import { ago } from '../../i18n';
 
 export function view(effects, fractal) {
     return xs.combine(effects.state$, fractal.state$).map(([state, fstate]) => {
@@ -15,6 +11,16 @@ export function view(effects, fractal) {
         const image = user.image || ''
 
         return main([
+            adminTools({ user }) 
+                ? header('.navbar-tools.fade-in', [
+                    nav([
+                        div('.flex-auto', a('Gestión de Anzu')),
+                        span('.badge', 'Reportes'),
+                        a('.ml3', 'Gestión de usuarios'),
+                        a('.ml3', 'Configuración')
+                    ])
+                ])
+                : null,
             header('.navbar', [
                 logoSection(), 
                 mobileSection({ user, resolving, connectedCount, image, state }),
@@ -76,7 +82,7 @@ function mobileSection({ user, resolving, connectedCount, image, state }) {
                                 return h('li.menu-item', h('a.pointer.ng-link', { dataset: { href: n.target } }, [
                                     h('span.db.clean-styles', n.title),
                                     h('span.db.gray', n.subtitle),
-                                    h('span.db.mid-gray', ago.format(n.createdAt)),
+                                    h('span.db.mid-gray', ago(n.createdAt)),
                                 ]));
                             })
                         )
@@ -149,7 +155,7 @@ function desktopVersion({ user, resolving, connectedCount, image, state }) {
                                 return h('li.menu-item', h('a.pointer.ng-link', { dataset: { href: n.target } }, [
                                     h('span.db.clean-styles', n.title),
                                     h('span.db.gray', n.subtitle),
-                                    h('span.db.mid-gray.b', ago.format(n.createdAt)),
+                                    h('span.db.mid-gray.b', ago(n.createdAt)),
                                 ]));
                             })
                         )
