@@ -17,7 +17,7 @@ export function view(effects, fractal) {
                         div('.flex-auto', a('Gestión de Anzu')),
                         span('.badge', 'Reportes'),
                         a('.ml3', 'Gestión de usuarios'),
-                        a('.ml3', 'Configuración')
+                        a('.ml3.modal-link', { dataset: { modal: 'config' } }, 'Configuración')
                     ])
                 ])
                 : null,

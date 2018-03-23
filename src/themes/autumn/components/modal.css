@@ -1,3 +1,5 @@
+@import "../variables.css";
+
 .modal.active .modal-overlay, .modal:target .modal-overlay {
 	background: rgba(17, 31, 68, 0.80) !important;
 }
@@ -12,4 +14,43 @@
 
 .form-checkbox, .form-radio, .form-switch {
 	font-weight: normal;
+}
+
+.modal-container.config {
+	& nav {
+		background: #f6f9fc;
+		border-right: 1px solid #e3e9ef;
+		width: 25%;
+		padding: 0.6rem 0;
+
+		& a {
+			display: block;
+			color: #50596c;
+			padding: 0.6rem 1rem;
+			cursor: pointer;
+
+			&.active, &:hover {
+				color: color(var(--primaryColor) blackness(10%));
+				text-decoration: none;
+			}
+
+			&.active {
+				font-weight: 500;
+			}
+		}		
+	}
+
+	& .flex > div {
+		padding: 1.2rem 1rem;
+
+		& h2 {
+			font-size: calc(var(--fontSize) * 1.8);
+			font-weight: 500;
+			margin: 0 0 1rem;
+		}
+
+		& label {
+			font-weight: 500;
+		}
+	}
 }

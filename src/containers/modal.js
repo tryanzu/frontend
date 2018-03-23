@@ -1,8 +1,9 @@
-import { h } from '@cycle/dom'
 import xs from 'xstream'
 import dropRepeats from 'xstream/extra/dropRepeats'
 import flattenConcurrently from 'xstream/extra/flattenConcurrently'
+import { h } from '@cycle/dom'
 import { AccountModal } from '../components/modal/account'
+import { ConfigModal } from '../components/modal/config'
 
 function intent({ DOM, fractal }) {
 
@@ -31,6 +32,8 @@ function model(sources, actions) {
             switch (modal) {
                 case 'account':
                     return AccountModal(sources)
+                case 'config':
+                    return ConfigModal(sources)
                 default:
                     return { DOM: xs.never() }
             }

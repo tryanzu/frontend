@@ -89,7 +89,15 @@ export function model(actions) {
     ).fold((state, action) => action(state), DEFAULT_STATE);
 
     const reducers$ = xs.merge(
-        actions.modalLink$.map(action => state => ({...state, modal: {...state.modal, active: true, modal: 'account'}}))
+        actions.modalLink$
+            .map(action => state => ({
+                ...state, 
+                modal: {
+                    ...state.modal, 
+                    active: true, 
+                    modal: action.modal
+                }
+            }))
     )
     
     const beep$ = actions.userChan$.filter(ev => ev.fire == 'notification' && ev.count > 0);
