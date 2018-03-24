@@ -3,15 +3,22 @@ import { glue } from './ext/glue'
 import { adapt } from '@cycle/run/lib/adapt'
 
 function makeOn(client) {
-    return function (event) {
+    return function (event = false) {
         const stream$ = xs.createWithMemory({
             eventListener: null,
             start(listener) {
-                client.send(JSON.stringify({event: 'listen', params: {chan: event}}))
-                this.channel = client.channel(event)
-                this.eventListener = this.channel.onMessage(args => {
+                const onMessage = (args) => {
                     listener.next(JSON.parse(args))
-                })
+                }
+
+                if (!event) {
+                    this.eventListener = client.onMessage(onMessage)
+                    return
+                }
+
+                client.send(JSON.stringify({ event: 'listen', params: { chan: event } }))
+                this.channel = client.channel(event)
+                this.eventListener = this.channel.onMessage(onMessage)
             },
             stop() {
                 client.send(JSON.stringify({ event: 'unlisten', params: { chan: event } }))

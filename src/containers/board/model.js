@@ -3,6 +3,10 @@ import sampleCombine from 'xstream/extra/sampleCombine'
 import merge from 'lodash/fp/merge'
 
 const DEFAULT_STATE = {
+    site: {
+        name: '',
+        description: ''
+    },
     page: 'board',
     user: {
         resolving: false,
@@ -114,6 +118,10 @@ export function model(actions) {
     const reducers$ = xs.merge(
         // Default root state.
         xs.of(state => DEFAULT_STATE),
+
+        // Runtime config
+        actions.config$
+            .map((site) => state => merge(state)({ site })),
 
         // Mapping some reducers into the main chain.
         fetchUser$

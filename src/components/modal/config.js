@@ -1,11 +1,11 @@
 import xs from 'xstream'
 import { h, div, span, nav, a, img, i, h2, p, form, label, input, textarea } from '@cycle/dom'
 
-export function ConfigModal({ DOM, HTTP }) {
+export function ConfigModal({ fractal, DOM, HTTP }) {
     /**
      * View computation.
      */
-    const vdom$ = xs.of({ title: 'Anzu' }).map((state) => {
+    const vdom$ = fractal.state$.debug().map((state) => {
         return div('.modal-container.config', { style:  { width: '640px' } }, [
             div('.flex', [
                 nav([
@@ -20,7 +20,7 @@ export function ConfigModal({ DOM, HTTP }) {
                     form({ attrs: { id: 'update-post' } }, [
                         div('.form-group', [
                             label('.b.form-label', 'Nombre del sitio'),
-                            input('#title.form-input', { attrs: { type: 'text', placeholder: 'Ej. Comunidad de Anzu', required: true } }),
+                            input('#title.form-input', { attrs: { type: 'text', placeholder: 'Ej. Comunidad de Anzu', value: state.site.name, required: true } }),
                             p('.form-input-hint', 'Mostrado alrededor del sitio, el nombre de tu comunidad.')
                         ]),
                         div('.form-group', [
@@ -30,15 +30,24 @@ export function ConfigModal({ DOM, HTTP }) {
                                     placeholder: '...',
                                     rows: 3
                                 }
-                            }),
+                            }, state.site.description),
                             p('.form-input-hint', 'Para metadatos, resultados de busqueda y dar a conocer tu comunidad.')
                         ]),
                     ]),
                     form('.bt.b--light-gray.pt2', { attrs: { id: 'links' } }, [
                         div('.form-group', [
                             label('.b.form-label', 'Menu de navegación'),
-                            input('#title.form-input', { attrs: { type: 'text', placeholder: 'Ej. Comunidad de Anzu', required: true } }),
-                            p('.form-input-hint', 'Mostrado alrededor del sitio, el nombre de tu comunidad.')
+                            p('.form-input-hint', 'Mostrado en la parte superior del sitio. (- = +)'),
+                            div(
+                                state.site.nav.map((link) => {
+                                    return div('.input-group.mb2', [
+                                        span('.input-group-addon', i('.icon-up-outline')),
+                                        span('.input-group-addon', i('.icon-down-outline')),
+                                        input('.form-input', { attrs: { type: 'text', placeholder: '...', value: link.name, required: true } }),
+                                        input('.form-input', { attrs: { type: 'text', placeholder: '...', value: link.href, required: true } })
+                                    ])
+                                })
+                            ),
                         ])
                     ])
                 ])

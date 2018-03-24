@@ -9,7 +9,7 @@ const Routes = {
     '/c/:slug': slug => ({ type: 'goTo', page: 'category', category: { slug } }),
 }
 
-export function intent({ history, storage, HTTP, fractal }) {
+export function intent({ history, glue, storage, HTTP, fractal }) {
     const routePath$ = history
         .map(location => ({ location, route: switchPath(location.pathname, Routes) }))
         .filter(({ route }) => route.value != false)
@@ -82,6 +82,10 @@ export function intent({ history, storage, HTTP, fractal }) {
         .map(response$ => response$.replaceError(err => xs.of(err)))
         .flatten()
         .filter(res => res instanceof Error && res.message == 'Unauthorized')
-
-    return { page$, routePath$, authToken$, unauthorized$, user$, post$, comments$, categories$, fetchUser$, logout$, rawToken$ }
+    
+    const config$ = glue.get()
+        .filter(({ event }) => (event === 'config'))
+        .map(({ params }) => (params))
+    
+    return { config$, page$, routePath$, authToken$, unauthorized$, user$, post$, comments$, categories$, fetchUser$, logout$, rawToken$ }
 }
