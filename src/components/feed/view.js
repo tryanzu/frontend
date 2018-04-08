@@ -47,7 +47,7 @@ export function view(state$) {
                             h1(
                                 a('.link', { attrs: { href }, dataset: { postId: post.id } }, post.title),
                             ),
-                            a({ attrs: { rel: 'author' } }, [
+                            a('.pointer',{ attrs: { rel: 'author' } }, [
                                 div(author.image ? img({ attrs: { src: author.image, alt: `Avatar de ${author.username}` } }) : div('.empty-avatar', author.username.substr(0, 1))),
                                 div([
                                     span(author.username),

@@ -41,6 +41,9 @@ header.navbar {
 	& a.btn.btn-link, & span.badge {
 		color: #32325d;
 		font-size: calc(var(--fontSize) * 1.1);
+		margin: 0 calc(var(--fontSize) - 7px) ;
+		padding-left:0px;
+		padding-right: 0px;
 	}
 }
 
