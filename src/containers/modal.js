@@ -12,7 +12,7 @@ function intent({ DOM, fractal }) {
 
     // Compute a stream that holds the recent modal put into state. (outside world side effect)
     const modal$ = fractal.state$
-        .compose(dropRepeats((a, b) => (a.active === b.active && a.modal === b.modal)))
+        .compose(dropRepeats((a, b) => (a.modal.active === b.modal.active && a.modal.modal === b.modal.modal)))
 
     return {
         overlayClick$,
@@ -22,14 +22,17 @@ function intent({ DOM, fractal }) {
 
 function model(sources, actions) {
 
-    // Stream of current modal component instance.
+    // Current modal component stream.
+    // modal$ will receive an object that tells 
+    // both current state (enabled|disabled) and
+    // the modal "kind" (string)
     const modal$ = actions.modal$
-        .map(({ active, modal }) => {
-            if (active == false) {
+        .map(({ modal }) => {
+            if (modal.active == false) {
                 return { DOM: xs.of({}) }
             }
 
-            switch (modal) {
+            switch (modal.modal) {
                 case 'account':
                     return AccountModal(sources)
                 case 'config':
@@ -40,13 +43,18 @@ function model(sources, actions) {
         })
         .remember()
      
-    // Helper to get child streams.
+    // Sink getter from modal$ stream.
+    // This will get inner stream from current modal stream. 
+    // flattenConcurrently avoids losing signals from the inner stream  
+    // when modal$ changes suddenly.
     const sink = (modal$, name) => {
         return modal$
             .map(m => name in m ? m[name] : xs.never())
             .compose(flattenConcurrently)
     }
 
+    // childSinks computes an object containing all sinks 
+    // from left param recursively and based in source.
     const childSinks = (source, ...left) => {
         if (left.length > 0) {
             const name = left[0]
@@ -60,10 +68,10 @@ function model(sources, actions) {
      * Modal container state.
      */ 
     const reducers$ = xs.merge(
-        xs.of(state => ({ active: false, modal: false, params: {} })),
+        xs.of(state => ({ modal: { active: false, modal: false, params: {} } })),
 
         // Close modal overlay clicks
-        actions.overlayClick$.mapTo(state => ({ ...state, active: false })),
+        actions.overlayClick$.mapTo(state => ({ ...state, modal: { ...state.modal, active: false } })),
 
         // Child components reducers
         sink(modal$, 'fractal'),
@@ -80,17 +88,18 @@ function model(sources, actions) {
 
 function view(state$, childVTree$) {
     return xs.combine(state$, childVTree$).map(([state, childVNode]) => {
-            if (state.active == false) {
+            if (state.modal.active == false) {
                 return h('div')
             }
 
             return h('div.modal.active', [
-                h('div.modal-overlay.modal-link', { dataset: { modal: state.modal } }),
+                h('div.modal-overlay.modal-link', { dataset: { modal: state.modal.modal } }),
                 childVNode
             ])
         }
     )
 }
+
 export function Modal(sources) {
     const { DOM, HTTP, fractal, glue, storage } = sources
 

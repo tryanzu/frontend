@@ -9,6 +9,7 @@ export function view(effects, fractal) {
         const _user = fstate.user
         const { user } = _user
         const image = user.image || ''
+        const site = fstate.site
 
         return main([
             adminTools({ user }) 
@@ -24,7 +25,7 @@ export function view(effects, fractal) {
             header('.navbar', [
                 logoSection(), 
                 mobileSection({ user, resolving, connectedCount, image, state }),
-                desktopVersion({ user, resolving, connectedCount, image, state }),
+                desktopVersion({ user, resolving, connectedCount, image, state, site }),
                 _user.resolving === true
                     ? div('.loading') 
                     : null,
@@ -114,12 +115,12 @@ function mobileSection({ user, resolving, connectedCount, image, state }) {
     ])
 }
 
-function desktopVersion({ user, resolving, connectedCount, image, state }) {
-    return h('section.navbar-section.hide-sm', [
-        a('.btn.btn-link', 'Inicio'),
-        a('.btn.btn-link', 'Preguntas frecuentes'),
-        a('.btn.btn-link', 'Lineamientos'),
-        a('.btn.btn-link', 'Donar'),
+function desktopVersion({ user, resolving, connectedCount, image, state, site }) {
+    const nav = site.nav || []
+
+    return h('section.navbar-section.hide-sm', nav.map(
+        (link) => (a('.btn.btn-link', { href: link.href }, link.name))
+    ).concat([
         //a('.btn.btn-link.ng-link', {dataset: {href: '/chat'}}, ['Chat ', span('.bg-green.ph1.br1', String(connectedCount))]),
         /*div('.dropdown', [
             a('.btn.btn-link.dropdown-toggle', {attrs: {tabindex: 0}}, 'Conoce Buldar'),
@@ -195,5 +196,5 @@ function desktopVersion({ user, resolving, connectedCount, image, state }) {
                 ]) : null,
             ])
             : div('.dn')
-    ])
+    ]))
 }

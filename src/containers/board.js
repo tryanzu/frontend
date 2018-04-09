@@ -94,8 +94,18 @@ function board(sources) {
  */
 function modalLens() {
     return {
-        get: ({ site, modal }) => ({ site, ...modal }),
-        set: (state, child) => ({ ...state, modal: child })
+        get: state => {
+            const { modal, site, config } = state
+            return { modal, site, config }
+        },
+        set: (state, child) => ({ 
+            ...state, 
+            modal: child.modal,
+            config: { 
+                ...state.config, 
+                ...child.config
+            } 
+        })
     }
 }
 

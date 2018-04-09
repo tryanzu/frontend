@@ -10,11 +10,12 @@ export function intent({DOM, HTTP, storage, glue, props}) {
      * - Open notifications link.
      */
     const modalLink$ = DOM.select('.modal-link').events('click')
-        .map(event => ({modal: event.target.dataset.modal, data: event.target.dataset}));
+        .map(event => ({modal: event.target.dataset.modal, data: event.target.dataset}))
+        .debug()
 
-    const logoutLink$ = DOM.select('#logout').events('click').mapTo(true);
+    const logoutLink$ = DOM.select('#logout').events('click').mapTo(true)
     
-    const openNotifications$ = DOM.select('#notifications').events('click');
+    const openNotifications$ = DOM.select('#notifications').events('click')
 
     /**
      * HTTP read effects including: 
@@ -26,12 +27,9 @@ export function intent({DOM, HTTP, storage, glue, props}) {
         .map(response$ => response$.replaceError(err => xs.of(err)))
         .flatten()
         .filter(res => !(res instanceof Error))
-        .map(res => res.body);
+        .map(res => res.body)
 
-    //const userChan$ = user$.map(user => socketIO.get(`user ${user.id} notification`))
-    //    .flatten()
-    //    .debug();
-    const userChan$ = xs.empty();
+    const userChan$ = xs.empty()
 
     return {
         modalLink$, 
@@ -40,5 +38,5 @@ export function intent({DOM, HTTP, storage, glue, props}) {
         userChan$, 
         openNotifications$,
         authToken$: props.authToken$,
-    };
-};
+    }
+}

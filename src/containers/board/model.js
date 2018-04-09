@@ -7,6 +7,13 @@ const DEFAULT_STATE = {
         name: '',
         description: ''
     },
+    config: {
+        dirty: false, 
+        site: {
+            name: '',
+            description: ''
+        } 
+    },
     page: 'board',
     user: {
         resolving: false,
@@ -121,7 +128,8 @@ export function model(actions) {
 
         // Runtime config
         actions.config$
-            .map((site) => state => merge(state)({ site })),
+            .debug('runtime::')
+            .map((site) => state => merge(state)({ site, config: { site } })),
 
         // Mapping some reducers into the main chain.
         fetchUser$
