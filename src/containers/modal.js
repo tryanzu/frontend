@@ -1,6 +1,6 @@
 import xs from 'xstream'
 import dropRepeats from 'xstream/extra/dropRepeats'
-import flattenConcurrently from 'xstream/extra/flattenConcurrently'
+import delay from 'xstream/extra/delay'
 import { h } from '@cycle/dom'
 import { AccountModal } from '../components/modal/account'
 import { ConfigModal } from '../components/modal/config'
@@ -21,15 +21,19 @@ function intent({ DOM, fractal }) {
 }
 
 function model(sources, actions) {
-
+    
     // Current modal component stream.
     // modal$ will receive an object that tells 
     // both current state (enabled|disabled) and
-    // the modal "kind" (string)
+    // the modal "kind" (string).
+    // The "delay" avoids losing signals from the inner stream  
+    // when modal$ changes suddenly. Previously we used flattenConcurrently
+    // but it keeps undesired inner streams active.
     const modal$ = actions.modal$
+        .compose(delay(60))
         .map(({ modal }) => {
             if (modal.active == false) {
-                return { DOM: xs.of({}) }
+                return { DOM: xs.of(null) }
             }
 
             switch (modal.modal) {
@@ -37,20 +41,16 @@ function model(sources, actions) {
                     return AccountModal(sources)
                 case 'config':
                     return ConfigModal(sources)
-                default:
-                    return { DOM: xs.never() }
             }
         })
         .remember()
-     
+
     // Sink getter from modal$ stream.
     // This will get inner stream from current modal stream. 
-    // flattenConcurrently avoids losing signals from the inner stream  
-    // when modal$ changes suddenly.
     const sink = (modal$, name) => {
         return modal$
             .map(m => name in m ? m[name] : xs.never())
-            .compose(flattenConcurrently)
+            .flatten()
     }
 
     // childSinks computes an object containing all sinks 
@@ -77,9 +77,10 @@ function model(sources, actions) {
         sink(modal$, 'fractal'),
     )
 
+    const DOM = sink(modal$, 'DOM').debug("New modal DOM:")
+
     return childSinks(
-        { modal$, fractal: reducers$ }, 
-        'DOM',
+        { modal$, DOM, fractal: reducers$ }, 
         'HTTP',
         'storage',
         'glue',
@@ -92,7 +93,7 @@ function view(state$, childVTree$) {
                 return h('div')
             }
 
-            return h('div.modal.active', [
+            return h('div.modal.active', { key: state.modal.modal }, [
                 h('div.modal-overlay.modal-link', { dataset: { modal: state.modal.modal } }),
                 childVNode
             ])

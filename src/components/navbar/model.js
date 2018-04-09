@@ -25,14 +25,14 @@ export function model(actions) {
             url: Anzu.layer + 'notifications',
             category: 'notifications',
             headers: withAuth({})
-        }));
+        }))
 
     /**
      * LocalStorage write effects including:
      * - Auth token reset
      * - New auth token persistence 
      */
-    const storage$ = actions.logoutLink$.map(() => ({key: 'id_token', action: 'removeItem'})); 
+    const storage$ = actions.logoutLink$.map(() => ({key: 'id_token', action: 'removeItem'})) 
 
     /**
      * Reducers.
@@ -46,7 +46,7 @@ export function model(actions) {
                 ...state.resolving,
                 notifications: true
             },
-        }));
+        }))
 
     const notificationsR$ = actions.notifications$
         .map(notifications => state => ({
@@ -60,7 +60,7 @@ export function model(actions) {
                 notifications: 0,
             },
             notifications
-        }));
+        }))
 
     const incomingNotificationR$ = actions.userChan$.filter(ev => ev.fire == 'notification')
         .map(ev => state => ({
@@ -88,17 +88,15 @@ export function model(actions) {
         incomingNotificationR$, 
     ).fold((state, action) => action(state), DEFAULT_STATE);
 
-    const reducers$ = xs.merge(
-        actions.modalLink$
-            .map(action => state => ({
-                ...state, 
-                modal: {
-                    ...state.modal, 
-                    active: true, 
-                    modal: action.modal
-                }
-            }))
-    )
+    const reducers$ = actions.modalLink$
+        .map(action => state => ({
+            ...state, 
+            modal: {
+                ...state.modal, 
+                active: true, 
+                modal: action.modal
+            }
+        }))
     
     const beep$ = actions.userChan$.filter(ev => ev.fire == 'notification' && ev.count > 0);
 

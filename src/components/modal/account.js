@@ -26,7 +26,7 @@ export function AccountModal({ DOM, HTTP }) {
      */
     const tab$ = tabLink$.startWith('login')
     const token$ = xs.merge(login.token, signup.token).remember()
-    const reducers$ = token$.mapTo(state => ({...state, modal: false, active: false})) 
+    const reducers$ = token$.mapTo(state => ({...state, modal: { modal: false, active: false }})) 
 
     /**
      * View computation.
