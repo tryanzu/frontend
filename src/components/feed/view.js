@@ -32,7 +32,7 @@ export function view(state$) {
                 const missed = counters.missed[post.id] || 0
                 const category = subcategories.id[post.category] || false
 
-                return article('.post', { class: { active: postId == post.id }, dataset: { href } }, [
+                return article('.post-preview', { class: { active: postId == post.id }, dataset: { href } }, [
                     div('.flex.items-center', [
                         div('.flex-auto', 
                             category != false

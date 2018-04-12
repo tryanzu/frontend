@@ -63,6 +63,10 @@
 		margin-left: 0.8rem;
 		border-left: 2px solid var(--mainGray);
 	}
+	@media (--breakpoint-medium){
+		margin: 0;
+		padding: 1rem;
+	}
 }
 
 .quick-guide {

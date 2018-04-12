@@ -17,8 +17,18 @@ main.board {
 	& > section:nth-child(2) {
 		lost-column: 2/3;
 	}
+	@media (--breakpoint-medium) {
+			padding: 0 .5rem;
+		
+			& > section:nth-child(1) {
+				lost-column: 1/1;
+			}
+		
+			& > section:nth-child(2) {
+				lost-column: 1/1;
+			}
+	}
 }
-
 main.publish {
 	lost-center: var(--layoutSize);
 	width: 100%;
