@@ -43,10 +43,14 @@
 	& .flex > div {
 		padding: 1.2rem 1rem;
 
+		& .header {
+			margin: 0 0 1rem;
+		}
+		
 		& h2 {
 			font-size: calc(var(--fontSize) * 1.8);
 			font-weight: 500;
-			margin: 0 0 1rem;
+			margin: 0;
 		}
 
 		& label {

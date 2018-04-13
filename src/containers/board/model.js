@@ -129,7 +129,7 @@ export function model(actions) {
         // Runtime config
         actions.config$
             .debug('runtime::')
-            .map((site) => state => merge(state)({ site, config: { site } })),
+            .map((site) => state => merge(state)({ site, config: { dirty: false, site } })),
 
         // Mapping some reducers into the main chain.
         fetchUser$

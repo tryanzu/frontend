@@ -1,9 +1,23 @@
 import xs from 'xstream'
+import sampleCombine from 'xstream/extra/sampleCombine'
 import { h, div, span, nav, a, img, i, h2, p, form, label, input, textarea } from '@cycle/dom'
 
-export function ConfigModal({ fractal, DOM, HTTP }) {
-    const siteFields$ = DOM.select('#update-site input').events('input')
-        .map((event) => ({ [event.target.name]: event.target.value }))
+export function ConfigModal({ fractal, DOM, HTTP, props }) {
+
+    const siteFields$ = xs.merge(
+        DOM.select('#update-site input').events('input'),
+        DOM.select('#update-site textarea').events('input'),
+    ).map((event) => ({ [event.target.name]: event.target.value }))
+
+    const navFields$ = DOM.select('#links input').events('input')
+        .map(event => {
+            const el = event.target
+            return { id: el.dataset.id, fields: { [el.name]: el.value } }
+        })
+        .debug()
+
+    const save$ = DOM.select('form#update-site').events('submit', { preventDefault: true })
+        .mapTo(true)
 
     const reducers$ = xs.merge(
         siteFields$.map(changes => (state => ({
@@ -15,8 +29,36 @@ export function ConfigModal({ fractal, DOM, HTTP }) {
                     ...changes
                 }
             }
+        }))),
+        navFields$.map((changes) => (state => ({
+            ...state,
+            config: {
+                dirty: true,
+                site: {
+                    ...state.config.site,
+                    nav: state.config.site.nav.map((link, k) => (k == changes.id ? { ...link, ...changes.fields } : link))
+                }
+            }
         })))
     )
+
+    const http$ = save$
+        .compose(sampleCombine(props.authToken$, fractal.state$))
+        .map(([_, withAuth, state]) => ({
+            method: 'PUT',
+            type: 'application/json',
+            url: `${Anzu.layer}config`,
+            category: 'config',
+            send: { 
+                section: 'site',
+                changes: {
+                    name: state.config.site.name,
+                    description: state.config.site.description,
+                    nav: state.config.site.nav,
+                }
+             },
+            headers: withAuth({})
+        }))
 
     /**
      * View computation.
@@ -37,12 +79,10 @@ export function ConfigModal({ fractal, DOM, HTTP }) {
                 ]),
                 div('.flex-auto', [
                     form({ attrs: { id: 'update-site' } }, [
-                        div('.flex', [
+                        div('.flex.items-center.header', [
                             h2('.flex-auto', 'General'),
                             dirty !== false
-                                ? div([
-                                    input('.btn.btn-primary.btn-block', { attrs: { type: 'submit', value: 'Guardar ahora' } })
-                                ])
+                                ? span(input('.btn.btn-primary.btn-block', { attrs: { type: 'submit', value: 'Guardar cambios' } }))
                                 : null
                         ]),
                         div('.form-group', [
@@ -61,12 +101,15 @@ export function ConfigModal({ fractal, DOM, HTTP }) {
                         div('.form-group', [
                             label('.b.form-label', 'Descripción del sitio'),
                             textarea('.form-input', {
+                                props: {
+                                    value: site.description
+                                },
                                 attrs: {
                                     name: 'description',
                                     placeholder: '...',
-                                    rows: 3
+                                    rows: 3,
                                 }
-                            }, site.description),
+                            }),
                             p('.form-input-hint', 'Para metadatos, resultados de busqueda y dar a conocer tu comunidad.')
                         ]),
                     ]),
@@ -75,12 +118,12 @@ export function ConfigModal({ fractal, DOM, HTTP }) {
                             label('.b.form-label', 'Menu de navegación'),
                             p('.form-input-hint', 'Mostrado en la parte superior del sitio. (- = +)'),
                             div(
-                                state.site.nav.map((link) => {
-                                    return div('.input-group.mb2', { key: link.href }, [
+                                state.site.nav.map((link, k) => {
+                                    return div('.input-group.mb2', { key: `link-${k}` }, [
                                         span('.input-group-addon', i('.icon-up-outline')),
                                         span('.input-group-addon', i('.icon-down-outline')),
-                                        input('.form-input', { attrs: { type: 'text', placeholder: '...', value: link.name, required: true } }),
-                                        input('.form-input', { attrs: { type: 'text', placeholder: '...', value: link.href, required: true } })
+                                        input('.form-input', { dataset: { id: String(k) }, attrs: { name: 'name', type: 'text', placeholder: '...', value: link.name, required: true } }),
+                                        input('.form-input', { dataset: { id: String(k) }, attrs: { name: 'href', type: 'text', placeholder: '...', value: link.href, required: true } })
                                     ])
                                 })
                             ),
@@ -93,6 +136,7 @@ export function ConfigModal({ fractal, DOM, HTTP }) {
 
     return {
         DOM: vdom$,
-        fractal: reducers$
+        fractal: reducers$,
+        HTTP: http$
     }
 }

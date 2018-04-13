@@ -29,7 +29,7 @@ function board(sources) {
      * Child component wiring...
      * Pass through some read sinks & read some effects.
      */
-    const modal = isolate(Modal, { fractal: modalLens() })({ DOM, HTTP, storage, fractal, glue })
+    const modal = isolate(Modal, { fractal: modalLens() })({ DOM, HTTP, storage, fractal, glue, props: { authToken$ } })
     const navbar = Navbar({ DOM, HTTP, storage, fractal, glue, props: { authToken$ } })
     const feed = isolate(Feed, { fractal: feedLens() })({ DOM, HTTP, fractal, glue, props: { authToken$, router$ } })
     const post = isolate(Post, { fractal: postLens() })({ DOM, HTTP, fractal, glue, props: { authToken$, router$ } })

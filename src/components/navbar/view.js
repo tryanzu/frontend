@@ -119,7 +119,7 @@ function desktopVersion({ user, resolving, connectedCount, image, state, site })
     const nav = site.nav || []
 
     return h('section.navbar-section.hide-sm', nav.map(
-        (link) => (a('.btn.btn-link', { href: link.href }, link.name))
+        (link) => (a('.btn.btn-link', { attrs: { href: link.href } }, link.name))
     ).concat([
         //a('.btn.btn-link.ng-link', {dataset: {href: '/chat'}}, ['Chat ', span('.bg-green.ph1.br1', String(connectedCount))]),
         /*div('.dropdown', [

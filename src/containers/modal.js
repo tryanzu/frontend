@@ -77,7 +77,7 @@ function model(sources, actions) {
         sink(modal$, 'fractal'),
     )
 
-    const DOM = sink(modal$, 'DOM').debug("New modal DOM:")
+    const DOM = sink(modal$, 'DOM')
 
     return childSinks(
         { modal$, DOM, fractal: reducers$ }, 
