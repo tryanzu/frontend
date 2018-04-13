@@ -22,6 +22,7 @@
 		border-right: 1px solid #e3e9ef;
 		width: 25%;
 		padding: 0.6rem 0;
+		flex-shrink: 0;
 
 		& a {
 			display: block;

@@ -19,6 +19,6 @@ export function authorView(item, label = 'Publicó') {
                 ])
             ])
         ]),
-        div('.pl2.top', small('.ago', label + ' hace ' + ago(item.created_at)))
+        div('.pl2.self-start', small('.ago', label + ' hace ' + ago(item.created_at)))
     ])
 }
