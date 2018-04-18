@@ -1,6 +1,6 @@
-import {intent} from './chat/intent';
-import {model} from './chat/model';
-import {view} from './chat/view';
+import { intent } from './chat/intent';
+import { model } from './chat/model';
+import { view } from './chat/view';
 
 export function Chat(sources) {
     const actions$ = intent(sources.DOM, sources.socketIO);
@@ -9,6 +9,6 @@ export function Chat(sources) {
 
     return {
         DOM: vtree$,
-        socketIO: model$.socket$
+        socketIO: model$.socket$,
     };
-};
+}
