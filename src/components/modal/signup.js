@@ -1,8 +1,8 @@
-import {intent} from './signup/intent';
-import {model} from './signup/model';
-import {view} from './signup/view';
+import { intent } from './signup/intent';
+import { model } from './signup/model';
+import { view } from './signup/view';
 
-export function SignupModal({DOM, HTTP}) {
+export function SignupModal({ DOM, HTTP }) {
     const actions = intent(DOM, HTTP);
     const model$ = model(actions);
     const view$ = view(model$.state$);
@@ -11,6 +11,6 @@ export function SignupModal({DOM, HTTP}) {
         DOM: view$,
         HTTP: model$.HTTP,
         token: model$.token$,
-        finished: actions.finished$
+        finished: actions.finished$,
     };
-};
+}

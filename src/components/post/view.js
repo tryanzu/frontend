@@ -1,7 +1,6 @@
-import { section, footer, small } from '@cycle/dom'
-import { t } from '../../i18n'
-import { toastsView } from './views/toastsView'
-import { QuickstartView } from './views/quickstartView'
+import { section, footer, small } from '@cycle/dom';
+import { t } from '../../i18n';
+import { toastsView } from './views/toastsView';
 import { postView } from './views/postView';
 
 export function view(state$) {
@@ -10,8 +9,11 @@ export function view(state$) {
             toastsView({ state }),
             postView({ state }),
             footer('.pa3.pt4', [
-                small('.silver', t`Powered by Anzu community software v0.1 alpha`)
-            ])
-        ])
-    })
+                small(
+                    '.silver',
+                    t`Powered by Anzu community software v0.1 alpha`
+                ),
+            ]),
+        ]);
+    });
 }

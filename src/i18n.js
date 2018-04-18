@@ -1,10 +1,9 @@
-import Jed from 'jed'
-import es from 'date-fns/locale/es'
-import { format, distanceInWordsToNow } from 'date-fns'
+import Jed from 'jed';
+import es from 'date-fns/locale/es';
+import { format, distanceInWordsToNow } from 'date-fns';
 
-export const i18n = new Jed({ 
+export const i18n = new Jed({
     locale_data: {
-
         // This is the domain key
         messages: {
             '': {
@@ -12,24 +11,24 @@ export const i18n = new Jed({
                 domain: 'messages',
 
                 // Language code
-                "lang" : "es",
+                lang: 'es',
 
                 // Plural form function for language
-                'plural_forms': 'nplurals=2; plural=(n != 1);'
-            }
-        }
+                plural_forms: 'nplurals=2; plural=(n != 1);',
+            },
+        },
     },
-    domain: 'messages'
- })
+    domain: 'messages',
+});
 
- export function t(str, ...values) {
-     return i18n.translate(String.raw(str, ...values)).fetch()
- }
+export function t(str, ...values) {
+    return i18n.translate(String.raw(str, ...values)).fetch();
+}
 
 export function dateToString(date, body = 'dddd, D MMMM YYYY') {
-    return format(date, body, { locale: es })
+    return format(date, body, { locale: es });
 }
 
 export function ago(date, options = {}) {
-    return distanceInWordsToNow(date, { locale: es, ...options })
+    return distanceInWordsToNow(date, { locale: es, ...options });
 }

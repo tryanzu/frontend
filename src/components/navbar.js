@@ -1,13 +1,12 @@
-import {intent} from './navbar/intent'
-import {model} from './navbar/model'
-import {view} from './navbar/view'
-import xs from 'xstream'
+import { intent } from './navbar/intent';
+import { model } from './navbar/model';
+import { view } from './navbar/view';
 
 export function Navbar(sources) {
-    const { DOM, HTTP, storage, fractal, props } = sources
-    const actions = intent(sources)
-    const effects = model(actions)
-    const vdom$ = view(effects, fractal)
+    const { fractal } = sources;
+    const actions = intent(sources);
+    const effects = model(actions);
+    const vdom$ = view(effects, fractal);
 
     return {
         DOM: vdom$,
@@ -15,5 +14,5 @@ export function Navbar(sources) {
         storage: effects.storage$,
         beep: effects.beep$,
         fractal: effects.fractal,
-    }
+    };
 }

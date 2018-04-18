@@ -50,9 +50,15 @@
     "autoprefixer": "^7.1.6",
     "babel-brunch": "^6.1.1",
     "babel-preset-env": "^1.6.1",
+    "babel-preset-flow": "^6.23.0",
     "babel-preset-stage-2": "^6.24.1",
     "brunch": "^2",
     "clean-css-brunch": "^2",
+    "eslint": "^4.19.1",
+    "eslint-brunch": "^3.12.0",
+    "eslint-config-prettier": "^2.9.0",
+    "eslint-plugin-prettier": "^2.6.0",
+    "prettier": "^1.12.0",
     "uglify-js-brunch": "^2.10.0"
   }
 }

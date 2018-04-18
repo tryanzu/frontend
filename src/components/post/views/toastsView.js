@@ -1,13 +1,20 @@
-import { div } from '@cycle/dom'
+import { div } from '@cycle/dom';
 
 export function toastsView({ state }) {
-    const { toasts } = state.own
+    const { toasts } = state.own;
 
     if (toasts.length === 0) {
-        return div('.dn')
+        return div('.dn');
     }
 
-    return toasts.map(
-        (toast) => div({ attrs: { class: 'mb2 fade-in shadow-4 toast toast-' + toast.type } }, toast.content)
-    )
+    return toasts.map(toast =>
+        div(
+            {
+                attrs: {
+                    class: 'mb2 fade-in shadow-4 toast toast-' + toast.type,
+                },
+            },
+            toast.content
+        )
+    );
 }

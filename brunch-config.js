@@ -22,6 +22,11 @@ exports.plugins = {
     babel: {
         presets: ['env']
     },
+    eslint: {
+        pattern: /^src\/.*\.js$/,
+        warnOnly: true,
+        formatter: 'table',
+    },
     uglify: {
       mangle: true,
       compress: {
