@@ -49,7 +49,7 @@ export function AccountModal({ DOM, HTTP }) {
                             [
                                 h('img.w2', {
                                     attrs: {
-                                        src: '/images/seal.svg',
+                                        src: '/images/anzu.svg',
                                         alt: 'Únete a la conversación',
                                     },
                                 }),

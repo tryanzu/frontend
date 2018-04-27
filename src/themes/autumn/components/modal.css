@@ -43,6 +43,8 @@
 
 	& .flex > div {
 		padding: 1.2rem 1rem;
+		max-height: 600px;
+    	overflow-y: scroll;
 
 		& .header {
 			margin: 0 0 1rem;
