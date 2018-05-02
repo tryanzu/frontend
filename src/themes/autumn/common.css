@@ -33,6 +33,20 @@ a {
 	border-color: var(--primaryColor);
 }
 
+.toast.toast-warning {
+	background: #FFF9C2;
+	border-color: #e3dfb3;
+	color: #22292F;
+}
+
+.avatar {
+	border-radius: 4px;
+	
+	& img {
+		border-radius: inherit;
+	}
+}
+
 .btn-icon {
 	border: 1px solid #caced7;
 	border-radius: .125rem;

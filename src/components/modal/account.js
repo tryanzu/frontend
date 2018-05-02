@@ -1,18 +1,16 @@
-import { h } from '@cycle/dom';
+import { h, div } from '@cycle/dom';
 import xs from 'xstream';
 import isolate from '@cycle/isolate';
 import { LoginModal } from './login';
 import { SignupModal } from './signup';
+import { t } from '../../i18n';
 
-export function AccountModal({ DOM, HTTP }) {
+export function AccountModal({ DOM, HTTP, fractal }) {
     /**
      * Child components declarations.
      */
-    const loginModal = isolate(LoginModal, 'login');
-    const signupModal = isolate(SignupModal, 'signup');
-
-    const login = loginModal({ DOM, HTTP });
-    const signup = signupModal({ DOM, HTTP });
+    const login = isolate(LoginModal, 'login')({ DOM, HTTP });
+    const signup = isolate(SignupModal, 'signup')({ DOM, HTTP });
 
     /**
      * Read effects including:
@@ -36,8 +34,12 @@ export function AccountModal({ DOM, HTTP }) {
      * View computation.
      */
     const vdom$ = xs
-        .combine(tab$, login.DOM, signup.DOM)
-        .map(([tab, loginVNode, signupVNode]) => {
+        .combine(fractal.state$, tab$, login.DOM, signup.DOM)
+        .map(([state, tab, loginVNode, signupVNode]) => {
+            const modal = state.modal || {};
+            const params = modal.params || {};
+            const intent = params.intent || false;
+
             return h('div.modal-container', { style: { width: '360px' } }, [
                 h(
                     'div.modal-body',
@@ -47,7 +49,7 @@ export function AccountModal({ DOM, HTTP }) {
                             'div.bg-near-white.tc.pv3',
                             { style: { margin: '0 -0.8rem' } },
                             [
-                                h('img.w2', {
+                                h('img.w3', {
                                     attrs: {
                                         src: '/images/anzu.svg',
                                         alt: 'Únete a la conversación',
@@ -79,6 +81,14 @@ export function AccountModal({ DOM, HTTP }) {
                                 ),
                             ]
                         ),
+                        div({ style: { padding: '0 0.4rem' } }, [
+                            intent === 'publish'
+                                ? div(
+                                      '.toast.toast-warning.mb3',
+                                      t`Necesitas estar identificado para continuar con tu publicación.`
+                                  )
+                                : null,
+                        ]),
                         tab === 'login' ? loginVNode : signupVNode,
                     ]
                 ),

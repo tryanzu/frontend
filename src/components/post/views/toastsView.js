@@ -7,14 +7,17 @@ export function toastsView({ state }) {
         return div('.dn');
     }
 
-    return toasts.map(toast =>
-        div(
-            {
-                attrs: {
-                    class: 'mb2 fade-in shadow-4 toast toast-' + toast.type,
+    return div(
+        '.absolute.top-1.right-1.z-1',
+        toasts.map(toast =>
+            div(
+                {
+                    attrs: {
+                        class: 'mb2 fade-in shadow-4 toast toast-' + toast.type,
+                    },
                 },
-            },
-            toast.content
+                toast.content
+            )
         )
     );
 }

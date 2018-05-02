@@ -167,6 +167,7 @@ export function model(actions) {
                                 ...shared.modal,
                                 active: true,
                                 modal: 'account',
+                                params: { intent: 'publish' },
                             },
                         },
                     };

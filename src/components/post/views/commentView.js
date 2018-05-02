@@ -107,7 +107,7 @@ export function commentView(props) {
         ui.replyTo === comment.id
             ? div(
                   comment.reply_type == 'post' ? '.pl4' : '.pl0',
-                  replyView(user, ui, 'comment', comment.id, true)
+                  replyView({ state, type: 'comment', id: comment.id })
               )
             : div(),
     ]);

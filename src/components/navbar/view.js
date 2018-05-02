@@ -462,12 +462,17 @@ function desktopVersion({ user, resolving, image, state, site }) {
                       ])
                     : div('.dn'),
                 user !== false
+                    ? a('.link.pointer.btn.btn-link', [
+                          h('i.icon-crown'),
+                          h('span.b', user.gaming.swords),
+                      ])
+                    : null,
+                user !== false
                     ? div('.dropdown.dropdown-right', [
                           h(
                               'span.dropdown-toggle.pointer.link',
-                              { attrs: { tabindex: 0 } },
+                              { attrs: { tabindex: 0, title: user.username } },
                               [
-                                  h('span.mr1', user.username),
                                   figure(
                                       '.avatar',
                                       {
@@ -535,7 +540,7 @@ function desktopVersion({ user, resolving, image, state, site }) {
                                   ),
                                   h('a.pointer', 'Reputación'),
                               ]),
-                              h('li.menu-item.cf', [
+                              /*h('li.menu-item.cf', [
                                   h(
                                       'div.menu-badge',
                                       h(
@@ -544,7 +549,7 @@ function desktopVersion({ user, resolving, image, state, site }) {
                                       )
                                   ),
                                   h('a.pointer', 'Tributo'),
-                              ]),
+                              ]),*/
                               h('li.divider'),
                               h(
                                   'li.menu-item',

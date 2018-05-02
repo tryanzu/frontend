@@ -186,7 +186,6 @@ export function model(actions) {
     );
 
     const voteErr$ = actions.vote$.filter(res => res.status == 'error');
-
     const voteFailR$ = voteErr$.map(({ err }) => state =>
         update(state, {
             voting: false,
@@ -389,7 +388,7 @@ function traduceErr(err) {
         case 401:
             return 'Necesitas iniciar sesión en tu cuenta para calificar.';
         case 412:
-            return 'No cuentas con tributo suficiente para calificar =(';
+            return 'Necesitas 15 puntos de reputación para poder votar.';
         default:
             return 'Pasados 15 minutos ya no es posible cambiar tu voto en este comentario.';
     }

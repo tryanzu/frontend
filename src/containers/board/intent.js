@@ -100,9 +100,9 @@ export function intent({ history, glue, storage, HTTP, fractal }) {
         .filter(res => !(res instanceof Error))
         .map(res => res.body);
 
-    const unauthorized$ = HTTP.filter(req => {
-        return 'headers' in req && 'Authorization' in req.headers;
-    })
+    const unauthorized$ = HTTP.filter(
+        req => 'headers' in req && 'Authorization' in req.headers
+    )
         .select() // This fetches all happening requests having the Auth header present.
         .map(response$ => response$.replaceError(err => xs.of(err)))
         .flatten()

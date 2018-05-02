@@ -157,7 +157,12 @@
 a[rel="author"] {
 	color: #32325d;
 	display: flex;
+	flex-wrap: wrap;
 	align-items: center;
+
+	&:hover {
+		text-decoration: none;
+	}
 	
 	& > div {
 		&.top {

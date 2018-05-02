@@ -425,7 +425,7 @@ function postInfo({ categories, publisher }) {
 function postContent(state) {
     const { publisher } = state;
     const { content } = publisher;
-    const ready = content.length > 120;
+    const ready = content.length > 30;
 
     return div([
         h1('.ma0.pv3.tc', 'Escribir nueva publicación'),

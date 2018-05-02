@@ -20,7 +20,7 @@ export function replyView(props) {
     }
 
     return div(
-        '.comment.flex.fade-in',
+        '.comment.flex.fade-in.items-start',
         { class: { pb3: nested == false, pt3: nested } },
         [
             a({ attrs: { href: '/', rel: 'author' } }, [
