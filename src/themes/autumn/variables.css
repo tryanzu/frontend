@@ -1,3 +1,4 @@
+@import "tachyons/src/_media-queries.css";
 :root {
 	--primaryColor: #3D5AFE;
 	--navbarColor: #FFF;
