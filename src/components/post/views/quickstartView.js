@@ -11,25 +11,8 @@ export function QuickstartView() {
             h2('Si eres nuevo por aquí'),
             div('.quick-guide', [
                 div([
-<<<<<<< HEAD
-                    h3(a('.pointer',['Código de conducta ', span('.icon.icon-arrow-right')])),
-                    p('Si gustas de contribuir te compartimos los lineamientos que está comunidad sigue por el bien de todos.')
-                ]),
-                div([
-                    h3(a('.pointer',['Preguntas frecuentes ', span('.icon.icon-arrow-right')])),
-                    p('Antes de preguntar algo te pedimos consultar está sección para saber si alguien más ya ha resuelto esa duda.')
-                ]),
-                div([
-                    h3(a('.pointer',['Desarrollo Libre ', span('.icon.icon-arrow-right')])),
-                    p('Anzu es una plataforma de código abierto escrita por apasionados del software! Te invitamos a conocer nuestra misión y unirte.')
-                ])
-            ])
-        ])
-    ])
-}
-=======
                     h3(
-                        a([
+                        a('.pointer', [
                             'Código de conducta ',
                             span('.icon.icon-arrow-right'),
                         ])
@@ -40,7 +23,7 @@ export function QuickstartView() {
                 ]),
                 div([
                     h3(
-                        a([
+                        a('.pointer', [
                             'Preguntas frecuentes ',
                             span('.icon.icon-arrow-right'),
                         ])
@@ -51,7 +34,10 @@ export function QuickstartView() {
                 ]),
                 div([
                     h3(
-                        a(['Desarrollo Libre ', span('.icon.icon-arrow-right')])
+                        a('.pointer', [
+                            'Desarrollo Libre ',
+                            span('.icon.icon-arrow-right'),
+                        ])
                     ),
                     p(
                         'Anzu es una plataforma de código abierto escrita por apasionados del software! Te invitamos a conocer nuestra misión y unirte.'
@@ -61,4 +47,3 @@ export function QuickstartView() {
         ]),
     ]);
 }
->>>>>>> release/alpha

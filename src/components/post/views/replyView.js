@@ -1,12 +1,18 @@
 import autosize from 'autosize';
 import { div, a, img, form, textarea, button } from '@cycle/dom';
 import { t } from '../../../i18n';
+import { debounce } from 'lodash';
 
 export function replyView(props) {
     const { state, type, id } = props;
     const { user } = state.shared;
-    const { ui } = state.own;
+    const { comments, ui } = state.own;
     const nested = props.nested || false;
+    const mentionable = (comments.list || []).reduce((users, id) => {
+        const comment = comments.map[id];
+        const { author } = comment;
+        return { ...users, [author.id]: author.username };
+    }, {});
 
     // Textarea mutable props...
     let textareaProps = { value: '' };
@@ -43,20 +49,19 @@ export function replyView(props) {
                         hook: {
                             insert: vnode => {
                                 if (nested) {
-                                    // debounce(vnode => vnode.elm.focus(), 100)(
-                                    //    vnode
-                                    //);
+                                    debounce(vnode => vnode.elm.focus(), 100)(
+                                        vnode
+                                    );
                                 }
                                 autosize(vnode.elm);
 
                                 const mentions = new Tribute({
-                                    values: [
-                                        { key: 'nobody', value: 'nobody' },
-                                        {
-                                            key: 'TestUser1',
-                                            value: 'testuser1',
-                                        },
-                                    ],
+                                    values: Object.keys(mentionable).map(
+                                        id => ({
+                                            key: mentionable[id],
+                                            value: mentionable[id],
+                                        })
+                                    ),
                                 });
 
                                 mentions.attach(vnode.elm);

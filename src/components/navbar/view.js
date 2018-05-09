@@ -463,7 +463,7 @@ function desktopVersion({ user, resolving, image, state, site }) {
                     : div('.dn'),
                 user !== false
                     ? a('.link.pointer.btn.btn-link', [
-                          h('i.icon-crown'),
+                          h('i.icon-crown.gold'),
                           h('span.b', user.gaming.swords),
                       ])
                     : null,

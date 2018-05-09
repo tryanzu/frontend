@@ -61,47 +61,6 @@ export function view(state$) {
                         const category =
                             subcategories.id[post.category] || false;
 
-<<<<<<< HEAD
-                return article('.post-preview', { class: { active: postId == post.id }, dataset: { href } }, [
-                    div('.flex.items-center', [
-                        div('.flex-auto', 
-                            category != false
-                                ? a('.category', { attrs: { href: `/c/${category.slug}` } }, category.name)
-                                : a('.category', span('.loading'))
-                        ),
-                        post.pinned ? span('.icon-pin.pinned-post') : null
-                    ]),
-
-                    div('.flex.items-center', [
-                        div('.flex-auto', [
-                            h1(
-                                a('.link', { attrs: { href }, dataset: { postId: post.id } }, post.title),
-                            ),
-                            a('.pointer',{ attrs: { rel: 'author' } }, [
-                                div(author.image ? img({ attrs: { src: author.image, alt: `Avatar de ${author.username}` } }) : div('.empty-avatar', author.username.substr(0, 1))),
-                                div([
-                                    span(author.username),
-                                    span('.ago', 'Publicó hace ' + ago(post.created_at))
-                                ])
-                            ]),
-                        ]),
-                        div('.tc', { style: { minWidth: '50px', flexShrink: 0 } }, [
-                            span('.icon-chat-alt'),
-                            span('.pl2.b', post.comments.count + recent),
-                            missed > 0 ? span('.new-comments', `+${missed}`) : null
-                        ])
-                    ])
-                ])
-            }).concat(
-                endReached
-                    ? [
-                        div('.pv2', p('.measure.center.ph2.gray.lh-copy.tc', 'No encontramos más publicaciones por cargar.'))
-                    ]
-                    : [
-                        div('.pv2', div('.loading', { class: { dn: !loading } }))
-                    ]
-                ))
-=======
                         return article(
                             '.post',
                             {
@@ -221,7 +180,6 @@ export function view(state$) {
                               ]
                     )
             ),
->>>>>>> release/alpha
         ]);
     });
 }
