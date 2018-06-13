@@ -58,6 +58,25 @@ export function intent({ DOM, HTTP, glue, fractal, props }) {
             before: event.currentTarget.dataset.before || false,
         }));
 
+    const edit$ = DOM.select('form#update-post')
+        .events('submit', { preventDefault: true })
+        .mapTo(true);
+
+    const editPostFields$ = xs.merge(
+        DOM.select('form#update-post .form-input')
+            .events('input')
+            .map(({ target }) => ({
+                field: target.name,
+                value: target.value,
+            })),
+        DOM.select('form#update-post input[type=checkbox]')
+            .events('change')
+            .map(({ target }) => ({
+                field: target.name,
+                value: target.checked,
+            }))
+    );
+
     /**
      * HTTP read effects including:
      * - new posts data
@@ -132,6 +151,8 @@ export function intent({ DOM, HTTP, glue, fractal, props }) {
         voting$,
         comments$,
         commentFocus$,
+        edit$,
+        editPostFields$,
         replyTo$,
         replyContent$,
         reply$,

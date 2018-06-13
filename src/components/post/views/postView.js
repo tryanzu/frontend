@@ -91,6 +91,7 @@ function updatePostView({ state }) {
             input('#title.form-input', {
                 attrs: {
                     type: 'text',
+                    name: 'title',
                     value: post.title,
                     placeholder:
                         'Escribe el titulo de tu publicación o pregunta...',
@@ -101,6 +102,7 @@ function updatePostView({ state }) {
         div('.form-group.pb2', [
             textarea('#content.form-input', {
                 attrs: {
+                    name: 'content',
                     placeholder: 'Escribe aquí el contenido de tu publicación',
                     rows: 8,
                 },
@@ -119,8 +121,8 @@ function updatePostView({ state }) {
                     input({
                         attrs: {
                             type: 'checkbox',
-                            name: 'isQuestion',
-                            checked: false,
+                            name: 'is_question',
+                            checked: post.is_question,
                         },
                     }),
                     i('.form-icon'),
@@ -133,8 +135,8 @@ function updatePostView({ state }) {
                     input({
                         attrs: {
                             type: 'checkbox',
-                            name: 'disabledComments',
-                            checked: false,
+                            name: 'lock',
+                            checked: post.lock,
                         },
                     }),
                     i('.form-icon'),
@@ -148,7 +150,7 @@ function updatePostView({ state }) {
                         attrs: {
                             type: 'checkbox',
                             name: 'pinned',
-                            checked: false,
+                            checked: post.pinned,
                         },
                     }),
                     i('.form-icon'),

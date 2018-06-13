@@ -105,6 +105,19 @@ export function model(actions) {
                     before: 'before' in params ? params.before : '',
                 },
                 headers: withAuth({}),
+            })),
+        // Post update
+        actions.edit$
+            .compose(sampleCombine(actions.authToken$, actions.state$))
+            .map(([params, withAuth, state]) => ({
+                method: 'PUT',
+                url: Anzu.layer + 'posts/' + state.own.post.id,
+                category: 'post.update',
+                send: {
+                    kind: 'post',
+                    ...state.own.ui.post,
+                },
+                headers: withAuth({}),
             }))
     );
 
@@ -358,9 +371,31 @@ export function model(actions) {
             .filter(({ action }) => action === 'update' || action === 'cancel')
             .map(({ action }) => state =>
                 update(state, {
-                    ui: { updating: action === 'update', post: state.own.post },
+                    ui: {
+                        updating: action === 'update',
+                        post: { ...state.own.post },
+                    },
                 })
             ),
+
+        actions.editPostFields$.map(updates => state =>
+            update(state, {
+                ui: {
+                    post: {
+                        [updates.field]: updates.value,
+                    },
+                },
+            })
+        ),
+
+        actions.edit$.mapTo(state =>
+            update(state, {
+                ui: { updating: false },
+                post: {
+                    ...state.own.ui.post,
+                },
+            })
+        ),
 
         // Incoming comments from remote.
         actions.postGlue$
