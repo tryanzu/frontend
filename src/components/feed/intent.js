@@ -19,6 +19,7 @@ export function intent({ DOM, HTTP, props, glue }) {
             .map(event => {
                 const { currentTarget } = event;
                 event.preventDefault();
+                event.stopPropagation();
 
                 return { path: currentTarget.getAttribute('href') };
             }),

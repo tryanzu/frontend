@@ -9,6 +9,7 @@ import { Modal } from './modal';
 import { model } from './board/model';
 import { intent } from './board/intent';
 import { Publisher } from './publisher';
+import { User } from '../components/user';
 
 /**
  * Board component wrapped in the onion interface for fractal state.
@@ -23,48 +24,28 @@ function board(sources) {
     const { DOM, HTTP, storage, fractal, glue } = sources;
     const { authToken$ } = actions;
     const { router$ } = effects;
+    const deps = {
+        DOM,
+        HTTP,
+        storage,
+        fractal,
+        glue,
+        props: { authToken$, router$ },
+    };
 
     /**
      * Child component wiring...
      * Pass through some read sinks & read some effects.
      */
-    const modal = isolate(Modal, { fractal: modalLens() })({
-        DOM,
-        HTTP,
-        storage,
-        fractal,
-        glue,
-        props: { authToken$ },
-    });
-    const navbar = Navbar({
-        DOM,
-        HTTP,
-        storage,
-        fractal,
-        glue,
-        props: { authToken$ },
-    });
-    const feed = isolate(Feed, { fractal: feedLens() })({
-        DOM,
-        HTTP,
-        fractal,
-        glue,
-        props: { authToken$, router$ },
-    });
-    const post = isolate(Post, { fractal: postLens() })({
-        DOM,
-        HTTP,
-        fractal,
-        glue,
-        props: { authToken$, router$ },
-    });
+    const modal = isolate(Modal, { fractal: modalLens() })({ ...deps });
+    const navbar = Navbar({ ...deps });
+    const feed = isolate(Feed, { fractal: feedLens() })({ ...deps });
+    const post = isolate(Post, { fractal: postLens() })({ ...deps });
     const publisher = isolate(Publisher, { fractal: publisherLens() })({
-        DOM,
-        HTTP,
-        storage,
-        fractal,
-        glue,
-        props: { authToken$, router$ },
+        ...deps,
+    });
+    const profile = isolate(User, { fractal: profileLens() })({
+        ...deps,
     });
 
     // Compute merged vdom trees.
@@ -75,7 +56,8 @@ function board(sources) {
             navbar.DOM,
             post.DOM,
             modal.DOM,
-            publisher.DOM
+            publisher.DOM,
+            profile.DOM
         )
         .map(
             ([
@@ -85,6 +67,7 @@ function board(sources) {
                 postVNode,
                 modalVNode,
                 publisherVNode,
+                profileVNode,
             ]) => {
                 return div('.flex.flex-column.flex-auto', [
                     modalVNode,
@@ -93,9 +76,16 @@ function board(sources) {
                         `.board.flex.flex-auto${
                             page.post !== false ? '.post-active' : ''
                         }`,
-                        page.current == 'board'
-                            ? [feedVNode, postVNode]
-                            : publisherVNode
+                        (() => {
+                            switch (page.current) {
+                                case 'board':
+                                    return [feedVNode, postVNode];
+                                case 'publish':
+                                    return publisherVNode;
+                                case 'user':
+                                    return profileVNode;
+                            }
+                        })()
                     ),
                 ]);
             }
@@ -210,5 +200,18 @@ function publisherLens() {
             subcategories: feed.subcategories,
         }),
         set: (state, updated) => ({ ...state, publisher: { ...updated } }),
+    };
+}
+
+function profileLens() {
+    return {
+        get: state => {
+            const { site, config, profile } = state;
+            return { site, config, profile };
+        },
+        set: (state, child) => ({
+            ...state,
+            profile: child.profile,
+        }),
     };
 }

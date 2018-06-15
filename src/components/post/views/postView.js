@@ -65,7 +65,7 @@ function updatePostView({ state }) {
             label('.b.form-label', 'Categoría principal'),
             select(
                 '.form-select',
-                { attrs: { id: 'category', required: true } },
+                { attrs: { id: 'category', name: 'category', required: true } },
                 [option('Selecciona una categoría para la publicación')].concat(
                     categories.map(c =>
                         optgroup(

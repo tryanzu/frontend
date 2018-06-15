@@ -19,6 +19,10 @@ const DEFAULT_STATE = {
         resolving: false,
         user: false,
     },
+    profile: {
+        resolving: false,
+        user: false,
+    },
     categories: false,
     subcategories: {
         id: {},
@@ -67,7 +71,13 @@ export function model(actions) {
 
     const publishRoute$ = actions.routePath$
         .map(({ route }) => route.value)
-        .filter(action => action.page == 'publish');
+        .filter(action => action.page === 'publish');
+
+    const userRoute$ = actions.routePath$
+        .map(({ route }) => route.value)
+        .filter(action => action.page === 'user')
+        .compose(sampleCombine(actions.authToken$))
+        .remember();
 
     const fetchUser$ = actions.fetchUser$.remember();
 
@@ -124,7 +134,15 @@ export function model(actions) {
                     }
                 )
             )
-            .flatten()
+            .flatten(),
+
+        // User profile request.
+        userRoute$.map(([action, withAuth]) => ({
+            method: 'GET',
+            url: Anzu.layer + 'users/' + action.user.id,
+            category: 'user.profile',
+            headers: withAuth({}),
+        }))
     );
 
     const reducers$ = xs.merge(
@@ -132,16 +150,15 @@ export function model(actions) {
         xs.of(() => DEFAULT_STATE),
 
         // Runtime config
-        actions.config$
-            .debug('runtime::')
-            .map(site => state =>
-                merge(state)({ site, config: { dirty: false, site } })
-            ),
+        actions.config$.map(site => state =>
+            merge(state)({ site, config: { dirty: false, site } })
+        ),
 
         // Mapping some reducers into the main chain.
         fetchUser$.mapTo(state =>
             merge(state)({ user: { user: false, resolving: true } })
         ),
+
         postRoute$.map(([action]) => state => {
             const { id } = action.post;
             const recent = state.feed.counters.recent[id] || 0;
@@ -167,6 +184,9 @@ export function model(actions) {
             });
         }),
         publishRoute$.map(() => state => merge(state)({ page: 'publish' })),
+        userRoute$.map(() => state =>
+            merge(state)({ page: 'user', profile: { resolving: true } })
+        ),
         actions.categories$.map(categories => state =>
             merge(state)({
                 categories,
@@ -178,6 +198,9 @@ export function model(actions) {
         ),
         actions.user$.map(user => state =>
             merge(state)({ user: { user, resolving: false } })
+        ),
+        actions.profile$.map(user => state =>
+            merge(state)({ profile: { user, resolving: false } })
         ),
         actions.post$.map(post => state =>
             merge(state)({ post: { post, resolving: false } })

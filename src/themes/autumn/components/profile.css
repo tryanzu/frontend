@@ -1,0 +1,20 @@
+@import "../variables.css";
+
+.profile {
+    & > section {
+        width: 40rem;
+        margin: 0 auto;
+
+        & > div {
+            padding: 2rem 1rem;
+            background: #FFF;
+            border-radius: 4px;
+            box-shadow: 0 7px 14px 0 rgba(50,50,93,.1), 0 3px 6px 0 rgba(0,0,0,.07);
+            
+            & > h1, & > h2 {
+                color: color(var(--primaryColor) blackness(10%));
+                font-size: calc(var(--fontSize) * 1.6);
+            }
+        }
+    }
+}

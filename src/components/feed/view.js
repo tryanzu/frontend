@@ -104,34 +104,45 @@ export function view(state$) {
                                                 post.title
                                             )
                                         ),
-                                        a({ attrs: { rel: 'author' } }, [
-                                            div(
-                                                author.image
-                                                    ? img({
-                                                          attrs: {
-                                                              src: author.image,
-                                                              alt: `Avatar de ${
-                                                                  author.username
-                                                              }`,
-                                                          },
-                                                      })
-                                                    : div(
-                                                          '.empty-avatar',
-                                                          author.username.substr(
-                                                              0,
-                                                              1
+                                        a(
+                                            {
+                                                attrs: {
+                                                    href: `/u/${
+                                                        author.username
+                                                    }/${author.id}`,
+                                                    rel: 'author',
+                                                },
+                                            },
+                                            [
+                                                div(
+                                                    author.image
+                                                        ? img({
+                                                              attrs: {
+                                                                  src:
+                                                                      author.image,
+                                                                  alt: `Avatar de ${
+                                                                      author.username
+                                                                  }`,
+                                                              },
+                                                          })
+                                                        : div(
+                                                              '.empty-avatar',
+                                                              author.username.substr(
+                                                                  0,
+                                                                  1
+                                                              )
                                                           )
-                                                      )
-                                            ),
-                                            div([
-                                                span(author.username),
-                                                span(
-                                                    '.ago',
-                                                    'Publicó hace ' +
-                                                        ago(post.created_at)
                                                 ),
-                                            ]),
-                                        ]),
+                                                div([
+                                                    span(author.username),
+                                                    span(
+                                                        '.ago',
+                                                        'Publicó hace ' +
+                                                            ago(post.created_at)
+                                                    ),
+                                                ]),
+                                            ]
+                                        ),
                                     ]),
                                     div(
                                         '.tc',

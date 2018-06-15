@@ -171,7 +171,7 @@ function model(actions) {
                 send: {
                     kind: 'category-post',
                     content: state.content,
-                    name: state.title,
+                    title: state.title,
                     category: state.category,
                     locked: state.disabledComments,
                     is_question: state.isQuestion,

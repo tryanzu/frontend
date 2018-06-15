@@ -74,6 +74,12 @@ export function intent({ DOM, HTTP, glue, fractal, props }) {
             .map(({ target }) => ({
                 field: target.name,
                 value: target.checked,
+            })),
+        DOM.select('form#update-post select')
+            .events('change')
+            .map(({ target }) => ({
+                field: target.name,
+                value: target.value,
             }))
     );
 
@@ -92,10 +98,17 @@ export function intent({ DOM, HTTP, glue, fractal, props }) {
         .map(res => res.body);
 
     const post$ = HTTP.select('post')
-        .map(response$ => response$.replaceError(err => xs.of(err)))
+        .map(response$ =>
+            response$.replaceError(err => xs.of({ ok: false, err: err }))
+        )
         .flatten()
-        .filter(res => !(res instanceof Error))
-        .map(res => res.body);
+        .map(res => {
+            if (res.status !== 200) {
+                return { ok: false, status: res.status };
+            }
+
+            return res.body;
+        });
 
     const vote$ = HTTP.select('vote')
         .map(response$ =>

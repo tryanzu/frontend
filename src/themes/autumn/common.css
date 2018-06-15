@@ -45,6 +45,11 @@ a {
 	& img {
 		border-radius: inherit;
 	}
+
+	&.avatar-xl {
+		width: 6.4rem;
+		height: 6.4rem;
+	}
 }
 
 .btn-icon {
@@ -91,6 +96,10 @@ a {
 
 .bg-near-white {
 	background-color: var(--mainGray) !important;
+}
+
+.b--light-gray {
+    border-color: #cfd6de !important;
 }
 
 .fade-in {animation:fade-in 0.5s;}

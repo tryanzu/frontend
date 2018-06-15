@@ -15,6 +15,11 @@ const Routes = {
         page: 'category',
         category: { slug },
     }),
+    '/u/:slug/:id': (slug, id) => ({
+        type: 'goTo',
+        page: 'user',
+        user: { id, slug },
+    }),
 };
 
 export function intent({ history, glue, storage, HTTP, fractal }) {
@@ -94,6 +99,12 @@ export function intent({ history, glue, storage, HTTP, fractal }) {
         .filter(res => !(res instanceof Error))
         .map(res => res.body);
 
+    const profile$ = HTTP.select('user.profile')
+        .map(response$ => response$.replaceError(err => xs.of(err)))
+        .flatten()
+        .filter(res => !(res instanceof Error))
+        .map(res => res.body);
+
     const categories$ = HTTP.select('categories')
         .map(response$ => response$.replaceError(err => xs.of(err)))
         .flatten()
@@ -120,6 +131,7 @@ export function intent({ history, glue, storage, HTTP, fractal }) {
         authToken$,
         unauthorized$,
         user$,
+        profile$,
         post$,
         comments$,
         categories$,
