@@ -2,11 +2,11 @@
 
 .profile {
     & > section {
-        width: 40rem;
+        width: 50rem;
         margin: 0 auto;
 
-        & > div {
-            padding: 2rem 1rem;
+        & div.boxed {
+            padding: 1rem;
             background: #FFF;
             border-radius: 4px;
             box-shadow: 0 7px 14px 0 rgba(50,50,93,.1), 0 3px 6px 0 rgba(0,0,0,.07);
@@ -16,5 +16,81 @@
                 font-size: calc(var(--fontSize) * 1.6);
             }
         }
+    }
+
+    & article.post {
+        padding: 0.5rem 1rem;
+        border-bottom: 1px solid var(--mainGray);
+
+        &:hover {
+            background: #fff;
+        }
+
+        &:first-child, &:last-child {
+            padding: 1rem;
+        }
+
+        & a.category {
+            color: #6b7c93;
+            display: inline-block;
+            padding-bottom: 0.25rem;
+            font-size: calc(var(--fontSize) * 0.9);
+        }
+
+        & .new-comments {
+            background: var(--primaryColor);
+            font-weight: 700;
+            color: #FFF;
+            padding: 0.1rem;
+            border-radius: 4px;
+            margin-left: .5rem;
+        }
+
+        & .pinned-post {
+            color: #e85600
+        }
+
+        & h1 {
+            font-size: calc(var(--fontSize) * 1.2);
+            font-weight: 600;
+            margin: 0 0 0.25rem;
+
+            & a {
+                color: #32325d;
+            }
+        }
+    }
+
+    & article.comment {
+        padding: 0.5rem 1rem;
+        border-bottom: 1px solid var(--mainGray);
+
+        &:hover {
+            background: #fff;
+        }
+
+        &:first-child, &:last-child {
+            padding: 1rem;
+        }
+
+        & a.category {
+            color: #32325d;
+            display: inline-block;
+            padding-bottom: 0.25rem;
+            font-size: calc(var(--fontSize) * 1.2);
+            font-weight: 600;
+        }
+
+        & p {
+            margin-bottom: 10px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            white-space: initial;
+        }
+    }
+
+    & .bar {
+        background: #b3b7c3;
     }
 }

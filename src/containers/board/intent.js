@@ -102,8 +102,17 @@ export function intent({ history, glue, storage, HTTP, fractal }) {
     const profile$ = HTTP.select('user.profile')
         .map(response$ => response$.replaceError(err => xs.of(err)))
         .flatten()
-        .filter(res => !(res instanceof Error))
-        .map(res => res.body);
+        .filter(res => !(res instanceof Error));
+
+    const profilePosts$ = HTTP.select('user.posts')
+        .map(response$ => response$.replaceError(err => xs.of(err)))
+        .flatten()
+        .filter(res => !(res instanceof Error));
+
+    const profileComments$ = HTTP.select('user.comments')
+        .map(response$ => response$.replaceError(err => xs.of(err)))
+        .flatten()
+        .filter(res => !(res instanceof Error));
 
     const categories$ = HTTP.select('categories')
         .map(response$ => response$.replaceError(err => xs.of(err)))
@@ -132,6 +141,8 @@ export function intent({ history, glue, storage, HTTP, fractal }) {
         unauthorized$,
         user$,
         profile$,
+        profilePosts$,
+        profileComments$,
         post$,
         comments$,
         categories$,

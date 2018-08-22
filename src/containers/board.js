@@ -206,8 +206,13 @@ function publisherLens() {
 function profileLens() {
     return {
         get: state => {
-            const { site, config, profile } = state;
-            return { site, config, profile };
+            const { site, config, profile, subcategories } = state;
+            return {
+                site,
+                config,
+                profile,
+                subcategories,
+            };
         },
         set: (state, child) => ({
             ...state,

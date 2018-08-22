@@ -22,6 +22,8 @@ const DEFAULT_STATE = {
     profile: {
         resolving: false,
         user: false,
+        posts: false,
+        comments: false,
     },
     categories: false,
     subcategories: {
@@ -137,12 +139,39 @@ export function model(actions) {
             .flatten(),
 
         // User profile request.
-        userRoute$.map(([action, withAuth]) => ({
-            method: 'GET',
-            url: Anzu.layer + 'users/' + action.user.id,
-            category: 'user.profile',
-            headers: withAuth({}),
-        }))
+        userRoute$
+            .map(([action, withAuth]) =>
+                xs.of(
+                    {
+                        method: 'GET',
+                        url: Anzu.layer + 'users/' + action.user.id,
+                        category: 'user.profile',
+                        headers: withAuth({}),
+                    },
+                    {
+                        method: 'GET',
+                        url: Anzu.layer + 'feed',
+                        category: 'user.posts',
+                        headers: withAuth({}),
+                        query: {
+                            user_id: action.user.id,
+                            limit: 10,
+                            offset: 0,
+                        },
+                    },
+                    {
+                        method: 'GET',
+                        url:
+                            Anzu.layer +
+                            'users/' +
+                            action.user.id +
+                            '/comments',
+                        category: 'user.comments',
+                        headers: withAuth({}),
+                    }
+                )
+            )
+            .flatten()
     );
 
     const reducers$ = xs.merge(
@@ -199,8 +228,18 @@ export function model(actions) {
         actions.user$.map(user => state =>
             merge(state)({ user: { user, resolving: false } })
         ),
-        actions.profile$.map(user => state =>
-            merge(state)({ profile: { user, resolving: false } })
+        actions.profile$.map(response => state =>
+            merge(state)({ profile: { user: response.body, resolving: false } })
+        ),
+        actions.profilePosts$.map(response => state =>
+            merge(state)({
+                profile: { posts: response.body, resolving: false },
+            })
+        ),
+        actions.profileComments$.map(response => state =>
+            merge(state)({
+                profile: { comments: response.body, resolving: false },
+            })
         ),
         actions.post$.map(post => state =>
             merge(state)({ post: { post, resolving: false } })
