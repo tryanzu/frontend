@@ -1,6 +1,7 @@
 import Jed from 'jed';
 import es from 'date-fns/locale/es';
 import { format, distanceInWordsToNow } from 'date-fns';
+import numberFormat from 'number-format.js';
 
 export const i18n = new Jed({
     locale_data: {
@@ -31,4 +32,8 @@ export function dateToString(date, body = 'dddd, D MMMM YYYY') {
 
 export function ago(date, options = {}) {
     return distanceInWordsToNow(date, { locale: es, ...options });
+}
+
+export function number(n) {
+    return numberFormat('#,###.', n);
 }

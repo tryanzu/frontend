@@ -120,6 +120,12 @@ export function intent({ history, glue, storage, HTTP, fractal }) {
         .filter(res => !(res instanceof Error))
         .map(res => res.body);
 
+    const gamification$ = HTTP.select('gamification')
+        .map(response$ => response$.replaceError(err => xs.of(err)))
+        .flatten()
+        .filter(res => !(res instanceof Error))
+        .map(res => res.body);
+
     const unauthorized$ = HTTP.filter(
         req => 'headers' in req && 'Authorization' in req.headers
     )
@@ -146,6 +152,7 @@ export function intent({ history, glue, storage, HTTP, fractal }) {
         post$,
         comments$,
         categories$,
+        gamification$,
         fetchUser$,
         logout$,
         rawToken$,

@@ -26,6 +26,11 @@ const DEFAULT_STATE = {
         comments: false,
     },
     categories: false,
+    gamification: {
+        loaded: false,
+        updated_at: false,
+        rules: [],
+    },
     subcategories: {
         id: {},
         slug: {},
@@ -105,6 +110,13 @@ export function model(actions) {
             method: 'GET',
             url: Anzu.layer + 'category',
             category: 'categories',
+        }),
+
+        // Fetch gamification data.
+        xs.of({
+            method: 'GET',
+            url: Anzu.layer + 'gamification',
+            category: 'gamification',
         }),
 
         // Fetch fresh user data whenever authToken$ gets a value.
@@ -224,6 +236,9 @@ export function model(actions) {
                     slug: subcategoriesBy(categories, 'slug'),
                 },
             })
+        ),
+        actions.gamification$.map(config => state =>
+            merge(state)({ gamification: { ...config, loaded: true } })
         ),
         actions.user$.map(user => state =>
             merge(state)({ user: { user, resolving: false } })

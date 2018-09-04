@@ -13,7 +13,7 @@ import {
     article,
     a,
 } from '@cycle/dom';
-import { ago } from '../i18n';
+import { ago, number } from '../i18n';
 
 const defaultState = {
     resolving: false,
@@ -50,13 +50,21 @@ function model(actions) {
 
 function view(state$) {
     return state$.map(state => {
-        const { profile, subcategories } = state;
+        const { profile, subcategories, gamification } = state;
         const { resolving, user, posts, comments } = profile;
 
         // Loading state.
         if (user === false || resolving) {
             return main('.profile.flex-auto', div('.pv2', div('.loading')));
         }
+
+        const level = user.gaming.level || 0;
+        const lvl = gamification.rules.find(rule => rule.level == level) || {};
+        const starts = lvl.swords_start || 0;
+        const ends = lvl.swords_end || 0;
+        const gap = ends - starts;
+        const rest = ends - user.gaming.swords;
+        const gapPercent = Math.round(rest / gap * 10000) / 100;
 
         return main('.profile.flex-auto', [
             section('.fade-in.tc', [
@@ -74,37 +82,45 @@ function view(state$) {
                 p(user.description),
                 div('.mw5.mb3.center', [
                     i('.icon-crown.gold.f5'),
-                    span('.db.mb2.f5', [span('.b', '5,420'), ' / reputación']),
+                    span('.db.mb2.f5', [
+                        span('.b', number(user.gaming.swords)),
+                        ' / reputación',
+                    ]),
                     div('.flex.items-center.mb2', [
-                        span('.ph2', '11'),
+                        span('.ph2', String(level)),
                         div(
                             '.bar.bar-sm',
                             div('.bar-item', {
                                 attrs: { role: 'progressbar' },
-                                style: { width: '25%' },
+                                style: {
+                                    width: `${gapPercent}%`,
+                                },
                             })
                         ),
-                        span('.ph2', '12'),
+                        span('.ph2', String(level + 1)),
                     ]),
-                    span('.db.mb2', '520 para el siguiente nivel'),
+                    span('.db.mb2', `${number(rest)} para el siguiente nivel`),
                 ]),
                 div('.flex.pb4.boxed', [
                     span('.flex-auto', [
                         span('.icon-location.mr2'),
-                        'México D.F.',
+                        user.profile.country || 'Desconocido',
                     ]),
                     span('.flex-auto', [
                         span('.icon-calendar.mr2'),
-                        'Miembro desde hace 1 año',
+                        `Miembro hace ${ago(user.created_at)}`,
                     ]),
                     span('.flex-auto', [
                         span('.icon-doc.mr2'),
-                        span('.b', '8,910'),
+                        span('.b', posts === false ? 0 : number(posts.count)),
                         ' publicaciones',
                     ]),
                     span('.flex-auto', [
                         span('.icon-chat.mr2'),
-                        span('.b', '30,591'),
+                        span(
+                            '.b',
+                            comments === false ? 0 : number(comments.count)
+                        ),
                         ' comentarios',
                     ]),
                 ]),
