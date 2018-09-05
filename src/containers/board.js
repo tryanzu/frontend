@@ -112,7 +112,12 @@ function board(sources) {
         modal.HTTP,
         publisher.HTTP
     );
-    const history$ = xs.merge(feed.history, publisher.history);
+    const history$ = xs.merge(
+        effects.history,
+        profile.history,
+        feed.history,
+        publisher.history
+    );
     const beep$ = navbar.beep;
     const storage$ = xs.merge(effects.storage, modal.storage, navbar.storage);
 

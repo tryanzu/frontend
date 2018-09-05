@@ -1,6 +1,7 @@
 import xs from 'xstream';
 import switchPath from 'switch-path';
 import dropRepeats from 'xstream/extra/dropRepeats';
+import { selectLinks } from '../../generators';
 
 const Routes = {
     '/': { type: 'goTo', page: 'board', category: false },
@@ -22,7 +23,7 @@ const Routes = {
     }),
 };
 
-export function intent({ history, glue, storage, HTTP, fractal }) {
+export function intent({ DOM, history, glue, storage, HTTP, fractal }) {
     const routePath$ = history
         .map(location => ({
             location,
@@ -156,5 +157,6 @@ export function intent({ history, glue, storage, HTTP, fractal }) {
         fetchUser$,
         logout$,
         rawToken$,
+        links$: selectLinks(DOM, 'a.link'),
     };
 }

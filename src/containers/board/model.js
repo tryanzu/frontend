@@ -282,12 +282,19 @@ export function model(actions) {
         )
     );
 
+    const routeTo$ = actions.links$.map(link => ({
+        type: 'push',
+        pathname: link.path,
+        state: {},
+    }));
+
     return {
         router$,
         HTTP: http$,
         storage: storage$,
         fractal: reducers$,
         glue: glue$,
+        history: routeTo$,
     };
 }
 

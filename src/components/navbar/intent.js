@@ -13,8 +13,7 @@ export function intent({ DOM, HTTP, props }) {
         .map(event => ({
             modal: event.target.dataset.modal,
             data: event.target.dataset,
-        }))
-        .debug();
+        }));
 
     const logoutLink$ = DOM.select('#logout')
         .events('click')

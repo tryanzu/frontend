@@ -504,7 +504,7 @@ function desktopVersion({ user, resolving, image, state, site }) {
                                   h(
                                       'a.link.ng-link.pointer',
                                       {
-                                          dataset: {
+                                          attrs: {
                                               href: `/u/${user.username}/${
                                                   user.id
                                               }`,
@@ -513,7 +513,7 @@ function desktopVersion({ user, resolving, image, state, site }) {
                                       'Ver mi perfil'
                                   )
                               ),
-                              h(
+                              /*h(
                                   'li.menu-item',
                                   h(
                                       'a.link.ng-link.pointer',
@@ -529,7 +529,7 @@ function desktopVersion({ user, resolving, image, state, site }) {
                                       'Ranking de usuarios'
                                   )
                               ),
-                              h('li.divider'),
+                              h('li.divider'),*/
                               h('li.menu-item.cf', [
                                   h(
                                       'div.menu-badge',

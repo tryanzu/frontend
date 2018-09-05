@@ -1,4 +1,5 @@
 import xs from 'xstream';
+import virtualize from 'snabbdom-virtualize';
 import {
     main,
     section,
@@ -14,6 +15,8 @@ import {
     a,
 } from '@cycle/dom';
 import { ago, number } from '../i18n';
+import { markdown } from '../ui';
+import { selectLinks } from '../generators';
 
 const defaultState = {
     resolving: false,
@@ -27,13 +30,24 @@ export function User(sources) {
 
     return {
         fractal: effects.fractal,
+        history: effects.history,
         DOM: vtree$,
     };
 }
 
 function intent({ DOM, HTTP, fractal, props }) {
+    const links$ = xs.merge(
+        selectLinks(DOM, 'a.link'),
+        DOM.select('a.user-mention')
+            .events('click')
+            .map(event => {
+                const dataset = event.currentTarget.dataset;
+                return { path: `/u/${dataset.username}/${dataset.id}` };
+            })
+    );
     return {
         authToken$: props.authToken$,
+        links$,
     };
 }
 
@@ -43,8 +57,15 @@ function model(actions) {
         xs.of(() => defaultState)
     );
 
+    const routeTo$ = actions.links$.map(link => ({
+        type: 'push',
+        pathname: link.path,
+        state: {},
+    }));
+
     return {
         fractal: reducers$,
+        history: routeTo$,
     };
 }
 
@@ -68,16 +89,21 @@ function view(state$) {
 
         return main('.profile.flex-auto', [
             section('.fade-in.tc', [
-                figure(
-                    '.avatar.avatar-xl',
-                    { style: { borderRadius: '100%' } },
-                    img({
-                        attrs: {
-                            src: user.image,
-                            alt: `Perfil de ${user.username}`,
-                        },
-                    })
-                ),
+                user.image
+                    ? figure(
+                          '.avatar.avatar-xl',
+                          { style: { borderRadius: '100%' } },
+                          img({
+                              attrs: {
+                                  src: user.image,
+                                  alt: `Perfil de ${user.username}`,
+                              },
+                          })
+                      )
+                    : figure('.avatar.avatar-xl', {
+                          style: { borderRadius: '100%' },
+                          dataset: { initial: user.username.substr(0, 1) },
+                      }),
                 h1('.ma0.mv2', `${user.username}`),
                 p(user.description),
                 div('.mw5.mb3.center', [
@@ -166,7 +192,7 @@ function commentView({ comment }) {
             div(
                 '.flex-auto',
                 a(
-                    '.category',
+                    '.category.link',
                     {
                         attrs: {
                             href,
@@ -177,7 +203,10 @@ function commentView({ comment }) {
             ),
         ]),
         div([
-            p('.truncate.lh-copy', comment.content),
+            p(
+                '.truncate.lh-copy.md',
+                virtualize(`${markdown.render(comment.content)}`)
+            ),
             div(span('.ago', 'Comentado hace ' + ago(comment.created_at))),
         ]),
     ]);
@@ -193,7 +222,7 @@ function postView({ post, subcategories }) {
                 '.flex-auto',
                 category != false
                     ? a(
-                          '.category',
+                          '.link.category',
                           {
                               attrs: {
                                   href: `/c/${category.slug}`,
@@ -208,6 +237,7 @@ function postView({ post, subcategories }) {
         div('.flex.items-center', [
             div('.flex-auto', [
                 h1(
+                    '.lh-copy',
                     a(
                         '.link',
                         {
