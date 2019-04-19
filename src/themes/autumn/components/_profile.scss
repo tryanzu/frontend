@@ -1,0 +1,94 @@
+.profile {
+    & > section {
+        width: 50rem;
+        max-width: 100%;
+        margin: 0 auto;
+
+        & div.boxed {
+            padding: 1rem;
+            background: $light-color;
+            border-radius: 4px;
+            box-shadow: 0 7px 14px 0 rgba(50,50,93,.1), 0 3px 6px 0 rgba(0,0,0,.07);
+            
+            & > h1, & > h2 {
+                color: $darkest-primary;
+                font-size: 1.2rem;
+            }
+        }
+    }
+
+    & article.post {
+        padding: 0.5rem 1rem;
+        border-bottom: 1px solid $light-color;
+
+        &:hover {
+            background: $light-color;
+        }
+
+        &:first-child, &:last-child {
+            padding: 1rem;
+        }
+
+        & a.category {
+            display: inline-block;
+            padding-bottom: 0.25rem;
+            font-size: 0.7rem;
+        }
+
+        & .new-comments {
+            background: $primary-color;
+            font-weight: 700;
+            color: $light-color;
+            padding: 0.1rem;
+            border-radius: 4px;
+            margin-left: .5rem;
+        }
+
+        & .pinned-post {
+            color: #e85600
+        }
+
+        & h1 {
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin: 0 0 0.25rem;
+
+            & a {
+                color: $darkest-primary;
+            }
+        }
+    }
+
+    & article.comment {
+        padding: 0.5rem 1rem;
+        border-bottom: 1px solid var(--mainGray);
+
+        &:hover {
+            background: $light-color;
+        }
+
+        &:first-child, &:last-child {
+            padding: 1rem;
+        }
+
+        & a.category {
+            color: $darkest-primary;
+            display: inline-block;
+            padding-bottom: 0.25rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        & > p {
+            margin-bottom: 10px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            white-space: initial;
+        }
+    }
+
+    & .bar {
+        background: #b3b7c3;
+    }
+}

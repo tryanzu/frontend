@@ -1,0 +1,80 @@
+main.publish {
+    & .editor hr {
+        height: 1px; 
+        border: 0;
+        background: $gray-color-light;
+    }
+
+    & .editor form  {
+		background: $light-color;
+		outline: 1px solid $light-shade;
+        border-radius: 4px;
+        box-shadow: 0 7px 14px 0 rgba(50,50,93,.1), 0 3px 6px 0 rgba(0,0,0,.07);
+        
+        & > h1, & > h2 {
+            color: $primary-color;
+        }
+    }
+
+    & .editor .post-preview {
+        & h1 {
+            font-size: 1.3rem;
+        }
+
+        & h2 {
+            font-size: 1.2rem;
+        }
+
+        & h3 {
+            font-size: 1.1rem;
+        }
+    }
+}
+
+ .RichTextEditor__root___2QXK- {
+    background: $light-color !important;
+    border-color: $gray-color !important;
+    font-family: inherit !important;
+
+    & h1 {
+        font-size: 1.3rem;
+    }
+
+    & h2 {
+        font-size: 1.2rem;
+    }
+
+    & h3 {
+        font-size: 1.1rem;
+    }
+
+    & ul {
+        list-style: disc outside;
+    }
+
+    & .ImageSpan__root___RoAqL {
+        max-width: 100%;
+    }
+
+    .public-DraftEditor-content {
+        min-height: 110px;
+    }
+
+    .Button__root___1gz0c {
+        background: rgba(255, 255, 255, 0.6) !important;
+    }
+}
+
+.context-help {
+    ul {
+        padding: 0;
+        margin-top: 0;
+
+        li {
+            margin-bottom: 0.25rem;
+        }
+    }
+    p {
+        margin: 0 0 0.5rem;
+    }
+}

@@ -3,6 +3,7 @@ module.exports = {
     plugins: ['prettier'], // activating esling-plugin-prettier (--fix stuff)
     rules: {
         'function-paren-newline': [0],
+        'no-console': [0],
         'object-property-newline': [1, { "allowMultiplePropertiesPerLine": true }],
         'prettier/prettier': [ // customizing prettier rules (unfortunately not many of them are customizable)
             'error',
@@ -16,7 +17,9 @@ module.exports = {
     globals: {
         window: true,
         Anzu: true,
-        Tribute: true
+        console: true,
+        Tribute: true,
+        Promise: true,
     },
     "parserOptions": { "ecmaVersion": 2018, sourceType: 'module' }
 };

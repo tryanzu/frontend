@@ -1,0 +1,130 @@
+header.navbar-tools {
+	background: $darkest-primary;
+
+	& > nav {
+    	display: flex;
+		max-width: $layout-max-width;
+		margin: 0 auto;
+		padding: 0.5rem 1rem;
+		color: $light-color;
+		font-size: 14px;
+
+		& a {
+			cursor: pointer;
+			color: $light-color;
+		}
+
+		& .badge:not([data-badge])::after, & .badge[data-badge]::after {
+			background: #38C172;
+			box-shadow: 0 0 0 0.1rem #191E38;
+		}
+	}
+}
+
+header.navbar {
+	background-color: transparent;
+	border-bottom: transparent;
+	padding: 1rem 1rem;
+	max-width: $layout-max-width;
+	margin: 0 auto;
+
+	& h1.logo {
+		color: $primary-color;
+		margin: 0;
+		text-transform: lowercase;
+	}
+
+	& img.logo {
+		min-width: 65px;
+	}
+
+	& input[type="search"] {
+		font-size: 0.8rem;
+		margin-left: 1rem;
+		border: 1px solid $dark-shade;
+		border-radius: 25px;
+		background: $dark-shade;
+		padding: 0.25rem 1rem;
+		width: 110px;
+
+		&.extended {
+			width: 220px;
+		}
+
+		&:hover {
+			background: $light-color;
+		}
+
+		&:focus {
+			outline: none;
+			background: $light-color;
+			border-color: $primary-color;
+			color: $primary-color;
+		}
+	}
+
+	& a.btn.btn-link, & span.badge {
+		color: $darkest-primary;
+		margin: 0 0.8rem 0 0;
+		padding-left:0px;
+		padding-right: 0px;
+	}
+
+	& .new-reputation {
+		background: #38C172;
+		font-weight: 700;
+		color: #FFF;
+		padding: 0.1rem;
+		border-radius: 4px;
+		margin-left: .5rem;
+
+		&.lost {
+			background: $error-color;
+		}
+	}
+
+	& .menu.notifications {
+		width: 300px;
+		padding: 0;
+
+		@media screen and (min-width: 30em) {
+			width: 360px;
+		}
+
+		& li.menu-item {
+			padding: 0;
+			margin: 0;
+		}
+
+		& li.menu-item a.link {
+			padding: 0.5rem 1.5rem;
+			border-bottom: 1px solid $light-shade;
+			line-height: 1.5;
+
+			&:focus, &:hover  {
+				background-color: $light-shade;
+				outline: 0;
+				box-shadow: none;
+			}
+
+			& .clean-styles {
+				color: $darker-primary;
+			}
+		}
+	}
+}
+
+
+header.navbar .badge {
+	background-color: transparent;
+	color: $darkest-primary;
+	padding: 0.5rem 1rem;
+
+	&.none::after {
+		display: none;
+	}
+}
+
+header.navbar .badge:not([data-badge])::after, header.navbar .badge[data-badge]::after {
+	box-shadow: none;
+}

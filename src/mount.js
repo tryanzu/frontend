@@ -1,19 +1,17 @@
-import { Board } from './containers/board';
-import { run } from '@cycle/run';
-import { makeDOMDriver } from '@cycle/dom';
-import { makeHistoryDriver } from '@cycle/history';
-import { makeHTTPDriver } from '@cycle/http';
-import { makeGlueDriver } from './drivers/glue';
-import { beepDriver } from './drivers/beep';
-import storageDriver from '@cycle/storage';
+import 'babel-polyfill';
+import { render } from 'react-dom';
+import h from 'react-hyperscript';
+import Home from './board/containers/home';
 
-export function AnzuApp(element) {
-    run(Board, {
-        DOM: makeDOMDriver(element),
-        history: makeHistoryDriver(),
-        HTTP: makeHTTPDriver(),
-        storage: storageDriver,
-        beep: beepDriver,
-        glue: makeGlueDriver(),
-    });
+export function anzu(elm, props = {}) {
+    const params = new window.URLSearchParams(window.location.search);
+    if (params.has('token')) {
+        window.localStorage.setItem(
+            '_auth',
+            JSON.stringify({
+                token: params.get('token'),
+            })
+        );
+    }
+    return render(h(Home, { ...props }), elm);
 }

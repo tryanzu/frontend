@@ -1,0 +1,32 @@
+.account-modal {
+    z-index: 301;
+    width: 320px;
+    max-width: 100%;
+    margin: 1rem auto;
+
+    &:focus {
+        outline-color: $light-shade;
+    }
+
+    & .modal-container {
+        margin: 1rem auto;
+        padding: 0;
+        max-width: 100%;
+    }
+
+    & .form-group:not(:last-child) { 
+        margin-bottom: 0.8rem;
+    }
+
+    & li.tab-item a {
+        padding-top: 0.8rem;
+        padding-bottom: 0.8rem;
+    }
+}
+
+@media screen and (min-width: 30em) {
+    .account-modal {
+        width: 380px;
+        margin: 4rem auto;
+    }
+}

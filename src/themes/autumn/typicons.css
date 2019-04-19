@@ -1,3 +1,4 @@
+
 @font-face {
   font-family: 'typicons';
   src: url('./font/typicons.eot?48371228');
@@ -145,8 +146,8 @@
 .icon-bookmark:before { content: '\e857'; } /* '' */
 .icon-flag:before { content: '\e858'; } /* '' */
 .icon-flag-filled:before { content: '\e859'; } /* '' */
-.icon-thumbs-up:before { content: '\e85a'; } /* '' */
-.icon-thumbs-down:before { content: '\e85b'; } /* '' */
+.icon-thumbs-up:before, .icon-upvote:before { content: '\e85a'; } /* '' */
+.icon-thumbs-down:before, .icon-downvote:before { content: '\e85b'; } /* '' */
 .icon-download-outline:before { content: '\e85c'; } /* '' */
 .icon-download:before { content: '\e85d'; } /* '' */
 .icon-upload-outline:before { content: '\e85e'; } /* '' */
@@ -389,3 +390,89 @@
 .icon-vimeo:before { content: '\e94a'; } /* '' */
 .icon-spin4:before { content: '\e94b'; } /* '' */
 .icon-spin6:before { content: '\e94c'; } /* '' */
+
+/*
+   Animation example, for spinners
+*/
+.animate-spin {
+  -moz-animation: spin 2s infinite linear;
+  -o-animation: spin 2s infinite linear;
+  -webkit-animation: spin 2s infinite linear;
+  animation: spin 2s infinite linear;
+  display: inline-block;
+}
+@-moz-keyframes spin {
+  0% {
+    -moz-transform: rotate(0deg);
+    -o-transform: rotate(0deg);
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+
+  100% {
+    -moz-transform: rotate(359deg);
+    -o-transform: rotate(359deg);
+    -webkit-transform: rotate(359deg);
+    transform: rotate(359deg);
+  }
+}
+@-webkit-keyframes spin {
+  0% {
+    -moz-transform: rotate(0deg);
+    -o-transform: rotate(0deg);
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+
+  100% {
+    -moz-transform: rotate(359deg);
+    -o-transform: rotate(359deg);
+    -webkit-transform: rotate(359deg);
+    transform: rotate(359deg);
+  }
+}
+@-o-keyframes spin {
+  0% {
+    -moz-transform: rotate(0deg);
+    -o-transform: rotate(0deg);
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+
+  100% {
+    -moz-transform: rotate(359deg);
+    -o-transform: rotate(359deg);
+    -webkit-transform: rotate(359deg);
+    transform: rotate(359deg);
+  }
+}
+@-ms-keyframes spin {
+  0% {
+    -moz-transform: rotate(0deg);
+    -o-transform: rotate(0deg);
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+
+  100% {
+    -moz-transform: rotate(359deg);
+    -o-transform: rotate(359deg);
+    -webkit-transform: rotate(359deg);
+    transform: rotate(359deg);
+  }
+}
+@keyframes spin {
+  0% {
+    -moz-transform: rotate(0deg);
+    -o-transform: rotate(0deg);
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+
+  100% {
+    -moz-transform: rotate(359deg);
+    -o-transform: rotate(359deg);
+    -webkit-transform: rotate(359deg);
+    transform: rotate(359deg);
+  }
+}

@@ -1,0 +1,150 @@
+body, html {
+    height: 100%;
+}
+
+body {
+	background: $light-shade;
+}
+
+p.md p:last-child {
+	margin-bottom: 0 !important;
+}
+
+.btn.btn-primary.btn-facebook {
+	background: #4A67AD !important;
+	border-color: #4A67AD !important;
+}
+
+.step .step-item a {
+	color: #777777;
+}
+
+.toast.toast-error {
+	background: rgba(232, 0, 30, 0.9);
+	border-color: #c61d31;
+}
+
+.toast.toast-primary {
+	background: $primary-color;
+	border-color: $primary-color;
+}
+
+.toast.toast-warning {
+	background: #FFF9C2;
+	border-color: #e3dfb3;
+	color: #22292F;
+
+	a {
+		color: #22292F;
+	}
+}
+
+.avatar {
+	border-radius: 4px;
+	
+	& img {
+		border-radius: inherit;
+	}
+
+	&.avatar-xl {
+		width: 6.4rem;
+		height: 6.4rem;
+	}
+}
+
+.label.label-sm {
+	padding-left: .25rem;
+    padding-right: .25rem;
+    font-size: 13px;
+}
+
+.dropdown .menu {
+	min-width: 210px;
+}
+
+.btn-icon {
+	border: 1px solid $gray-color;
+	border-radius: .125rem;
+	padding: 0.15rem 0.25rem;
+	cursor: pointer;
+
+	&.active {
+		background: $primary-color;
+		//border-color: color($primary-color blackness(50%));
+		text-decoration: none;
+		color: #FFF;
+		color: rgba(255, 255, 255, 0.9);
+
+		&:hover {
+			color: #FFF;
+			//border-color: color($primary-color blackness(60%));
+		}
+	}
+
+	&:hover {
+		border-color: $primary-color;
+		text-decoration: none;		
+	}
+}
+
+.modal.active .modal-container, .modal:target .modal-container {
+	padding: 0
+}
+
+.form-input:not(:placeholder-shown):invalid {
+    border-color: #e80060;
+}
+
+.empty {
+	background: none;
+}
+
+.gray {
+	color: $gray-color !important;
+}
+
+.b--light-gray {
+    border-color: #cfd6de !important;
+}
+
+.fade-in {animation:fade-in 0.5s;}
+
+.form-select.select-sm {
+	color: $dark-color;
+    background-color: $light-color !important;
+    margin-right: 0.5rem;
+}
+
+@keyframes fade-in {
+    from {opacity:0;}
+    to {opacity:1;}
+}
+
+.shadow {
+    box-shadow: 0 0 0 .5px rgba(49,49,93,.03),0 2px 5px 0 rgba(49,49,93,.1),0 1px 2px 0 rgba(0,0,0,.08) !important;
+}
+
+.badge[data-badge]::after {
+    font-size: 0.6rem;
+    height: 0.8rem;
+	line-height: 0.6rem;
+}
+
+.tab {
+	border-bottom-color: $gray-color-light;
+}
+
+@media (--breakpoint-medium){
+	.feed{
+	display: flex;
+	}	
+	.post-active .feed{
+	display: none;
+	}
+	.post{
+	display: none;
+	}
+	.post-active  .post{
+	display: flex;
+	}
+}
