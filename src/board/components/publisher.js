@@ -246,14 +246,22 @@ function PostInfo({ state, effects }) {
                     [
                         option('Selecciona una categoría para tu publicación'),
                     ].concat(
-                        categories.map(c =>
-                            optgroup(
-                                { label: c.name },
-                                c.subcategories
-                                    .filter(sub => sub.writable || false)
-                                    .map(s => option({ value: s.id }, s.name))
-                            )
-                        )
+                        categories
+                            .map(c => {
+                                const list = c.subcategories.filter(
+                                    sub => sub.writable || false
+                                );
+                                if (list.length === 0) {
+                                    return false;
+                                }
+                                return optgroup(
+                                    { label: c.name },
+                                    list.map(s =>
+                                        option({ value: s.id }, s.name)
+                                    )
+                                );
+                            })
+                            .filter(c => c !== false)
                     )
                 ),
             ]),

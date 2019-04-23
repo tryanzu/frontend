@@ -187,6 +187,7 @@ function fetchAccount(effects, token) {
             );
             return jsonReq(request('user/my'));
         })
+        .then(user => effects.fetchCategories(true).then(() => user))
         .then(user => {
             if ('Raven' in window) {
                 window.Raven.setUserContext(user);
