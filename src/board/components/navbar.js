@@ -68,7 +68,6 @@ function LogoSection(props) {
             Link,
             { className: 'link', to: '/' },
             h('img.logo.w3', {
-                href: '/',
                 src: props.state.site.logoUrl || '/images/anzu.svg',
                 alt: props.state.site.name || '',
             })

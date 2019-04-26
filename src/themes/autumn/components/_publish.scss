@@ -29,6 +29,25 @@ main.publish {
             font-size: 1.1rem;
         }
     }
+
+    .form-select {
+        width: auto;
+    }
+    .form-select:not([multiple]):not([size]) {
+        background: none;
+    }
+
+    .title-input {
+        font-size: 1.3rem;
+        font-weight: 600;
+        border: 0;
+        padding-left: 0;
+        padding-right: 0;
+
+        &:focus {
+            box-shadow: none;
+        }
+    }
 }
 
  .RichTextEditor__root___2QXK- {

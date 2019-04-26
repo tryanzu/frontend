@@ -35,7 +35,7 @@ export function Publisher({ state, effects }) {
                             }),
                             dataset: { step: 0 },
                         },
-                        a('Contenido')
+                        a(t`Publicación`)
                     ),
                     li(
                         {
@@ -46,18 +46,7 @@ export function Publisher({ state, effects }) {
                             }),
                             dataset: { step: 1 },
                         },
-                        a('Publicación')
-                    ),
-                    li(
-                        {
-                            onClick: () =>
-                                step > 2 && effects.publisher({ step: 2 }),
-                            className: classNames('step-item pointer', {
-                                active: step == 2,
-                            }),
-                            dataset: { step: 2 },
-                        },
-                        a('Revisión final')
+                        a(t`Revisión`)
                     ),
                 ])
             ),
@@ -66,8 +55,6 @@ export function Publisher({ state, effects }) {
                     case 0:
                         return h(PostContent, { state, effects });
                     case 1:
-                        return h(PostInfo, { state, effects });
-                    case 2:
                         return h(PostReview, { state, effects });
                 }
             })(),
@@ -76,7 +63,7 @@ export function Publisher({ state, effects }) {
             '.fade-in.guidelines.flex.flex-column',
             { style: { display: 'none' } },
             [
-                h2('.f4', 'Recuerda estas reglas básicas'),
+                h2('.f4', t`Recuerda estas reglas básicas`),
                 div('.timeline', [
                     div('.timeline-item', [
                         div('.timeline-left', {}, a('.timeline-icon')),
@@ -159,17 +146,6 @@ function PostInfo({ state, effects }) {
         h1('.ma0.pv3.f6.f3-ns.tc', 'Completar publicación'),
         form('.pa4-ns.pv2.ph2.mh2.mh0-ns', { onSubmit }, [
             div('.form-group.pb2', [
-                label('.b.form-label', 'Título de la publicación'),
-                input('#title.form-input', {
-                    type: 'text',
-                    value: title,
-                    onChange: event => setTitle(event.target.value),
-                    placeholder:
-                        'Escribe el titulo de tu publicación o pregunta...',
-                    required: true,
-                }),
-            ]),
-            div('.form-group.pb2', [
                 label('.b.form-label.pb0', '¿Es una pregunta?'),
                 p(
                     '.ma0',
@@ -232,19 +208,54 @@ function PostInfo({ state, effects }) {
                     ])
                 ),
             ]),
+            input('.btn.btn-primary.btn-block', {
+                type: 'submit',
+                value: 'Continuar',
+                disabled: !ready,
+            }),
+        ]),
+    ]);
+}
+
+function PostContent({ effects, state }) {
+    const { categories, publisher } = state;
+    const [title, setTitle] = useState(publisher.title);
+    const [editor, setEditor] = useState(() => {
+        return RichTextEditor.createValueFromString(
+            publisher.content,
+            'markdown'
+        );
+    });
+    const ready = editor.toString('markdown').length > 30;
+    function onSubmit(event) {
+        event.preventDefault();
+        effects.publisher({
+            title,
+            content: editor.toString('markdown'),
+            step: 1,
+        });
+    }
+
+    return div([
+        h1('.ma0.pv3.f6.f3-ns.tc', 'Escribir nueva publicación'),
+        form('.ph4-ns.pv3-ns.pv2.ph2.mh2.mh0-ns', { onSubmit }, [
             div('.form-group.pb2', [
-                label('.b.form-label', 'Categoría principal'),
                 select(
                     '.form-select',
                     {
                         id: 'category',
                         required: true,
-                        value: category,
+                        value: publisher.category,
                         onChange: event =>
                             effects.publisher('category', event.target.value),
                     },
                     [
-                        option('Selecciona una categoría para tu publicación'),
+                        option(
+                            {
+                                value: '',
+                            },
+                            'Escoge una categoría (requerido)'
+                        ),
                     ].concat(
                         categories
                             .map(c => {
@@ -265,43 +276,25 @@ function PostInfo({ state, effects }) {
                     )
                 ),
             ]),
-            input('.btn.btn-primary.btn-block', {
-                type: 'submit',
-                value: 'Continuar',
-                disabled: !ready,
-            }),
-        ]),
-    ]);
-}
-
-function PostContent({ effects, state }) {
-    const [editor, setEditor] = useState(() => {
-        return RichTextEditor.createValueFromString(
-            state.publisher.content,
-            'markdown'
-        );
-    });
-    const ready = editor.toString('markdown').length > 30;
-    function onSubmit(event) {
-        event.preventDefault();
-        effects.publisher('content', editor.toString('markdown'));
-        effects.publisher('step', 1);
-    }
-
-    return div([
-        h1('.ma0.pv3.f6.f3-ns.tc', 'Escribir nueva publicación'),
-        form('.pa4-ns.pv2.ph2.mh2.mh0-ns', { onSubmit }, [
-            h2('.mt0.mb3-ns.f6.f4-ns.tc.tl-ns', 'Explica tu tema o pregunta:'),
+            div('.form-group.pb2', [
+                input('#title.form-input.title-input', {
+                    type: 'text',
+                    value: title,
+                    onChange: event => setTitle(event.target.value),
+                    placeholder: 'Escribe aquí un titulo...',
+                    required: true,
+                    autoFocus: true,
+                }),
+            ]),
             div('.form-group.pb2', [
                 h(RichTextEditor, {
-                    autoFocus: true,
                     value: editor,
                     onChange: setEditor,
                 }),
             ]),
             input('.btn.btn-primary.btn-block', {
                 type: 'submit',
-                value: 'Continuar',
+                value: t`Revisión y publicar`,
                 disabled: !ready,
             }),
             div('.mt3', [
