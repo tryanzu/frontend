@@ -35,7 +35,7 @@ export function Publisher({ state, effects }) {
                             }),
                             dataset: { step: 0 },
                         },
-                        a(t`Publicación`)
+                        a(t`Escribir nueva publicación`)
                     ),
                     li(
                         {
@@ -237,8 +237,7 @@ function PostContent({ effects, state }) {
     }
 
     return div([
-        h1('.ma0.pv3.f6.f3-ns.tc', 'Escribir nueva publicación'),
-        form('.ph4-ns.pv3-ns.pv2.ph2.mh2.mh0-ns', { onSubmit }, [
+        form('.ph4-ns.pv3-ns.mt3.pv2.ph2.mh2.mh0-ns', { onSubmit }, [
             div('.form-group.pb2', [
                 select(
                     '.form-select',
