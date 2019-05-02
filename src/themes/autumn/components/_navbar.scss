@@ -128,3 +128,7 @@ header.navbar .badge {
 header.navbar .badge:not([data-badge])::after, header.navbar .badge[data-badge]::after {
 	box-shadow: none;
 }
+.mio{
+	font-size: 10px;
+	color: #36c;
+}

@@ -344,6 +344,40 @@ function DesktopVersion({ user, image, state, effects }) {
                         { notifications, effects },
                         'Notificaciones'
                     ),
+               user !== false &&
+                    h('div.dropdown.dropdown-right', [
+                        h(
+                            'a.dib.btn-icon.dropdown-toggle.btn-link',
+                             { tabIndex: 0 },
+                        h('span.icon-info-outline')
+                        ),
+                        h('ul.menu', [
+                            h('li.menu-item.cf', [
+                                h('a.pointer', 'Tour'),
+                                h('.a.mio p' , 'Start her for a quick overview of the site.'),
+                            ]),
+                            h('li.divider'),
+                            h('li.menu-item.cf', [
+                                h('a.pointer', 'Help Center'),
+                                h('.a.mio p' , 'Detailed answers to any questions you might have.'),
+                            ]),
+                            h('li.divider'),
+                            h('li.menu-item.cf', [
+                                h('a.pointer', 'Meta'),
+                                h('.a.mio p' , 'Discuss the working and policies of this site.'),
+                            ]),
+                            h('li.divider'),
+                            h('li.menu-item.cf', [
+                                h('a.pointer', 'About us'),
+                                h('.a.mio p' , 'Learn more about Anzu and our community'),
+                            ]),
+                            h('li.divider'),
+                            h('li.menu-item.cf', [
+                                h('a.pointer', 'Bussines'),
+                                h('.a.mio p' , 'Learn more about hiring developers and posting ads with us'),
+                            ]),
+                        ]),
+                    ]),
                 user !== false &&
                     h('a.link.pointer.btn.btn-link', [
                         h('i.icon-crown.gold'),
@@ -434,6 +468,7 @@ function DesktopVersion({ user, image, state, effects }) {
                               ),
                               h('a.pointer', 'Tributo'),
                           ]),*/
+
                             h('li.divider'),
                             h(
                                 'li.menu-item',
