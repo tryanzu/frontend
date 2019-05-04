@@ -245,6 +245,8 @@ function MobileSection({ user, image, state, effects }) {
                         h('a.pointer', 'Salir de mi cuenta')
                     ),
                 ]),
+                 user.validated == false &&
+                    h(NeedAccountValidation, { user, effects }),
             ]),
         user === false &&
             h('div.dropdown.dropdown-right', [
@@ -296,8 +298,6 @@ function MobileSection({ user, image, state, effects }) {
                             ),
                         ])
                 ),
-                user.validated == false &&
-                    h(NeedAccountValidation, { user, effects }),
             ]),
     ]);
 }
