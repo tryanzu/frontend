@@ -9,6 +9,7 @@ import { ErrorBoundary } from '../errors';
 import { MemoizedMarkdown } from '../utils';
 import { t } from '../../i18n';
 import { ConfirmWithReasonLink } from './actions';
+import { FlagPost } from './actions';
 
 const tags = helpers(h);
 const { article, div, a, span, i, h5, ul, li } = tags;
@@ -158,6 +159,20 @@ function CommentView({ comment, effects, ui, hashtables, ...props }) {
                                             t`Borrar comentario`,
                                         ]
                                     )
+                                ),
+                                li(
+                                    '.menu-item',
+                                    {},
+                                    h(
+                                         FlagPost,
+                                         {
+                                             title: t`¿Por qué quieres reportar este comentario?`
+                                         },
+                                         [
+                                            i('.mr1.icon-warning-empty'),
+                                            t`Reportar`,
+                                         ],
+                                    ),
                                 ),
                             ]),
                         ]),
