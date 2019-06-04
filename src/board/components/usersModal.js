@@ -5,6 +5,7 @@ import helpers from 'hyperscript-helpers';
 import { t, ago } from '../../i18n';
 import { throttle } from 'lodash';
 import { Link } from 'react-router-dom';
+import { banAUser } from './actions';
 
 const tags = helpers(h);
 const { div, img, figure, ul, li, a } = tags;
@@ -137,10 +138,20 @@ export function UsersModal({ state, effects, setOpen }) {
                                     li(
                                         '.menu-item',
                                         {},
-                                        a('.pointer.post-action', [
-                                            i('.mr1.icon-edit'),
-                                            t`Banear cuenta`,
-                                        ])
+                                        h(
+                                            banAUser,
+                                            {
+                                                title: t`¿Por qué quieres reportar este comentario?`,
+                                            },
+                                            [
+                                                i('.mr1.icon-edit'),
+                                                t`Banear cuenta`,
+                                            ]
+                                        )
+                                        // a('.pointer.post-action', [
+                                        //     i('.mr1.icon-edit'),
+                                        //     t`Banear cuenta`,
+                                        // ])
                                     ),
                                 ]),
                             ]),
