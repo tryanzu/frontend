@@ -111,10 +111,10 @@ export function banAUser(props) {
                         props.title && div('.modal-title.mb3', props.title),
                         h('.divider'),
                         div('.modal-body', '.items-center-l', [
-                            h('a.btn.btn-primary.mr3-ns.mb-2.br4-ns', 'abuse'),
-                            h('a.btn.btn-primary.mr3-ns.mb-2.br4-ns', 'spam'),
-                            h('a.btn.btn-primary.mr3-ns.mb-2.br4-ns', 'rude'),
-                            h('a.btn.btn-primary.mb-2.br4-ns', 'spoofing'),
+                            h('a.btn.btn-primary.mr3-ns.mb-2.br4-ns', 'Abuse'),
+                            h('a.btn.btn-primary.mr3-ns.mb-2.br4-ns', 'Spam'),
+                            h('a.btn.btn-primary.mr3-ns.mb-2.br4-ns', 'Rude'),
+                            h('a.btn.btn-primary.mb-2.br4-ns', 'Spoofing'),
                             h(
                                 'a.post-action.btn.btn-primary.mb-2.br4-ns.icon-search-outline',
                                 'Otro motivo'

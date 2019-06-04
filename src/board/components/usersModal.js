@@ -141,17 +141,13 @@ export function UsersModal({ state, effects, setOpen }) {
                                         h(
                                             banAUser,
                                             {
-                                                title: t`¿Por qué quieres reportar este comentario?`,
+                                                title: t`¿Por qué quieres banear este usuario?`,
                                             },
                                             [
                                                 i('.mr1.icon-edit'),
                                                 t`Banear cuenta`,
                                             ]
                                         )
-                                        // a('.pointer.post-action', [
-                                        //     i('.mr1.icon-edit'),
-                                        //     t`Banear cuenta`,
-                                        // ])
                                     ),
                                 ]),
                             ]),
