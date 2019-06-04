@@ -1,4 +1,4 @@
-import qs from 'querystring';
+import qs from 'query-string';
 import { provideState, update } from 'freactal';
 import { toast } from 'react-toastify';
 import { request } from '../../utils';

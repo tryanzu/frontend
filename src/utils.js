@@ -1,4 +1,4 @@
-import qs from 'querystring';
+import qs from 'query-string';
 import { toast } from 'react-toastify';
 import { t } from './i18n';
 

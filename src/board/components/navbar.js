@@ -1,5 +1,5 @@
 import h from 'react-hyperscript';
-import qs from 'querystring';
+import qs from 'query-string';
 import { adminTools } from '../../acl';
 import { ago, t } from '../../i18n';
 import { withRouter, Link } from 'react-router-dom';
