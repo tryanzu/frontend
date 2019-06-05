@@ -75,6 +75,7 @@ export function banAUser(props) {
     const [open, setOpen] = useState(false);
     const [reason, setReason] = useState('');
     const [category, setCategory] = useState('');
+    const reasons = ['Abuso', 'Spam', 'Grosero', 'Suplantación', 'Otro'];
     function onSubmit(event) {
         event.preventDefault();
         if (reason.length === 0) {
@@ -120,16 +121,10 @@ export function banAUser(props) {
                                     onChange: event =>
                                         setCategory(event.target.value),
                                 },
-                                [
-                                    option('.menu-item', t`Abuso`),
-                                    option('.menu-item', t`Spam`),
-                                    option('.menu-item', t`Grosero`),
-                                    option('.menu-item', t`Suplantación`),
-                                    option('.menu-item', t`Otro`),
-                                ]
+                                reasons.map(reason =>
+                                    option('.menu-item', reason)
+                                )
                             ),
-                            // Console.log(category),
-                            // h(category),
                             category == 'Otro' &&
                                 textarea('.form-input', {
                                     name: 'description',
