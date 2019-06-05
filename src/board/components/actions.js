@@ -2,8 +2,9 @@ import h from 'react-hyperscript';
 import Modal from 'react-modal';
 import helpers from 'hyperscript-helpers';
 import { Fragment, useState } from 'react';
+import { t } from '../../i18n';
 const tags = helpers(h);
-const { div, a, form, input } = tags;
+const { div, a, form, input, select, option, textarea } = tags;
 
 export function ConfirmWithReasonLink(props) {
     const [open, setOpen] = useState(false);
@@ -53,7 +54,7 @@ export function ConfirmWithReasonLink(props) {
                                     type: 'text',
                                     placeholder:
                                         props.placeholder ||
-                                        'Escribe el motivo de esta acción...',
+                                        t`Escribe el motivo de esta acción...`,
                                     required: true,
                                     autoFocus: true,
                                 }),
@@ -73,6 +74,7 @@ export function ConfirmWithReasonLink(props) {
 export function banAUser(props) {
     const [open, setOpen] = useState(false);
     const [reason, setReason] = useState('');
+    const [category, setCategory] = useState('');
     function onSubmit(event) {
         event.preventDefault();
         if (reason.length === 0) {
@@ -110,15 +112,30 @@ export function banAUser(props) {
                     div('.modal-container', { style: { width: '360px' } }, [
                         props.title && div('.modal-title.mb3', props.title),
                         h('.divider'),
-                        div('.modal-body', '.items-center-l', [
-                            h('a.btn.btn-primary.mr3-ns.mb-2.br4-ns', 'Abuse'),
-                            h('a.btn.btn-primary.mr3-ns.mb-2.br4-ns', 'Spam'),
-                            h('a.btn.btn-primary.mr3-ns.mb-2.br4-ns', 'Rude'),
-                            h('a.btn.btn-primary.mb-2.br4-ns', 'Spoofing'),
-                            h(
-                                'a.post-action.btn.btn-primary.mb-2.br4-ns.icon-search-outline',
-                                'Otro motivo'
+                        div('.modal-body.items-center-l', [
+                            select(
+                                '.menu.fl.w-100.mb2',
+                                {
+                                    value: category,
+                                    onChange: event =>
+                                        setCategory(event.target.value),
+                                },
+                                [
+                                    option('.menu-item', t`Abuso`),
+                                    option('.menu-item', t`Spam`),
+                                    option('.menu-item', t`Grosero`),
+                                    option('.menu-item', t`Suplantación`),
+                                    option('.menu-item', t`Otro`),
+                                ]
                             ),
+                            // Console.log(category),
+                            // h(category),
+                            category == 'Otro' &&
+                                textarea('.form-input', {
+                                    name: 'description',
+                                    placeholder: t`ej. Por burro`,
+                                    rows: 3,
+                                }),
                             h('.divider'),
                             input('.btn.btn-primary.btn-block', {
                                 type: 'submit',
