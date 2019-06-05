@@ -58,6 +58,11 @@ export const i18n = new Jed({
             'Not allowed to perform this operation': [
                 'No tienes permiso para realizar esta acción.',
             ],
+            spam: ['spam'],
+            rude: ['grosero'],
+            abuse: ['abuso'],
+            spoofing: ['suplantación'],
+            other: ['otro'],
             upvote: ['Me gusta'],
             downvote: ['No me gusta'],
             useful: ['Ùtil'],
