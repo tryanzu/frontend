@@ -110,12 +110,12 @@ export function FlagPost(props){
                 },
             [
             div('.modal-container', { style: { width: '450px' } }, [
-                props.title && div('.modal-title.mb1', props.title),
+                props.title && div('.b..modal-title.icon-warning-empty', props.title),
                 h('.divider'),
-                    div('.modal-body.items-center-l', [
-                      label('.b.form-label', t`Elije un motivo`),
+                    div('.modal-body-flagpost.items-center-l', [
+                      label('.form-label', t`Elije un motivo`),
                       select(
-                          '.menu.fl.w-100.mb4',
+                          '.menu.fl.w-100.mb3',
                           {
                               value: category,
                               onChange: event =>
@@ -126,7 +126,7 @@ export function FlagPost(props){
                           )
                       ),
                     category == 'Otro' &&
-                        textarea('.form-input', {
+                        textarea('.form-input.mb2', {
                             name: 'description',
                             placeholder: t`...`,
                             rows: 3,

@@ -41,7 +41,7 @@ p.md p:last-child {
 
 .avatar {
 	border-radius: 4px;
-	
+
 	& img {
 		border-radius: inherit;
 	}
@@ -83,12 +83,12 @@ p.md p:last-child {
 
 	&:hover {
 		border-color: $primary-color;
-		text-decoration: none;		
+		text-decoration: none;
 	}
 }
 
 .modal.active .modal-container, .modal:target .modal-container {
-	padding: 0
+	padding: 0;
 }
 
 .form-input:not(:placeholder-shown):invalid {
@@ -137,7 +137,7 @@ p.md p:last-child {
 @media (--breakpoint-medium){
 	.feed{
 	display: flex;
-	}	
+	}
 	.post-active .feed{
 	display: none;
 	}
