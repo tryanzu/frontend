@@ -1,10 +1,12 @@
 import h from 'react-hyperscript';
 import Modal from 'react-modal';
+import classNames from 'classnames';
 import helpers from 'hyperscript-helpers';
 import { Fragment, useState } from 'react';
 import { t } from '../../i18n';
+
 const tags = helpers(h);
-const { div, a, form, input, select, option, textarea } = tags;
+const { div, a, p, form, input, select, option, textarea } = tags;
 
 export function ConfirmWithReasonLink(props) {
     const [open, setOpen] = useState(false);
@@ -71,20 +73,26 @@ export function ConfirmWithReasonLink(props) {
     ]);
 }
 
-export function banAUser(props) {
+export function BanWithReason(props) {
     const [open, setOpen] = useState(false);
     const [reason, setReason] = useState('');
-    const [category, setCategory] = useState('');
+    const [content, setContent] = useState('');
+    const [sending, setSending] = useState(false);
+
     const reasons = ['spam', 'rude', 'abuse', 'spoofing', 'other'];
-    function onSubmit(event) {
+    const disabled = !reason.length || (reason === 'other' && !content.length);
+
+    async function onSubmit(event) {
         event.preventDefault();
-        if (reason.length === 0) {
+        if (disabled || sending) {
             return;
         }
-        setReason('');
+        setSending(true);
+        await Promise.resolve(props.onBan({ reason, content }));
+        setSending(false);
         setOpen(false);
-        props.onConfirm(reason);
     }
+
     return h(Fragment, [
         a(
             '.pointer.post-action',
@@ -111,31 +119,42 @@ export function banAUser(props) {
                 },
                 [
                     div('.modal-container', { style: { width: '360px' } }, [
-                        props.title && div('.modal-title.mb3', props.title),
-                        h('.divider'),
-                        div('.modal-body.items-center-l', [
+                        form('.modal-body', { onSubmit }, [
+                            props.title && p(props.title),
                             select(
-                                '.menu.fl.w-100.mb2',
+                                '.form-select.w-100.mb2',
                                 {
-                                    value: category,
+                                    value: reason,
                                     onChange: event =>
-                                        setCategory(event.target.value),
+                                        setReason(event.target.value),
                                 },
-                                reasons.map(reason =>
-                                    option('.menu-item', t`${reason}`)
+                                [
+                                    option(
+                                        { value: '' },
+                                        t`Selecciona una opcion`
+                                    ),
+                                ].concat(
+                                    reasons.map(reason =>
+                                        option({ value: reason }, t`${reason}`)
+                                    )
                                 )
                             ),
-                            category == 'other' &&
-                                textarea('.form-input', {
-                                    name: 'description',
-                                    placeholder: '...',
-                                    rows: 3,
-                                }),
-                            h('.divider'),
+                            reason == 'other' &&
+                                div('.form-group', [
+                                    textarea('.form-input', {
+                                        name: 'description',
+                                        placeholder: t`Escribe el motivo...`,
+                                        value: content,
+                                        onChange: event =>
+                                            setContent(event.target.value),
+                                        rows: 3,
+                                    }),
+                                ]),
                             input('.btn.btn-primary.btn-block', {
+                                disabled,
                                 type: 'submit',
-                                disabled: reason.length === 0,
                                 value: props.action || 'Continuar',
+                                className: classNames({ loading: sending }),
                             }),
                         ]),
                     ]),

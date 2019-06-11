@@ -379,6 +379,27 @@ function postNewAvatar(effects, form) {
     }));
 }
 
+function requestUserBan(effects, form) {
+    const body = {
+        related_to: 'site',
+        user_id: form.user_id,
+        reason: form.reason,
+        content: form.content,
+    };
+    return jsonReq(request('ban', { method: 'POST', body }))
+        .then(res => {
+            if (res.status === 'error') {
+                throw res.message;
+            }
+            toast.success(t`La solicitud de baneo ha sido procesada.`);
+            return state => state;
+        })
+        .catch(message => {
+            toast.error(t`${message}`);
+            return state => state;
+        });
+}
+
 function updateProfile(effects, form) {
     return jsonReq(
         request(`user/my`, {
@@ -539,6 +560,7 @@ export default provideState({
         change,
         requestValidationEmail,
         requestPasswordReset,
+        requestUserBan,
         fetchRequest,
         fetchGamification,
         postNewAvatar,
