@@ -4,15 +4,30 @@ module.exports = {
     rules: {
         'function-paren-newline': [0],
         'no-console': [0],
-        'object-property-newline': [1, { "allowMultiplePropertiesPerLine": true }],
-        'prettier/prettier': [ // customizing prettier rules (unfortunately not many of them are customizable)
+        'object-property-newline': [
+            1,
+            { allowMultiplePropertiesPerLine: true },
+        ],
+        'prettier/prettier': [
+            // customizing prettier rules (unfortunately not many of them are customizable)
             'error',
             {
-                singleQuote: true, 
+                printWidth: 80,
+                singleQuote: true,
                 trailingComma: 'es5',
-                tabWidth: 4
+                tabWidth: 4,
+                useTabs: false,
+                singleQuote: true,
+                bracketSpacing: true,
+                arrowParens: 'avoid',
+                semi: true,
+                endOfLine: 'lf',
+                htmlWhitespaceSensitivity: 'css',
+                jsxBracketSameLine: false,
+                proseWrap: 'preserve',
+                requirePragma: false,
             },
-        ]
+        ],
     },
     globals: {
         window: true,
@@ -21,5 +36,5 @@ module.exports = {
         Tribute: true,
         Promise: true,
     },
-    "parserOptions": { "ecmaVersion": 2018, sourceType: 'module' }
+    parserOptions: { ecmaVersion: 2018, sourceType: 'module' },
 };

@@ -47,15 +47,17 @@ export function kvReducer(obj) {
 }
 
 export function jsonReq(req) {
-    return req.then(response => response.json()).then(response => {
-        const status = response.status || 'okay';
-        const message =
-            response.message || 'Invalid response, check network requests.';
-        if (status !== 'okay') {
-            throw message;
-        }
-        return response;
-    });
+    return req
+        .then(response => response.json())
+        .then(response => {
+            const status = response.status || 'okay';
+            const message =
+                response.message || 'Invalid response, check network requests.';
+            if (status !== 'okay') {
+                throw message;
+            }
+            return response;
+        });
 }
 
 export function channelToObs(socket, name = false) {

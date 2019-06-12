@@ -372,9 +372,7 @@ function DesktopVersion({ user, image, state, effects }) {
                                     [
                                         image.length > 0
                                             ? h('img', {
-                                                  alt: `Avatar de ${
-                                                      user.username
-                                                  }`,
+                                                  alt: `Avatar de ${user.username}`,
                                                   src: image,
                                               })
                                             : h('div.dn'),

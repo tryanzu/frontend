@@ -66,7 +66,7 @@
     "eslint-brunch": "^3.12.0",
     "eslint-config-prettier": "^2.9.0",
     "eslint-plugin-prettier": "^2.6.0",
-    "prettier": "^1.12.0",
+    "prettier": "1.18.2",
     "sass-brunch": "^2.10.8",
     "uglify-js-brunch": "^2.10.0"
   }
