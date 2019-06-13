@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { t } from '../../i18n';
 
 const tags = helpers(h);
-const { div, form, label, i, a, input } = tags;
+const { div, form, label, i, a, img, input } = tags;
 
 export function Login({ state, effects }) {
     const { auth } = state;
@@ -16,26 +16,36 @@ export function Login({ state, effects }) {
         effects.performLogin();
     }
 
+    const providers = state.site.thirdPartyAuth || [];
+
     return div(
         '.content.fade-in',
         { key: 'login', style: { padding: '0 0.4rem 0.5rem' } },
         [
-            div(
-                '.form-group',
-                {},
-                a(
-                    '.btn.btn-primary.btn-block.btn-facebook',
-                    {
-                        href:
-                            Anzu.layer +
-                            'oauth/facebook?redir=' +
-                            window.location.href,
-                        style: {},
-                    },
-                    [i('.icon-facebook.mr1'), 'Iniciar sesión con Facebook']
-                )
-            ),
-            div('.form-group.tc', 'ó con tu cuenta'),
+            providers.includes('fb') &&
+                div(
+                    '.form-group',
+                    {},
+                    a(
+                        '.btn.btn-primary.db.w-80.btn-facebook.center',
+                        {
+                            href:
+                                Anzu.layer +
+                                'oauth/facebook?redir=' +
+                                window.location.href,
+                            style: {},
+                        },
+                        [
+                            img({
+                                src: '/dist/images/facebook.svg',
+                                className: 'fl w1',
+                            }),
+                            'Continuar con Facebook',
+                        ]
+                    )
+                ),
+            providers.includes('fb') &&
+                div('.form-group.tc', 'ó con tu cuenta anzu'),
             form({ onSubmit }, [
                 div(
                     '.black.bg-washed-red.pa2.mb2.f7.fade-in',

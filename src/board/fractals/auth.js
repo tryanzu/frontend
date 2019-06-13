@@ -391,7 +391,30 @@ function requestFlag(effects, form) {
             if (res.status === 'error') {
                 throw res.message;
             }
-            toast.success(t`Tu solicitud ha sido enviada. Alguien la revisará pronto.`);
+            toast.success(
+                t`Tu solicitud ha sido enviada. Alguien la revisará pronto.`
+            );
+            return state => state;
+        })
+        .catch(message => {
+            toast.error(t`${message}`);
+            return state => state;
+        });
+}
+
+function requestUserBan(effects, form) {
+    const body = {
+        related_to: 'site',
+        user_id: form.user_id,
+        reason: form.reason,
+        content: form.content,
+    };
+    return jsonReq(request('ban', { method: 'POST', body }))
+        .then(res => {
+            if (res.status === 'error') {
+                throw res.message;
+            }
+            toast.success(t`La solicitud de baneo ha sido procesada.`);
             return state => state;
         })
         .catch(message => {
@@ -561,6 +584,7 @@ export default provideState({
         requestValidationEmail,
         requestPasswordReset,
         requestFlag,
+        requestUserBan,
         fetchRequest,
         fetchGamification,
         postNewAvatar,

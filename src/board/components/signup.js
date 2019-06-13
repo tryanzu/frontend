@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { t } from '../../i18n';
 
 const tags = helpers(h);
-const { div, form, i, a, input } = tags;
+const { div, form, img, a, input } = tags;
 
 export function Signup({ state, effects }) {
     const { auth } = state;
@@ -15,29 +15,35 @@ export function Signup({ state, effects }) {
         }
         effects.performSignup();
     }
+    const providers = state.site.thirdPartyAuth || [];
     return div(
         '.content.fade-in',
         { key: 'signup', style: { padding: '0 0.4rem' } },
         [
-            div(
-                '.form-group',
-                {},
-                a(
-                    '.btn.btn-primary.btn-block.btn-facebook',
-                    {
-                        href:
-                            Anzu.layer +
-                            'oauth/facebook?redir=' +
-                            window.location.href,
-                        style: {
-                            background: '#4267b2',
-                            borderColor: '#4267b2',
+            providers.includes('fb') &&
+                div(
+                    '.form-group',
+                    {},
+                    a(
+                        '.btn.btn-primary.db.w-80.btn-facebook.center',
+                        {
+                            href:
+                                Anzu.layer +
+                                'oauth/facebook?redir=' +
+                                window.location.href,
+                            style: {},
                         },
-                    },
-                    [i('.icon-facebook.mr1'), 'Únete con Facebook']
-                )
-            ),
-            div('.form-group.tc', 'ó crea una cuenta con tu correo'),
+                        [
+                            img({
+                                src: '/dist/images/facebook.svg',
+                                className: 'fl w1',
+                            }),
+                            'Continuar con Facebook',
+                        ]
+                    )
+                ),
+            providers.includes('fb') &&
+                div('.form-group.tc', 'ó crea una cuenta con tu correo'),
             form({ onSubmit }, [
                 div(
                     '.black.bg-washed-red.pa2.mb2.f7.fade-in',

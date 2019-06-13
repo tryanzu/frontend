@@ -5,6 +5,7 @@ import helpers from 'hyperscript-helpers';
 import { t, ago } from '../../i18n';
 import { throttle } from 'lodash';
 import { Link } from 'react-router-dom';
+import { BanWithReason } from './actions';
 
 const tags = helpers(h);
 const { div, img, figure, ul, li, a } = tags;
@@ -24,12 +25,14 @@ export function UsersModal({ state, effects, setOpen }) {
     useEffect(() => {
         effects.fetchUsers();
     }, []);
+
     function onScroll(e) {
         const bottomReached =
             e.target.scrollHeight - e.target.scrollTop - e.target.clientHeight <
             1;
         throttledScroll(bottomReached, effects, users);
     }
+
     return h(
         Modal,
         {
@@ -137,10 +140,22 @@ export function UsersModal({ state, effects, setOpen }) {
                                     li(
                                         '.menu-item',
                                         {},
-                                        a('.pointer.post-action', [
-                                            i('.mr1.icon-edit'),
-                                            t`Banear cuenta`,
-                                        ])
+                                        h(
+                                            BanWithReason,
+                                            {
+                                                title: t`¿Por qué quieres banear este usuario?`,
+                                                user,
+                                                onBan: form =>
+                                                    effects.requestUserBan({
+                                                        ...form,
+                                                        user_id: user.id,
+                                                    }),
+                                            },
+                                            [
+                                                i('.mr1.icon-edit'),
+                                                t`Banear cuenta`,
+                                            ]
+                                        )
                                     ),
                                 ]),
                             ]),

@@ -64,7 +64,7 @@ export const i18n = new Jed({
             spoofing: ['Suplantación de identidad'],
             duplicate: ['Contenido duplicado'],
             needs_review: ['Necesita revisión'],
-            other: ['Otro'],
+            other: ['Otros'],
             upvote: ['Me gusta'],
             downvote: ['No me gusta'],
             useful: ['Ùtil'],
