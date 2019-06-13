@@ -3,6 +3,8 @@ import Modal from 'react-modal';
 import helpers from 'hyperscript-helpers';
 import { Fragment, useState } from 'react';
 import { t, i18n } from '../../i18n';
+import classNames from 'classnames';
+
 const tags = helpers(h);
 const { div, a, form, input, select, option, textarea, label } = tags;
 
@@ -70,20 +72,25 @@ export function ConfirmWithReasonLink(props) {
             ),
     ]);
 }
-export function FlagPost(props){
+export function Flag(props) {
     const [open, setOpen] = useState(false);
     const [reason, setReason] = useState('');
-    const [category, setCategory] = useState('');
-    const reasons = ['violence', 'spam', 'fakenews', 'unauthorizedsales', 'inappropriatelanguage', 'other'];
-    function onSubmit(event) {
+    const reasons = ['spam', 'rude', 'duplicate', 'needs_review', 'other'];
+    const [content, setContent] = useState('');
+    const [sending, setSending] = useState(false);
+    const disabled = !reason.length || (reason === 'other' && !content.length);
+
+    async function onSubmit(event) {
         event.preventDefault();
-        if (reason.length === 0) {
+        if (disabled || sending) {
             return;
         }
-        setReason('');
+        setSending(true);
+        await Promise.resolve(props.onFlag({ reason, content }));
+        setSending(false);
         setOpen(false);
-        props.onConfirm(reason);
     }
+
     return h(Fragment, [
         a(
             '.pointer.post-action',
@@ -104,40 +111,58 @@ export function FlagPost(props){
                     style: {
                         overlay: {
                             zIndex: 301,
-                            backgroundColor: 'rgba(0, 0, 0, 0.30)',
+                            backgroundColor: 'rgba(0, 0,f 0, 0.30)',
                         },
                     },
                 },
-            [
-            div('.modal-container', { style: { width: '450px' } }, [
-                props.title && div('.b..modal-title.icon-warning-empty', props.title),
-                h('.divider'),
-                    div('.modal-body-flagpost.items-center-l', [
-                      label('.form-label', t`Elije un motivo`),
-                      select(
-                          '.menu.fl.w-100.mb3',
-                          {
-                              value: category,
-                              onChange: event =>
-                              setCategory(event.target.value),
-                          },
-                              reasons.map(reason =>
-                              option('.menu-item', t`${reason}`)
-                          )
-                      ),
-                    category == 'Otro' &&
-                        textarea('.form-input.mb2', {
-                            name: 'description',
-                            placeholder: t`...`,
-                            rows: 3,
-                        }),
-                    input('.btn.btn-primary.btn-block.', {
-                        type: 'submit',
-                        disabled: category.length === 0,
-                        value: props.action || 'Continuar',
-                    }),
-                ]),
-            ]),
-        ]),
+                [
+                    div('.modal-container', { style: { width: '450px' } }, [
+                        form('.modal-body', { onSubmit }, [
+                            props.title &&
+                                div(
+                                    '.b..modal-title.icon-warning-empty',
+                                    props.title
+                                ),
+                            h('.divider'),
+                            label('.form-label', t`Elije un motivo`),
+                            select(
+                                '.menu.fl.w-100.mb3',
+                                {
+                                    value: reason,
+                                    onChange: event =>
+                                        setReason(event.target.value),
+                                },
+                                [
+                                    option(
+                                        { value: '' },
+                                        t`Selecciona una opcion`
+                                    ),
+                                ].concat(
+                                    reasons.map(reason =>
+                                        option({ value: reason }, t`${reason}`)
+                                    )
+                                )
+                            ),
+                            reason == 'other' &&
+                                div('.form-group', [
+                                    textarea('.form-input', {
+                                        name: 'description',
+                                        placeholder: t`Escribe el motivo...`,
+                                        value: content,
+                                        onChange: event =>
+                                            setContent(event.target.value),
+                                        rows: 3,
+                                    }),
+                                ]),
+                            input('.btn.btn-primary.btn-block.', {
+                                disabled,
+                                type: 'submit',
+                                value: props.action || 'Continuar',
+                                className: classNames({ loading: sending }),
+                            }),
+                        ]),
+                    ]),
+                ]
+            ),
     ]);
 }
