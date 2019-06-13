@@ -100,7 +100,7 @@
 		& .ago {
 			font-size: 0.6rem;
 		}
-		
+
 		& article {
 			padding: 0.5rem 1rem;
 			border-left: 2px solid transparent;
@@ -131,7 +131,7 @@
 				font-size: 0.6rem;
 			}
 
-			
+
 
 			& .new-comments {
 				background: #38C172;
@@ -168,7 +168,7 @@ a[rel="author"], .author {
 	&:hover {
 		text-decoration: none;
 	}
-	
+
 	& > div:first-child {
 		min-width: 32px;
 	}
@@ -185,7 +185,7 @@ a[rel="author"], .author {
 		& small.ago {
 			font-size: 14px;
 		}
-		
+
 		& small.ago, & span.ago {
 			color: $gray-color-dark;
 		}

@@ -379,6 +379,29 @@ function postNewAvatar(effects, form) {
     }));
 }
 
+function requestFlag(effects, form) {
+    const body = {
+        related_to: form.related_to,
+        related_id: form.related_id,
+        category: form.reason,
+        content: form.content,
+    };
+    return jsonReq(request(`flags`, { method: 'POST', body }))
+        .then(res => {
+            if (res.status === 'error') {
+                throw res.message;
+            }
+            toast.success(
+                t`Tu solicitud ha sido enviada. Alguien la revisará pronto.`
+            );
+            return state => state;
+        })
+        .catch(message => {
+            toast.error(t`${message}`);
+            return state => state;
+        });
+}
+
 function requestUserBan(effects, form) {
     const body = {
         related_to: 'site',
@@ -560,6 +583,7 @@ export default provideState({
         change,
         requestValidationEmail,
         requestPasswordReset,
+        requestFlag,
         requestUserBan,
         fetchRequest,
         fetchGamification,

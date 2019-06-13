@@ -62,6 +62,8 @@ export const i18n = new Jed({
             rude: ['Comportamiento agresivo'],
             abuse: ['Abuso del sitio'],
             spoofing: ['Suplantación de identidad'],
+            duplicate: ['Contenido duplicado'],
+            needs_review: ['Necesita revisión'],
             other: ['Otros'],
             upvote: ['Me gusta'],
             downvote: ['No me gusta'],

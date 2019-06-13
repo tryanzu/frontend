@@ -451,7 +451,7 @@ function DesktopVersion({ user, image, state, effects }) {
     );
 }
 
-function NeedAccountValidation({ effects }) {
+export function NeedAccountValidation({ effects }) {
     const [sending, setSending] = useState(false);
     function onClick() {
         if (sending) {

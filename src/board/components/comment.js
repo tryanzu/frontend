@@ -9,6 +9,7 @@ import { ErrorBoundary } from '../errors';
 import { MemoizedMarkdown } from '../utils';
 import { t } from '../../i18n';
 import { ConfirmWithReasonLink } from './actions';
+import { Flag } from './actions';
 
 const tags = helpers(h);
 const { article, div, a, span, i, h5, ul, li } = tags;
@@ -90,26 +91,28 @@ function CommentView({ comment, effects, ui, hashtables, ...props }) {
                         noAvatar: nested,
                     }),
                 ]),
-                div('.flex-shrink-0', [
-                    a(
-                        '.v-mid.pointer.reply-to',
-                        {
-                            className: classNames({
-                                dn: isCurrentUsersComment,
-                                dib: !isCurrentUsersComment,
-                            }),
-                            onClick: () =>
-                                effects.replyFocus(
-                                    'comment',
-                                    noPadding ? comment.reply_to : comment.id
-                                ),
-                        },
-                        [
-                            i('.icon-reply-outline'),
-                            span('.pl2.dn.dib-ns', ['Responder']),
-                        ]
-                    ),
-                    props.auth.user !== false &&
+                props.auth.user !== false &&
+                    div('.flex-shrink-0', [
+                        a(
+                            '.v-mid.pointer.reply-to',
+                            {
+                                className: classNames({
+                                    dn: isCurrentUsersComment,
+                                    dib: !isCurrentUsersComment,
+                                }),
+                                onClick: () =>
+                                    effects.replyFocus(
+                                        'comment',
+                                        noPadding
+                                            ? comment.reply_to
+                                            : comment.id
+                                    ),
+                            },
+                            [
+                                i('.icon-reply-outline'),
+                                span('.pl2.dn.dib-ns', ['Responder']),
+                            ]
+                        ),
                         div('.dib.v-mid.dropdown.dropdown-right', [
                             a(
                                 {
@@ -159,9 +162,27 @@ function CommentView({ comment, effects, ui, hashtables, ...props }) {
                                         ]
                                     )
                                 ),
+                                li(
+                                    '.menu-item',
+                                    {},
+                                    h(
+                                        Flag,
+                                        {
+                                            title: t`Reportar un comentario`,
+                                            comment,
+                                            onFlag: form =>
+                                                effects.requestFlag({
+                                                    ...form,
+                                                    related_id: comment.id,
+                                                    related_to: 'comment',
+                                                }),
+                                        },
+                                        [i('.mr1.icon-warning-empty'), t`Reportar`]
+                                    )
+                                ),
                             ]),
                         ]),
-                ]),
+                    ]),
             ]),
             div('.comment-body', { className: updating ? 'dn' : '' }, [
                 h(

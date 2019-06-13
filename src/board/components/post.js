@@ -13,6 +13,7 @@ import { Link } from 'react-router-dom';
 import { ReplyView } from './reply';
 import { adminTools } from '../../acl';
 import { ConfirmWithReasonLink } from './actions';
+import { Flag } from './actions';
 
 const tags = helpers(h);
 const { form, label, select, optgroup, option, input } = tags;
@@ -136,12 +137,21 @@ function PostActionsView({ state, effects, updating, setUpdating }) {
             ]),
         ]);
     }
-
     return div([
-        a('.dib.btn-icon', [
-            i('.icon-warning-empty'),
-            span('.ml1.dn.dib-ns', t`Reportar`),
-        ]),
+        h(
+            Flag,
+            {
+                title: t`Reportar una publicación`,
+                post,
+                onFlag: form =>
+                    effects.requestFlag({
+                        ...form,
+                        related_id: post.id,
+                        related_to: 'post',
+                    }),
+            },
+            [span('.dib.btn-icon.icon-warning-empty', t`Reportar`)]
+        ),
     ]);
 }
 

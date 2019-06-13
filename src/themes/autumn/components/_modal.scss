@@ -3,7 +3,7 @@
     width: 640px;
     max-width: 100%;
     margin: 2rem auto;
-    
+
     &:focus {
         outline-color: $light-shade;
     }
@@ -51,7 +51,7 @@
 			&.active {
 				font-weight: 500;
 			}
-		}		
+		}
 	}
 
 	& .flex > div {
@@ -62,7 +62,7 @@
 		& .header {
 			margin: 0 0 1rem;
 		}
-		
+
 		& h2 {
 			font-size: 1.2rem;
 			font-weight: 500;
@@ -87,7 +87,13 @@
         padding: 0.8rem;
     }
 
-    & .form-group:not(:last-child) { 
+    & .form-group:not(:last-child) {
         margin-bottom: 0.8rem;
     }
+}
+
+.modal-body-flagpost {
+  max-height: 50vh;
+  overflow-y: auto;
+  position: relative;
 }
