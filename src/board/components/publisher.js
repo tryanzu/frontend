@@ -11,9 +11,9 @@ import RichTextEditor from 'react-rte';
 import { t } from '../../i18n';
 
 const tags = helpers(h);
-const { form, label, select, optgroup, option, input } = tags;
+const { form, select, optgroup, option, input } = tags;
 const { div, section, main, li, ul, ol } = tags;
-const { h1, h2, h3, p, a, small, i, span, hr } = tags;
+const { h1, h2, h3, p, a, span, hr } = tags;
 
 export function Publisher({ state, effects }) {
     const { publisher } = state;
@@ -128,92 +128,6 @@ export function Publisher({ state, effects }) {
                 ]),
             ]
         ),
-    ]);
-}
-
-function PostInfo({ state, effects }) {
-    const { categories, publisher } = state;
-    const { isQuestion, disabledComments, pinned, category } = publisher;
-    const [title, setTitle] = useState(publisher.title);
-    const ready = title.length > 0 && category !== false;
-
-    function onSubmit(event) {
-        event.preventDefault();
-        effects.publisher({ step: 2, title });
-    }
-
-    return div([
-        h1('.ma0.pv3.f6.f3-ns.tc', 'Completar publicación'),
-        form('.pa4-ns.pv2.ph2.mh2.mh0-ns', { onSubmit }, [
-            div('.form-group.pb2', [
-                label('.b.form-label.pb0', '¿Es una pregunta?'),
-                p(
-                    '.ma0',
-                    {},
-                    small(
-                        'De esta forma decidimos a quien mostrar tu publicación, a usuarios que responden o a usuarios que buscan respuestas.'
-                    )
-                ),
-                div(
-                    '.form-group',
-                    {},
-                    label('.form-switch.normal', [
-                        input({
-                            type: 'checkbox',
-                            name: 'isQuestion',
-                            checked: isQuestion,
-                            onChange: event =>
-                                effects.publisher(
-                                    'isQuestion',
-                                    event.target.checked
-                                ),
-                        }),
-                        i('.form-icon'),
-                        'Mi publicación es una pregunta',
-                    ])
-                ),
-                div(
-                    '.form-group',
-                    {},
-                    label('.form-switch.normal', [
-                        input({
-                            type: 'checkbox',
-                            checked: disabledComments,
-                            onChange: event =>
-                                effects.publisher(
-                                    'disabledComments',
-                                    event.target.checked
-                                ),
-                        }),
-                        i('.form-icon'),
-                        t`No permitir comentarios en esta publicación`,
-                    ])
-                ),
-                div(
-                    '.form-group',
-                    {},
-                    label('.form-switch.normal', [
-                        input({
-                            type: 'checkbox',
-                            name: 'pinned',
-                            checked: pinned,
-                            onChange: event =>
-                                effects.publisher(
-                                    'pinned',
-                                    event.target.checked
-                                ),
-                        }),
-                        i('.form-icon'),
-                        t`Publicar como importante`,
-                    ])
-                ),
-            ]),
-            input('.btn.btn-primary.btn-block', {
-                type: 'submit',
-                value: 'Continuar',
-                disabled: !ready,
-            }),
-        ]),
     ]);
 }
 
