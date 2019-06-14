@@ -143,7 +143,7 @@ function PostActionsView({ state, effects, updating, setUpdating }) {
             {
                 title: t`Reportar una publicación`,
                 post,
-                onFlag: form =>
+                onSend: form =>
                     effects.requestFlag({
                         ...form,
                         related_id: post.id,

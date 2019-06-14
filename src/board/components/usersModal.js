@@ -145,7 +145,7 @@ export function UsersModal({ state, effects, setOpen }) {
                                             {
                                                 title: t`¿Por qué quieres banear este usuario?`,
                                                 user,
-                                                onBan: form =>
+                                                onSend: form =>
                                                     effects.requestUserBan({
                                                         ...form,
                                                         user_id: user.id,

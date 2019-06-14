@@ -170,7 +170,7 @@ function CommentView({ comment, effects, ui, hashtables, ...props }) {
                                         {
                                             title: t`Reportar un comentario`,
                                             comment,
-                                            onFlag: form =>
+                                            onSend: form =>
                                                 effects.requestFlag({
                                                     ...form,
                                                     related_id: comment.id,
