@@ -54,6 +54,8 @@
     "timeago.js": "^3.0.2"
   },
   "devDependencies": {
+    "ws": ">=3.3.1",
+    "braces": ">=2.3.1",
     "auto-reload-brunch": "^2",
     "autoprefixer": "^7.1.6",
     "babel-brunch": "^6.1.1",
@@ -61,6 +63,7 @@
     "babel-preset-flow": "^6.23.0",
     "babel-preset-stage-2": "^6.24.1",
     "brunch": "^2.10.17",
+    "clean-css": ">=4.1.11",
     "clean-css-brunch": "^2",
     "eslint": "^4.19.1",
     "eslint-brunch": "^3.12.0",
