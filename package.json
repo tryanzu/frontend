@@ -1,17 +1,17 @@
 {
-  "name": "anzu",
+  "name": "anzu.frontend",
   "version": "0.1.0",
   "description": "Anzu forums system frontend.",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/RodrigoCR/bakkhos.git"
+    "url": "git+https://github.com/tryanzu/frontend.git"
   },
   "author": "fernandez14",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/RodrigoCR/bakkhos/issues"
+    "url": "https://github.com/tryanzu/frontend/issues"
   },
-  "homepage": "https://github.com/RodrigoCR/bakkhos#readme",
+  "homepage": "https://github.com/tryanzu/frontend#readme",
   "dependencies": {
     "@types/history": "^4.6.1",
     "autosize": "^4.0.0",

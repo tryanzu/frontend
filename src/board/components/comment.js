@@ -177,7 +177,10 @@ function CommentView({ comment, effects, ui, hashtables, ...props }) {
                                                     related_to: 'comment',
                                                 }),
                                         },
-                                        [i('.mr1.icon-warning-empty'), t`Reportar`]
+                                        [
+                                            i('.mr1.icon-warning-empty'),
+                                            t`Reportar`,
+                                        ]
                                     )
                                 ),
                             ]),
