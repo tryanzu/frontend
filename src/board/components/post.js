@@ -310,10 +310,12 @@ function RegularPostView({ state, effects }) {
 
     function reactLink({ type, icon, label }) {
         return a(
-            '.badge',
+            '.badge.badge-inline',
             {
                 onClick: onClickGn(type),
-                dataset: { badge: votes[type] || 0 },
+                dataset: {
+                    badge: votes[type] ? votes[type].toLocaleString() : 0,
+                },
                 className: classNames({ active: reactions.includes(type) }),
             },
             [
