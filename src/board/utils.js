@@ -58,26 +58,36 @@ export function jsonReq(req) {
     });
 }
 
+function socketEvent(event, params) {
+    return JSON.stringify({
+        event,
+        params,
+    });
+}
 export function channelToObs(socket, name = false) {
     return {
         subscribe: observer => {
-            socket.on('connected', () => {
+            function listen() {
                 // When is not the global namespace we need to explicitly tell
                 // the remote to join us into that channel.
                 if (name) {
-                    socket.send(
-                        JSON.stringify({
-                            event: 'listen',
-                            params: { chan: name },
-                        })
-                    );
+                    socket.send(socketEvent('listen', { chan: name }));
                 }
                 const channel = name ? socket.channel(name) : socket;
                 channel.onMessage(m => {
                     const msg = JSON.parse(m);
                     observer.next(msg);
                 });
-            });
+            }
+            if (socket.state() === 'connected') {
+                listen();
+            } else {
+                socket.on('connected', listen);
+            }
+            return () => {
+                socket.send(socketEvent('unlisten', { chan: name }));
+                observer.complete(name);
+            };
         },
     };
 }

@@ -18,6 +18,7 @@
     "babel-polyfill": "^6.26.0",
     "callbag-basics": "^3.0.0",
     "callbag-observe": "^1.0.0",
+    "callbag-subscribe": "^1.5.1",
     "classnames": "^2.2.5",
     "date-fns": "^1.29.0",
     "emoji-dictionary": "^1.0.9",

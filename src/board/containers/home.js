@@ -10,6 +10,7 @@ import withState from '../fractals/auth';
 import { injectState } from 'freactal/lib/inject';
 import { Account } from '../components/account';
 import { ToastContainer } from 'react-toastify';
+import Chat from '../components/chat';
 
 // Default export has the injected auth state.
 export default withState(injectState(Home));
@@ -36,6 +37,10 @@ export function Home({ state, effects }) {
                         exact: true,
                         path: '/',
                         component: ReaderWithParentState,
+                    }),
+                    h(Route, {
+                        path: '/chat',
+                        component: Chat,
                     }),
                     h(Route, {
                         path: '/u/:slug/:id',

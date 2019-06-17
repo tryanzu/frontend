@@ -1,0 +1,16 @@
+main.chat {
+	max-width: $layout-max-width;
+	width: 100%;
+	margin: 0 auto;
+	padding: 0 1rem;
+
+	&::before {
+		content: "";
+    	display: table;
+	}
+	&::after {
+		content: "";
+		display: table;
+		clear: both;
+    }
+}
