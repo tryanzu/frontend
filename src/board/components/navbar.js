@@ -338,15 +338,6 @@ function DesktopVersion({ user, image, state, effects }) {
                     t`Crear una cuenta`
                 ),
                 user !== false &&
-                   h(
-                       Link,
-                       {
-                           to: '/chat',
-                           className: 'link pointer btn btn-link',
-                       },
-                       t`Chat`
-                   ),
-                user !== false &&
                     h(
                         NotificationsLink,
                         { notifications, effects },
