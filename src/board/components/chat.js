@@ -57,7 +57,20 @@ function Chat({ state }) {
                                 className: classNames({ b: name == chan }),
                                 onClick: () => setChan(name),
                             },
-                            `#${name}`
+                            [
+                                `#${name}`,
+                                div('.dib.btn-icon.ml2.dropdown-toggle', {}, [
+                                    span('.bg-green.br-100.dib.mr1', {
+                                        style: { width: 10, height: 10 },
+                                    }),
+                                    span(
+                                        '.near-black.b',
+                                        String(
+                                            `${counters['chat:' + name] || 0}`
+                                        )
+                                    ),
+                                ]),
+                            ]
                         )
                     )
                 ),
