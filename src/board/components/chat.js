@@ -1,4 +1,5 @@
 import { useRef, useState, useEffect } from 'react';
+import classNames from 'classnames';
 import h from 'react-hyperscript';
 import helpers from 'hyperscript-helpers';
 import withState from '../fractals/profile';
@@ -19,6 +20,7 @@ function Chat({ state }) {
     const [message, setMessage] = useState('');
     const [lock, setLock] = useState('');
     const [chan, setChan] = useState('general');
+    const [counters, setCounters] = useState({});
 
     useEffect(
         () => {
@@ -26,6 +28,16 @@ function Chat({ state }) {
         },
         [lock]
     );
+
+    useEffect(() => {
+        // Reactive message list from our chat source.
+        const dispose = counters$(state.realtime, counters => {
+            setCounters(counters);
+            console.info(counters);
+        });
+        // Dispose function will be called at unmount.
+        return dispose;
+    }, []);
 
     function onSubmit(event) {
         event.preventDefault();
@@ -38,6 +50,8 @@ function Chat({ state }) {
         setMessage('');
     }
 
+    const online = counters['chat:' + chan] || 0;
+
     return main('.chat.flex.flex-auto', [
         div('.flex.flex-column.w-25.pr4', [
             div('.bg-white.shadow.pa3', [
@@ -49,17 +63,20 @@ function Chat({ state }) {
                         'desarrollo',
                         'videojuegos',
                         'armados',
-                    ].map(chan =>
+                    ].map(channel =>
                         a(
-                            '.link.db.pv1',
-                            { onClick: () => setChan(chan) },
-                            `#${chan}`
+                            '.link.db.pv1.pointer',
+                            {
+                                className: classNames({ b: channel == chan }),
+                                onClick: () => setChan(channel),
+                            },
+                            `#${channel}`
                         )
                     )
                 ),
             ]),
         ]),
-        div('.flex.flex-column.flex-auto', [
+        div('.flex.flex-column.flex-auto.pb3', [
             div('.flex-auto.flex.flex-column.bg-white.shadow', [
                 header('.flex.items-center.bb.b--light-gray.ph3', [
                     div('.flex-auto', [
@@ -71,7 +88,7 @@ function Chat({ state }) {
                             span('.bg-green.br-100.dib.mr1', {
                                 style: { width: 10, height: 10 },
                             }),
-                            span('.near-black.b', ['0']),
+                            span('.near-black.b', String(online)),
                         ]),
                         div('.dropdown.dropdown-right', [
                             a(
@@ -172,4 +189,13 @@ function chat$(realtime, chan, next) {
         subscribe({ next })
     );
 }
+
+function counters$(realtime, next) {
+    return pipe(
+        fromObs(channelToObs(realtime, 'chat:counters')),
+        map(msg => msg.params),
+        subscribe({ next })
+    );
+}
+
 export default withState(injectState(Chat));
