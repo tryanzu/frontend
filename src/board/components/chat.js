@@ -2,7 +2,6 @@ import { useRef, useState, useEffect } from 'react';
 import classNames from 'classnames';
 import h from 'react-hyperscript';
 import helpers from 'hyperscript-helpers';
-import withState from '../fractals/profile';
 import { injectState } from 'freactal';
 import { channelToObs } from '../utils';
 import { pipe, fromObs, map, scan } from 'callbag-basics';
@@ -10,10 +9,9 @@ import subscribe from 'callbag-subscribe';
 import { ago, t } from '../../i18n';
 
 const tags = helpers(h);
-const { main, div, button } = tags;
+const { main, div, i, input, label } = tags;
 const { figure, header, nav, a, img } = tags;
-// eslint-disable-next-line no-unused-vars
-const { h3, h1, form, span, ul, li, i, input, p, label } = tags;
+const { h1, form, span, ul, li } = tags;
 
 function Chat({ state }) {
     const scrollLockRef = useRef(false);
@@ -21,6 +19,7 @@ function Chat({ state }) {
     const [lock, setLock] = useState('');
     const [chan, setChan] = useState('general');
     const [counters, setCounters] = useState({});
+    const channels = state.site.chat || [];
 
     useEffect(
         () => {
@@ -29,15 +28,8 @@ function Chat({ state }) {
         [lock]
     );
 
-    useEffect(() => {
-        // Reactive message list from our chat source.
-        const dispose = counters$(state.realtime, counters => {
-            setCounters(counters);
-            console.info(counters);
-        });
-        // Dispose function will be called at unmount.
-        return dispose;
-    }, []);
+    // Subscribe to counter updates.
+    useEffect(() => counters$(state.realtime, setCounters), []);
 
     function onSubmit(event) {
         event.preventDefault();
@@ -57,20 +49,15 @@ function Chat({ state }) {
             div('.bg-white.shadow.pa3', [
                 h1('.f6.ma0.mb3', 'Canales'),
                 nav(
-                    [
-                        'general',
-                        'dia-de-hueva',
-                        'desarrollo',
-                        'videojuegos',
-                        'armados',
-                    ].map(channel =>
+                    channels.map(({ name }) =>
                         a(
                             '.link.db.pv1.pointer',
                             {
-                                className: classNames({ b: channel == chan }),
-                                onClick: () => setChan(channel),
+                                key: name,
+                                className: classNames({ b: name == chan }),
+                                onClick: () => setChan(name),
                             },
-                            `#${channel}`
+                            `#${name}`
                         )
                     )
                 ),
@@ -198,4 +185,4 @@ function counters$(realtime, next) {
     );
 }
 
-export default withState(injectState(Chat));
+export default injectState(Chat);

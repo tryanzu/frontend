@@ -32,6 +32,7 @@ function initialState() {
             name: '',
             description: '',
             nav: [],
+            chat: [],
             logoUrl: '',
             ...site,
         },
