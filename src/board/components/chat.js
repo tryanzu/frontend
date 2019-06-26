@@ -12,15 +12,18 @@ import { format } from 'date-fns';
 const tags = helpers(h);
 const { main, div, i, input, label } = tags;
 const { figure, header, nav, a, img } = tags;
-const { h1, form, span, ul, li } = tags;
+const { h1, form, span, ul, li, p } = tags;
 
-function Chat({ state }) {
+function Chat({ state, effects }) {
     const scrollLockRef = useRef(false);
     const [message, setMessage] = useState('');
     const [lock, setLock] = useState('');
     const [chan, setChan] = useState('anzu');
     const [counters, setCounters] = useState({});
     const channels = state.site.chat || [];
+    const { auth } = state;
+    const { user } = auth;
+    const disabled = user == false;
 
     useEffect(
         () => {
@@ -45,7 +48,6 @@ function Chat({ state }) {
         );
         setMessage('');
     }
-
     const online = counters['chat:' + chan] || 0;
 
     return main('.chat.flex.flex-auto', [
@@ -66,9 +68,7 @@ function Chat({ state }) {
                                 div('.dib.btn-icon.fr', {}, [
                                     span(
                                         '.near-black.b',
-                                        String(
-                                            `${counters['chat:' + name] || 0}`
-                                        )
+                                        `${counters['chat:' + name] || 0}`
                                     ),
                                 ]),
                             ]
@@ -121,7 +121,38 @@ function Chat({ state }) {
                     lockRef: scrollLockRef,
                 }),
                 form('.pa3.bt.b--light-gray', { onSubmit }, [
+                    user == false &&
+                        div('.flex.flex-wrap.mb3', [
+                            p('.mb0.mh-auto', [
+                                'Si quieres unirte a nuestra comunidad, ',
+                                a(
+                                    '.link.modal-link.pointer',
+                                    {
+                                        onClick: () =>
+                                            effects.auth({
+                                                modal: true,
+                                                tab: 'login',
+                                            }),
+                                    },
+                                    'inicia sesión'
+                                ),
+                                ', o si aún no eres miembro, ',
+                                a(
+                                    '.link.modal-link.pointer',
+                                    {
+                                        onClick: () =>
+                                            effects.auth({
+                                                modal: true,
+                                                tab: 'signup',
+                                            }),
+                                    },
+                                    'únete'
+                                ),
+                                ' a la comunidad.',
+                            ]),
+                        ]),
                     input('.form-input', {
+                        disabled,
                         type: 'text',
                         placeholder: t`Escribe aquí tu mensaje...`,
                         value: message,
