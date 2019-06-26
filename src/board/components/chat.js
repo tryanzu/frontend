@@ -124,7 +124,7 @@ function Chat({ state, effects }) {
                     user == false &&
                         div('.flex.flex-wrap.mb3', [
                             p('.mb0.mh-auto', [
-                                'Si quieres unirte a nuestra comunidad, ',
+                                t`Únete a la conversación, `,
                                 a(
                                     '.link.modal-link.pointer',
                                     {
@@ -134,9 +134,9 @@ function Chat({ state, effects }) {
                                                 tab: 'login',
                                             }),
                                     },
-                                    'inicia sesión'
+                                    t`inicia sesión`
                                 ),
-                                ', o si aún no eres miembro, ',
+                                t`, o si aún no eres miembro, `,
                                 a(
                                     '.link.modal-link.pointer',
                                     {
@@ -146,9 +146,9 @@ function Chat({ state, effects }) {
                                                 tab: 'signup',
                                             }),
                                     },
-                                    'únete'
+                                    t`únete`
                                 ),
-                                ' a la comunidad.',
+                                t` a la comunidad.`,
                             ]),
                         ]),
                     input('.form-input', {
