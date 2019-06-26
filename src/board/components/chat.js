@@ -124,7 +124,7 @@ function Chat({ state, effects }) {
                     user == false &&
                         div('.flex.flex-wrap.mb3', [
                             p('.mb0.mh-auto', [
-                                t`Únete a la conversación, `,
+                                t`Para utilizar el chat `,
                                 a(
                                     '.link.modal-link.pointer',
                                     {
@@ -136,7 +136,7 @@ function Chat({ state, effects }) {
                                     },
                                     t`inicia sesión`
                                 ),
-                                t`, o si aún no eres miembro, `,
+                                t`, o si aún no tienes una cuenta, `,
                                 a(
                                     '.link.modal-link.pointer',
                                     {
@@ -146,9 +146,8 @@ function Chat({ state, effects }) {
                                                 tab: 'signup',
                                             }),
                                     },
-                                    t`únete`
+                                    t`registrate`
                                 ),
-                                t` a la comunidad.`,
                             ]),
                         ]),
                     input('.form-input', {
