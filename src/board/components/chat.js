@@ -6,7 +6,8 @@ import { injectState } from 'freactal';
 import { channelToObs } from '../utils';
 import { pipe, fromObs, map, scan } from 'callbag-basics';
 import subscribe from 'callbag-subscribe';
-import { ago, t } from '../../i18n';
+import { t } from '../../i18n';
+import { format } from 'date-fns';
 
 const tags = helpers(h);
 const { main, div, i, input, label } = tags;
@@ -17,7 +18,7 @@ function Chat({ state }) {
     const scrollLockRef = useRef(false);
     const [message, setMessage] = useState('');
     const [lock, setLock] = useState('');
-    const [chan, setChan] = useState('general');
+    const [chan, setChan] = useState('anzu');
     const [counters, setCounters] = useState({});
     const channels = state.site.chat || [];
 
@@ -32,6 +33,9 @@ function Chat({ state }) {
     useEffect(() => counters$(state.realtime, setCounters), []);
 
     function onSubmit(event) {
+        if (message === '') {
+            return;
+        }
         event.preventDefault();
         state.realtime.send(
             JSON.stringify({
@@ -59,10 +63,7 @@ function Chat({ state }) {
                             },
                             [
                                 `#${name}`,
-                                div('.dib.btn-icon.ml2.dropdown-toggle', {}, [
-                                    span('.bg-green.br-100.dib.mr1', {
-                                        style: { width: 10, height: 10 },
-                                    }),
+                                div('.dib.btn-icon.fr', {}, [
                                     span(
                                         '.near-black.b',
                                         String(
@@ -148,7 +149,7 @@ function ChatMessageList({ state, chan, lockRef }) {
                     return;
                 }
                 bottomRef.current.scrollIntoView({
-                    behavior: 'smooth',
+                    // behavior: 'smooth',
                 });
             });
             // Dispose function will be called at unmount.
@@ -159,25 +160,40 @@ function ChatMessageList({ state, chan, lockRef }) {
 
     return div('.flex-auto.overflow-y-scroll', [
         div(
-            '.pa3',
-            list.map(message =>
-                div('.tile.mb3', { key: message.id }, [
-                    div('.tile-icon.', [
-                        figure('.avatar.avatar-chat', [
-                            img({ src: message.avatar }),
-                        ]),
-                    ]),
-                    div('.tile-content', [
-                        div('.tile-title', [
-                            span('.text-bold.message-id', message.from),
-                            span('.fr', ago(message.at)),
-                        ]),
-                        div('.tile-subtitle', message.msg),
-                    ]),
-                ])
+            '.pv3',
+            list.map((message, k) =>
+                h(ChatMessageItem, {
+                    key: message.id,
+                    short:
+                        list[k - 1] &&
+                        list[k - 1].from === message.from &&
+                        (!list[k - 10] ||
+                            k % 10 != 0 ||
+                            (list[k - 10] &&
+                                list[k - 10].from !== message.from)),
+                    message,
+                })
             )
         ),
         div('#bottom', { ref: bottomRef }),
+    ]);
+}
+
+function ChatMessageItem({ message, short }) {
+    return div('.tile.mb2.ph3', { key: message.id }, [
+        div('.tile-icon', { style: { width: 50 } }, [
+            !short &&
+                figure('.avatar.avatar-chat', [img({ src: message.avatar })]),
+            short && span('.white', [format(message.at, 'HH:mm')]),
+        ]),
+        div('.tile-content', [
+            !short &&
+                div('.tile-title.pt2.mb2', [
+                    span('.text-bold.text-primary', message.from),
+                    span('.text-gray.ml2', format(message.at, 'HH:mm')),
+                ]),
+            div('.tile-subtitle', message.msg),
+        ]),
     ]);
 }
 

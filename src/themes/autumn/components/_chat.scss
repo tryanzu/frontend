@@ -12,7 +12,15 @@ main.chat {
 		content: "";
 		display: table;
 		clear: both;
-    }
+	}
+	
+	.tile:hover {
+		background: $bg-color;
+
+		.white {
+			color: $dark-color !important;
+		}
+	}
 }
 .nav-text{
 	color: #3D5AFE;
