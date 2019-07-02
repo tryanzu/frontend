@@ -1,10 +1,11 @@
-import { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import classNames from 'classnames';
 import h from 'react-hyperscript';
 import helpers from 'hyperscript-helpers';
 import { injectState } from 'freactal';
 import { channelToObs } from '../utils';
 import { pipe, fromObs, map, scan } from 'callbag-basics';
+import { debounce } from 'callbag-debounce';
 import subscribe from 'callbag-subscribe';
 import { t } from '../../i18n';
 import { format } from 'date-fns';
@@ -12,7 +13,7 @@ import { format } from 'date-fns';
 const tags = helpers(h);
 const { main, div, i, input, label } = tags;
 const { figure, header, nav, a, img } = tags;
-const { h1, form, span, ul, li, p } = tags;
+const { h1, form, span, ul, li, p, small } = tags;
 
 function Chat({ state, effects }) {
     const scrollLockRef = useRef(false);
@@ -36,10 +37,10 @@ function Chat({ state, effects }) {
     useEffect(() => counters$(state.realtime, setCounters), []);
 
     function onSubmit(event) {
+        event.preventDefault();
         if (message === '') {
             return;
         }
-        event.preventDefault();
         state.realtime.send(
             JSON.stringify({
                 event: 'chat:message',
@@ -51,9 +52,9 @@ function Chat({ state, effects }) {
     const online = counters['chat:' + chan] || 0;
 
     return main('.chat.flex.flex-auto', [
-        div('.flex.flex-column.w-25.pr4', [
-            div('.bg-white.shadow.pa3', [
-                h1('.f6.ma0.mb3', 'Canales'),
+        div('.flex.flex-column.w-25.pr2', [
+            div('.pa3', [
+                h1('.f5.ma0.mb3', t`Canales`),
                 nav(
                     channels.map(({ name }) =>
                         a(
@@ -65,12 +66,10 @@ function Chat({ state, effects }) {
                             },
                             [
                                 `#${name}`,
-                                div('.dib.btn-icon.fr', {}, [
-                                    span(
-                                        '.near-black.b',
-                                        `${counters['chat:' + name] || 0}`
-                                    ),
-                                ]),
+                                span(
+                                    '.label.label-primary.label-rounded.fr',
+                                    `${counters['chat:' + name] || 0}`
+                                ),
                             ]
                         )
                     )
@@ -164,31 +163,33 @@ function Chat({ state, effects }) {
     ]);
 }
 
-function ChatMessageList({ state, chan, lockRef }) {
+const ChatMessageList = React.memo(function({ state, chan, lockRef }) {
     const bottomRef = useRef(null);
     const [list, setList] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     useEffect(
         () => {
             setList([]);
+            setLoading(true);
 
             // Reactive message list from our chat source.
             const dispose = chat$(state.realtime, chan, list => {
                 setList(list.slice(0, 50).reverse());
+                setLoading(false);
                 if (lockRef.current) {
                     return;
                 }
-                bottomRef.current.scrollIntoView({
-                    // behavior: 'smooth',
-                });
+                bottomRef.current.scrollIntoView({});
             });
-            // Dispose function will be called at unmount.
+            // Unsubscribe will be called at unmount.
             return dispose;
         },
         [chan]
     );
 
     return div('.flex-auto.overflow-y-scroll', [
+        loading && div('.loading.loading-lg.mt2'),
         div(
             '.pv3',
             list.map((message, k) =>
@@ -207,14 +208,17 @@ function ChatMessageList({ state, chan, lockRef }) {
         ),
         div('#bottom', { ref: bottomRef }),
     ]);
-}
+});
 
-function ChatMessageItem({ message, short }) {
+const ChatMessageItem = React.memo(function({ message, short }) {
+    const initial = message.from.substr(0, 2).toUpperCase();
     return div('.tile.mb2.ph3', { key: message.id }, [
-        div('.tile-icon', { style: { width: 50 } }, [
+        div('.tile-icon', { style: { width: '1.6rem' } }, [
             !short &&
-                figure('.avatar.avatar-chat', [img({ src: message.avatar })]),
-            short && span('.white', [format(message.at, 'HH:mm')]),
+                figure('.avatar', { dataset: { initial } }, [
+                    message.avatar && img({ src: message.avatar }),
+                ]),
+            short && small('.white', [format(message.at, 'HH:mm')]),
         ]),
         div('.tile-content', [
             !short &&
@@ -225,13 +229,14 @@ function ChatMessageItem({ message, short }) {
             div('.tile-subtitle', message.msg),
         ]),
     ]);
-}
+});
 
 function chat$(realtime, chan, next) {
     return pipe(
         fromObs(channelToObs(realtime, 'chat:' + chan)),
         map(msg => msg.params),
         scan((prev, msg) => [msg].concat(prev), []),
+        debounce(60),
         subscribe({ next })
     );
 }

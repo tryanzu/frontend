@@ -17,6 +17,7 @@
     "autosize": "^4.0.0",
     "babel-polyfill": "^6.26.0",
     "callbag-basics": "^3.0.0",
+    "callbag-debounce": "^2.1.2",
     "callbag-observe": "^1.0.0",
     "callbag-subscribe": "^1.5.1",
     "classnames": "^2.2.5",

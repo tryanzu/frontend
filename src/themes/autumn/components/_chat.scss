@@ -18,8 +18,12 @@ main.chat {
 		background: $bg-color;
 
 		.white {
-			color: $dark-color !important;
+			color: $gray-color !important;
 		}
+	}
+
+	.avatar {
+		border-radius: 50%;
 	}
 }
 .nav-text{
@@ -28,14 +32,4 @@ main.chat {
 
 .message-id{
 	color: #007acc;
-}
-
-.avatar-chat {
-	width: 2rem;
-	height: 2rem;
-	border-radius: 100%;
-}
-
-.div-avatar{
-	height: auto;
 }
