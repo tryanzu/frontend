@@ -19,12 +19,9 @@ function Chat({ state, effects }) {
     const scrollLockRef = useRef(false);
     const [message, setMessage] = useState('');
     const [lock, setLock] = useState('');
-    const [chan, setChan] = useState('anzu');
+    const [chan, setChan] = useState('general');
     const [counters, setCounters] = useState({});
     const channels = state.site.chat || [];
-    const { auth } = state;
-    const { user } = auth;
-    const disabled = user == false;
 
     useEffect(
         () => {
@@ -49,10 +46,11 @@ function Chat({ state, effects }) {
         );
         setMessage('');
     }
-    const online = counters['chat:' + chan] || 0;
+    const byChannel = counters.channels || {};
+    const online = byChannel['chat:' + chan] || 0;
 
     return main('.chat.flex.flex-auto', [
-        div('.flex.flex-column.w-25.pr2', [
+        /* div('.flex.flex-column.w-25.pr2', [
             div('.pa3', [
                 h1('.f5.ma0.mb3', t`Canales`),
                 nav(
@@ -75,7 +73,7 @@ function Chat({ state, effects }) {
                     )
                 ),
             ]),
-        ]),
+        ]), */
         div('.flex.flex-column.flex-auto.pb3', [
             div('.flex-auto.flex.flex-column.bg-white.shadow', [
                 header('.flex.items-center.bb.b--light-gray.ph3', [
@@ -117,10 +115,11 @@ function Chat({ state, effects }) {
                 h(ChatMessageList, {
                     state,
                     chan,
+                    isOnline: counters.isOnline || false,
                     lockRef: scrollLockRef,
                 }),
                 form('.pa3.bt.b--light-gray', { onSubmit }, [
-                    user == false &&
+                    false === state.authenticated &&
                         div('.flex.flex-wrap.mb3', [
                             p('.mb0.mh-auto', [
                                 t`Para utilizar el chat `,
@@ -150,12 +149,12 @@ function Chat({ state, effects }) {
                             ]),
                         ]),
                     input('.form-input', {
-                        disabled,
-                        type: 'text',
+                        disabled: false === state.authenticated,
                         placeholder: t`Escribe aquí tu mensaje...`,
                         value: message,
-                        onChange: event => setMessage(event.target.value),
+                        type: 'text',
                         autoFocus: true,
+                        onChange: event => setMessage(event.target.value),
                     }),
                 ]),
             ]),
@@ -163,7 +162,8 @@ function Chat({ state, effects }) {
     ]);
 }
 
-const ChatMessageList = React.memo(function({ state, chan, lockRef }) {
+const ChatMessageList = React.memo(function(props) {
+    const { state, chan, isOnline, lockRef } = props;
     const bottomRef = useRef(null);
     const [list, setList] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -203,6 +203,7 @@ const ChatMessageList = React.memo(function({ state, chan, lockRef }) {
                             (list[k - 10] &&
                                 list[k - 10].from !== message.from)),
                     message,
+                    isOnline: isOnline && isOnline.has(message.userId),
                 })
             )
         ),
@@ -210,13 +211,18 @@ const ChatMessageList = React.memo(function({ state, chan, lockRef }) {
     ]);
 });
 
-const ChatMessageItem = React.memo(function({ message, short }) {
+const ChatMessageItem = React.memo(function({ message, short, isOnline }) {
     const initial = message.from.substr(0, 2).toUpperCase();
     return div('.tile.mb2.ph3', { key: message.id }, [
-        div('.tile-icon', { style: { width: '1.6rem' } }, [
+        div('.tile-icon', { style: { width: '2rem' } }, [
             !short &&
                 figure('.avatar', { dataset: { initial } }, [
                     message.avatar && img({ src: message.avatar }),
+                    i('.avatar-presence', {
+                        className: classNames({
+                            online: isOnline,
+                        }),
+                    }),
                 ]),
             short && small('.white', [format(message.at, 'HH:mm')]),
         ]),
@@ -245,6 +251,10 @@ function counters$(realtime, next) {
     return pipe(
         fromObs(channelToObs(realtime, 'chat:counters')),
         map(msg => msg.params),
+        map(counters => ({
+            ...counters,
+            isOnline: new window.Map(counters.peers || []),
+        })),
         subscribe({ next })
     );
 }
