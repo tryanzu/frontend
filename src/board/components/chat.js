@@ -75,8 +75,8 @@ function Chat({ state, effects }) {
             ]),
         ]), */
         div('.flex.flex-column.flex-auto.pb3', [
-            div('.flex-auto.flex.flex-column.bg-white.shadow', [
-                header('.flex.items-center.bb.b--light-gray.ph3', [
+            div('.flex-auto.flex.flex-column', [
+                header('.flex.items-center.ph3', [
                     div('.flex-auto', [
                         span('.f5.v-mid.mr2', '#'),
                         h1('.f5.dib.v-mid', chan),
@@ -86,7 +86,7 @@ function Chat({ state, effects }) {
                             span('.bg-green.br-100.dib.mr1', {
                                 style: { width: 10, height: 10 },
                             }),
-                            span('.near-black.b', String(online)),
+                            span('.online.b', String(online)),
                         ]),
                         div('.dropdown.dropdown-right', [
                             a(
@@ -118,7 +118,7 @@ function Chat({ state, effects }) {
                     isOnline: counters.isOnline || false,
                     lockRef: scrollLockRef,
                 }),
-                form('.pa3.bt.b--light-gray', { onSubmit }, [
+                form('.pa3', { onSubmit }, [
                     false === state.authenticated &&
                         div('.flex.flex-wrap.mb3', [
                             p('.mb0.mh-auto', [
@@ -224,7 +224,7 @@ const ChatMessageItem = React.memo(function({ message, short, isOnline }) {
                         }),
                     }),
                 ]),
-            short && small('.white', [format(message.at, 'HH:mm')]),
+            short && small('.time', [format(message.at, 'HH:mm')]),
         ]),
         div('.tile-content', [
             !short &&
