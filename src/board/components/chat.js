@@ -3,11 +3,11 @@ import classNames from 'classnames';
 import h from 'react-hyperscript';
 import helpers from 'hyperscript-helpers';
 import { injectState } from 'freactal';
-import { channelToObs } from '../utils';
+import { channelToObs, MemoizedBasicMarkdown } from '../utils';
 import { pipe, fromObs, map, scan } from 'callbag-basics';
 import { debounce } from 'callbag-debounce';
 import subscribe from 'callbag-subscribe';
-import { t } from '../../i18n';
+import { t, translate } from '../../i18n';
 import { format } from 'date-fns';
 
 const tags = helpers(h);
@@ -192,8 +192,15 @@ const ChatMessageList = React.memo(function(props) {
         loading && div('.loading.loading-lg.mt2'),
         div(
             '.pv3',
-            list.map((message, k) =>
-                h(ChatMessageItem, {
+            list.map((message, k) => {
+                if (message.type === 'log') {
+                    return h(ChatLogItem, {
+                        key: message.id,
+                        message,
+                    });
+                }
+
+                return h(ChatMessageItem, {
                     key: message.id,
                     short:
                         list[k - 1] &&
@@ -204,8 +211,8 @@ const ChatMessageList = React.memo(function(props) {
                                 list[k - 10].from !== message.from)),
                     message,
                     isOnline: isOnline && isOnline.has(message.userId),
-                })
-            )
+                });
+            })
         ),
         div('#bottom', { ref: bottomRef }),
     ]);
@@ -232,7 +239,27 @@ const ChatMessageItem = React.memo(function({ message, short, isOnline }) {
                     span('.text-bold.text-primary', message.from),
                     span('.text-gray.ml2', format(message.at, 'HH:mm')),
                 ]),
-            div('.tile-subtitle', message.msg),
+            div(
+                '.tile-subtitle',
+                {},
+                h(MemoizedBasicMarkdown, { content: message.msg })
+            ),
+        ]),
+    ]);
+});
+
+const ChatLogItem = React.memo(function({ message }) {
+    const i18nParams = message.i18n || [];
+    const translated = i18nParams.map(item => t`${item}`);
+    return div('.tile.mb2.ph3', { key: message.id }, [
+        div('.tile-icon', { style: { width: '2rem' } }, [
+            small('.time', [format(message.at, 'HH:mm')]),
+        ]),
+        div('.tile-content', [
+            div(
+                '.tile-subtitle',
+                translate`${message.msg}`.fetch(...translated)
+            ),
         ]),
     ]);
 });
@@ -240,7 +267,7 @@ const ChatMessageItem = React.memo(function({ message, short, isOnline }) {
 function chat$(realtime, chan, next) {
     return pipe(
         fromObs(channelToObs(realtime, 'chat:' + chan)),
-        map(msg => msg.params),
+        map(msg => ({ ...msg.params, type: msg.event })),
         scan((prev, msg) => [msg].concat(prev), []),
         debounce(60),
         subscribe({ next })

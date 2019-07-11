@@ -5,18 +5,17 @@ $secondary-color: lighten($primary-color, 37.5%) !default;
 // Gray colors
 // Comment for dark
 
-/* $dark-color: #454d5d !default;
+$dark-color: #454d5d !default;
 $light-color: #fff !default;
- */
 
 // Uncomment for dark
-
+/*
 $dark-color: rgb(196, 196, 196) !default;
 $light-color: #292929 !default;
 $gray-color: lighten($light-color, 40%) !default;
 $gray-color-dark: lighten($gray-color, 25%) !default;
 $gray-color-light: darken($gray-color, 20%) !default;
-
+*/
 
 
 // Extra colors

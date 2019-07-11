@@ -2,8 +2,8 @@ main.chat {
 	max-width: $layout-max-width;
 	width: 100%;
 	margin: 0 auto;
-	padding: 0 1rem;
-	background: $lighter-shade;
+	padding: 0;
+	background: $light-color;
 	border-bottom-right-radius: 4px;
 	border-bottom-left-radius: 4px;
 	box-shadow: 0 7px 14px 0 rgba(50,50,93,.1), 0 3px 6px 0 $gray-color-light;
@@ -31,14 +31,14 @@ main.chat {
 	}
 
 	small.time {
-		color: $light-shade;	
+		color: $light-color;	
 	}
 
 	.tile:hover {
-		background: $light-color;
+		background: $light-shade;
 
 		small.time {
-			color: $gray-color-light !important;
+			color: $gray-color !important;
 		}
 	}
 

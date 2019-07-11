@@ -80,6 +80,10 @@ export function t(str, ...values) {
     return i18n.translate(String.raw(str, ...values)).fetch();
 }
 
+export function translate(str, ...values) {
+    return i18n.translate(String.raw(str, ...values));
+}
+
 export function dateToString(date, body = 'dddd, D MMMM YYYY') {
     return format(date, body, { locale: es });
 }
