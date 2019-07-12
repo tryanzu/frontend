@@ -20,10 +20,15 @@ main.chat {
 		content: "";
     	display: table;
 	}
+	
 	&::after {
 		content: "";
 		display: table;
 		clear: both;
+	}
+	
+	.tile-subtitle p:last-child {
+		margin-bottom: 0;
 	}
 	
 	.online {

@@ -12,10 +12,6 @@ function emojiSupport(props) {
 }
 
 function linkSupport(props) {
-    const supported = ['gif', 'jpeg', 'jpg', 'png'];
-    if (supported.filter(ext => props.href.endsWith(ext)).length > 0) {
-        return h('img.chat', { src: props.href, style: { maxWidth: 300 } });
-    }
     return props.href.match(/^(https?:)?\/\//)
         ? h(
               'a',
@@ -25,10 +21,34 @@ function linkSupport(props) {
         : h(Link, { to: props.href }, props.children);
 }
 
-export const MemoizedBasicMarkdown = memo(({ content }) => {
+function linkParser(onImageLoad) {
+    return props => {
+        const supported = ['gif', 'jpeg', 'jpg', 'png'];
+        if (supported.filter(ext => props.href.endsWith(ext)).length > 0) {
+            return h('img.chat', {
+                src: props.href,
+                onLoad: onImageLoad,
+                style: { maxWidth: 300 },
+            });
+        }
+        return props.href.match(/^(https?:)?\/\//)
+            ? h(
+                  'a',
+                  {
+                      href: props.href,
+                      target: 'blank',
+                      rel: 'noopener noreferrer',
+                  },
+                  props.children
+              )
+            : h(Link, { to: props.href }, props.children);
+    };
+}
+
+export const MemoizedBasicMarkdown = memo(({ content, onImageLoad }) => {
     return h(Markdown, {
         source: content,
-        renderers: { text: emojiSupport, link: linkSupport },
+        renderers: { text: emojiSupport, link: linkParser(onImageLoad) },
         disallowedTypes: ['heading'],
         escapeHtml: true,
     });

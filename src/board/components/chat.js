@@ -33,19 +33,6 @@ function Chat({ state, effects }) {
     // Subscribe to counter updates.
     useEffect(() => counters$(state.realtime, setCounters), []);
 
-    function onSubmit(event) {
-        event.preventDefault();
-        if (message === '') {
-            return;
-        }
-        state.realtime.send(
-            JSON.stringify({
-                event: 'chat:message',
-                params: { msg: message, chan },
-            })
-        );
-        setMessage('');
-    }
     const byChannel = counters.channels || {};
     const online = byChannel['chat:' + chan] || 0;
 
@@ -118,49 +105,71 @@ function Chat({ state, effects }) {
                     isOnline: counters.isOnline || false,
                     lockRef: scrollLockRef,
                 }),
-                form('.pa3', { onSubmit }, [
-                    false === state.authenticated &&
-                        div('.flex.flex-wrap.mb3', [
-                            p('.mb0.mh-auto', [
-                                t`Para utilizar el chat `,
-                                a(
-                                    '.link.modal-link.pointer',
-                                    {
-                                        onClick: () =>
-                                            effects.auth({
-                                                modal: true,
-                                                tab: 'login',
-                                            }),
-                                    },
-                                    t`inicia sesión`
-                                ),
-                                t`, o si aún no tienes una cuenta, `,
-                                a(
-                                    '.link.modal-link.pointer',
-                                    {
-                                        onClick: () =>
-                                            effects.auth({
-                                                modal: true,
-                                                tab: 'signup',
-                                            }),
-                                    },
-                                    t`registrate`
-                                ),
-                            ]),
-                        ]),
-                    input('.form-input', {
-                        disabled: false === state.authenticated,
-                        placeholder: t`Escribe aquí tu mensaje...`,
-                        value: message,
-                        type: 'text',
-                        autoFocus: true,
-                        onChange: event => setMessage(event.target.value),
-                    }),
-                ]),
+                h(ChatMessageInput, {
+                    state,
+                    effects,
+                    chan,
+                }),
             ]),
         ]),
     ]);
 }
+
+const ChatMessageInput = React.memo(function({ state, effects, chan }) {
+    const [message, setMessage] = useState('');
+    function onSubmit(event) {
+        event.preventDefault();
+        if (message === '') {
+            return;
+        }
+        state.realtime.send(
+            JSON.stringify({
+                event: 'chat:message',
+                params: { msg: message, chan },
+            })
+        );
+        setMessage('');
+    }
+    return form('.pa3', { onSubmit }, [
+        false === state.authenticated &&
+            div('.flex.flex-wrap.mb3', [
+                p('.mb0.mh-auto', [
+                    t`Para utilizar el chat `,
+                    a(
+                        '.link.modal-link.pointer',
+                        {
+                            onClick: () =>
+                                effects.auth({
+                                    modal: true,
+                                    tab: 'login',
+                                }),
+                        },
+                        t`inicia sesión`
+                    ),
+                    t`, o si aún no tienes una cuenta, `,
+                    a(
+                        '.link.modal-link.pointer',
+                        {
+                            onClick: () =>
+                                effects.auth({
+                                    modal: true,
+                                    tab: 'signup',
+                                }),
+                        },
+                        t`registrate`
+                    ),
+                ]),
+            ]),
+        input('.form-input', {
+            disabled: false === state.authenticated,
+            placeholder: t`Escribe aquí tu mensaje...`,
+            value: message,
+            type: 'text',
+            autoFocus: true,
+            onChange: event => setMessage(event.target.value),
+        }),
+    ]);
+});
 
 const ChatMessageList = React.memo(function(props) {
     const { state, chan, isOnline, lockRef } = props;
@@ -180,7 +189,9 @@ const ChatMessageList = React.memo(function(props) {
                 if (lockRef.current) {
                     return;
                 }
-                bottomRef.current.scrollIntoView({});
+                window.requestAnimationFrame(() => {
+                    bottomRef.current.scrollIntoView({});
+                });
             });
             // Unsubscribe will be called at unmount.
             return dispose;
@@ -211,6 +222,8 @@ const ChatMessageList = React.memo(function(props) {
                                 list[k - 10].from !== message.from)),
                     message,
                     isOnline: isOnline && isOnline.has(message.userId),
+                    bottomRef,
+                    lockRef,
                 });
             })
         ),
@@ -218,7 +231,16 @@ const ChatMessageList = React.memo(function(props) {
     ]);
 });
 
-const ChatMessageItem = React.memo(function({ message, short, isOnline }) {
+const ChatMessageItem = React.memo(function(props) {
+    const { message, short, isOnline, bottomRef, lockRef } = props;
+    function onImageLoad() {
+        if (lockRef.current) {
+            return;
+        }
+        window.requestAnimationFrame(() => {
+            bottomRef.current.scrollIntoView({});
+        });
+    }
     const initial = message.from.substr(0, 2).toUpperCase();
     return div('.tile.mb2.ph3', { key: message.id }, [
         div('.tile-icon', { style: { width: '2rem' } }, [
@@ -242,7 +264,7 @@ const ChatMessageItem = React.memo(function({ message, short, isOnline }) {
             div(
                 '.tile-subtitle',
                 {},
-                h(MemoizedBasicMarkdown, { content: message.msg })
+                h(MemoizedBasicMarkdown, { content: message.msg, onImageLoad })
             ),
         ]),
     ]);
