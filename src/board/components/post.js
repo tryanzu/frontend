@@ -216,12 +216,11 @@ function UpdatePostView({ state, effects, setUpdating }) {
             ),
         ]),
         div('.form-group.pb2', [
-            label('.b.form-label', 'Título de la publicación'),
+            label('.b.form-label', t`Título de la publicación`),
             input('#title.form-input', {
                 type: 'text',
                 value: title,
-                placeholder:
-                    'Escribe el titulo de tu publicación o pregunta...',
+                placeholder: t`Escribe el titulo de tu publicación o pregunta...`,
                 required: true,
                 onChange: event => setTitle(event.target.value),
             }),
@@ -230,7 +229,7 @@ function UpdatePostView({ state, effects, setUpdating }) {
             h(RichTextEditor, {
                 value: content,
                 onChange: setContent,
-                placeholder: 'Escribe aquí el contenido de tu publicación',
+                placeholder: t`Escribe aquí el contenido de tu publicación`,
             }),
         ]),
         div('.form-group.pb2', [
@@ -244,7 +243,7 @@ function UpdatePostView({ state, effects, setUpdating }) {
                         checked: is_question,
                     }),
                     i('.form-icon'),
-                    'La publicación es una pregunta',
+                    t`La publicación es una pregunta`,
                 ])
             ),
             div(
@@ -257,7 +256,7 @@ function UpdatePostView({ state, effects, setUpdating }) {
                         checked: lock,
                     }),
                     i('.form-icon'),
-                    'No permitir comentarios en esta publicación',
+                    t`No permitir comentarios en esta publicación`,
                 ])
             ),
             div(
@@ -270,13 +269,13 @@ function UpdatePostView({ state, effects, setUpdating }) {
                         checked: pinned,
                     }),
                     i('.form-icon'),
-                    'Publicar como importante',
+                    t`Publicar como importante`,
                 ])
             ),
         ]),
         input('.btn.btn-primary.btn-block', {
             type: 'submit',
-            value: 'Guardar publicación',
+            value: t`Guardar publicación`,
         }),
     ]);
 }

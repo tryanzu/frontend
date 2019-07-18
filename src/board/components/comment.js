@@ -87,7 +87,7 @@ function CommentView({ comment, effects, ui, hashtables, ...props }) {
                     nested === true && span('.icon-flow-split.mr2'),
                     h(Author, {
                         item: comment,
-                        label: 'Comentó',
+                        label: t`Comentó`,
                         noAvatar: nested,
                     }),
                 ]),
@@ -110,7 +110,7 @@ function CommentView({ comment, effects, ui, hashtables, ...props }) {
                             },
                             [
                                 i('.icon-reply-outline'),
-                                span('.pl2.dn.dib-ns', ['Responder']),
+                                span('.pl2.dn.dib-ns', t`Responder`),
                             ]
                         ),
                         div('.dib.v-mid.dropdown.dropdown-right', [
@@ -231,7 +231,7 @@ function CommentView({ comment, effects, ui, hashtables, ...props }) {
                 div(
                     '.feedback',
                     { className: updating ? 'dn' : '' },
-                    [h5('Esta respuesta fue considerada:')].concat(
+                    [h5(t`Esta respuesta fue considerada:`)].concat(
                         (category.reactions || []).map(r =>
                             reactLink({
                                 type: r,

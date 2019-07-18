@@ -70,11 +70,11 @@ export function Publisher({ state, effects }) {
                         div('.timeline-content', [
                             p(
                                 '.b.lh-title.mb1',
-                                'Las publicaciones deben ser relacionados a su categoría'
+                                t`Las publicaciones deben ser relacionados a su categoría`
                             ),
                             p(
                                 '.lh-copy.mb0',
-                                'Si deseas colocar un tema que se salga muy abruptamente de las categorías de la comunidad, te pedimos que utilices la sección de Bar Spartano para hacerlo. Damos la bienvenida a temas de discusión general, pero los rechazamos en las otras secciones.'
+                                t`Si deseas colocar un tema que se salga muy abruptamente de las categorías de la comunidad, te pedimos que utilices la sección de Bar Spartano para hacerlo. Damos la bienvenida a temas de discusión general, pero los rechazamos en las otras secciones.`
                             ),
                         ]),
                     ]),
@@ -83,11 +83,11 @@ export function Publisher({ state, effects }) {
                         div('.timeline-content', [
                             p(
                                 '.b.lh-title.mb1',
-                                'Utiliza títulos que expliquen tu publicación'
+                                t`Utiliza títulos que expliquen tu publicación`
                             ),
                             p(
                                 '.lh-copy.mb0',
-                                'No publiques títulos poniendo solamente frases como “Ayuda”, “No sé qué hacer”, “xD”, “Recomendación”, o cualquier otra cosa que no explique tu tema. Nuestros algoritmos van a penalizar dichas publicaciones, incluso cuando en la descripción expliques perfectamente tu problema. La única excepción para publicar cualquier título es el Bar Spartano.'
+                                t`No publiques títulos poniendo solamente frases como “Ayuda”, “No sé qué hacer”, “xD”, “Recomendación”, o cualquier otra cosa que no explique tu tema. Nuestros algoritmos van a penalizar dichas publicaciones, incluso cuando en la descripción expliques perfectamente tu problema. La única excepción para publicar cualquier título es el Bar Spartano.`
                             ),
                         ]),
                     ]),
@@ -96,11 +96,11 @@ export function Publisher({ state, effects }) {
                         div('.timeline-content', [
                             p(
                                 '.b.lh-title.mb1',
-                                'Explica y escribe bien tu tema, pregunta o aportación'
+                                t`Explica y escribe bien tu tema, pregunta o aportación`
                             ),
                             p(
                                 '.lh-copy.mb0',
-                                'Haz un esfuerzo por leer una vez más el texto donde describes tu pregunta o comentario ANTES DE PUBLICAR. Procura que esté lo mejor explicado que puedas, que no esté incompleto, y que sea fácil de comprender. Todo eso ayuda a que los demás contribuyan y a que aumentes tu reputación en la comunidad.'
+                                t`Haz un esfuerzo por leer una vez más el texto donde describes tu pregunta o comentario ANTES DE PUBLICAR. Procura que esté lo mejor explicado que puedas, que no esté incompleto, y que sea fácil de comprender. Todo eso ayuda a que los demás contribuyan y a que aumentes tu reputación en la comunidad.`
                             ),
                         ]),
                     ]),
@@ -109,11 +109,11 @@ export function Publisher({ state, effects }) {
                         div('.timeline-content', [
                             p(
                                 '.b.lh-title.mb1',
-                                'Contenido ilegal (torrents, cracks, MP3, P2P, etc)'
+                                t`Contenido ilegal (torrents, cracks, MP3, P2P, etc)`
                             ),
                             p(
                                 '.lh-copy.mb0',
-                                'Está prohibido cualquier mensaje de solicitud, ayuda o recomendación sobre contenido ilegal. Cualquier mensaje en foros, artículos, perfiles u otra sección pública de la comunidad SpartanGeek.com que contenga dicho material será removido y se evaluará suspender la cuenta.'
+                                t`Está prohibido cualquier mensaje de solicitud, ayuda o recomendación sobre contenido ilegal. Cualquier mensaje en foros, artículos, perfiles u otra sección pública de la comunidad SpartanGeek.com que contenga dicho material será removido y se evaluará suspender la cuenta.`
                             ),
                         ]),
                     ]),
@@ -122,7 +122,7 @@ export function Publisher({ state, effects }) {
                         div(
                             '.timeline-content',
                             {},
-                            a('.f5', 'Leer reglamento completo')
+                            a('.f5', t`Leer reglamento completo`)
                         ),
                     ]),
                 ]),
@@ -167,7 +167,7 @@ function PostContent({ effects, state }) {
                             {
                                 value: '',
                             },
-                            'Escoge una categoría (requerido)'
+                            t`Escoge una categoría (requerido)`
                         ),
                     ].concat(
                         categories
@@ -194,7 +194,7 @@ function PostContent({ effects, state }) {
                     type: 'text',
                     value: title,
                     onChange: event => setTitle(event.target.value),
-                    placeholder: 'Escribe aquí un titulo...',
+                    placeholder: t`Escribe aquí un titulo...`,
                     required: true,
                     autoFocus: true,
                 }),
@@ -213,17 +213,17 @@ function PostContent({ effects, state }) {
             div('.mt3', [
                 h3(
                     '.f5.fw6',
-                    'Sugerencias para obtener más y mejores respuestas y comentarios:'
+                    t`Sugerencias para obtener más y mejores respuestas y comentarios:`
                 ),
                 ol('.pa0.ma0.measure.lh-copy', [
                     li(
-                        'Lee nuevamente tu publicación antes de enviarla. Procura que sea clara y entendible.'
+                        t`Lee nuevamente tu publicación antes de enviarla. Procura que sea clara y entendible.`
                     ),
                     li(
-                        'Si son varias preguntas, trata de empezar por las más importantes. Evita abrumar con mucha info y ve al punto.'
+                        t`Si son varias preguntas, trata de empezar por las más importantes. Evita abrumar con mucha info y ve al punto.`
                     ),
                     li(
-                        'Gana reputación agradeciendo a los que te ayuden o contribuyan a tu tema.'
+                        t`Gana reputación agradeciendo a los que te ayuden o contribuyan a tu tema.`
                     ),
                 ]),
             ]),
@@ -247,7 +247,7 @@ function PostReview({ state, effects }) {
         return h(Redirect, { to: `/p/${post.slug}/${post.id}` });
     }
     return div([
-        h1('.ma0.pv3.f6.f3-ns.tc', 'Un último vistazo antes de publicar'),
+        h1('.ma0.pv3.f6.f3-ns.tc', t`Un último vistazo antes de publicar`),
         form('.pa4-ns.pv2.ph2.mh2.mh0-ns', { onSubmit }, [
             h3('.mt0.f6', [subcategory.name, span('.icon-right-open.silver')]),
             h2('.mt0.mb3', title),
@@ -255,7 +255,7 @@ function PostReview({ state, effects }) {
             div('.post-preview.pb2', {}, h(Markdown, { source: content })),
             input('.btn.btn-primary.btn-block', {
                 type: 'submit',
-                value: 'Publicar ahora',
+                value: t`Publicar ahora`,
                 className: classNames({ loading: publisher.saving }),
             }),
         ]),

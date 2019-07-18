@@ -38,12 +38,12 @@ export function Signup({ state, effects }) {
                                 src: '/dist/images/facebook.svg',
                                 className: 'fl w1',
                             }),
-                            'Continuar con Facebook',
+                            t`Continuar con Facebook`,
                         ]
                     )
                 ),
             providers.includes('fb') &&
-                div('.form-group.tc', 'ó crea una cuenta con tu correo'),
+                div('.form-group.tc', t`ó crea una cuenta con tu correo`),
             form({ onSubmit }, [
                 div(
                     '.black.bg-washed-red.pa2.mb2.f7.fade-in',
