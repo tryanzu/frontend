@@ -38,7 +38,7 @@ export function ReplyView(props) {
                     user.image
                         ? img({
                               src: user.image,
-                              alt: `Avatar de ${user.username}`,
+                              alt: t`Avatar de ${user.username}`,
                           })
                         : div('.empty-avatar', {}, user.username.substr(0, 1))
                 ),
@@ -50,7 +50,7 @@ export function ReplyView(props) {
                     h(RichTextEditor, {
                         value: reply,
                         onChange: setReply,
-                        placeholder: 'Escribe aquí tu respuesta',
+                        placeholder: t`Escribe aquí tu respuesta`,
                         onFocus: () => effects.replyFocus(type, id),
                     })
                 ),
@@ -70,11 +70,11 @@ export function ReplyView(props) {
                         ul([
                             li([
                                 t`Asegúrate de `,
-                                i('responder la publicación principal '),
+                                i(t`responder la publicación principal `),
                                 t`y proporcionar detalles suficientes en tu respuesta.`,
                             ]),
                         ]),
-                        p([t`Y trata de `, strong('evitar'), ':']),
+                        p([t`Y trata de `, strong(t`evitar`), ':']),
                         ul([
                             li(t`Responder con otra pregunta.`),
                             li(t`Responder a otras respuestas.`),

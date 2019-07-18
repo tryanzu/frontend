@@ -22,9 +22,9 @@ export function ForgotPassword({ state, effects }) {
         { key: 'forgot-password', style: { padding: '0 0.4rem 0.5rem' } },
         [
             form({ onSubmit: lostPasswordHandler }, [
-                h('h6', { className: 'mb2' }, 'Recuperar contraseña'),
+                h('h6', { className: 'mb2' }, t`Recuperar contraseña`),
                 p(
-                    'Recupera el acceso a tu cuenta proporcionando el correo electrónico que usaste en tu registro.'
+                    t`Recupera el acceso a tu cuenta proporcionando el correo electrónico que usaste en tu registro.`
                 ),
                 div(
                     '.black.bg-washed-red.pa2.mb2.f7.fade-in',
@@ -39,14 +39,14 @@ export function ForgotPassword({ state, effects }) {
                         id: 'email',
                         type: 'email',
                         autoComplete: 'username',
-                        placeholder: 'Correo electrónico',
+                        placeholder: t`Correo electrónico`,
                         required: true,
                         autoFocus: true,
                     }),
                 ]),
                 input('.btn.btn-primary.btn-block', {
                     type: 'submit',
-                    value: 'Recuperar contraseña',
+                    value: t`Recuperar contraseña`,
                     className: classNames({ loading: auth.loading }),
                 }),
                 a(
@@ -55,7 +55,7 @@ export function ForgotPassword({ state, effects }) {
                         id: 'forgot',
                         onClick: () => effects.auth('forgot', false),
                     },
-                    'Cancelar'
+                    t`Cancelar`
                 ),
             ]),
         ]

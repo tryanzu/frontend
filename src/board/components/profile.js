@@ -65,7 +65,7 @@ function Profile({ state, effects }) {
                                     image &&
                                         img({
                                             src: image,
-                                            alt: `Perfil de ${username}`,
+                                            alt: t`Perfil de ${username}`,
                                         }),
                                 ]
                             ),
@@ -160,6 +160,7 @@ function Profile({ state, effects }) {
                     '.toast.toast-warning.measure-wide.center.lh-copy.mv3',
                     t`Aún no has escrito tu biografía. Ayuda a otros a conocer sobre ti escribiendo una en tu perfil.`
                 ),
+            //holi
             div('.mw5.mb3.center', [
                 i('.icon-crown.gold.f5'),
                 span('.db.mb2.f5', [
@@ -180,31 +181,31 @@ function Profile({ state, effects }) {
                     ),
                     span('.ph2', String(level + 1)),
                 ]),
-                span('.db.mb2', `${number(rest)} para el siguiente nivel`),
+                span('.db.mb2', t`${number(rest)} para el siguiente nivel`),
             ]),
             div('.flex.flex-wrap.pb4.boxed', [
                 span('.flex-auto', [
                     span('.icon-location.mr2'),
-                    user.profile.country || 'Desconocido',
+                    user.profile.country || t`Desconocido`,
                 ]),
                 span('.flex-auto', [
                     span('.icon-calendar.mr2'),
-                    `Miembro hace ${ago(user.created_at)}`,
+                    t`Miembro hace ${ago(user.created_at)}`,
                 ]),
                 span('.flex-auto', [
                     span('.icon-doc.mr2'),
                     span('.b', String(number(posts.count || 0))),
-                    ' publicaciones',
+                    t` publicaciones`,
                 ]),
                 span('.flex-auto', [
                     span('.icon-chat.mr2'),
                     span('.b', number(comments.count)),
-                    ' comentarios',
+                    t` comentarios`,
                 ]),
             ]),
             div('.db.flex-ns.mt4', [
                 div('.flex-auto.w-50-ns', [
-                    h3('.f5.mb3', 'Ultimas publicaciones'),
+                    h3('.f5.mb3', t`Ultimas publicaciones`),
                     div('.tl.boxed', { style: { padding: '0' } }, [
                         posts.loading === true &&
                             div('.pv2', {}, div('.loading')),
@@ -229,7 +230,7 @@ function Profile({ state, effects }) {
                 ]),
                 div('.ph3.dn.db-ns'),
                 div('.flex-auto.mt3.w-50-ns.mt0-ns', [
-                    h3('.f5.mb3', 'Ultimos comentarios'),
+                    h3('.f5.mb3', t`Ultimos comentarios`),
                     div('.tl.boxed', { style: { padding: '0' } }, [
                         comments.loading === true &&
                             div('.pv2', {}, div('.loading')),
@@ -269,7 +270,7 @@ function CommentView({ comment }) {
         ]),
         div([
             h(MemoizedMarkdown, { content: comment.content }),
-            div({}, span('.ago', 'Comentado hace ' + ago(comment.created_at))),
+            div({}, span('.ago', t`Comentado hace ` + ago(comment.created_at))),
         ]),
     ]);
 }
@@ -313,7 +314,10 @@ function PostView({ post, subcategories }) {
                         post.title
                     )
                 ),
-                div({}, span('.ago', 'Publicado hace ' + ago(post.created_at))),
+                div(
+                    {},
+                    span('.ago', t`Publicado hace ` + ago(post.created_at))
+                ),
             ]),
             div(
                 '.tc',

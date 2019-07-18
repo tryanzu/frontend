@@ -40,12 +40,12 @@ export function Login({ state, effects }) {
                                 src: '/dist/images/facebook.svg',
                                 className: 'fl w1',
                             }),
-                            'Continuar con Facebook',
+                            t`Continuar con Facebook`,
                         ]
                     )
                 ),
             providers.includes('fb') &&
-                div('.form-group.tc', 'ó con tu cuenta anzu'),
+                div('.form-group.tc', t`ó con tu cuenta anzu`),
             form({ onSubmit }, [
                 div(
                     '.black.bg-washed-red.pa2.mb2.f7.fade-in',
@@ -60,7 +60,7 @@ export function Login({ state, effects }) {
                         id: 'email',
                         type: 'email',
                         autoComplete: 'username',
-                        placeholder: 'Correo electrónico',
+                        placeholder: t`Correo electrónico`,
                         required: true,
                         autoFocus: true,
                     }),
@@ -73,7 +73,7 @@ export function Login({ state, effects }) {
                         id: 'password',
                         type: 'password',
                         autoComplete: 'current-password',
-                        placeholder: 'Contraseña',
+                        placeholder: t`Contraseña`,
                         required: true,
                     }),
                 ]),
@@ -91,12 +91,12 @@ export function Login({ state, effects }) {
                             checked: auth.rememberMe,
                         }),
                         i('.form-icon'),
-                        ' Recordar mi sesión',
+                        t` Recordar mi sesión`,
                     ]),
                 ]),
                 input('.btn.btn-primary.btn-block', {
                     type: 'submit',
-                    value: 'Iniciar sesión',
+                    value: t`Iniciar sesión`,
                     className: classNames({ loading: auth.loading }),
                 }),
                 a(
@@ -105,7 +105,7 @@ export function Login({ state, effects }) {
                         id: 'forgot',
                         onClick: () => effects.auth('forgot', true),
                     },
-                    '¿Olvidaste tu contraseña?'
+                    t`¿Olvidaste tu contraseña?`
                 ),
             ]),
         ]

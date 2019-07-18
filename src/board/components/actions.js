@@ -65,7 +65,7 @@ export function ConfirmWithReasonLink(props) {
                             input('.btn.btn-primary.btn-block', {
                                 type: 'submit',
                                 disabled: reason.length === 0,
-                                value: props.action || 'Continuar',
+                                value: props.action || t`Continuar`,
                             }),
                         ]),
                     ]),
