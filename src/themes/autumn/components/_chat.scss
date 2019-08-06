@@ -45,6 +45,18 @@ main.chat {
 		small.time {
 			color: $gray-color !important;
 		}
+
+		.tile-actions a {
+			color: $gray-color !important;
+
+			&:hover {
+				color: $primary-color !important;
+			}
+		}
+	}
+
+	.tile-actions a {
+		color: $light-color;	
 	}
 
 	.avatar {

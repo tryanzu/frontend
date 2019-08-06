@@ -1,3 +1,4 @@
+import React from 'react';
 import { provideState, update } from 'freactal';
 import { request } from '../../utils';
 import { kvReducer, jsonReq, channelToObs } from '../utils';
@@ -5,6 +6,9 @@ import { glue } from '../../drivers/ext/glue';
 import { fromObs } from 'callbag-basics';
 import { toast } from 'react-toastify';
 import { t, i18n } from '../../i18n';
+
+export const GlueContext = React.createContext(false);
+export const AuthContext = React.createContext({});
 
 function initialState() {
     const realtime = glue(window.Anzu.glue || '', {});
@@ -615,10 +619,19 @@ export default provideState({
                 return auth.user !== false && auth.user.id == id;
             };
         },
+        chat({ site }) {
+            return {
+                channels: new window.Map(
+                    site.chat.map(chan => [chan.name, chan])
+                ),
+            };
+        },
+        glue({ realtime }) {
+            return realtime;
+        },
     },
     initialState,
 });
-
 function delay(duration) {
     return function() {
         return new Promise(function(resolve) {

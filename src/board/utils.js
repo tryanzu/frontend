@@ -101,6 +101,7 @@ function socketEvent(event, params) {
         params,
     });
 }
+
 export function channelToObs(socket, name = false) {
     return {
         subscribe: observer => {
@@ -128,3 +129,5 @@ export function channelToObs(socket, name = false) {
         },
     };
 }
+
+export const audio = new window.Audio('/assets/sounds/notification.mp3');
