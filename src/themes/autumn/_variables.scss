@@ -24,6 +24,7 @@ $light-shade: desaturate(mix($light-color, $primary-color, 92%), 50%);
 $lighter-shade: desaturate(mix($light-color, $primary-color, 96%), 50%);
 $darkest-primary: mix($dark-color, $primary-color, 90%);
 $darker-primary: mix($dark-color, $primary-color, 30%);
+$gold-color: #ffb700;
 
 // Font sizes
 $html-font-size: 20px !default;

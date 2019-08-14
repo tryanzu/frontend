@@ -43,6 +43,10 @@ export function Home({ state, effects }) {
                             component: ReaderWithParentState,
                         }),
                         h(Route, {
+                            path: '/chat/:chan',
+                            component: Chat,
+                        }),
+                        h(Route, {
                             path: '/chat',
                             component: Chat,
                         }),

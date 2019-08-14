@@ -1,31 +1,43 @@
 import React, { useRef, useState, useEffect, useContext } from 'react';
 import YouTube from 'react-youtube';
 import classNames from 'classnames';
+import { Link } from 'react-router-dom';
 import h from 'react-hyperscript';
 import helpers from 'hyperscript-helpers';
 import { injectState } from 'freactal';
 import { channelToObs, MemoizedBasicMarkdown } from '../utils';
-import { pipe, filter, fromObs, map, scan } from 'callbag-basics';
+import { pipe, filter, fromObs, map, scan } from 'callbag-basics-esmodules';
 import { debounce } from 'callbag-debounce';
 import subscribe from 'callbag-subscribe';
 import { t, translate } from '../../i18n';
-import { format } from 'date-fns';
+import { format, subSeconds, isAfter } from 'date-fns';
 import { Flag, ConfirmWithReasonLink } from './actions';
 import { AuthContext } from '../fractals/auth';
 import { useSessionState } from '../../hooks';
+import { adminTools } from '../../acl';
 
 const tags = helpers(h);
 const { main, div, i, input, label } = tags;
-const { figure, header, a, img } = tags;
-const { h1, form, span, ul, li, p, small } = tags;
+const { figure, header, a, img, nav, section } = tags;
+const { h1, h5, form, span } = tags;
+const { h4, ul, li, p, small } = tags;
 
-function Chat({ state, effects }) {
+function Chat({ state, effects, match }) {
     const scrollLockRef = useRef(false);
     const [lock, setLock] = useState('');
     const [hideVideo, setHideVideo] = useSessionState('hideVideo', false);
-    const [chan] = useState('general');
+    const [chan, setChan] = useState(match.params.chan || 'general');
     const [counters, setCounters] = useState({});
     const { chat } = state;
+
+    useEffect(
+        () => {
+            if (match.params.chan) {
+                setChan(match.params.chan);
+            }
+        },
+        [match.params.chan]
+    );
 
     useEffect(
         () => {
@@ -33,6 +45,7 @@ function Chat({ state, effects }) {
         },
         [lock]
     );
+    console.info(chan);
 
     // Subscribe to counter updates.
     useEffect(() => counters$(state.realtime, setCounters), []);
@@ -42,35 +55,45 @@ function Chat({ state, effects }) {
     const channel = chat.channels.has(chan) && chat.channels.get(chan);
 
     return main('.chat.flex.flex-auto.relative', [
-        channel.youtubeVideo &&
-            hideVideo === false &&
-            div(
-                '.absolute.p-3.shadow.s-rounded',
-                {
-                    style: {
-                        minWidth: 515,
-                        zIndex: 100,
-                        top: 75,
-                        right: 35,
-                    },
-                },
-                [
-                    h(
-                        '.video-responsive',
-                        {},
-                        h(YouTube, {
-                            videoId: channel.youtubeVideo,
-                            opts: {
-                                playerVars: {
-                                    // https://developers.google.com/youtube/player_parameters
-                                    autoplay: 0,
-                                },
+        div('#channels.flex-shrink-0.flex.flex-column', [
+            div('.flex-auto.flex.flex-column', [
+                header('.flex.items-center.ph3', [
+                    h1('.f5.dib.v-mid', 'Canales'),
+                ]),
+                nav(
+                    '.flex-auto',
+                    state.site.chat.map(channel =>
+                        h(
+                            Link,
+                            {
+                                key: channel.name,
+                                to: `/chat/${channel.name}`,
+                                className: classNames('db pa2 ph3', {
+                                    active: channel.name === chan,
+                                }),
                             },
-                        })
+                            `#${channel.name}`
+                        )
+                    )
+                ),
+                section('.flex.flex-column.peers', [
+                    header('.ph3.pv2', [h4('.dib.v-mid.mb0', 'Conectados')]),
+                    nav(
+                        '.flex-auto.overflow-y-scroll',
+                        (counters.peers || []).map(([id, username], k) =>
+                            a(
+                                '.db.pa2.ph3',
+                                {
+                                    key: id + k,
+                                },
+                                [i('.icon-user.mr2'), `${username}`]
+                            )
+                        )
                     ),
-                ]
-            ),
-        div('.flex.flex-column.flex-auto.pb3', [
+                ]),
+            ]),
+        ]),
+        div('.flex.flex-column.flex-auto', [
             div('.flex-auto.flex.flex-column', [
                 header('.flex.items-center.ph3', [
                     div('.flex-auto', [
@@ -121,6 +144,34 @@ function Chat({ state, effects }) {
                         ]),
                     ]),
                 ]),
+                channel.youtubeVideo &&
+                    hideVideo === false &&
+                    div(
+                        '.ph3#video',
+                        {
+                            style: {
+                                minWidth: 515,
+                                zIndex: 100,
+                                top: 75,
+                                right: 35,
+                            },
+                        },
+                        [
+                            h(
+                                '.video-responsive.center',
+                                { style: { maxWidth: '70%' } },
+                                h(YouTube, {
+                                    videoId: channel.youtubeVideo,
+                                    opts: {
+                                        playerVars: {
+                                            // https://developers.google.com/youtube/player_parameters
+                                            autoplay: 0,
+                                        },
+                                    },
+                                })
+                            ),
+                        ]
+                    ),
                 h(ChatMessageList, {
                     state,
                     channel,
@@ -196,18 +247,22 @@ const ChatMessageList = React.memo(function(props) {
     const { state, channel, isOnline, lockRef } = props;
     const bottomRef = useRef(null);
     const [list, setList] = useState([]);
+    const [featured, setFeatured] = useState(false);
     const [loading, setLoading] = useState(false);
     const chan = channel.name;
     useEffect(
         () => {
             setList([]);
+            setFeatured(false);
             setLoading(true);
             // Reactive message list from our chat source.
             const dispose = streamChatChannel(
                 { realtime: state.realtime, chan },
-                list => {
+                ({ list, starred }) => {
                     setList(list.slice(0, 50).reverse());
+                    setFeatured(starred.length > 0 && starred[0]);
                     setLoading(false);
+                    console.info(starred);
                     if (lockRef.current) {
                         return;
                     }
@@ -224,6 +279,43 @@ const ChatMessageList = React.memo(function(props) {
 
     return div('.flex-auto.overflow-y-scroll.relative', [
         loading && div('.loading.loading-lg.mt2'),
+        featured &&
+            isAfter(featured.at, subSeconds(new Date(), 15)) &&
+            div(
+                '.starred',
+                {},
+                div([
+                    h5([i('.icon-star-filled.mr1'), 'Mensaje destacado:']),
+                    div('.tile', [
+                        div('.tile-icon', { style: { width: '2rem' } }, [
+                            figure('.avatar', [
+                                featured.avatar &&
+                                    img({ src: featured.avatar }),
+                                i('.avatar-presence', {
+                                    className: classNames({
+                                        online: isOnline,
+                                    }),
+                                }),
+                            ]),
+                        ]),
+                        div('.tile-content', [
+                            div('.tile-title.mb2', [
+                                span('.text-bold.text-primary', featured.from),
+                                span(
+                                    '.text-gray.ml2',
+                                    format(featured.at, 'HH:mm')
+                                ),
+                            ]),
+                            div('.tile-subtitle', {}, [
+                                h(MemoizedBasicMarkdown, {
+                                    content: featured.msg,
+                                    onImageLoad: () => false,
+                                }),
+                            ]),
+                        ]),
+                    ]),
+                ])
+            ),
         div(
             '.pv3',
             list.map((message, k) => {
@@ -291,14 +383,29 @@ const ChatMessageItem = React.memo(function(props) {
             ]),
         ]),
         div('.tile-actions.self-center', {}, [
-            h(
-                Flag,
-                {
-                    title: t`Reportar un mensaje`,
-                    onSend: form => console.info(form),
-                },
-                i('.mr1.icon-warning-empty.pointer', { title: t`Reportar` })
-            ),
+            adminTools({ user: auth.auth.user }) &&
+                a(
+                    {
+                        onClick: () =>
+                            auth.glue.send(
+                                glueEvent('chat:star', {
+                                    chan,
+                                    message,
+                                    id: message.id,
+                                })
+                            ),
+                    },
+                    [i('.mr1.icon-star-filled.pointer', { title: t`Destacar` })]
+                ),
+            !auth.canUpdate(message.userId) &&
+                h(
+                    Flag,
+                    {
+                        title: t`Reportar un mensaje`,
+                        onSend: form => console.info(form),
+                    },
+                    i('.mr1.icon-warning-empty.pointer', { title: t`Reportar` })
+                ),
             auth.canUpdate(message.userId) &&
                 h(
                     ConfirmWithReasonLink,
@@ -341,7 +448,7 @@ const ChatLogItem = React.memo(function({ message }) {
 });
 
 function streamChatChannel({ realtime, chan }, next) {
-    const types = ['message', 'log', 'delete'];
+    const types = ['message', 'log', 'delete', 'star'];
     // Transform this reactive structure into what we finally need (list of messages)
     return pipe(
         // Stream of chat's channel messages from glue socket.
@@ -351,12 +458,29 @@ function streamChatChannel({ realtime, chan }, next) {
         // Filtering known messages, just in case.
         filter(msg => types.includes(msg.type)),
         // Merging into single list
-        scan((prev, msg) => {
-            if (msg.type === 'delete') {
-                return prev.filter(m => m.id !== msg.id);
-            }
-            return [msg].concat(prev);
-        }, []),
+        scan(
+            (prev, msg) => {
+                switch (msg.type) {
+                    case 'delete':
+                        return {
+                            ...prev,
+                            list: prev.list.filter(m => m.id !== msg.id),
+                        };
+                    case 'star':
+                        return {
+                            ...prev,
+                            starred: [msg].concat(prev.starred),
+                        };
+                    case 'log':
+                    case 'message':
+                        return {
+                            ...prev,
+                            list: [msg].concat(prev.list),
+                        };
+                }
+            },
+            { list: [], starred: [] }
+        ),
         debounce(60),
         subscribe({ next })
     );

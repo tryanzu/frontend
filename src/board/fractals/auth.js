@@ -3,9 +3,10 @@ import { provideState, update } from 'freactal';
 import { request } from '../../utils';
 import { kvReducer, jsonReq, channelToObs } from '../utils';
 import { glue } from '../../drivers/ext/glue';
-import { fromObs } from 'callbag-basics';
+import { fromObs } from 'callbag-basics-esmodules';
 import { toast } from 'react-toastify';
 import { t, i18n } from '../../i18n';
+import { adminTools } from '../../acl';
 
 export const GlueContext = React.createContext(false);
 export const AuthContext = React.createContext({});
@@ -616,7 +617,10 @@ export default provideState({
         },
         canUpdate({ auth }) {
             return id => {
-                return auth.user !== false && auth.user.id == id;
+                return (
+                    auth.user !== false &&
+                    (auth.user.id == id || adminTools({ user: auth.user }))
+                );
             };
         },
         chat({ site }) {
