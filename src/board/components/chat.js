@@ -55,7 +55,7 @@ function Chat({ state, effects, match }) {
     const channel = chat.channels.has(chan) && chat.channels.get(chan);
 
     return main('.chat.flex.flex-auto.relative', [
-        div('#channels.flex-shrink-0.flex.flex-column', [
+        div('#channels.flex-shrink-0.flex-ns.flex-column.dn', [
             div('.flex-auto.flex.flex-column', [
                 header('.flex.items-center.ph3', [
                     h1('.f5.dib.v-mid', 'Canales'),
@@ -102,7 +102,7 @@ function Chat({ state, effects, match }) {
                         p('.dib.v-mid.ma0.ml3', channel.description || ''),
                     ]),
                     div([
-                        a('.dib.btn-icon.ml2.dropdown-toggle', {}, [
+                        a('.dn.dib-ns.btn-icon.ml2.dropdown-toggle', {}, [
                             span('.bg-green.br-100.dib.mr1', {
                                 style: { width: 10, height: 10 },
                             }),
