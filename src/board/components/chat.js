@@ -11,7 +11,7 @@ import { debounce } from 'callbag-debounce';
 import subscribe from 'callbag-subscribe';
 import { t, translate } from '../../i18n';
 import { format, subSeconds, isAfter } from 'date-fns';
-import { Flag, ConfirmWithReasonLink } from './actions';
+import { Flag } from './actions';
 import { AuthContext } from '../fractals/auth';
 import { useSessionState } from '../../hooks';
 import { adminTools } from '../../acl';
@@ -397,6 +397,23 @@ const ChatMessageItem = React.memo(function(props) {
                     },
                     [i('.mr1.icon-star-filled.pointer', { title: t`Destacar` })]
                 ),
+            adminTools({ user: auth.auth.user }) &&
+                a(
+                    {
+                        onClick: () =>
+                            auth.glue.send(
+                                glueEvent('chat:ban', {
+                                    userId: message.userId,
+                                    id: message.id,
+                                })
+                            ),
+                    },
+                    [
+                        i('.mr1.icon-cancel-circled.pointer', {
+                            title: t`Banear usuario`,
+                        }),
+                    ]
+                ),
             !auth.canUpdate(message.userId) &&
                 h(
                     Flag,
@@ -408,15 +425,12 @@ const ChatMessageItem = React.memo(function(props) {
                 ),
             auth.canUpdate(message.userId) &&
                 h(
-                    ConfirmWithReasonLink,
+                    'a',
                     {
-                        title: t`¿Por qué quieres borrar este mensaje?`,
-                        placeholder: t`Describe el motivo...`,
-                        action: t`Borrar mensaje`,
-                        onConfirm: reason =>
+                        onClick: () =>
                             auth.glue.send(
                                 glueEvent('chat:delete', {
-                                    reason,
+                                    reason: 'Message deleted by admin',
                                     chan,
                                     id: message.id,
                                 })
