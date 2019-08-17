@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useMemo, useEffect, memo } from 'react';
 import classNames from 'classnames';
 import h from 'react-hyperscript';
 import helpers from 'hyperscript-helpers';
+import { debounce } from 'lodash';
 import { t } from '../../i18n';
 import RichTextEditor from 'react-rte';
 
@@ -9,6 +10,17 @@ const tags = helpers(h);
 const { form } = tags;
 const { div, p, ul, li } = tags;
 const { a, i, strong, button, img } = tags;
+
+const ReplyViewEditor = memo(({ effects, type, id, onChange }) => {
+    const [reply, setReply] = useState(RichTextEditor.createEmptyValue);
+    useEffect(() => onChange(reply), [reply]);
+    return h(RichTextEditor, {
+        value: reply,
+        onChange: setReply,
+        placeholder: 'Escribe aquí tu respuesta',
+        onFocus: () => effects.replyFocus(type, id),
+    });
+});
 
 export function ReplyView(props) {
     const { effects, auth, ui, type, id /*, mentionable*/ } = props;
@@ -47,11 +59,11 @@ export function ReplyView(props) {
                 div(
                     '.form-group',
                     {},
-                    h(RichTextEditor, {
-                        value: reply,
+                    h(ReplyViewEditor, {
                         onChange: setReply,
-                        placeholder: 'Escribe aquí tu respuesta',
-                        onFocus: () => effects.replyFocus(type, id),
+                        type,
+                        id,
+                        effects,
                     })
                 ),
                 div(

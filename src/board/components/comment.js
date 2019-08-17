@@ -2,7 +2,7 @@ import h from 'react-hyperscript';
 import RichTextEditor from 'react-rte';
 import classNames from 'classnames';
 import helpers from 'hyperscript-helpers';
-import { useState, useMemo, memo } from 'react';
+import { useState, useMemo, useEffect, memo } from 'react';
 import { debounce } from 'lodash';
 import { Author } from './author';
 import { ReplyView } from './reply';
@@ -16,14 +16,22 @@ const tags = helpers(h);
 const { article, div, a, span, i, h5, ul, li } = tags;
 const { form, button } = tags;
 
+const CommentEditor = memo(({ onChange, content }) => {
+    const [comment, setComment] = useState(content);
+    useEffect(() => onChange(comment), [comment]);
+    return h(RichTextEditor, {
+        value: comment,
+        onChange: setComment,
+        placeholder: 'Escribe aquí tu respuesta',
+    });
+});
+
 function CommentView({ comment, effects, ui, hashtables, ...props }) {
     const [saving, setSaving] = useState(false);
     const [updating, setUpdating] = useState(false);
     const [content, setContent] = useState(() =>
         RichTextEditor.createValueFromString(comment.content, 'markdown')
     );
-
-    const debouncedContentUpdate = useMemo(() => debounce(setContent, 250), []);
 
     //voting !== false && voting.id == comment.id ? voting.intent : false;
     const noPadding = props.noPadding || false;
@@ -205,10 +213,9 @@ function CommentView({ comment, effects, ui, hashtables, ...props }) {
                         div(
                             '.form-group',
                             {},
-                            h(RichTextEditor, {
-                                value: content,
-                                onChange: debouncedContentUpdate,
-                                placeholder: 'Escribe aquí tu respuesta',
+                            h(CommentEditor, {
+                                onChange: setContent,
+                                content,
                             })
                         ),
                         div('.tr.mt2', [
