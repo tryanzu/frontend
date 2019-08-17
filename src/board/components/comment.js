@@ -2,8 +2,9 @@ import h from 'react-hyperscript';
 import RichTextEditor from 'react-rte';
 import classNames from 'classnames';
 import helpers from 'hyperscript-helpers';
+import { useState, useMemo, memo } from 'react';
+import { debounce } from 'lodash';
 import { Author } from './author';
-import { useState, memo } from 'react';
 import { ReplyView } from './reply';
 import { ErrorBoundary } from '../errors';
 import { MemoizedMarkdown } from '../utils';
@@ -21,6 +22,8 @@ function CommentView({ comment, effects, ui, hashtables, ...props }) {
     const [content, setContent] = useState(() =>
         RichTextEditor.createValueFromString(comment.content, 'markdown')
     );
+
+    const debouncedContentUpdate = useMemo(() => debounce(setContent, 250), []);
 
     //voting !== false && voting.id == comment.id ? voting.intent : false;
     const noPadding = props.noPadding || false;
@@ -204,7 +207,7 @@ function CommentView({ comment, effects, ui, hashtables, ...props }) {
                             {},
                             h(RichTextEditor, {
                                 value: content,
-                                onChange: setContent,
+                                onChange: debouncedContentUpdate,
                                 placeholder: 'Escribe aquí tu respuesta',
                             })
                         ),
