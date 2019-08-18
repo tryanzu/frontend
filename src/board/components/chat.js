@@ -99,7 +99,10 @@ function Chat({ state, effects, match }) {
                     div('.flex-auto', [
                         span('.f5.v-mid.mr2', '#'),
                         h1('.f5.dib.v-mid', channel.name || ''),
-                        p('.dib.v-mid.ma0.ml3', channel.description || ''),
+                        p(
+                            '.dn.dib-ns.v-mid.ma0.ml3',
+                            channel.description || ''
+                        ),
                     ]),
                     div([
                         a('.dn.dib-ns.btn-icon.ml2.dropdown-toggle', {}, [
@@ -107,6 +110,39 @@ function Chat({ state, effects, match }) {
                                 style: { width: 10, height: 10 },
                             }),
                             span('.online.b', String(online)),
+                        ]),
+                        div('.dropdown.dropdown-right', [
+                            a(
+                                '.dib.btn-icon.ml2.dropdown-toggle',
+                                { tabIndex: 0 },
+                                ['Canales', i('.icon-down-open')]
+                            ),
+                            ul(
+                                '.menu',
+                                { style: { width: '200px' } },
+                                state.site.chat.map(channel =>
+                                    li(
+                                        '.menu-item',
+                                        {},
+                                        h(
+                                            Link,
+                                            {
+                                                key: channel.name,
+                                                to: `/chat/${channel.name}`,
+                                                className: classNames(
+                                                    'db pa2 ph3',
+                                                    {
+                                                        active:
+                                                            channel.name ===
+                                                            chan,
+                                                    }
+                                                ),
+                                            },
+                                            `#${channel.name}`
+                                        )
+                                    )
+                                )
+                            ),
                         ]),
                         div('.dropdown.dropdown-right', [
                             a(
