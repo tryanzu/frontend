@@ -45,7 +45,6 @@ function Chat({ state, effects, match }) {
         },
         [lock]
     );
-    console.info(chan);
 
     // Subscribe to counter updates.
     useEffect(() => counters$(state.realtime, setCounters), []);
@@ -105,13 +104,13 @@ function Chat({ state, effects, match }) {
                         ),
                     ]),
                     div([
-                        a('.dn.dib-ns.btn-icon.ml2.dropdown-toggle', {}, [
+                        a('.dib.btn-icon.ml2.dropdown-toggle', {}, [
                             span('.bg-green.br-100.dib.mr1', {
                                 style: { width: 10, height: 10 },
                             }),
                             span('.online.b', String(online)),
                         ]),
-                        div('.dropdown.dropdown-right', [
+                        div('.dn-ns.dropdown.dropdown-right', [
                             a(
                                 '.dib.btn-icon.ml2.dropdown-toggle',
                                 { tabIndex: 0 },
@@ -411,7 +410,11 @@ const ChatMessageItem = React.memo(function(props) {
         div('.tile-content', [
             !short &&
                 div('.tile-title.pt2.mb2', [
-                    span('.text-bold.text-primary', message.from),
+                    h(
+                        Link,
+                        { to: `/u/${message.from}/${message.userId}` },
+                        span('.text-bold.text-primary', message.from)
+                    ),
                     span('.text-gray.ml2', format(message.at, 'HH:mm')),
                 ]),
             div('.tile-subtitle', {}, [

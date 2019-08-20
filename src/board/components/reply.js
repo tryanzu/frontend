@@ -1,8 +1,7 @@
-import { useState, useMemo, useEffect, memo } from 'react';
+import { useState, useEffect, memo } from 'react';
 import classNames from 'classnames';
 import h from 'react-hyperscript';
 import helpers from 'hyperscript-helpers';
-import { debounce } from 'lodash';
 import { t } from '../../i18n';
 import RichTextEditor from 'react-rte';
 

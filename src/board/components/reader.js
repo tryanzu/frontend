@@ -12,7 +12,6 @@ class Reader extends React.Component {
 
         // Subscribe to some events that trigger effects.
         observe(event => this.onFeedNsEvent(event))(channels.feed);
-        console.log('Remote listener setup done');
     }
     onFeedNsEvent(data) {
         const params = data.p || {};

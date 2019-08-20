@@ -85,7 +85,5 @@ function onGlobalNsEvent({ data, effects }) {
             return effects.notifications('count', data.p.count || 0);
         case 'gaming':
             return effects.updateGaming(data.p);
-        default:
-            console.log('Remote message could not be handled', data);
     }
 }
