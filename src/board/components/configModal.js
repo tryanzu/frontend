@@ -34,39 +34,39 @@ export function ConfigModal({ state, setOpen }) {
                             alt: 'Anzu',
                         }),
                     ]),
-                    a('.active', [i('.icon-cog.mr1'), 'General']),
-                    a([i('.icon-th-list-outline.mr1'), 'Categorias']),
-                    a([i('.icon-lock-open.mr1'), 'Permisos']),
-                    a([i('.icon-picture-outline.mr1'), 'Diseño']),
+                    a('.active', [i('.icon-cog.mr1'), t`General`]),
+                    a([i('.icon-th-list-outline.mr1'), t`Categorías`]),
+                    a([i('.icon-lock-open.mr1'), t`Permisos`]),
+                    a([i('.icon-picture-outline.mr1'), t`Diseño`]),
                 ]),
                 div('.flex-auto', [
                     form({ id: 'update-site' }, [
                         div('.flex.items-center.header', [
-                            h2('.flex-auto', 'General'),
+                            h2('.flex-auto', t`General`),
                             dirty === true &&
                                 span([
                                     input('.btn.btn-primary.btn-block', {
                                         type: 'submit',
-                                        value: 'Guardar cambios',
+                                        value: t`Guardar cambios`,
                                     }),
                                 ]),
                         ]),
                         div('.form-group', [
-                            label('.b.form-label', 'Nombre del sitio'),
+                            label('.b.form-label', t`Nombre del sitio`),
                             input('.form-input', {
                                 name: 'name',
                                 type: 'text',
-                                placeholder: 'Ej. Comunidad de Anzu',
+                                placeholder: t`Ej. Comunidad de Anzu`,
                                 required: true,
                                 value: site.name,
                             }),
                             p(
                                 '.form-input-hint',
-                                'Mostrado alrededor del sitio, el nombre de tu comunidad.'
+                                t`Mostrado alrededor del sitio, el nombre de tu comunidad.`
                             ),
                         ]),
                         div('.form-group', [
-                            label('.b.form-label', 'Descripción del sitio'),
+                            label('.b.form-label', t`Descripción del sitio`),
                             textarea('.form-input', {
                                 value: site.description,
                                 name: 'description',
@@ -75,15 +75,15 @@ export function ConfigModal({ state, setOpen }) {
                             }),
                             p(
                                 '.form-input-hint',
-                                'Para metadatos, resultados de busqueda y dar a conocer tu comunidad.'
+                                t`Para metadatos, resultados de busqueda y dar a conocer tu comunidad.`
                             ),
                         ]),
                         div('.form-group', [
-                            label('.b.form-label', 'Dirección del sitio'),
+                            label('.b.form-label', t`Dirección del sitio`),
                             input('.form-input', {
                                 name: 'url',
                                 type: 'text',
-                                placeholder: 'Ej. https://comunidad.anzu.io',
+                                placeholder: t`Ej. https://comunidad.anzu.io`,
                                 required: true,
                                 value: site.url,
                             }),
@@ -95,10 +95,10 @@ export function ConfigModal({ state, setOpen }) {
                     ]),
                     form('.bt.b--light-gray.pt2', { id: 'links' }, [
                         div('.form-group', [
-                            label('.b.form-label', 'Menu de navegación'),
+                            label('.b.form-label', t`Menú de navegación`),
                             p(
                                 '.form-input-hint',
-                                'Mostrado en la parte superior del sitio. (- = +)'
+                                t`Mostrado en la parte superior del sitio. (- = +)`
                             ),
                             div(
                                 site.nav.map((link, k) => {

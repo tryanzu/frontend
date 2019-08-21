@@ -4,32 +4,22 @@ import h from 'react-hyperscript';
 import helpers from 'hyperscript-helpers';
 import { t } from '../../i18n';
 import RichTextEditor from 'react-rte';
+import { StatefulEditor } from './statefulEditor';
 
 const tags = helpers(h);
 const { form } = tags;
 const { div, p, ul, li } = tags;
 const { a, i, strong, button, img } = tags;
 
-const ReplyViewEditor = memo(({ effects, type, id, onChange }) => {
-    const [reply, setReply] = useState(RichTextEditor.createEmptyValue);
-    useEffect(() => onChange(reply), [reply]);
-    return h(RichTextEditor, {
-        value: reply,
-        onChange: setReply,
-        placeholder: 'Escribe aquí tu respuesta',
-        onFocus: () => effects.replyFocus(type, id),
-    });
-});
-
 export function ReplyView(props) {
     const { effects, auth, ui, type, id /*, mentionable*/ } = props;
     const { user } = auth;
-    const [reply, setReply] = useState(RichTextEditor.createEmptyValue);
+    const [reply, setReply] = useState('');
     const nested = props.nested || false;
 
     function onSubmit(event) {
         event.preventDefault();
-        const markdown = reply.toString('markdown');
+        const markdown = reply;
         if (ui.replying || markdown.length === 0) {
             return;
         }
@@ -49,7 +39,7 @@ export function ReplyView(props) {
                     user.image
                         ? img({
                               src: user.image,
-                              alt: `Avatar de ${user.username}`,
+                              alt: t`Avatar de ${user.username}`,
                           })
                         : div('.empty-avatar', {}, user.username.substr(0, 1))
                 ),
@@ -58,11 +48,9 @@ export function ReplyView(props) {
                 div(
                     '.form-group',
                     {},
-                    h(ReplyViewEditor, {
+                    h(StatefulEditor, {
                         onChange: setReply,
-                        type,
-                        id,
-                        effects,
+                        onFocus: () => effects.replyFocus(type, id),
                     })
                 ),
                 div(
@@ -81,11 +69,11 @@ export function ReplyView(props) {
                         ul([
                             li([
                                 t`Asegúrate de `,
-                                i('responder la publicación principal '),
+                                i(t`responder la publicación principal `),
                                 t`y proporcionar detalles suficientes en tu respuesta.`,
                             ]),
                         ]),
-                        p([t`Y trata de `, strong('evitar'), ':']),
+                        p([t`Y trata de `, strong(t`evitar`), ':']),
                         ul([
                             li(t`Responder con otra pregunta.`),
                             li(t`Responder a otras respuestas.`),

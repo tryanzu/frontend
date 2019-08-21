@@ -43,7 +43,7 @@ export function Account({ state, effects, ...props }) {
                                     src:
                                         state.site.logoUrl ||
                                         '/images/anzu.svg',
-                                    alt: 'Únete a la conversación',
+                                    alt: t`Únete a la conversación`,
                                 })
                             ),
                         ]),
@@ -63,7 +63,7 @@ export function Account({ state, effects, ...props }) {
                                             onClick: () =>
                                                 effects.auth('tab', 'login'),
                                         },
-                                        ['Iniciar sesión']
+                                        t`Iniciar sesión`
                                     )
                                 ),
                                 li(
@@ -78,14 +78,14 @@ export function Account({ state, effects, ...props }) {
                                             onClick: () =>
                                                 effects.auth('tab', 'signup'),
                                         },
-                                        ['Crear cuenta']
+                                        t`Crear cuenta`
                                     )
                                 ),
                             ]
                         ),
                         !auth.forgot &&
                             p('.tc.lh-copy', [
-                                'Únete o inicia sesión, la conversación te necesita.',
+                                t`Únete o inicia sesión, la conversación te necesita.`,
                             ]),
                         div({ style: { padding: '0 0.4rem' } }, [
                             auth.intent === 'publish' &&

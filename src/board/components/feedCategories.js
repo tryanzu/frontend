@@ -1,6 +1,7 @@
 import h from 'react-hyperscript';
 import { Link } from 'react-router-dom';
 import { memo } from 'react';
+import { t } from '../../i18n';
 
 export const FeedCategories = memo(props => {
     const { feed, categories, subcategories } = props;
@@ -42,13 +43,13 @@ export const FeedCategories = memo(props => {
                   h(
                       'h2.pl2.flex-auto.fade-in',
                       feed.search.length > 0
-                          ? `Buscando: ${feed.search}`
+                          ? t`Buscando: ${feed.search}`
                           : slugs[category].name
                   ),
                   feed.loading && h('span.loading.mr4'),
               ]
             : [
-                  h('h2.flex-auto.fade-in', 'Todas las categorias'),
+                  h('h2.flex-auto.fade-in', t`Todas las categorias`),
                   feed.loading && h('span.loading.mr4'),
                   h('div.dropdown.dropdown-right.fade-in', [
                       h(

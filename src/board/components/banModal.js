@@ -70,7 +70,7 @@ export function BanModal({ isOpen, onRequestClose, ...props }) {
                     input('.btn.btn-primary.btn-block', {
                         disabled,
                         type: 'submit',
-                        value: props.action || 'Continuar',
+                        value: props.action || t`Continuar`,
                         className: classNames({ loading: sending }),
                     }),
                 ]),

@@ -78,7 +78,7 @@ function LogoSection(props) {
             value: search,
             debounceTimeout: 600,
             minLength: 3,
-            placeholder: 'Buscar...',
+            placeholder: t`Buscar...`,
             onChange,
         }),
         h(DebounceInput, {
@@ -88,7 +88,7 @@ function LogoSection(props) {
             value: search,
             debounceTimeout: 600,
             minLength: 3,
-            placeholder: 'Buscar publicaciones...',
+            placeholder: t`Buscar publicaciones...`,
             onChange,
         }),
     ]);
@@ -106,7 +106,7 @@ function NotificationsDropdown({ loading, list }) {
                   list.length === 0
                       ? h(
                             'p.tc.mv2',
-                            'No tienes ninguna notificación por el momento.'
+                            t`No tienes ninguna notificación por el momento.`
                         )
                       : list.map(n => {
                             return h(
@@ -196,7 +196,7 @@ function MobileSection({ user, image, state, effects }) {
                         [
                             image.length > 0 &&
                                 h('img', {
-                                    alt: `Avatar de ${user.username}`,
+                                    alt: t`Avatar de ${user.username}`,
                                     src: image,
                                 }),
                         ]
@@ -216,7 +216,7 @@ function MobileSection({ user, image, state, effects }) {
                         h(
                             Link,
                             { to: `/u/${user.username}/${user.id}` },
-                            'Ver mi perfil'
+                            t`Ver mi perfil`
                         )
                     ),
                     h('li.divider'),
@@ -226,7 +226,7 @@ function MobileSection({ user, image, state, effects }) {
                             {},
                             h('label.label.label-primary', user.gaming.swords)
                         ),
-                        h('a', 'Reputación'),
+                        h('a', t`Reputación`),
                     ]),
                     h('li.menu-item.cf', [
                         h(
@@ -234,13 +234,13 @@ function MobileSection({ user, image, state, effects }) {
                             {},
                             h('label.label.label-primary', user.gaming.tribute)
                         ),
-                        h('a', 'Tributo'),
+                        h('a', t`Tributo`),
                     ]),
                     h('li.divider'),
                     h(
                         'li.menu-item',
                         { onClick: () => effects.logout() },
-                        h('a.pointer', 'Salir de mi cuenta')
+                        h('a.pointer', t`Salir de mi cuenta`)
                     ),
                 ]),
                 user.validated == false &&
@@ -276,7 +276,7 @@ function MobileSection({ user, image, state, effects }) {
                                                 tab: 'login',
                                             }),
                                     },
-                                    'Iniciar sesión'
+                                    t`Iniciar sesión`
                                 )
                             ),
                             h(
@@ -291,7 +291,7 @@ function MobileSection({ user, image, state, effects }) {
                                                 tab: 'signup',
                                             }),
                                     },
-                                    'Únete'
+                                    t`Únete`
                                 )
                             ),
                         ])
@@ -322,7 +322,7 @@ function DesktopVersion({ user, image, state, effects }) {
                             }),
                         className: user !== false ? 'dn' : '',
                     },
-                    'Iniciar sesión'
+                    t`Iniciar sesión`
                 ),
                 h(
                     'a.link.pointer.btn.btn-link.modal-link.b',
@@ -340,7 +340,7 @@ function DesktopVersion({ user, image, state, effects }) {
                     h(
                         NotificationsLink,
                         { notifications, effects },
-                        'Notificaciones'
+                        t`Notificaciones`
                     ),
                 user !== false &&
                     h('a.link.pointer.btn.btn-link', [
@@ -462,9 +462,10 @@ export function NeedAccountValidation({ effects }) {
     return h('div.absolute.top-2.z-2.w5.right-0.toast.shadow.lh-copy.tl.pa3', [
         h('span.b', 'Acción necesaria'),
         h('p.mb1', [
-            'Enviamos a tu correo las instrucciones necesarias para validar tu cuenta. Obtén acceso completo al sitio y únete a la conversación.',
+            t`Enviamos a tu correo las instrucciones necesarias para validar tu cuenta. Obtén acceso completo al sitio y únete a la conversación.`,
         ]),
         sending === true && h('div.loading'),
-        sending === false && h('a', { onClick }, 'Reenviar correo electrónico'),
+        sending === false &&
+            h('a', { onClick }, t`Reenviar correo electrónico`),
     ]);
 }

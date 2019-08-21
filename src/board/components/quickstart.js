@@ -30,10 +30,10 @@ export function Quickstart({ state }) {
             h1(quickstart.headline || t`Bienvenido a la comunidad de Anzu.`),
             p([
                 quickstart.description ||
-                    'Únete a la conversación y aporta ideas para el desarrollo de Anzu, una poderosa plataforma de foros y comunidades enfocada en la discusión e interacción entre usuarios en tiempo real.',
+                    t`Únete a la conversación y aporta ideas para el desarrollo de Anzu, una poderosa plataforma de foros y comunidades enfocada en la discusión e interacción entre usuarios en tiempo real.`,
             ]),
             div('.separator'),
-            h2(['Si eres nuevo por aquí']),
+            h2([t`Si eres nuevo por aquí`]),
             div(
                 '.quick-guide',
                 links.map(link =>
