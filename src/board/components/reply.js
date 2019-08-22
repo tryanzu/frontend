@@ -1,10 +1,10 @@
-import { useState, useEffect, memo } from 'react';
+import { useState } from 'react';
 import classNames from 'classnames';
 import h from 'react-hyperscript';
 import helpers from 'hyperscript-helpers';
 import { t } from '../../i18n';
-import RichTextEditor from 'react-rte';
 import { StatefulEditor } from './statefulEditor';
+import { useSessionState } from '../../hooks';
 
 const tags = helpers(h);
 const { form } = tags;
@@ -15,6 +15,10 @@ export function ReplyView(props) {
     const { effects, auth, ui, type, id /*, mentionable*/ } = props;
     const { user } = auth;
     const [reply, setReply] = useState('');
+    const [hidden, hideRecommendations] = useSessionState(
+        'replyRecommendations',
+        false
+    );
     const nested = props.nested || false;
 
     function onSubmit(event) {
@@ -23,9 +27,12 @@ export function ReplyView(props) {
         if (ui.replying || markdown.length === 0) {
             return;
         }
-        effects
-            .publishReply(markdown, type, id)
-            .then(() => setReply(RichTextEditor.createEmptyValue));
+        // We set reply to false to remount the editor component.
+        // Since it's state is self contained we cannot reset it now.
+        setReply(false);
+
+        // We now execute the actual side effect and reset our reply state.
+        effects.publishReply(markdown, type, id).then(() => setReply(''));
     }
 
     return div(
@@ -48,10 +55,11 @@ export function ReplyView(props) {
                 div(
                     '.form-group',
                     {},
-                    h(StatefulEditor, {
-                        onChange: setReply,
-                        onFocus: () => effects.replyFocus(type, id),
-                    })
+                    reply !== false &&
+                        h(StatefulEditor, {
+                            onChange: setReply,
+                            onFocus: () => effects.replyFocus(type, id),
+                        })
                 ),
                 div(
                     '.toast.toast-warning.context-help',
@@ -60,11 +68,14 @@ export function ReplyView(props) {
                             dn:
                                 ui.commenting == false ||
                                 ui.commentingType !== 'post' ||
-                                ui.commentingId != id,
+                                ui.commentingId != id ||
+                                hidden,
                         }),
                     },
                     [
-                        button('.btn.btn-clear.float-right'),
+                        a('.btn.btn-clear.float-right', {
+                            onClick: () => hideRecommendations(true),
+                        }),
                         p(t`Gracias por contribuir con tu respuesta!`),
                         ul([
                             li([
@@ -112,7 +123,7 @@ export function ReplyView(props) {
                                 type: 'submit',
                                 className: classNames({ loading: ui.replying }),
                             },
-                            t`Publicar respuesta`
+                            t`Publicar`
                         ),
                         button(
                             '.btn',

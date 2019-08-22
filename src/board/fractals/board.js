@@ -66,6 +66,7 @@ function initialState(props) {
             lastPost: false,
         },
         ui: {
+            replying: false,
             commenting: false,
             commentingType: false,
             commentingId: false,
