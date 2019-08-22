@@ -195,6 +195,7 @@ function fetchAccount(effects, token) {
         })
         .then(user => effects.fetchCategories(true).then(() => user))
         .then(user => {
+            user.profile = user.profile || { bio: '', country: '' };
             if ('Raven' in window) {
                 window.Raven.setUserContext(user);
             }
