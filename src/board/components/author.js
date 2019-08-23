@@ -5,6 +5,21 @@ import { Link } from 'react-router-dom';
 
 const { div, img, small, span, i } = helpers(h);
 
+export function AuthorAvatarLink({ user }) {
+    return h(Link, { to: `/u/${user.username}/${user.id}`, rel: 'author' }, [
+        div(
+            '.dn.db-ns',
+            {},
+            user.image
+                ? img({
+                      src: user.image,
+                      alt: t`Avatar de ${user.username}`,
+                  })
+                : div('.empty-avatar', {}, user.username.substr(0, 1))
+        ),
+    ]);
+}
+
 export function Author({ item, ...props }) {
     const label = props.label || t`Publicó`;
     const { author } = item;

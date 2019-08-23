@@ -186,7 +186,7 @@ function Profile({ state, effects }) {
             div('.flex.flex-wrap.pb4.boxed', [
                 span('.flex-auto', [
                     span('.icon-location.mr2'),
-                    user.profile.country || t`Desconocido`,
+                    (user.profile && user.profile.country) || t`Desconocido`,
                 ]),
                 span('.flex-auto', [
                     span('.icon-calendar.mr2'),
