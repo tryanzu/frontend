@@ -209,6 +209,7 @@ function Chat({ state, effects, match }) {
                     ),
                 h(ChatMessageList, {
                     state,
+                    effects,
                     channel,
                     isOnline: counters.isOnline || false,
                     lockRef: scrollLockRef,
@@ -279,7 +280,7 @@ const ChatMessageInput = React.memo(function({ state, effects, chan }) {
 });
 
 const ChatMessageList = React.memo(function(props) {
-    const { state, channel, isOnline, lockRef } = props;
+    const { state, channel, isOnline, lockRef, effects } = props;
     const bottomRef = useRef(null);
     const [list, setList] = useState([]);
     const [featured, setFeatured] = useState(false);
@@ -375,6 +376,7 @@ const ChatMessageList = React.memo(function(props) {
                     message,
                     isOnline: isOnline && isOnline.has(message.userId),
                     bottomRef,
+                    effects,
                     lockRef,
                     chan,
                 });
@@ -386,7 +388,15 @@ const ChatMessageList = React.memo(function(props) {
 
 const ChatMessageItem = React.memo(function(props) {
     const auth = useContext(AuthContext);
-    const { message, short, isOnline, bottomRef, lockRef, chan } = props;
+    const {
+        message,
+        short,
+        isOnline,
+        bottomRef,
+        lockRef,
+        chan,
+        effects,
+    } = props;
     function onImageLoad() {
         if (lockRef.current) {
             return;
@@ -460,7 +470,13 @@ const ChatMessageItem = React.memo(function(props) {
                     Flag,
                     {
                         title: t`Reportar un mensaje`,
-                        onSend: form => console.info(form),
+                        message,
+                        onSend: form =>
+                            effects.requestFlag({
+                                ...form,
+                                related_id: message.id,
+                                related_to: 'chat',
+                            }),
                     },
                     i('.mr1.icon-warning-empty.pointer', { title: t`Reportar` })
                 ),
