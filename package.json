@@ -16,6 +16,7 @@
     "@types/history": "^4.6.1",
     "autosize": "^4.0.0",
     "babel-polyfill": "^6.26.0",
+    "callbag-basics": "^3.1.0",
     "callbag-basics-esmodules": "^4.0.0",
     "callbag-debounce": "^2.1.2",
     "callbag-observe": "^1.0.0",

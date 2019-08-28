@@ -6,14 +6,14 @@ import h from 'react-hyperscript';
 import helpers from 'hyperscript-helpers';
 import { injectState } from 'freactal';
 import { channelToObs, MemoizedBasicMarkdown } from '../utils';
-import { pipe, filter, fromObs, map, scan } from 'callbag-basics-esmodules';
+import { pipe, filter, fromObs, map, scan } from 'callbag-basics';
 import { debounce } from 'callbag-debounce';
 import subscribe from 'callbag-subscribe';
 import { t, translate } from '../../i18n';
 import { format, subSeconds, isAfter } from 'date-fns';
 import { Flag } from './actions';
 import { AuthContext } from '../fractals/auth';
-import { useSessionState } from '../../hooks';
+import { useSessionState, useTitleNotification } from '../../hooks';
 import { adminTools } from '../../acl';
 
 const tags = helpers(h);
@@ -283,8 +283,10 @@ const ChatMessageList = React.memo(function(props) {
     const bottomRef = useRef(null);
     const [list, setList] = useState([]);
     const [featured, setFeatured] = useState(false);
+    const [, { pingNotification }] = useTitleNotification();
     const [loading, setLoading] = useState(false);
     const chan = channel.name;
+
     useEffect(
         () => {
             setList([]);
@@ -297,7 +299,7 @@ const ChatMessageList = React.memo(function(props) {
                     setList(list.slice(0, 50).reverse());
                     setFeatured(starred.length > 0 && starred[0]);
                     setLoading(false);
-                    console.info(starred);
+                    pingNotification();
                     if (lockRef.current) {
                         return;
                     }
