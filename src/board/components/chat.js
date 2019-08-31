@@ -6,7 +6,7 @@ import h from 'react-hyperscript';
 import helpers from 'hyperscript-helpers';
 import { injectState } from 'freactal';
 import { channelToObs, MemoizedBasicMarkdown } from '../utils';
-import { pipe, filter, fromObs, map, scan } from 'callbag-basics';
+import { pipe, filter, merge, fromObs, map, scan } from 'callbag-basics';
 import { debounce } from 'callbag-debounce';
 import subscribe from 'callbag-subscribe';
 import { t, translate } from '../../i18n';
@@ -290,6 +290,9 @@ const ChatMessageList = React.memo(function(props) {
 
     useEffect(
         () => {
+            // This side effect will be executed every time a channel is load.
+            // So in short it clears the message list state and subscribes to
+            // the events stream.
             setList([]);
             setFeatured(false);
             setLoading(true);
@@ -297,7 +300,7 @@ const ChatMessageList = React.memo(function(props) {
             const dispose = streamChatChannel(
                 { realtime: state.realtime, chan },
                 ({ list, starred }) => {
-                    setList(list.slice(0, 50).reverse());
+                    setList(lockRef.current ? list : list.slice(-50));
                     setFeatured(starred.length > 0 && starred[0]);
                     setLoading(false);
                     pingNotification();
@@ -519,11 +522,15 @@ const ChatLogItem = React.memo(function({ message }) {
 });
 
 function streamChatChannel({ realtime, chan }, next) {
-    const types = ['message', 'log', 'delete', 'star'];
+    const types = ['listen:ready', 'message', 'log', 'delete', 'star'];
     // Transform this reactive structure into what we finally need (list of messages)
     return pipe(
         // Stream of chat's channel messages from glue socket.
-        fromObs(channelToObs(realtime, 'chat:' + chan)),
+        merge(
+            fromObs(channelToObs(realtime, 'chat:' + chan)),
+            fromObs(channelToObs(realtime))
+        ),
+
         // Flattening of object params & type
         map(msg => ({ ...msg.params, type: msg.event })),
         // Filtering known messages, just in case.
@@ -546,8 +553,17 @@ function streamChatChannel({ realtime, chan }, next) {
                     case 'message':
                         return {
                             ...prev,
-                            list: [msg].concat(prev.list),
+                            list: prev.list.concat(msg),
                         };
+                    case 'listen:ready':
+                        if (chan === msg.chan) {
+                            return {
+                                ...prev,
+                                starred: [],
+                                list: [],
+                            };
+                        }
+                        return prev;
                 }
             },
             { list: [], starred: [] }
