@@ -30,7 +30,7 @@ export function Author({ item, ...props }) {
                 '.flex-shrink-0.mr2',
                 {},
                 small(
-                    '.bg-light-gray.br1.gray.ml2',
+                    '.bg-light-gray.br1.ml2',
                     { style: { padding: '2px 5px' } },
                     [
                         i('.icon-crown.gold'),

@@ -1,7 +1,9 @@
 .current-article {
 	background: $light-color;
 	border-radius: 4px;
-	box-shadow: 0 7px 14px 0 rgba(50,50,93,.1), 0 3px 6px 0 $gray-color-light;
+	@if $light-color == #fff{
+	box-shadow: 0 7px 14px 0 rgba(50,50,93,.1), 0 3px 6px 0 $gray-color-light;		
+	}
 	padding: 1rem;
 	overflow-x: hidden;
 	overflow-y: auto;
@@ -31,6 +33,11 @@
 			width: 100%;
 			border-bottom: 1px solid $gray-color-light;
 			margin: .8rem 0;
+		}
+		& div.dropdown > ul.menu {
+			& > li.menu-item > a:hover {
+				background-color: $lighter-shade;
+			}
 		}
 	}
 

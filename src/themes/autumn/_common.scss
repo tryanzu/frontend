@@ -3,7 +3,11 @@ body, html {
 }
 
 body {
-	background: $light-shade;
+	@if $light-color == #fff{
+		background: #F5F6FA;
+	} @else {
+		background: #1C1C22;
+	}
 }
 
 p.md p:last-child {
@@ -17,6 +21,13 @@ p.md p:last-child {
     color: #fff !important;
 }
 
+.btn.btn-primary{
+	color: #fff;
+	&:hover {
+		color: #fff;
+	}
+}
+
 .step .step-item a {
 	color: #777777;
 }
@@ -24,11 +35,13 @@ p.md p:last-child {
 .toast.toast-error {
 	background: rgba(232, 0, 30, 0.9);
 	border-color: #c61d31;
+	color: #fff;
 }
 
 .toast.toast-primary {
 	background: $primary-color;
 	border-color: $primary-color;
+	color: #fff;
 }
 
 .toast.toast-warning {
@@ -43,7 +56,7 @@ p.md p:last-child {
 
 .avatar {
 	border-radius: 4px;
-
+	color: #fff;
 	& img {
 		border-radius: inherit;
 	}
@@ -60,8 +73,19 @@ p.md p:last-child {
     font-size: 13px;
 }
 
-.dropdown .menu {
+.dropdown.menu {
 	min-width: 210px;
+}
+
+.dropdown.menu.menu-item:hover{
+	background-color: $gray-color-dark;
+}
+
+.btn-action{
+	background-color: $light-shade;
+	&:hover{
+		background-color: $light-color;
+	}
 }
 
 .btn-icon {
@@ -130,6 +154,7 @@ p.md p:last-child {
     font-size: 0.6rem;
     height: 0.8rem;
 	line-height: 0.6rem;
+	color:#fff;
 }
 
 .tab {

@@ -43,7 +43,7 @@ header.navbar {
 		margin-left: 1rem;
 		border: 1px solid $dark-shade;
 		border-radius: 25px;
-		background: $dark-shade;
+		background: $light-color;
 		padding: 0.25rem 1rem;
 		width: 110px;
 
@@ -109,6 +109,22 @@ header.navbar {
 
 			& .clean-styles {
 				color: $darker-primary;
+			}
+		}
+	}
+	& .dropdown {
+		& ul.menu {
+			& li {
+				& > a.pointer {
+					&:hover{
+					background-color: $lighter-shade;
+					}
+				}
+				 & > div.menu-badge{
+					& > label.label{
+				 		color: #fff;						
+					}
+				 }
 			}
 		}
 	}

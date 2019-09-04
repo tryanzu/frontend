@@ -33,6 +33,7 @@
 			& a {
 				cursor: pointer;
 			}
+
 		}
 
 		& .filters {
@@ -86,15 +87,24 @@
 			& ul.menu {
 				width: 345px;
 				max-width: 100%;
+
+				& li > a {
+
+					&:hover{
+						background-color: $lighter-shade;
+					}
+				}
 			}
 		}
 	}
 
 	& .list {
-		background: $lighter-shade;
+		background: $light-color;
 		border-bottom-right-radius: 4px;
 		border-bottom-left-radius: 4px;
-		box-shadow: 0 7px 14px 0 rgba(50,50,93,.1), 0 3px 6px 0 $gray-color-light;
+		@if $light-color == #fff {
+			box-shadow: 0 7px 14px 0 rgba(50,50,93,.1), 0 3px 6px 0 $gray-color-light;
+		}
 		overflow-y: scroll;
 
 		& .ago {
@@ -109,15 +119,25 @@
 
 			&.active {
 				border-left: 2px solid $primary-color;
-				background: $light-color;
-
+				@if $light-color != #fff{
+					background: #2F3035;
+				} @else {
+					background: $light-color; 
+				}
 				h1 a {
-					color: $primary-color;
+					@if $light-color == #fff {
+						color: $primary-color;
+					}@else {
+						color: #fff;
+					}
 				}
 			}
-
 			&:hover {
-				background: $light-color;
+				@if $light-color != #fff{
+					background: #2F3035;
+				} @else {
+					background: $light-shade; 
+				}
 			}
 
 			&:first-child, &:last-child {
@@ -199,13 +219,18 @@ a[rel="author"], .author {
 
 	& .empty-avatar {
 		background: $primary-color;
-		color: $light-color;
+		color: #fff;
 		line-height: 32px;
 		text-align: center;
 	}
 
 	& > div:nth-child(2) {
 		padding-left: 0.5rem;
+	}
+
+	& div > small.bg-light-gray {
+		color: $gray-color-dark ;
+		background-color: $gray-color-light;
 	}
 }
 

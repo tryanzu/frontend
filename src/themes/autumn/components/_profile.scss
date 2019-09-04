@@ -15,6 +15,10 @@
                 font-size: 1.2rem;
             }
         }
+
+        & div > span.label {
+            color: #fff;
+        }
     }
 
     & article.post {
