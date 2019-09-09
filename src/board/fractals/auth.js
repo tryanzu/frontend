@@ -430,6 +430,40 @@ function requestUserBan(effects, form) {
         });
 }
 
+function updateYoutubeVideoId(effects, channel) {
+    return effects
+        .working(true)
+        .then(state => {
+            const list = state.site.chat || [];
+            const updated = list.map(
+                item =>
+                    item.name === channel.name
+                        ? { ...item, youtubeVideo: channel.youtubeVideo }
+                        : item
+            );
+
+            const body = {
+                section: 'site',
+                changes: {
+                    chat: updated,
+                },
+            };
+
+            return jsonReq(request('config', { method: 'PUT', body }));
+        })
+        .then(res => {
+            if (res.status === 'error') {
+                throw res.message;
+            }
+            toast.success(t`Cambios guardados con éxtio`);
+            return state => state;
+        })
+        .catch(message => {
+            toast.error(t`${message}`);
+            return state => state;
+        });
+}
+
 function updateProfile(effects, form) {
     return jsonReq(
         request(`user/my`, {
@@ -595,6 +629,7 @@ export default provideState({
         fetchRequest,
         fetchGamification,
         postNewAvatar,
+        updateYoutubeVideoId,
         updateProfile,
         fetchCategories,
         fetchNotifications,

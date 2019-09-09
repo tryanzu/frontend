@@ -29,6 +29,7 @@ function Chat({ state, effects, match }) {
     const [chan, setChan] = useState(match.params.chan || 'general');
     const [counters, setCounters] = useState({});
     const { chat } = state;
+    const auth = useContext(AuthContext);
 
     useEffect(
         () => {
@@ -174,6 +175,11 @@ function Chat({ state, effects, match }) {
                                         i('.form-icon'),
                                         t`Desactivar video`,
                                     ]),
+                                    adminTools({ user: auth.auth.user }) &&
+                                        h(ChatAdminOptions, {
+                                            effects,
+                                            channel,
+                                        }),
                                 ]),
                             ]),
                         ]),
@@ -226,6 +232,38 @@ function Chat({ state, effects, match }) {
 
 function glueEvent(event, params) {
     return JSON.stringify({ event, params });
+}
+
+function ChatAdminOptions({ channel, effects }) {
+    const [videoId, setVideoId] = useState(false);
+    function onSubmit(event) {
+        event.preventDefault();
+        if (videoId === false) {
+            return;
+        }
+        effects.updateYoutubeVideoId({ ...channel, youtubeVideo: videoId });
+    }
+
+    // Restore local state on channel changing.
+    useEffect(() => setVideoId(false), [channel]);
+
+    return form({ onSubmit }, [
+        div('.divider'),
+        span('.b', t`Administración`),
+        span('.db.mt1', t`Video de youtube`),
+        input('.form-input.mt1', {
+            type: 'text',
+            placeholder: t`ID del video`,
+            value: videoId !== false ? videoId : channel.youtubeVideo,
+            onChange: event =>
+                setVideoId(event.target.value),
+        }),
+        videoId !== false &&
+            input('.btn.btn-primary.btn-block.mt1', {
+                type: 'submit',
+                value: t`Guardar ID`,
+            }),
+    ]);
 }
 
 const ChatMessageInput = React.memo(function({ state, effects, chan }) {
