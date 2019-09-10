@@ -13,13 +13,16 @@ const { div, p, form, input, select, option, textarea, h3, label, i } = tags;
 export const ChatChannelSettings = withRouter(function ChatChannelSettings(props) {
     const { channel, effects, isOpen, onRequestClose, ...otherProps } = props;
     const [enableVideo, setEnableVideo] = useState(!!channel.youtubeVideo);
+    const [deleteChannel, setDeleteChannel] = useState(false);
     const [name, setName] = useState(channel.name);
     const [description, setDescription] = useState(channel.description);
     const [videoId, setVideoId] = useState(channel.youtubeVideo);
     const disabled =
         (name == channel.name || !name) &&
         description == channel.description &&
-        (videoId == channel.youtubeVideo) && (enableVideo == !!channel.youtubeVideo || !videoId);
+        (videoId == channel.youtubeVideo) && 
+        (enableVideo == !!channel.youtubeVideo || !videoId) &&
+        !deleteChannel;
 
     async function onSubmit(event) {
         event.preventDefault();
@@ -31,12 +34,12 @@ export const ChatChannelSettings = withRouter(function ChatChannelSettings(props
             name,
             description,
             youtubeVideo: enableVideo ? videoId : '',
+            deleted: deleteChannel === true ? true : false,
         };
         await effects.updateChatChannelConfig(channel, updated);
-        onRequestClose();
         props.history.push(`/chat/${name}`);
+        onRequestClose();
     }
-
     return h(
         Modal,
         {
@@ -82,6 +85,22 @@ export const ChatChannelSettings = withRouter(function ChatChannelSettings(props
                             t`Describe cúal es el proposito de tu canal.`
                         ),
                     ]),
+                    channel.name !== '' &&
+                    div('.form-group', [
+                        label('.b.form-switch.normal', [
+                            input({
+                                type: 'checkbox',
+                                onChange: event =>
+                                    setDeleteChannel(
+                                        event.target.checked
+                                    ),
+                                checked: deleteChannel,
+                            }),
+                            i('.form-icon'),
+                            t`Borrar canal`,
+                        ]),
+                    ]),
+                    deleteChannel === false &&
                     div('.form-group', [
                         label('.b.form-switch.normal', [
                             input({
@@ -96,6 +115,7 @@ export const ChatChannelSettings = withRouter(function ChatChannelSettings(props
                             t`Video de Youtube`,
                         ]),
                     ]),
+                    deleteChannel === false &&
                     enableVideo === true &&
                     div('.form-group', [
                         label('.b.form-label', t`ID del video`),
@@ -111,10 +131,12 @@ export const ChatChannelSettings = withRouter(function ChatChannelSettings(props
                             t`Mostrado alrededor del sitio, el nombre de tu comunidad.`
                         ),
                     ]),
-                    input('.btn.btn-primary.btn-block', {
+                    input('.btn.btn-block', {
                         disabled,
                         type: 'submit',
-                        value: otherProps.action || 'Guardar',
+                        value: deleteChannel ? 'Borrar Canal' : 'Guardar Configuración',
+                        className: classNames({ 'btn-primary': true,
+                        'btn-error': deleteChannel === true,}),
                     }),
                 ]),
             ]),
