@@ -5,6 +5,7 @@ import { Fragment, useState } from 'react';
 import { t } from '../../i18n';
 import { FlagModal } from './flagModal';
 import { BanModal } from './banModal';
+import { ChatChannelSettings } from './chatChannelSettingsModal';
 
 const tags = helpers(h);
 const { div, a, form, input } = tags;
@@ -74,7 +75,7 @@ export function ConfirmWithReasonLink(props) {
     ]);
 }
 
-function ToggleableModal({ modal, ...props }) {
+function ToggleableModal({ modal, children, ...props }) {
     const [isOpen, setOpen] = useState(false);
     return h(Fragment, [
         a(
@@ -82,7 +83,7 @@ function ToggleableModal({ modal, ...props }) {
             {
                 onClick: () => setOpen(true),
             },
-            props.children || []
+            children || []
         ),
         isOpen === true &&
             h(modal, {
@@ -90,6 +91,7 @@ function ToggleableModal({ modal, ...props }) {
                 title: props.title || '',
                 onRequestClose: () => setOpen(false),
                 onSend: props.onSend,
+                ...props,
             }),
     ]);
 }
@@ -100,4 +102,8 @@ export function Flag({ children, ...props }) {
 
 export function BanWithReason({ children, ...props }) {
     return h(ToggleableModal, { ...props, modal: BanModal }, children);
+}
+
+export function ChatChannelSettingsModal ({ children, ...props }) {
+    return h(ToggleableModal, { ...props, modal: ChatChannelSettings }, children);
 }

@@ -15,6 +15,7 @@ import { Flag } from './actions';
 import { AuthContext } from '../fractals/auth';
 import { useSessionState, useTitleNotification } from '../../hooks';
 import { adminTools } from '../../acl';
+import { ChatChannelSettingsModal } from './actions';
 
 const tags = helpers(h);
 const { main, div, i, input, label } = tags;
@@ -73,7 +74,7 @@ function Chat({ state, effects, match }) {
                                 }),
                             },
                             `#${channel.name}`
-                        )
+                        ),
                     )
                 ),
                 section('.flex.flex-column.peers', [
@@ -99,8 +100,17 @@ function Chat({ state, effects, match }) {
                     div('.flex-auto', [
                         span('.f5.v-mid.mr2', '#'),
                         h1('.f5.dib.v-mid', channel.name || ''),
+                        adminTools({ user: auth.auth.user }) &&
+                        h(
+                            ChatChannelSettingsModal, {
+                                channel,
+                                effects,
+                                onChannelUpdate: (channel) => setChan(channel.name),
+                            },
+                            i('.icon-edit.ml2'),
+                        ),
                         p(
-                            '.dn.dib-ns.v-mid.ma0.ml3',
+                            '.dn.dib-ns.v-mid.ma0.ml2',
                             channel.description || ''
                         ),
                     ]),
@@ -175,11 +185,6 @@ function Chat({ state, effects, match }) {
                                         i('.form-icon'),
                                         t`Desactivar video`,
                                     ]),
-                                    adminTools({ user: auth.auth.user }) &&
-                                        h(ChatAdminOptions, {
-                                            effects,
-                                            channel,
-                                        }),
                                 ]),
                             ]),
                         ]),
@@ -232,38 +237,6 @@ function Chat({ state, effects, match }) {
 
 function glueEvent(event, params) {
     return JSON.stringify({ event, params });
-}
-
-function ChatAdminOptions({ channel, effects }) {
-    const [videoId, setVideoId] = useState(false);
-    function onSubmit(event) {
-        event.preventDefault();
-        if (videoId === false) {
-            return;
-        }
-        effects.updateYoutubeVideoId({ ...channel, youtubeVideo: videoId });
-    }
-
-    // Restore local state on channel changing.
-    useEffect(() => setVideoId(false), [channel]);
-
-    return form({ onSubmit }, [
-        div('.divider'),
-        span('.b', t`Administración`),
-        span('.db.mt1', t`Video de youtube`),
-        input('.form-input.mt1', {
-            type: 'text',
-            placeholder: t`ID del video`,
-            value: videoId !== false ? videoId : channel.youtubeVideo,
-            onChange: event =>
-                setVideoId(event.target.value),
-        }),
-        videoId !== false &&
-            input('.btn.btn-primary.btn-block.mt1', {
-                type: 'submit',
-                value: t`Guardar ID`,
-            }),
-    ]);
 }
 
 const ChatMessageInput = React.memo(function({ state, effects, chan }) {

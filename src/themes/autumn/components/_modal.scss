@@ -92,6 +92,28 @@
     }
 }
 
+.chat-config-modal {
+    max-width: 360px;
+    z-index: 301;
+	margin: 1rem auto;
+
+	& .modal-body {
+		max-height: 80vh;
+	}
+
+    &:focus {
+        outline-color: $light-shade;
+    }
+
+    & .modal-container {
+        padding: 0.8rem;
+    }
+
+    & .form-group:not(:last-child) {
+        margin-bottom: 0.8rem;
+    }	
+}
+
 .modal-body-flagpost {
   max-height: 50vh;
   overflow-y: auto;

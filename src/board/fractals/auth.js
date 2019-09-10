@@ -430,7 +430,7 @@ function requestUserBan(effects, form) {
         });
 }
 
-function updateYoutubeVideoId(effects, channel) {
+function updateChatChannelConfig(effects, channel, updates) {
     return effects
         .working(true)
         .then(state => {
@@ -438,7 +438,7 @@ function updateYoutubeVideoId(effects, channel) {
             const updated = list.map(
                 item =>
                     item.name === channel.name
-                        ? { ...item, youtubeVideo: channel.youtubeVideo }
+                        ? {...channel, ...updates}
                         : item
             );
 
@@ -449,14 +449,23 @@ function updateYoutubeVideoId(effects, channel) {
                 },
             };
 
-            return jsonReq(request('config', { method: 'PUT', body }));
+            return Promise.all([
+                jsonReq(request('config', { method: 'PUT', body })),
+                updated,
+            ]);
         })
-        .then(res => {
+        .then(([res, updated]) => {
             if (res.status === 'error') {
                 throw res.message;
             }
-            toast.success(t`Cambios guardados con éxtio`);
-            return state => state;
+            toast.success(t`Cambios guardados con éxito`);
+            return state => ({
+                ...state,
+                site: {
+                    ...state.site,
+                    chat: updated
+                },
+            });
         })
         .catch(message => {
             toast.error(t`${message}`);
@@ -622,6 +631,7 @@ export default provideState({
         performLogin,
         performSignup,
         change,
+        updateChatChannelConfig,
         requestValidationEmail,
         requestPasswordReset,
         requestFlag,
@@ -629,7 +639,6 @@ export default provideState({
         fetchRequest,
         fetchGamification,
         postNewAvatar,
-        updateYoutubeVideoId,
         updateProfile,
         fetchCategories,
         fetchNotifications,
