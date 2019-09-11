@@ -79,25 +79,25 @@ function Chat({ state, effects, match }) {
                         )
                         .concat([
                             adminTools({ user: auth.auth.user }) &&
-                            h('div.tc.mt2', {}, [
-                                h(
-                                    ChatChannelSettingsModal,
-                                    {
-                                        channel: {
-                                            name: '',
-                                            description: '',
-                                            youtubeVideo: '',
+                                h('div.tc.mt2', {}, [
+                                    h(
+                                        ChatChannelSettingsModal,
+                                        {
+                                            channel: {
+                                                name: '',
+                                                description: '',
+                                                youtubeVideo: '',
+                                            },
+                                            effects,
                                         },
-                                        effects,
-                                    },
-                                    [
-                                        span(
-                                            '.btn.btn-sm.btn-primary',
-                                            t`Agregar Canal`
-                                        ),
-                                    ]
-                                ),
-                            ]),
+                                        [
+                                            span(
+                                                '.btn.btn-sm.btn-primary',
+                                                t`Agregar Canal`
+                                            ),
+                                        ]
+                                    ),
+                                ]),
                         ])
                 ),
                 section('.flex.flex-column.peers', [
