@@ -78,6 +78,7 @@ function Chat({ state, effects, match }) {
                             )
                         )
                         .concat([
+                            adminTools({ user: auth.auth.user }) &&
                             h('div.tc.mt2', {}, [
                                 h(
                                     ChatChannelSettingsModal,

@@ -38,7 +38,7 @@ export const ChatChannelSettings = withRouter(function ChatChannelSettings(
             deleted: deleteChannel === true ? true : false,
         };
         await effects.updateChatChannelConfig(channel, updated);
-        props.history.push(`/chat/${name}`);
+        props.history.push(`/chat/`);
         onRequestClose();
     }
     return h(
