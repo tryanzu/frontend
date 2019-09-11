@@ -430,21 +430,31 @@ function requestUserBan(effects, form) {
         });
 }
 
-function updateChatChannelConfig(effects, channel, updates) {
+function updateChatChannelConfig(effects, channel, updated) {
     return effects
         .working(true)
         .then(state => {
             const list = state.site.chat || [];
-            if (updates.deleted === true) {
+            if (updated.deleted === true) {
+                const invalidDelete = list.length === 1;
+                if (invalidDelete) {
+                    throw 'No se puede dejar sin canales el chat';
+                }
                 return list.filter(item => item.name !== channel.name);
             }
-            if (channel.name === '' && updates.name.length > 0) {
-                return list.concat(updates);
+            if (channel.name === '' && updated.name.length > 0) {
+                const invalidUpdate = list.find(
+                    item => item.name === updated.name
+                );
+                if (invalidUpdate) {
+                    throw 'Ya existe un canal con ese nombre';
+                }
+                return list.concat(updated);
             }
             return list.map(
                 item =>
                     item.name === channel.name
-                        ? { ...channel, ...updates }
+                        ? { ...channel, ...updated }
                         : item
             );
         })

@@ -363,7 +363,9 @@ const ChatMessageList = React.memo(function(props) {
                         return;
                     }
                     window.requestAnimationFrame(() => {
-                        bottomRef.current.scrollIntoView({});
+                        if (bottomRef.current) {
+                            bottomRef.current.scrollIntoView({});
+                        }
                     });
                 }
             );
