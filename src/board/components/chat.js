@@ -120,7 +120,15 @@ function Chat({ state, effects, match, history }) {
                         ])
                 ),
                 section('.flex.flex-column.peers', [
-                    header('.ph3.pv2', [h4('.dib.v-mid.mb0', 'Conectados')]),
+                    header('.ph3.pv2', [
+                        h4('.dib.v-mid.mb0', 'Conectados'),
+                        a('.dib.btn-icon.ml4.dropdown-toggle', {}, [
+                            span('.bg-green.br-100.dib.mr1', {
+                                style: { width: 10, height: 10 },
+                            }),
+                            span('.online.b', String(online)),
+                        ]),
+                    ]),
                     nav(
                         '.flex-auto.overflow-y-scroll',
                         (counters.peers || []).map(([id, username], k) =>
@@ -142,29 +150,12 @@ function Chat({ state, effects, match, history }) {
                     div('.flex-auto', [
                         span('.f5.v-mid.mr2', '#'),
                         h1('.f5.dib.v-mid', channel.name || ''),
-                        adminTools({ user: auth.auth.user }) &&
-                            h(
-                                ChatChannelSettingsModal,
-                                {
-                                    channel,
-                                    effects,
-                                    onChannelUpdate: channel =>
-                                        setChan(channel.name),
-                                },
-                                i('.icon-edit.ml2')
-                            ),
                         p(
                             '.dn.dib-ns.v-mid.ma0.ml2',
                             channel.description || ''
                         ),
                     ]),
                     div([
-                        a('.dib.btn-icon.ml2.dropdown-toggle', {}, [
-                            span('.bg-green.br-100.dib.mr1', {
-                                style: { width: 10, height: 10 },
-                            }),
-                            span('.online.b', String(online)),
-                        ]),
                         div('.dn-ns.dropdown.dropdown-right', [
                             a(
                                 '.dib.btn-icon.ml2.dropdown-toggle',
@@ -229,6 +220,23 @@ function Chat({ state, effects, match, history }) {
                                         i('.form-icon'),
                                         t`Desactivar video`,
                                     ]),
+                                    adminTools({ user: auth.auth.user }) &&
+                                        h('.div', {}, [
+                                            span('.b.db', t`Administración`),
+                                            h(
+                                                ChatChannelSettingsModal,
+                                                {
+                                                    channel,
+                                                    effects,
+                                                    onChannelUpdate: channel =>
+                                                        setChan(channel.name),
+                                                },
+                                                span(
+                                                    '.btn.btn-sm.btn-primary.btn-block.icon-edit.mt1',
+                                                    t`Editar Canal`
+                                                )
+                                            ),
+                                        ]),
                                 ]),
                             ]),
                         ]),
