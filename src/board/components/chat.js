@@ -23,7 +23,7 @@ const { figure, header, a, img, nav, section } = tags;
 const { h1, h5, form, span } = tags;
 const { h4, ul, li, p, small } = tags;
 
-function Chat({ state, effects, match }) {
+function Chat({ state, effects, match}) {
     const scrollLockRef = useRef(false);
     const [lock, setLock] = useState('');
     const [hideVideo, setHideVideo] = useSessionState('hideVideo', false);
@@ -76,6 +76,21 @@ function Chat({ state, effects, match }) {
                             `#${channel.name}`
                         ),
                     )
+                    .concat([
+                        h( 'div.tc.mt2', {}, [
+                            h(
+                                ChatChannelSettingsModal,{ 
+                                channel: {
+                                    name: '',
+                                    description: '',
+                                    youtubeVideo:'',
+                                },
+                                effects,
+                                },
+                                [span('.btn.btn-sm.btn-primary', t`Agregar Canal`)]
+                            ),
+                        ]),
+                    ]),
                 ),
                 section('.flex.flex-column.peers', [
                     header('.ph3.pv2', [h4('.dib.v-mid.mb0', 'Conectados')]),

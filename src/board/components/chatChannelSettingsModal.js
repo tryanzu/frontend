@@ -1,25 +1,29 @@
 import h from 'react-hyperscript';
 import classNames from 'classnames';
 import helpers from 'hyperscript-helpers';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { withRouter } from 'react-router-dom';
 import { t } from '../../i18n';
 import { Modal } from './modal';
-import { useSessionState } from '../../hooks';
 
 const tags = helpers(h);
-const { div, p, form, input, select, option, textarea, h3, label, i } = tags;
+const { div, p, form, input, h3, label, i } = tags;
 
-export const ChatChannelSettings = withRouter(function ChatChannelSettings(props) {
+export const ChatChannelSettings = withRouter(function ChatChannelSettings(
+    props
+) {
     const { channel, effects, isOpen, onRequestClose, ...otherProps } = props;
     const [enableVideo, setEnableVideo] = useState(!!channel.youtubeVideo);
+    const [deleteChannel, setDeleteChannel] = useState(false);
     const [name, setName] = useState(channel.name);
     const [description, setDescription] = useState(channel.description);
     const [videoId, setVideoId] = useState(channel.youtubeVideo);
     const disabled =
         (name == channel.name || !name) &&
         description == channel.description &&
-        (videoId == channel.youtubeVideo) && (enableVideo == !!channel.youtubeVideo || !videoId);
+        videoId == channel.youtubeVideo &&
+        (enableVideo == !!channel.youtubeVideo || !videoId) &&
+        !deleteChannel;
 
     async function onSubmit(event) {
         event.preventDefault();
@@ -31,12 +35,12 @@ export const ChatChannelSettings = withRouter(function ChatChannelSettings(props
             name,
             description,
             youtubeVideo: enableVideo ? videoId : '',
+            deleted: deleteChannel === true ? true : false,
         };
         await effects.updateChatChannelConfig(channel, updated);
-        onRequestClose();
         props.history.push(`/chat/${name}`);
+        onRequestClose();
     }
-
     return h(
         Modal,
         {
@@ -82,39 +86,59 @@ export const ChatChannelSettings = withRouter(function ChatChannelSettings(props
                             t`Describe cúal es el proposito de tu canal.`
                         ),
                     ]),
-                    div('.form-group', [
-                        label('.b.form-switch.normal', [
-                            input({
-                                type: 'checkbox',
-                                onChange: event =>
-                                    setEnableVideo(
-                                        event.target.checked
-                                    ),
-                                checked: enableVideo,
-                            }),
-                            i('.form-icon'),
-                            t`Video de Youtube`,
+                    channel.name !== '' &&
+                        div('.form-group', [
+                            label('.b.form-switch.normal', [
+                                input({
+                                    type: 'checkbox',
+                                    onChange: event =>
+                                        setDeleteChannel(event.target.checked),
+                                    checked: deleteChannel,
+                                }),
+                                i('.form-icon'),
+                                t`Borrar canal`,
+                            ]),
                         ]),
-                    ]),
-                    enableVideo === true &&
-                    div('.form-group', [
-                        label('.b.form-label', t`ID del video`),
-                        input('.form-input', {
-                            name: 'videoId',
-                            type: 'text',
-                            placeholder: t`ID del video`,
-                            value: videoId,
-                            onChange: event => setVideoId(event.target.value),
-                        }),
-                        p(
-                            '.form-input-hint',
-                            t`Mostrado alrededor del sitio, el nombre de tu comunidad.`
-                        ),
-                    ]),
-                    input('.btn.btn-primary.btn-block', {
+                    deleteChannel === false &&
+                        div('.form-group', [
+                            label('.b.form-switch.normal', [
+                                input({
+                                    type: 'checkbox',
+                                    onChange: event =>
+                                        setEnableVideo(event.target.checked),
+                                    checked: enableVideo,
+                                }),
+                                i('.form-icon'),
+                                t`Video de Youtube`,
+                            ]),
+                        ]),
+                    deleteChannel === false &&
+                        enableVideo === true &&
+                        div('.form-group', [
+                            label('.b.form-label', t`ID del video`),
+                            input('.form-input', {
+                                name: 'videoId',
+                                type: 'text',
+                                placeholder: t`ID del video`,
+                                value: videoId,
+                                onChange: event =>
+                                    setVideoId(event.target.value),
+                            }),
+                            p(
+                                '.form-input-hint',
+                                t`Mostrado alrededor del sitio, el nombre de tu comunidad.`
+                            ),
+                        ]),
+                    input('.btn.btn-block', {
                         disabled,
                         type: 'submit',
-                        value: otherProps.action || 'Guardar',
+                        value: deleteChannel
+                            ? 'Borrar Canal'
+                            : 'Guardar Configuración',
+                        className: classNames({
+                            'btn-primary': true,
+                            'btn-error': deleteChannel === true,
+                        }),
                     }),
                 ]),
             ]),

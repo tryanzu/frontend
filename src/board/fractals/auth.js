@@ -435,20 +435,23 @@ function updateChatChannelConfig(effects, channel, updates) {
         .working(true)
         .then(state => {
             const list = state.site.chat || [];
-            const updated = list.map(
-                item =>
-                    item.name === channel.name
-                        ? {...channel, ...updates}
-                        : item
+            if (updates.deleted === true) {
+                return list.filter(item => item.name !== channel.name);
+            }
+            if (channel.name === '' && updates.name.length > 0) {
+                return list.concat(updates);
+            }
+            return list.map(
+                item.name === channel.name ? { ...channel, ...updates } : item
             );
-
+        })
+        .then(updated => {
             const body = {
                 section: 'site',
                 changes: {
                     chat: updated,
                 },
             };
-
             return Promise.all([
                 jsonReq(request('config', { method: 'PUT', body })),
                 updated,
@@ -463,7 +466,7 @@ function updateChatChannelConfig(effects, channel, updates) {
                 ...state,
                 site: {
                     ...state.site,
-                    chat: updated
+                    chat: updated,
                 },
             });
         })
