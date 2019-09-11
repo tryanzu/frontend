@@ -5,7 +5,7 @@ import { Fragment, useState } from 'react';
 import { t } from '../../i18n';
 import { FlagModal } from './flagModal';
 import { BanModal } from './banModal';
-import { ChatChannelSettings } from './chatChannelSettingsModal';
+import { ChatChannelSettings } from './chatChannelSettingsModal';
 
 const tags = helpers(h);
 const { div, a, form, input } = tags;
@@ -104,6 +104,10 @@ export function BanWithReason({ children, ...props }) {
     return h(ToggleableModal, { ...props, modal: BanModal }, children);
 }
 
-export function ChatChannelSettingsModal ({ children, ...props }) {
-    return h(ToggleableModal, { ...props, modal: ChatChannelSettings }, children);
+export function ChatChannelSettingsModal({ children, ...props }) {
+    return h(
+        ToggleableModal,
+        { ...props, modal: ChatChannelSettings },
+        children
+    );
 }

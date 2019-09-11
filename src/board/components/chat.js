@@ -23,7 +23,7 @@ const { figure, header, a, img, nav, section } = tags;
 const { h1, h5, form, span } = tags;
 const { h4, ul, li, p, small } = tags;
 
-function Chat({ state, effects, match}) {
+function Chat({ state, effects, match }) {
     const scrollLockRef = useRef(false);
     const [lock, setLock] = useState('');
     const [hideVideo, setHideVideo] = useSessionState('hideVideo', false);
@@ -63,34 +63,41 @@ function Chat({ state, effects, match}) {
                 ]),
                 nav(
                     '.flex-auto',
-                    state.site.chat.map(channel =>
-                        h(
-                            Link,
-                            {
-                                key: channel.name,
-                                to: `/chat/${channel.name}`,
-                                className: classNames('db pa2 ph3', {
-                                    active: channel.name === chan,
-                                }),
-                            },
-                            `#${channel.name}`
-                        ),
-                    )
-                    .concat([
-                        h( 'div.tc.mt2', {}, [
+                    state.site.chat
+                        .map(channel =>
                             h(
-                                ChatChannelSettingsModal,{ 
-                                channel: {
-                                    name: '',
-                                    description: '',
-                                    youtubeVideo:'',
+                                Link,
+                                {
+                                    key: channel.name,
+                                    to: `/chat/${channel.name}`,
+                                    className: classNames('db pa2 ph3', {
+                                        active: channel.name === chan,
+                                    }),
                                 },
-                                effects,
-                                },
-                                [span('.btn.btn-sm.btn-primary', t`Agregar Canal`)]
-                            ),
-                        ]),
-                    ]),
+                                `#${channel.name}`
+                            )
+                        )
+                        .concat([
+                            h('div.tc.mt2', {}, [
+                                h(
+                                    ChatChannelSettingsModal,
+                                    {
+                                        channel: {
+                                            name: '',
+                                            description: '',
+                                            youtubeVideo: '',
+                                        },
+                                        effects,
+                                    },
+                                    [
+                                        span(
+                                            '.btn.btn-sm.btn-primary',
+                                            t`Agregar Canal`
+                                        ),
+                                    ]
+                                ),
+                            ]),
+                        ])
                 ),
                 section('.flex.flex-column.peers', [
                     header('.ph3.pv2', [h4('.dib.v-mid.mb0', 'Conectados')]),
@@ -116,14 +123,16 @@ function Chat({ state, effects, match}) {
                         span('.f5.v-mid.mr2', '#'),
                         h1('.f5.dib.v-mid', channel.name || ''),
                         adminTools({ user: auth.auth.user }) &&
-                        h(
-                            ChatChannelSettingsModal, {
-                                channel,
-                                effects,
-                                onChannelUpdate: (channel) => setChan(channel.name),
-                            },
-                            i('.icon-edit.ml2'),
-                        ),
+                            h(
+                                ChatChannelSettingsModal,
+                                {
+                                    channel,
+                                    effects,
+                                    onChannelUpdate: channel =>
+                                        setChan(channel.name),
+                                },
+                                i('.icon-edit.ml2')
+                            ),
                         p(
                             '.dn.dib-ns.v-mid.ma0.ml2',
                             channel.description || ''

@@ -442,7 +442,10 @@ function updateChatChannelConfig(effects, channel, updates) {
                 return list.concat(updates);
             }
             return list.map(
-                item.name === channel.name ? { ...channel, ...updates } : item
+                item =>
+                    item.name === channel.name
+                        ? { ...channel, ...updates }
+                        : item
             );
         })
         .then(updated => {
@@ -452,6 +455,7 @@ function updateChatChannelConfig(effects, channel, updates) {
                     chat: updated,
                 },
             };
+
             return Promise.all([
                 jsonReq(request('config', { method: 'PUT', body })),
                 updated,
