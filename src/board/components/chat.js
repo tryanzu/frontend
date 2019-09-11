@@ -6,7 +6,15 @@ import h from 'react-hyperscript';
 import helpers from 'hyperscript-helpers';
 import { injectState } from 'freactal';
 import { channelToObs, MemoizedBasicMarkdown } from '../utils';
-import { pipe, filter, merge, fromObs, map, scan } from 'callbag-basics';
+import {
+    pipe,
+    filter,
+    merge,
+    fromObs,
+    map,
+    scan,
+    fromPromise,
+} from 'callbag-basics';
 import { debounce } from 'callbag-debounce';
 import subscribe from 'callbag-subscribe';
 import { t, translate } from '../../i18n';
@@ -23,19 +31,30 @@ const { figure, header, a, img, nav, section } = tags;
 const { h1, h5, form, span } = tags;
 const { h4, ul, li, p, small } = tags;
 
-function Chat({ state, effects, match }) {
+function Chat({ state, effects, match, history }) {
     const scrollLockRef = useRef(false);
     const [lock, setLock] = useState('');
     const [hideVideo, setHideVideo] = useSessionState('hideVideo', false);
-    const [chan, setChan] = useState(match.params.chan || 'general');
+    const [chan, setChan] = useState(() => {
+        if (match.params.chan && state.chat.channels.has(match.params.chan)) {
+            return match.params.chan;
+        }
+        if (state.site.chat.length > 0) {
+            return state.site.chat[0].name;
+        }
+        return 'general';
+    });
     const [counters, setCounters] = useState({});
-    const { chat } = state;
     const auth = useContext(AuthContext);
+    const { chat } = state;
 
     useEffect(
         () => {
-            if (match.params.chan) {
+            if (match.params.chan && chat.channels.has(match.params.chan)) {
                 setChan(match.params.chan);
+            }
+            if (!chat.channels.has(match.params.chan)) {
+                history.push('/chat');
             }
         },
         [match.params.chan]
@@ -557,13 +576,14 @@ const ChatLogItem = React.memo(function({ message }) {
 });
 
 function streamChatChannel({ realtime, chan }, next) {
-    const types = ['listen:ready', 'message', 'log', 'delete', 'star'];
+    const types = ['listen:ready', 'boot', 'message', 'log', 'delete', 'star'];
     // Transform this reactive structure into what we finally need (list of messages)
     return pipe(
         // Stream of chat's channel messages from glue socket.
         merge(
             fromObs(channelToObs(realtime, 'chat:' + chan)),
-            fromObs(channelToObs(realtime))
+            fromObs(channelToObs(realtime)),
+            fromPromise(Promise.resolve({ event: 'boot' }))
         ),
 
         // Flattening of object params & type
@@ -589,6 +609,12 @@ function streamChatChannel({ realtime, chan }, next) {
                         return {
                             ...prev,
                             list: prev.list.concat(msg),
+                        };
+                    case 'boot':
+                        return {
+                            ...prev,
+                            starred: [],
+                            list: [],
                         };
                     case 'listen:ready':
                         if (chan === msg.chan) {
