@@ -37,8 +37,10 @@ export const ChatChannelSettings = withRouter(function ChatChannelSettings(
             youtubeVideo: enableVideo ? videoId : '',
             deleted: deleteChannel === true,
         };
-        await effects.updateChatChannelConfig(channel, updated);
-        props.history.push(deleteChannel ? `/chat` : `/chat/${name}`);
+        const state = await effects.updateChatChannelConfig(channel, updated);
+        props.history.push(
+            deleteChannel ? `/chat/${state.site.chat[0].name}` : `/chat/${name}`
+        );
         onRequestClose();
     }
     return h(
