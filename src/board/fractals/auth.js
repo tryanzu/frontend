@@ -442,12 +442,15 @@ function updateChatChannelConfig(effects, channel, updated) {
                 }
                 return list.filter(item => item.name !== channel.name);
             }
+            if (!channel.name) {
+                throw 'No puedes crear un canal sin nombre';
+            }
             if (channel.name === '' && updated.name.length > 0) {
                 const invalidUpdate = list.find(
                     item => item.name === updated.name
                 );
                 if (invalidUpdate) {
-                    throw 'Ya existe un canal con ese nombre';
+                    throw 'No puedes crear un canal sin nombre';
                 }
                 return list.concat(updated);
             }
