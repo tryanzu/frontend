@@ -436,21 +436,18 @@ function updateChatChannelConfig(effects, channel, updated) {
         .then(state => {
             const list = state.site.chat || [];
             if (updated.deleted === true) {
-                const invalidDelete = list.length === 1;
-                if (invalidDelete) {
-                    throw 'No se puede dejar sin canales el chat';
+                if (list.length === 1) {
+                    throw 'Cannot delete last chat channel.';
                 }
                 return list.filter(item => item.name !== channel.name);
             }
-            if (!channel.name) {
-                throw 'No puedes crear un canal sin nombre';
+            if (channel.name === '' && !updated.name) {
+                throw 'Cannot create new channel if name is empty.';
             }
             if (channel.name === '' && updated.name.length > 0) {
-                const invalidUpdate = list.find(
-                    item => item.name === updated.name
-                );
-                if (invalidUpdate) {
-                    throw 'No puedes crear un canal sin nombre';
+                const invalid = list.find(item => item.name === updated.name);
+                if (invalid) {
+                    throw 'Cannot create duplicated chat channel.';
                 }
                 return list.concat(updated);
             }
