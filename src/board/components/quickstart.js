@@ -68,19 +68,17 @@ function QuickstartUpdate({ state, effects, update, setUpdate }) {
         (updateStart.description == quickstart.description ||
             !updateStart.description);
 
-    async function onSubmit(event) {
+    function onSubmit(event) {
         event.preventDefault();
-        if (disabled) {
+        if (disabled == true) {
             return;
         }
-        /*
         const updated = {
             ...quickstart,
             headline: updateStart.title,
             description: updateStart.description,
         };
-        const state = await effects.updateQuickstart({ quickstart, updated });
-        */
+        effects.updateQuickstart(updated).then(() => setUpdate(false));
     }
 
     return div([
@@ -92,6 +90,7 @@ function QuickstartUpdate({ state, effects, update, setUpdate }) {
             div('.form-group.pb2', [
                 label('.b.form-label', t`Título o saludo de Bienvenida`),
                 input('.form-input', {
+                    name: 'title',
                     maxlenght: '40',
                     type: 'text',
                     value:
@@ -110,6 +109,7 @@ function QuickstartUpdate({ state, effects, update, setUpdate }) {
             div('.form-group.pb2', [
                 label('.b.form-label', t`Descripción de tu Anzu`),
                 input('.form-input', {
+                    name: 'description',
                     type: 'text',
                     value:
                         'description' in updateStart
