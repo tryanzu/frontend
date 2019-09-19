@@ -361,14 +361,11 @@ function onUpdatePass(effects) {
         });
 }
 
-function updateQuickstart(effects, update) {
+function updateQuickstart(effects, updated) {
     const body = {
         section: 'site',
         changes: {
-            quickstart: {
-                headline: update.headline,
-                description: update.description,
-            },
+            quickstart: updated,
         },
     };
     return jsonReq(request('config', { method: 'PUT', body }))
@@ -376,7 +373,7 @@ function updateQuickstart(effects, update) {
             if (res.status === 'error') {
                 throw res.message;
             }
-            toast.success(t`Tu solicitud`);
+            toast.success(t`Cambios guardados con éxito`);
             return state => state;
         })
         .catch(message => {
