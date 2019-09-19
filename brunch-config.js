@@ -23,9 +23,9 @@ exports.paths = {
     watched: ['src'],
 };
 
-exports.npm = {
-    static: ['callbag-basics/dist/bundle.min.js'],
-};
+// exports.npm = {
+//     static: ['callbag-basics/dist/bundle.min.js'],
+// };
 
 exports.plugins = {
     babel: {

@@ -66,6 +66,7 @@ function initialState(props) {
             lastPost: false,
         },
         ui: {
+            replying: false,
             commenting: false,
             commentingType: false,
             commentingId: false,
@@ -545,7 +546,7 @@ function fetchComments(effects, id) {
     return effects
         .comments('loading', true)
         .then(() => {
-            const query = { limit: 10 };
+            const query = { limit: 25 };
             return jsonReq(request(`comments/${id}`, { query }));
         })
         .then(remote => state => ({
@@ -563,7 +564,7 @@ function fetchComments(effects, id) {
         }));
 }
 
-function fetchPreviousComments(effects, before, limit = 10) {
+function fetchPreviousComments(effects, before, limit = 25) {
     return effects
         .comments('loadingPrevious', true)
         .then(state => {

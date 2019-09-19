@@ -1,93 +1,64 @@
 import { useState } from 'react';
+import RichTextEditor from 'react-rte';
 import classNames from 'classnames';
 import h from 'react-hyperscript';
 import helpers from 'hyperscript-helpers';
 import { t } from '../../i18n';
-import RichTextEditor from 'react-rte';
+import { ReplyAdvice } from './replyAdvice';
+import { AuthorAvatarLink } from './author';
 
 const tags = helpers(h);
-const { form } = tags;
-const { div, p, ul, li } = tags;
-const { a, i, strong, button, img } = tags;
+const { form, div, button } = tags;
 
 export function ReplyView(props) {
-    const { effects, auth, ui, type, id /*, mentionable*/ } = props;
+    const [editorState, setEditorState] = useState(
+        RichTextEditor.createEmptyValue
+    );
+    const [mobileEditorContent, setMobileContent] = useState('');
+    const { effects, auth, ui, type, id } = props;
     const { user } = auth;
-    const [reply, setReply] = useState(RichTextEditor.createEmptyValue);
     const nested = props.nested || false;
-
-    function onSubmit(event) {
+    async function onSubmit(event) {
         event.preventDefault();
-        const markdown = reply.toString('markdown');
+        const markdown =
+            mobileEditorContent || editorState.toString('markdown');
         if (ui.replying || markdown.length === 0) {
             return;
         }
-        effects
-            .publishReply(markdown, type, id)
-            .then(() => setReply(RichTextEditor.createEmptyValue));
-    }
 
+        // We now execute the actual side effect and reset our reply state.
+        await effects.publishReply(markdown, type, id);
+        setEditorState(RichTextEditor.createEmptyValue());
+        setMobileContent('');
+    }
     return div(
         '.comment.reply.flex.fade-in.items-start',
         { className: classNames({ pb3: nested == false, pt3: nested }) },
         [
-            a({ href: '/', rel: 'author' }, [
-                div(
-                    '.dn.db-ns',
-                    {},
-                    user.image
-                        ? img({
-                              src: user.image,
-                              alt: t`Avatar de ${user.username}`,
-                          })
-                        : div('.empty-avatar', {}, user.username.substr(0, 1))
-                ),
-            ]),
+            h(AuthorAvatarLink, { user }),
             form('.pl2-ns.flex-auto.fade-in.reply-form', { onSubmit }, [
                 div(
-                    '.form-group',
+                    '.form-group.dn.db-ns',
                     {},
                     h(RichTextEditor, {
-                        value: reply,
-                        onChange: setReply,
-                        placeholder: t`Escribe aquí tu respuesta`,
+                        value: editorState,
+                        onChange: setEditorState,
+                        placeholder: 'Escribe aquí tu respuesta',
                         onFocus: () => effects.replyFocus(type, id),
                     })
                 ),
                 div(
-                    '.toast.toast-warning.context-help',
-                    {
-                        className: classNames({
-                            dn:
-                                ui.commenting == false ||
-                                ui.commentingType !== 'post' ||
-                                ui.commentingId != id,
-                        }),
-                    },
-                    [
-                        button('.btn.btn-clear.float-right'),
-                        p(t`Gracias por contribuir con tu respuesta!`),
-                        ul([
-                            li([
-                                t`Asegúrate de `,
-                                i(t`responder la publicación principal `),
-                                t`y proporcionar detalles suficientes en tu respuesta.`,
-                            ]),
-                        ]),
-                        p([t`Y trata de `, strong(t`evitar`), ':']),
-                        ul([
-                            li(t`Responder con otra pregunta.`),
-                            li(t`Responder a otras respuestas.`),
-                            li(
-                                t`Responder sólo tu opinión. Argumenta con referencias o tu experiencia personal.`
-                            ),
-                        ]),
-                        p([
-                            t`También puedes consultar nuestras recomendaciones sobre `,
-                            a(t`cómo escribir buenas respuestas.`),
-                        ]),
-                    ]
+                    '.form-group.db.dn-ns',
+                    {},
+                    h('textarea.form-input', {
+                        value: mobileEditorContent,
+                        onChange: event => setMobileContent(event.target.value),
+                        placeholder: 'Escribe aquí tu respuesta',
+                        onFocus: () => effects.replyFocus(type, id),
+                        rows: 5,
+                    })
                 ),
+                h(ReplyAdvice),
                 div(
                     '.tr.mt2',
                     {
@@ -103,7 +74,9 @@ export function ReplyView(props) {
                             '.btn.btn-primary.mr2.dn.dib-ns',
                             {
                                 type: 'submit',
-                                className: classNames({ loading: ui.replying }),
+                                className: classNames({
+                                    loading: ui.replying,
+                                }),
                             },
                             t`Publicar comentario`
                         ),
@@ -111,9 +84,11 @@ export function ReplyView(props) {
                             '.btn.btn-primary.mr2.dib.dn-ns',
                             {
                                 type: 'submit',
-                                className: classNames({ loading: ui.replying }),
+                                className: classNames({
+                                    loading: ui.replying,
+                                }),
                             },
-                            t`Publicar respuesta`
+                            t`Publicar`
                         ),
                         button(
                             '.btn',

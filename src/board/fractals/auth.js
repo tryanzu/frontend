@@ -1,3 +1,4 @@
+import React from 'react';
 import { provideState, update } from 'freactal';
 import { request } from '../../utils';
 import { kvReducer, jsonReq, channelToObs } from '../utils';
@@ -5,6 +6,10 @@ import { glue } from '../../drivers/ext/glue';
 import { fromObs } from 'callbag-basics';
 import { toast } from 'react-toastify';
 import { t, i18n } from '../../i18n';
+import { adminTools } from '../../acl';
+
+export const GlueContext = React.createContext(false);
+export const AuthContext = React.createContext({});
 
 function initialState() {
     const realtime = glue(window.Anzu.glue || '', {});
@@ -32,6 +37,7 @@ function initialState() {
             name: '',
             description: '',
             nav: [],
+            chat: [],
             logoUrl: '',
             ...site,
         },
@@ -189,6 +195,7 @@ function fetchAccount(effects, token) {
         })
         .then(user => effects.fetchCategories(true).then(() => user))
         .then(user => {
+            user.profile = user.profile || { bio: '', country: '' };
             if ('Raven' in window) {
                 window.Raven.setUserContext(user);
             }
@@ -423,6 +430,66 @@ function requestUserBan(effects, form) {
         });
 }
 
+function updateChatChannelConfig(effects, channel, updated) {
+    return effects
+        .working(true)
+        .then(state => {
+            const list = state.site.chat || [];
+            if (updated.deleted === true) {
+                if (list.length === 1) {
+                    throw 'Cannot delete last chat channel.';
+                }
+                return list.filter(item => item.name !== channel.name);
+            }
+            if (channel.name === '' && !updated.name) {
+                throw 'Cannot create new channel if name is empty.';
+            }
+            if (channel.name === '' && updated.name.length > 0) {
+                const invalid = list.find(item => item.name === updated.name);
+                if (invalid) {
+                    throw 'Cannot create duplicated chat channel.';
+                }
+                return list.concat(updated);
+            }
+            return list.map(
+                item =>
+                    item.name === channel.name
+                        ? { ...channel, ...updated }
+                        : item
+            );
+        })
+        .then(updated => {
+            const body = {
+                section: 'site',
+                changes: {
+                    chat: updated,
+                },
+            };
+
+            return Promise.all([
+                jsonReq(request('config', { method: 'PUT', body })),
+                updated,
+            ]);
+        })
+        .then(([res, updated]) => {
+            if (res.status === 'error') {
+                throw res.message;
+            }
+            toast.success(t`Cambios guardados con éxito`);
+            return state => ({
+                ...state,
+                site: {
+                    ...state.site,
+                    chat: updated,
+                },
+            });
+        })
+        .catch(message => {
+            toast.error(t`${message}`);
+            return state => state;
+        });
+}
+
 function updateProfile(effects, form) {
     return jsonReq(
         request(`user/my`, {
@@ -581,6 +648,7 @@ export default provideState({
         performLogin,
         performSignup,
         change,
+        updateChatChannelConfig,
         requestValidationEmail,
         requestPasswordReset,
         requestFlag,
@@ -611,13 +679,25 @@ export default provideState({
         },
         canUpdate({ auth }) {
             return id => {
-                return auth.user !== false && auth.user.id == id;
+                return (
+                    auth.user !== false &&
+                    (auth.user.id == id || adminTools({ user: auth.user }))
+                );
             };
+        },
+        chat({ site }) {
+            return {
+                channels: new window.Map(
+                    site.chat.map(chan => [chan.name, chan])
+                ),
+            };
+        },
+        glue({ realtime }) {
+            return realtime;
         },
     },
     initialState,
 });
-
 function delay(duration) {
     return function() {
         return new Promise(function(resolve) {

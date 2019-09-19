@@ -12,6 +12,7 @@ export function anzu(elm, props = {}) {
                 token: params.get('token'),
             })
         );
+        window.location.href = window.location.pathname;
     }
     return render(h(Home, { ...props }), elm);
 }

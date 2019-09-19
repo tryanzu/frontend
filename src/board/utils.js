@@ -13,9 +13,46 @@ function emojiSupport(props) {
 
 function linkSupport(props) {
     return props.href.match(/^(https?:)?\/\//)
-        ? h('a', { href: props.href }, props.children)
+        ? h(
+              'a',
+              { href: props.href, target: 'blank', rel: 'noopener noreferrer' },
+              props.children
+          )
         : h(Link, { to: props.href }, props.children);
 }
+
+function linkParser(onImageLoad) {
+    return props => {
+        const supported = ['gif', 'jpeg', 'jpg', 'png'];
+        if (supported.filter(ext => props.href.endsWith(ext)).length > 0) {
+            return h('img.chat', {
+                src: props.href,
+                onLoad: onImageLoad,
+                style: { maxWidth: 300 },
+            });
+        }
+        return props.href.match(/^(https?:)?\/\//)
+            ? h(
+                  'a',
+                  {
+                      href: props.href,
+                      target: 'blank',
+                      rel: 'noopener noreferrer',
+                  },
+                  props.children
+              )
+            : h(Link, { to: props.href }, props.children);
+    };
+}
+
+export const MemoizedBasicMarkdown = memo(({ content, onImageLoad }) => {
+    return h(Markdown, {
+        source: content,
+        renderers: { text: emojiSupport, link: linkParser(onImageLoad) },
+        disallowedTypes: ['heading'],
+        escapeHtml: true,
+    });
+});
 
 export const MemoizedMarkdown = memo(({ content }) => {
     return h(Markdown, {
@@ -58,26 +95,39 @@ export function jsonReq(req) {
     });
 }
 
+function socketEvent(event, params) {
+    return JSON.stringify({
+        event,
+        params,
+    });
+}
+
 export function channelToObs(socket, name = false) {
     return {
         subscribe: observer => {
-            socket.on('connected', () => {
+            function listen() {
                 // When is not the global namespace we need to explicitly tell
                 // the remote to join us into that channel.
                 if (name) {
-                    socket.send(
-                        JSON.stringify({
-                            event: 'listen',
-                            params: { chan: name },
-                        })
-                    );
+                    socket.send(socketEvent('listen', { chan: name }));
                 }
                 const channel = name ? socket.channel(name) : socket;
                 channel.onMessage(m => {
                     const msg = JSON.parse(m);
                     observer.next(msg);
                 });
-            });
+            }
+            if (socket.state() === 'connected') {
+                listen();
+            } else {
+                socket.on('connected', listen);
+            }
+            return () => {
+                socket.send(socketEvent('unlisten', { chan: name }));
+                observer.complete(name);
+            };
         },
     };
 }
+
+export const audio = new window.Audio('/assets/sounds/notification.mp3');

@@ -2,8 +2,8 @@ import h from 'react-hyperscript';
 import RichTextEditor from 'react-rte';
 import classNames from 'classnames';
 import helpers from 'hyperscript-helpers';
+import { useState, useEffect, memo } from 'react';
 import { Author } from './author';
-import { useState, memo } from 'react';
 import { ReplyView } from './reply';
 import { ErrorBoundary } from '../errors';
 import { MemoizedMarkdown } from '../utils';
@@ -14,6 +14,16 @@ import { Flag } from './actions';
 const tags = helpers(h);
 const { article, div, a, span, i, h5, ul, li } = tags;
 const { form, button } = tags;
+
+const CommentEditor = memo(({ onChange, content }) => {
+    const [comment, setComment] = useState(content);
+    useEffect(() => onChange(comment), [comment]);
+    return h(RichTextEditor, {
+        value: comment,
+        onChange: setComment,
+        placeholder: 'Escribe aquí tu respuesta',
+    });
+});
 
 function CommentView({ comment, effects, ui, hashtables, ...props }) {
     const [saving, setSaving] = useState(false);
@@ -202,10 +212,9 @@ function CommentView({ comment, effects, ui, hashtables, ...props }) {
                         div(
                             '.form-group',
                             {},
-                            h(RichTextEditor, {
-                                value: content,
+                            h(CommentEditor, {
                                 onChange: setContent,
-                                placeholder: 'Escribe aquí tu respuesta',
+                                content,
                             })
                         ),
                         div('.tr.mt2', [

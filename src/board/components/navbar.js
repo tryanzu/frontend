@@ -19,21 +19,19 @@ export const Navbar = withRouter(function Navbar(props) {
         adminTools({ user }) &&
             h('header.navbar-tools.fade-in', [
                 h('nav', [
-                    h(
-                        'div.flex-auto',
-                        {},
-                        h('span', t`Gestión y Herramientas`)
-                    ),
-                    h('span.badge', t`Reportes`),
-                    h(
-                        'a.dn.dib-ns.ml3',
-                        { onClick: () => viewUsers(true) },
-                        t`Gestión de usuarios`
-                    ),
+                    h('div.flex-auto', {}, h('span', 'Gestión y Herramientas')),
+                    h('a.dn.dib-ns.ml3', { onClick: () => viewUsers(true) }, [
+                        h('i.icon-contacts.mr1'),
+                        t`Reportes`,
+                    ]),
+                    h('a.dn.dib-ns.ml3', { onClick: () => viewUsers(true) }, [
+                        h('i.icon-users.mr1'),
+                        t`Gestión de usuarios`,
+                    ]),
                     h(
                         'a.dn.dib-ns.ml3.modal-link',
                         { onClick: () => setConfig(true) },
-                        t`Configuración`
+                        [h('i.icon-cog.mr1'), t`Configuración`]
                     ),
                 ]),
             ]),
@@ -62,10 +60,7 @@ function LogoSection(props) {
     function onChange(event) {
         const search = event.target.value;
         setSearch(search);
-        props.history.push({
-            ...location,
-            search: `?${qs.stringify({ search })}`,
-        });
+        props.history.push(`/?${qs.stringify({ search })}`);
     }
     return h('section.navbar-section', [
         h(
@@ -81,7 +76,7 @@ function LogoSection(props) {
             id: 'search',
             type: 'search',
             value: search,
-            debounceTimeout: 200,
+            debounceTimeout: 600,
             minLength: 3,
             placeholder: t`Buscar...`,
             onChange,
@@ -91,7 +86,7 @@ function LogoSection(props) {
             id: 'search',
             type: 'search',
             value: search,
-            debounceTimeout: 200,
+            debounceTimeout: 600,
             minLength: 3,
             placeholder: t`Buscar publicaciones...`,
             onChange,
