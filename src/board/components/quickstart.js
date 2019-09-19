@@ -194,7 +194,7 @@ function Quickstart({ state, effects }) {
                 ]),
                 adminTools({ user }) &&
                     updating !== 'headline' &&
-                    div('.tile-actions-q.pr2', [
+                    div('.tile-actions-q', [
                         a(
                             '.pointer.post-action',
                             { onClick: () => setUpdating('headline') },
