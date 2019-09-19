@@ -48,7 +48,7 @@ function QuickstartLink({ link, onUpdate }) {
         });
         return setUpdating(false);
     }
-    return div([
+    return div('.tile-quickstart.di', [
         h3('.flex', {}, [
             updating === false &&
                 a('.pointer.flex-auto', { href: link.href }, [
@@ -104,7 +104,7 @@ function QuickstartLink({ link, onUpdate }) {
                     ]),
                 ]),
             updating === false &&
-                div([
+                div('.tile-actions-q', [
                     a(
                         '.pointer.post-action',
                         { onClick: () => setUpdating(true) },
@@ -149,7 +149,7 @@ function Quickstart({ state, effects }) {
 
     return div('.flex-auto', [
         section([
-            div('.flex', [
+            div('.flex.tile-quickstart.items-center', [
                 div('.flex-auto', [
                     updating !== 'headline' &&
                         h1(
@@ -194,7 +194,7 @@ function Quickstart({ state, effects }) {
                 ]),
                 adminTools({ user }) &&
                     updating !== 'headline' &&
-                    div([
+                    div('.tile-actions-q.pr2', [
                         a(
                             '.pointer.post-action',
                             { onClick: () => setUpdating('headline') },
@@ -202,7 +202,7 @@ function Quickstart({ state, effects }) {
                         ),
                     ]),
             ]),
-            div('.flex', [
+            div('.flex.tile-quickstart', [
                 div('.flex-auto', [
                     updating !== 'description' &&
                         h(MemoizedMarkdown, {
@@ -241,7 +241,7 @@ function Quickstart({ state, effects }) {
                 ]),
                 adminTools({ user }) &&
                     updating !== 'description' &&
-                    div([
+                    div('.tile-actions-q', [
                         a(
                             '.pointer.post-action',
                             { onClick: () => setUpdating('description') },
