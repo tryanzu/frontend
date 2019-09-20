@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import h from 'react-hyperscript';
 import helpers from 'hyperscript-helpers';
 import { injectState } from 'freactal/lib/inject';
-import { QuickstartView } from './quickstart';
+import { Quickstart } from './quickstart';
 import { t, i18n } from '../../i18n';
 import { MemoizedMarkdown } from '../utils';
 import { Author } from './author';
@@ -36,7 +36,7 @@ export function Post({ state, effects }) {
         !error &&
             post.loading === false &&
             post.id === false &&
-            h(QuickstartView, { state, effects }),
+            h(Quickstart, { state, effects }),
 
         // Showing a post
         !error &&
