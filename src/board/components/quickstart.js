@@ -120,7 +120,7 @@ function Quickstart({ state, effects }) {
     const { user } = state.auth;
     const { site } = state;
     const quickstart = site.quickstart || {};
-    const links = quickstart.links ? quickstart.links : DEFAULT_LINKS;
+    const links = quickstart.links || DEFAULT_LINKS;
     const [title, setTitle] = useState(quickstart.headline);
     const [content, setContent] = useState(() =>
         RichTextEditor.createValueFromString(

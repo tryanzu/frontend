@@ -373,7 +373,7 @@ function updateQuickstart(effects, updated) {
             if (res.status === 'error') {
                 throw res.message;
             }
-            toast.success(t`Cambios guardados con éxito`);
+            toast.success(t`Configuration saved successfully`);
             return state => state;
         })
         .catch(message => {
