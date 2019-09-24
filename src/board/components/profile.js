@@ -44,7 +44,7 @@ function Profile({ state, effects }) {
     const editable = state.canUpdate(user.id);
     return main('.profile.flex-auto', [
         section('.fade-in.tc', [
-            state.canUpdate(user.id) &&
+            editable &&
                 h(
                     Dropzone,
                     { onDrop },
@@ -71,7 +71,7 @@ function Profile({ state, effects }) {
                             ),
                         ])
                 ),
-            state.canUpdate(user.id) === false &&
+            !editable &&
                 figure(
                     '.avatar.avatar-xl',
                     {
