@@ -3,7 +3,7 @@ import helpers from 'hyperscript-helpers';
 import { ago, t } from '../../i18n';
 import { Link } from 'react-router-dom';
 
-const { div, img, small, span, i } = helpers(h);
+const { div, img, small, span, i, p } = helpers(h);
 
 export function AuthorAvatarLink({ user }) {
     return h(Link, { to: `/u/${user.username}/${user.id}`, rel: 'author' }, [
@@ -40,21 +40,22 @@ export function Author({ item, ...props }) {
                           })
                         : div('.empty-avatar', author.username.substr(0, 1)),
                 ]),
-            div([span('.b', author.username)]),
-            div(
-                '.flex-shrink-0.mr2',
-                {},
-                small(
-                    '.bg-light-gray.br1.gray.ml2',
-                    { style: { padding: '2px 5px' } },
-                    [
-                        i('.icon-crown.gold'),
-                        span('.b', ' ' + String(author.gaming.swords)),
-                    ]
-                )
-            ),
+            div([
+                span('.b', [
+                    author.username,
+                    small(
+                        '.bg-light-gray.br1.gray.ml2',
+                        { style: { padding: '2px 5px' } },
+                        [
+                            i('.icon-crown.gold'),
+                            span('.b', ' ' + String(author.gaming.swords)),
+                        ]
+                    ),
+                ]),
+                p('.mb0', author.description || ''),
+            ]),
             div('.w-100.w-auto-ns', [
-                small('.ago', label + t` hace ` + ago(item.created_at)),
+                small('.ago.ml2', label + t` hace ` + ago(item.created_at)),
             ]),
         ]
     );

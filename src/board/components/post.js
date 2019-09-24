@@ -3,6 +3,7 @@ import RichTextEditor from 'react-rte';
 import classNames from 'classnames';
 import h from 'react-hyperscript';
 import helpers from 'hyperscript-helpers';
+import { withRouter } from 'react-router-dom';
 import { injectState } from 'freactal/lib/inject';
 import { Quickstart } from './quickstart';
 import { t, i18n } from '../../i18n';
@@ -45,7 +46,7 @@ export function Post({ state, effects }) {
             h(PostView, { state, effects }),
         footer('.pa3', [
             small('.silver', [
-                t`Powered by Anzu community`,
+                t`Powered by anzu community software`,
                 ' ',
                 a(
                     { href: 'https://github.com/tryanzu', target: '_blank' },
@@ -77,7 +78,7 @@ function PostView({ state, effects }) {
 
     return div('.current-article.flex-auto', [
         article([
-            div('.flex', [
+            div('.flex.actions', [
                 div('.flex-auto', {}, h(Author, { item: post.data })),
                 h(PostActionsView, { state, effects, updating, setUpdating }),
             ]),
@@ -88,7 +89,13 @@ function PostView({ state, effects }) {
     ]);
 }
 
-function PostActionsView({ state, effects, updating, setUpdating }) {
+const PostActionsView = withRouter(function PostActionsView({
+    state,
+    effects,
+    updating,
+    setUpdating,
+    history,
+}) {
     const post = state.post.data;
     const { user } = state.auth;
 
@@ -137,23 +144,51 @@ function PostActionsView({ state, effects, updating, setUpdating }) {
             ]),
         ]);
     }
-    return div([
-        h(
-            Flag,
-            {
-                title: t`Reportar una publicación`,
-                post,
-                onSend: form =>
-                    effects.requestFlag({
-                        ...form,
-                        related_id: post.id,
-                        related_to: 'post',
-                    }),
-            },
-            [span('.dib.btn-icon.icon-warning-empty', t`Reportar`)]
+    return div('.dropdown.dropdown-right', [
+        a(
+            '.dib.btn-icon.btn-sm.ml2.dropdown-toggle',
+            { tabIndex: 0 },
+            i('.icon-down-open')
         ),
+        ul('.menu', { style: { width: '200px' } }, [
+            li(
+                '.menu-item',
+                {},
+                a('.pointer.post-action', { onClick: () => history.goBack() }, [
+                    i('.mr1.icon-left-open'),
+                    t`Volver atrás`,
+                ])
+            ),
+            li(
+                '.menu-item',
+                {},
+                h(
+                    Flag,
+                    {
+                        title: t`Reportar una publicación`,
+                        post,
+                        onSend: form =>
+                            effects.requestFlag({
+                                ...form,
+                                related_id: post.id,
+                                related_to: 'post',
+                            }),
+                    },
+                    [
+                        span(
+                            '.pointer.post-action',
+                            { onClick: () => setUpdating(true) },
+                            [
+                                i('.mr1.icon-warning-empty'),
+                                t`Reportar publicación`,
+                            ]
+                        ),
+                    ]
+                )
+            ),
+        ]),
     ]);
-}
+});
 
 function UpdatePostView({ state, effects, setUpdating }) {
     const { categories } = state;
