@@ -368,6 +368,27 @@ function onUpdatePass(effects) {
         });
 }
 
+function updateQuickstart(effects, updated) {
+    const body = {
+        section: 'site',
+        changes: {
+            quickstart: updated,
+        },
+    };
+    return jsonReq(request('config', { method: 'PUT', body }))
+        .then(res => {
+            if (res.status === 'error') {
+                throw res.message;
+            }
+            toast.success(t`Configuration saved successfully`);
+            return state => state;
+        })
+        .catch(message => {
+            toast.error(t`${message}`);
+            return state => state;
+        });
+}
+
 function postNewAvatar(effects, form) {
     return jsonReq(
         request(`user/my/avatar`, {
@@ -656,6 +677,7 @@ export default provideState({
         fetchRequest,
         fetchGamification,
         postNewAvatar,
+        updateQuickstart,
         updateProfile,
         fetchCategories,
         fetchNotifications,

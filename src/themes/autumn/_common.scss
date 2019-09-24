@@ -136,6 +136,20 @@ p.md p:last-child {
 	border-bottom-color: $gray-color-light;
 }
 
+.tile-quickstart:hover {
+	.tile-actions-q a {
+		color: $gray-color !important;
+
+		&:hover {
+			color: $primary-color !important;
+		}
+	}
+}
+
+.tile-actions-q a {
+	color: $light-color;	
+}
+
 @media (--breakpoint-medium){
 	.feed{
 	display: flex;
