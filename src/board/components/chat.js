@@ -31,8 +31,10 @@ const { figure, header, a, img, nav, section } = tags;
 const { h1, h5, form, span } = tags;
 const { h4, ul, li, p, small } = tags;
 
-function Chat({ state, effects, match, history }) {
+function Chat({ state, effects, match, history}) {
     const scrollLockRef = useRef(false);
+    const soundRef = useRef(false);
+    const [sound, setSound] = useState(false);
     const [lock, setLock] = useState('');
     const [hideVideo, setHideVideo] = useSessionState('hideVideo', false);
     const [chan, setChan] = useState(() => {
@@ -63,8 +65,9 @@ function Chat({ state, effects, match, history }) {
     useEffect(
         () => {
             scrollLockRef.current = lock;
+            soundRef.current = sound;
         },
-        [lock]
+        [lock, sound]
     );
 
     // Subscribe to counter updates.
@@ -220,6 +223,18 @@ function Chat({ state, effects, match, history }) {
                                         i('.form-icon'),
                                         t`Desactivar video`,
                                     ]),
+                                    label('.form-switch.normal', [
+                                        input({
+                                            type: 'checkbox',
+                                            onChange: event =>
+                                                setSound(
+                                                    event.target.checked
+                                                ),
+                                            checked: sound,
+                                        }),
+                                        i('.form-icon'),
+                                        t`Desactivar notificaciones`,
+                                    ]),
                                     adminTools({ user: auth.auth.user }) &&
                                         h('.div', {}, [
                                             span('.b.db', t`Administración`),
@@ -276,6 +291,7 @@ function Chat({ state, effects, match, history }) {
                     channel,
                     isOnline: counters.isOnline || false,
                     lockRef: scrollLockRef,
+                    soundRef,
                 }),
                 h(ChatMessageInput, {
                     state,
@@ -343,7 +359,7 @@ const ChatMessageInput = React.memo(function({ state, effects, chan }) {
 });
 
 const ChatMessageList = React.memo(function(props) {
-    const { state, channel, isOnline, lockRef, effects } = props;
+    const { state, channel, isOnline, lockRef, effects, soundRef } = props;
     const bottomRef = useRef(null);
     const [list, setList] = useState([]);
     const [featured, setFeatured] = useState(false);
@@ -366,7 +382,9 @@ const ChatMessageList = React.memo(function(props) {
                     setList(lockRef.current ? list : list.slice(-50));
                     setFeatured(starred.length > 0 && starred[0]);
                     setLoading(false);
-                    pingNotification();
+                    if (soundRef.current === false){                        
+                        pingNotification();                        
+                    }
                     if (lockRef.current) {
                         return;
                     }
