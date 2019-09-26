@@ -31,7 +31,7 @@ const { figure, header, a, img, nav, section } = tags;
 const { h1, h5, form, span } = tags;
 const { h4, ul, li, p, small } = tags;
 
-function Chat({ state, effects, match, history}) {
+function Chat({ state, effects, match, history }) {
     const scrollLockRef = useRef(false);
     const soundRef = useRef(false);
     const [sound, setSound] = useState(false);
