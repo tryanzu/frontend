@@ -24,6 +24,11 @@
 		margin-bottom: 0.8rem;
 	}
 
+	& .actions {
+		margin: 0 -1rem;
+		padding: 0 1rem 0.5rem;
+	}
+
 	& section, & article {
 		line-height: 1.5;
 		& .separator {

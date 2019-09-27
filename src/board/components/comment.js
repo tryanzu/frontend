@@ -92,17 +92,18 @@ function CommentView({ comment, effects, ui, hashtables, ...props }) {
             id: comment.id,
         },
         [
-            div('.flex', [
+            div('.flex.items-center', [
                 div('.flex.flex-auto', {}, [
                     nested === true && span('.icon-flow-split.mr2'),
                     h(Author, {
                         item: comment,
                         label: t`Comentó`,
                         noAvatar: nested,
+                        className: 'flex-auto',
                     }),
                 ]),
                 props.auth.user !== false &&
-                    div('.flex-shrink-0', [
+                    div('.flex-shrink-0.ml2', [
                         a(
                             '.v-mid.pointer.reply-to',
                             {
@@ -239,15 +240,13 @@ function CommentView({ comment, effects, ui, hashtables, ...props }) {
             nested === false &&
                 div(
                     '.feedback',
-                    { className: updating ? 'dn' : '' },
-                    [h5(t`Esta respuesta fue considerada:`)].concat(
-                        (category.reactions || []).map(r =>
-                            reactLink({
-                                type: r,
-                                icon: r,
-                                label: t`${r}`,
-                            })
-                        )
+                    { className: 'dn' },
+                    (category.reactions || []).map(r =>
+                        reactLink({
+                            type: r,
+                            icon: r,
+                            label: t`${r}`,
+                        })
                     )
                 ),
             repliesCount > 0 &&
