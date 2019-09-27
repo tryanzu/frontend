@@ -79,7 +79,16 @@ function PostView({ state, effects }) {
     return div('.current-article.flex-auto', [
         article([
             div('.flex.actions', [
-                div('.flex-auto', {}, h(Author, { item: post.data })),
+                div(
+                    '.flex-auto',
+                    {},
+                    h(Author, { item: post.data }, [
+                        div('.b', [
+                            span('.icon.icon-eye-outline.mr1'),
+                            String(post.data.views),
+                        ]),
+                    ])
+                ),
                 h(PostActionsView, { state, effects, updating, setUpdating }),
             ]),
             updating === false && h(RegularPostView, { state, effects }),
@@ -378,7 +387,6 @@ function RegularPostView({ state, effects }) {
             content: post.data.content,
         }),
         div('.feedback', [
-            h5(t`Esta publicación fue considerada:`),
             div(
                 '.overflow-x-auto.pv2',
                 (category.reactions || []).map(r =>

@@ -172,6 +172,12 @@ a[rel="author"], .author {
 		min-width: 32px;
 	}
 
+	& small.ago, & time {
+		color: $gray-color;
+		font-weight: normal;
+		font-size: 12px;
+	}
+
 	& > div {
 		&.top {
 			vertical-align: top;
@@ -179,12 +185,6 @@ a[rel="author"], .author {
 
 		& > span {
 			display: flex;
-		}
-
-		& small.ago, & time {
-			color: $gray-color;
-			font-weight: normal;
-			font-size: 12px;
 		}
 
 		& .reputation {

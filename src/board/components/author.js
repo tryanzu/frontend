@@ -41,13 +41,12 @@ export function Author({ item, ...props }) {
                         : div('.empty-avatar', author.username.substr(0, 1)),
                 ]),
             div('.flex-auto', [
-                span('.b.flex.items-center', [
-                    span([author.username]),
-                    time('.flex-auto.text-right', [
-                        dateToString(item.created_at, 'D MMMM YYYY HH:mm'),
-                    ]),
-                ]),
+                span('.b', [author.username]),
                 author.description && p('.mb0.bio', author.description || ''),
+            ]),
+            time('.flex-auto.text-right', [
+                dateToString(item.created_at, 'D MMMM YYYY HH:mm'),
+                props.children || false,
             ]),
         ]
     );
