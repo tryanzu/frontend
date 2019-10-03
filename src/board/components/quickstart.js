@@ -7,9 +7,8 @@ import { adminTools } from '../../acl';
 import { t } from '../../i18n';
 import { QuickstartLink } from './quickstartLink';
 
-
-const { section, h1, p, div, h2, a, span, h3, article } = helpers(h);
-const { form, label, input, button, textarea } = helpers(h);
+const { section, h1, div, h2, a, span, article } = helpers(h);
+const { form, label, input, button } = helpers(h);
 
 const DEFAULT_LINKS = [
     {

@@ -19,7 +19,7 @@ import { Flag } from './actions';
 const tags = helpers(h);
 const { form, label, select, optgroup, option, input } = tags;
 const { div, section, footer, small, article } = tags;
-const { h3, h1, h5, span, p, a, button, i, img, ul, li } = tags;
+const { h3, h1, span, p, a, button, i, img, ul, li } = tags;
 
 export function Post({ state, effects }) {
     const { post } = state;

@@ -6,6 +6,7 @@ import { FeedCategories } from './feedCategories';
 import { Link } from 'react-router-dom';
 import { withRouter } from 'react-router-dom';
 import { throttle } from 'lodash';
+import { differenceInMinutes } from 'date-fns';
 
 const throttledFeedScroll = throttle(function onScroll(bottomReached, effects) {
     if (bottomReached) {
@@ -142,6 +143,10 @@ function FeedItem(props) {
     const href = `/p/${post.slug}/${post.id}`;
     const category = subcategories.id[post.category] || false;
     const missed = recent - count;
+    const lastSeenAt = author.last_seen_at || false;
+    const lastSeen = lastSeenAt
+        ? differenceInMinutes(new Date(), lastSeenAt)
+        : 1000;
     return h(
         'article.post',
         {
@@ -190,16 +195,24 @@ function FeedItem(props) {
                                 rel: 'author',
                                 onClick: event => event.stopPropagation(),
                             },
-                            author.image
-                                ? h('img', {
-                                      src: author.image,
-                                      alt: `Avatar de ${author.username}`,
-                                  })
-                                : h(
-                                      'div.empty-avatar',
-                                      {},
-                                      author.username.substr(0, 1)
-                                  )
+                            h('figure.avatar', [
+                                author.image
+                                    ? h('img', {
+                                          src: author.image,
+                                          alt: `Avatar de ${author.username}`,
+                                      })
+                                    : h(
+                                          'div.empty-avatar',
+                                          {},
+                                          author.username.substr(0, 1)
+                                      ),
+                                h('i.avatar-presence', {
+                                    className: classNames({
+                                        online: lastSeen < 15,
+                                        away: lastSeen >= 15 && lastSeen < 30,
+                                    }),
+                                }),
+                            ])
                         ),
                         h('div', [
                             h(

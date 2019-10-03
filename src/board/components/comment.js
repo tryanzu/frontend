@@ -12,7 +12,7 @@ import { ConfirmWithReasonLink } from './actions';
 import { Flag } from './actions';
 
 const tags = helpers(h);
-const { article, div, a, span, i, h5, ul, li } = tags;
+const { article, div, a, span, i, ul, li } = tags;
 const { form, button } = tags;
 
 const CommentEditor = memo(({ onChange, content }) => {

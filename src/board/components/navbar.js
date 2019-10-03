@@ -1,5 +1,6 @@
 import h from 'react-hyperscript';
 import qs from 'query-string';
+import helpers from 'hyperscript-helpers';
 import { adminTools } from '../../acl';
 import { ago, t } from '../../i18n';
 import { withRouter, Link } from 'react-router-dom';
@@ -7,6 +8,9 @@ import { useState } from 'react';
 import { DebounceInput } from 'react-debounce-input';
 import { ConfigModal } from './configModal';
 import { UsersModal } from './usersModal';
+
+const tags = helpers(h);
+const { span, a, i, div } = tags;
 
 export const Navbar = withRouter(function Navbar(props) {
     const [config, setConfig] = useState(false);
@@ -19,19 +23,19 @@ export const Navbar = withRouter(function Navbar(props) {
         adminTools({ user }) &&
             h('header.navbar-tools.fade-in', [
                 h('nav', [
-                    h('div.flex-auto', {}, h('span', 'Gestión y Herramientas')),
-                    h('a.dn.dib-ns.ml3', { onClick: () => viewUsers(true) }, [
-                        h('i.icon-contacts.mr1'),
+                    div('.flex-auto', {}, span('Gestión y Herramientas')),
+                    a('.dn.dib-ns.ml3', { onClick: () => viewUsers(true) }, [
+                        i('.icon-contacts.mr1'),
                         t`Reportes`,
                     ]),
-                    h('a.dn.dib-ns.ml3', { onClick: () => viewUsers(true) }, [
-                        h('i.icon-users.mr1'),
+                    a('.dn.dib-ns.ml3', { onClick: () => viewUsers(true) }, [
+                        i('.icon-users.mr1'),
                         t`Gestión de usuarios`,
                     ]),
-                    h(
-                        'a.dn.dib-ns.ml3.modal-link',
+                    a(
+                        '.dn.dib-ns.ml3.modal-link',
                         { onClick: () => setConfig(true) },
-                        [h('i.icon-cog.mr1'), t`Configuración`]
+                        [i('.icon-cog.mr1'), t`Configuración`]
                     ),
                 ]),
             ]),
@@ -394,23 +398,6 @@ function DesktopVersion({ user, image, state, effects }) {
                                     t`Ver mi perfil`
                                 )
                             ),
-                            /*h(
-                              'li.menu-item',
-                              h(
-                                  'a.link.ng-link.pointer',
-                                  { dataset: { href: '/medallas' } },
-                                  'Medallas'
-                              )
-                          ),
-                          h(
-                              'li.menu-item',
-                              h(
-                                  'a.link.ng-link.pointer',
-                                  { dataset: { href: '/top-ranking' } },
-                                  'Ranking de usuarios'
-                              )
-                          ),
-                          h('li.divider'),*/
                             h('li.menu-item.cf', [
                                 h(
                                     'div.menu-badge',
