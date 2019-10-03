@@ -227,13 +227,11 @@ function Chat({ state, effects, match, history }) {
                                         input({
                                             type: 'checkbox',
                                             onChange: event =>
-                                                setSound(
-                                                    event.target.checked
-                                                ),
+                                                setSound(event.target.checked),
                                             checked: sound,
                                         }),
                                         i('.form-icon'),
-                                        t`Desactivar notificaciones`,
+                                        t`Desactivar sonido`,
                                     ]),
                                     adminTools({ user: auth.auth.user }) &&
                                         h('.div', {}, [
@@ -382,8 +380,8 @@ const ChatMessageList = React.memo(function(props) {
                     setList(lockRef.current ? list : list.slice(-50));
                     setFeatured(starred.length > 0 && starred[0]);
                     setLoading(false);
-                    if (soundRef.current === false){                        
-                        pingNotification();                        
+                    if (soundRef.current === false) {
+                        pingNotification();
                     }
                     if (lockRef.current) {
                         return;

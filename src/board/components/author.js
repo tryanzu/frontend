@@ -1,9 +1,11 @@
 import h from 'react-hyperscript';
 import helpers from 'hyperscript-helpers';
+import classNames from 'classnames';
 import { t, dateToString } from '../../i18n';
 import { Link } from 'react-router-dom';
+import { differenceInMinutes } from 'date-fns';
 
-const { div, img, small, span, i, p, time } = helpers(h);
+const { div, img, span, p, time, figure } = helpers(h);
 
 export function AuthorAvatarLink({ user }) {
     return h(Link, { to: `/u/${user.username}/${user.id}`, rel: 'author' }, [
@@ -23,6 +25,10 @@ export function AuthorAvatarLink({ user }) {
 export function Author({ item, ...props }) {
     const { author } = item;
     const noAvatar = props.noAvatar || false;
+    const lastSeenAt = author.last_seen_at || false;
+    const lastSeen = lastSeenAt
+        ? differenceInMinutes(new Date(), lastSeenAt)
+        : 1000;
     return h(
         Link,
         {
@@ -32,13 +38,23 @@ export function Author({ item, ...props }) {
         },
         [
             noAvatar === false &&
-                div([
+                figure('.avatar', [
                     author.image
-                        ? img({
+                        ? h('img', {
                               src: author.image,
-                              alt: t`Avatar de ${author.username}`,
+                              alt: `Avatar de ${author.username}`,
                           })
-                        : div('.empty-avatar', author.username.substr(0, 1)),
+                        : h(
+                              'div.empty-avatar',
+                              {},
+                              author.username.substr(0, 1)
+                          ),
+                    h('i.avatar-presence', {
+                        className: classNames({
+                            online: lastSeen < 15,
+                            away: lastSeen >= 15 && lastSeen < 30,
+                        }),
+                    }),
                 ]),
             div('.flex-auto', [
                 span('.b', [author.username]),

@@ -42,11 +42,6 @@ p.md p:last-child {
 }
 
 .avatar {
-	border-radius: 4px;
-
-	& img {
-		border-radius: inherit;
-	}
 
 	&.avatar-xl {
 		width: 6.4rem;
