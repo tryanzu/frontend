@@ -231,7 +231,7 @@ function Chat({ state, effects, match, history }) {
                                             checked: sound,
                                         }),
                                         i('.form-icon'),
-                                        t`Desactivar notificaciones`,
+                                        t`Desactivar sonido`,
                                     ]),
                                     adminTools({ user: auth.auth.user }) &&
                                         h('.div', {}, [
