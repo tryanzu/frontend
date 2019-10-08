@@ -11,8 +11,8 @@ const { span, h2, form, input, label, textarea } = tags;
 export function ConfigModal({ state, setOpen, effects }) {
     const { site } = state;
     const [nav, setNav] = useState(site.nav);
-    const [dirty, setDirty] = useState(false);
     const [changes, setChanges] = useState({});
+    const dirty = Object.keys(changes).length > 0 || nav !== site.nav; 
 
     function swapNavLink(from, to) {
         const a = nav[from];
@@ -56,6 +56,12 @@ export function ConfigModal({ state, setOpen, effects }) {
         setOpen(false);
     }
 
+    function cancelConfigEdition() {
+        setChanges({});
+        setNav(site.nav);
+        setOpen(false);
+    }
+
     return h(
         Modal,
         {
@@ -71,7 +77,7 @@ export function ConfigModal({ state, setOpen, effects }) {
                 },
             },
         },
-        div('.modal-container.config.fade-in', { style: { width: '640px' } }, [
+        div('.modal-container.config.fade-in.', { style: { width: '640px' } }, [
             div('.flex', [
                 h('nav', [
                     a([
@@ -85,18 +91,28 @@ export function ConfigModal({ state, setOpen, effects }) {
                     a([i('.icon-lock-open.mr1'), t`Permisos`]),
                     a([i('.icon-picture-outline.mr1'), t`Diseño`]),
                 ]),
-                form('.flex-auto.pa3', { onSubmit }, [
+                form('.flex-auto.pa3.overflow-container.vh-90', { onSubmit }, [
                     // TO BE FORM
                     div([
                         // TO BE DIV
-                        div('.flex.items-center.header', [
+                        div('.flex.header.justify-end', [
                             h2('.flex-auto', t`General`),
-                            span([
-                                input('.btn.btn-primary.btn-block', {
-                                    type: 'submit',
-                                    value: t`Guardar cambios`,
-                                }),
-                            ]),
+                            dirty === true &&
+                                div('.fixed.z-9999', [
+                                    span([
+                                        input('.btn.btn-primary.mr2', {
+                                            type: 'submit',
+                                            value: t`Guardar cambios`,
+                                        }),
+                                    ]),
+                                    span([
+                                        input('.btn', {
+                                            type: 'button',
+                                            value: t`Cancelar`,
+                                            onClick: () => cancelConfigEdition(),
+                                        }),
+                                    ]),
+                                ]),
                         ]),
                         div('.form-group', [
                             label('.b.form-label', t`Nombre del sitio`),
@@ -149,9 +165,7 @@ export function ConfigModal({ state, setOpen, effects }) {
                                 placeholder: t`Ej. https://comunidad.anzu.io`,
                                 required: true,
                                 value:
-                                    'url' in changes
-                                        ? changes.url
-                                        : site.url,
+                                    'url' in changes ? changes.url : site.url,
                                 onChange: event =>
                                     setChanges({
                                         ...changes,
