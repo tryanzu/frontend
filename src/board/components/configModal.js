@@ -92,9 +92,7 @@ export function ConfigModal({ state, setOpen, effects }) {
                     a([i('.icon-picture-outline.mr1'), t`Diseño`]),
                 ]),
                 form('.flex-auto.pa3.overflow-container.vh-90', { onSubmit }, [
-                    // TO BE FORM
                     div([
-                        // TO BE DIV
                         div('.flex.header.justify-end', [
                             h2('.flex-auto', t`General`),
                             dirty === true &&
@@ -109,8 +107,7 @@ export function ConfigModal({ state, setOpen, effects }) {
                                         input('.btn', {
                                             type: 'button',
                                             value: t`Cancelar`,
-                                            onClick: () =>
-                                                cancelConfigEdition(),
+                                            onClick: cancelConfigEdition,
                                         }),
                                     ]),
                                 ]),
@@ -180,7 +177,6 @@ export function ConfigModal({ state, setOpen, effects }) {
                         ]),
                     ]),
                     div('.bt.b--light-gray.pt2', [
-                        // REMOVE FORM AND NESTING, CHECK STYLES
                         div('.form-group', [
                             label('.b.form-label', t`Menú de navegación`),
                             p(
