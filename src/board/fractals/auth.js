@@ -82,6 +82,25 @@ function initialState() {
     };
 }
 
+function updateSiteConfig(effects, changes) {
+    const body = {
+        section: 'site',
+        changes,
+    };
+    return jsonReq(request('config', { method: 'PUT', body }))
+        .then(res => {
+            if (res.status === 'error') {
+                throw res.message;
+            }
+            toast.success(t`Configuration saved successfully`);
+            return state => state;
+        })
+        .catch(message => {
+            toast.error(t`${message}`);
+            return state => state;
+        });
+}
+
 function initialize(effects, props) {
     const _auth = props.auth || {};
     const session = JSON.parse(window.localStorage.getItem('_auth') || '{}');
@@ -669,7 +688,6 @@ export default provideState({
         performLogin,
         performSignup,
         change,
-        updateChatChannelConfig,
         requestValidationEmail,
         requestPasswordReset,
         requestFlag,
@@ -677,6 +695,8 @@ export default provideState({
         fetchRequest,
         fetchGamification,
         postNewAvatar,
+        updateChatChannelConfig,
+        updateSiteConfig,
         updateQuickstart,
         updateProfile,
         fetchCategories,

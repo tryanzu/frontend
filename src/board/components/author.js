@@ -3,7 +3,7 @@ import helpers from 'hyperscript-helpers';
 import { t, dateToString } from '../../i18n';
 import { Link } from 'react-router-dom';
 
-const { div, img, small, span, i, p, time } = helpers(h);
+const { div, img, span, p, time } = helpers(h);
 
 export function AuthorAvatarLink({ user }) {
     return h(Link, { to: `/u/${user.username}/${user.id}`, rel: 'author' }, [

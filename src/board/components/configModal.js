@@ -1,15 +1,61 @@
+import { useState } from 'react';
 import h from 'react-hyperscript';
 import Modal from 'react-modal';
 import helpers from 'hyperscript-helpers';
 import { t } from '../../i18n';
 
 const tags = helpers(h);
-const { div, img, i, nav, a, p } = tags;
+const { div, img, i, a, p } = tags;
 const { span, h2, form, input, label, textarea } = tags;
 
-export function ConfigModal({ state, setOpen }) {
+export function ConfigModal({ state, setOpen, effects }) {
     const { site } = state;
-    const dirty = false;
+    const [nav, setNav] = useState(site.nav);
+    const [dirty, setDirty] = useState(false);
+    const [changes, setChanges] = useState({});
+
+    function swapNavLink(from, to) {
+        const a = nav[from];
+        const b = nav[to];
+        const copy = nav.slice();
+        copy[from] = b;
+        copy[to] = a;
+        setNav(copy);
+    }
+
+    function newNavLink() {
+        const link = {
+            name: '',
+            href: '',
+        };
+        setNav(nav.concat(link));
+    }
+
+    function deleteNavLink(index) {
+        const filtered = nav.filter((_, k) => k !== index);
+        setNav(filtered);
+    }
+
+    function updateNavLink(index, field, value) {
+        const link = nav[index];
+        const copy = nav.slice();
+        copy[index] = {
+            ...link,
+            [field]: value,
+        };
+        setNav(copy);
+    }
+
+    function onSubmit(event) {
+        event.preventDefault();
+        const config = {
+            ...changes,
+            nav,
+        };
+        const state = effects.updateSiteConfig(config);
+        setOpen(false);
+    }
+
     return h(
         Modal,
         {
@@ -27,7 +73,7 @@ export function ConfigModal({ state, setOpen }) {
         },
         div('.modal-container.config.fade-in', { style: { width: '640px' } }, [
             div('.flex', [
-                nav([
+                h('nav', [
                     a([
                         img('.w3', {
                             src: '/images/anzu.svg',
@@ -39,17 +85,18 @@ export function ConfigModal({ state, setOpen }) {
                     a([i('.icon-lock-open.mr1'), t`Permisos`]),
                     a([i('.icon-picture-outline.mr1'), t`Diseño`]),
                 ]),
-                div('.flex-auto', [
-                    form({ id: 'update-site' }, [
+                form('.flex-auto.pa3', { onSubmit }, [
+                    // TO BE FORM
+                    div([
+                        // TO BE DIV
                         div('.flex.items-center.header', [
                             h2('.flex-auto', t`General`),
-                            dirty === true &&
-                                span([
-                                    input('.btn.btn-primary.btn-block', {
-                                        type: 'submit',
-                                        value: t`Guardar cambios`,
-                                    }),
-                                ]),
+                            span([
+                                input('.btn.btn-primary.btn-block', {
+                                    type: 'submit',
+                                    value: t`Guardar cambios`,
+                                }),
+                            ]),
                         ]),
                         div('.form-group', [
                             label('.b.form-label', t`Nombre del sitio`),
@@ -58,7 +105,15 @@ export function ConfigModal({ state, setOpen }) {
                                 type: 'text',
                                 placeholder: t`Ej. Comunidad de Anzu`,
                                 required: true,
-                                value: site.name,
+                                value:
+                                    'name' in changes
+                                        ? changes.name
+                                        : site.name,
+                                onChange: event =>
+                                    setChanges({
+                                        ...changes,
+                                        name: event.target.value,
+                                    }),
                             }),
                             p(
                                 '.form-input-hint',
@@ -68,7 +123,15 @@ export function ConfigModal({ state, setOpen }) {
                         div('.form-group', [
                             label('.b.form-label', t`Descripción del sitio`),
                             textarea('.form-input', {
-                                value: site.description,
+                                value:
+                                    'description' in changes
+                                        ? changes.description
+                                        : site.description,
+                                onChange: event =>
+                                    setChanges({
+                                        ...changes,
+                                        description: event.target.value,
+                                    }),
                                 name: 'description',
                                 placeholder: '...',
                                 rows: 3,
@@ -85,7 +148,15 @@ export function ConfigModal({ state, setOpen }) {
                                 type: 'text',
                                 placeholder: t`Ej. https://comunidad.anzu.io`,
                                 required: true,
-                                value: site.url,
+                                value:
+                                    'url' in changes
+                                        ? changes.url
+                                        : site.url,
+                                onChange: event =>
+                                    setChanges({
+                                        ...changes,
+                                        url: event.target.value,
+                                    }),
                             }),
                             p(
                                 '.form-input-hint.lh-copy',
@@ -93,7 +164,8 @@ export function ConfigModal({ state, setOpen }) {
                             ),
                         ]),
                     ]),
-                    form('.bt.b--light-gray.pt2', { id: 'links' }, [
+                    div('.bt.b--light-gray.pt2', [
+                        // REMOVE FORM AND NESTING, CHECK STYLES
                         div('.form-group', [
                             label('.b.form-label', t`Menú de navegación`),
                             p(
@@ -101,40 +173,89 @@ export function ConfigModal({ state, setOpen }) {
                                 t`Mostrado en la parte superior del sitio. (- = +)`
                             ),
                             div(
-                                site.nav.map((link, k) => {
-                                    return div(
-                                        '.input-group.mb2.fade-in',
-                                        { key: `link-${k}` },
-                                        [
-                                            span(
-                                                '.input-group-addon',
-                                                {},
-                                                i('.icon-up-outline')
-                                            ),
-                                            span(
-                                                '.input-group-addon',
-                                                {},
-                                                i('.icon-down-outline')
-                                            ),
-                                            input('.form-input', {
-                                                dataset: { id: String(k) },
-                                                name: 'name',
-                                                type: 'text',
-                                                placeholder: '...',
-                                                value: link.name,
-                                                required: true,
-                                            }),
-                                            input('.form-input', {
-                                                dataset: { id: String(k) },
-                                                name: 'href',
-                                                type: 'text',
-                                                placeholder: '...',
-                                                value: link.href,
-                                                required: true,
-                                            }),
-                                        ]
-                                    );
-                                })
+                                nav
+                                    .map((link, k) => {
+                                        return div(
+                                            '.input-group.mb2.fade-in',
+                                            { key: `link-${k}` },
+                                            [
+                                                a(
+                                                    '.btn.btn-icon.pointer.mr1',
+                                                    {
+                                                        onClick: () =>
+                                                            k > 0 &&
+                                                            swapNavLink(
+                                                                k,
+                                                                k - 1
+                                                            ),
+                                                    },
+                                                    i('.icon-up-outline')
+                                                ),
+                                                a(
+                                                    '.btn.btn-icon.pointer.mr1',
+                                                    {
+                                                        onClick: () =>
+                                                            k <
+                                                                nav.length -
+                                                                    1 &&
+                                                            swapNavLink(
+                                                                k,
+                                                                k + 1
+                                                            ),
+                                                    },
+                                                    i('.icon-down-outline')
+                                                ),
+                                                input('.form-input', {
+                                                    dataset: { id: String(k) },
+                                                    name: 'name',
+                                                    type: 'text',
+                                                    placeholder: '...',
+                                                    value: link.name,
+                                                    onChange: event =>
+                                                        updateNavLink(
+                                                            k,
+                                                            'name',
+                                                            event.target.value
+                                                        ),
+                                                    required: true,
+                                                }),
+                                                input('.form-input', {
+                                                    dataset: { id: String(k) },
+                                                    name: 'href',
+                                                    type: 'text',
+                                                    placeholder: '...',
+                                                    value: link.href,
+                                                    onChange: event =>
+                                                        updateNavLink(
+                                                            k,
+                                                            'href',
+                                                            event.target.value
+                                                        ),
+                                                    required: true,
+                                                }),
+                                                a(
+                                                    '.btn.btn-icon.pointer.ml1',
+                                                    {
+                                                        onClick: () =>
+                                                            nav.length > 1 &&
+                                                            deleteNavLink(k),
+                                                    },
+                                                    i('.icon-trash')
+                                                ),
+                                            ]
+                                        );
+                                    })
+                                    .concat([
+                                        h('div.tc.mt2', {}, [
+                                            h([
+                                                span(
+                                                    '.btn.btn-icon.pointer.mb3',
+                                                    { onClick: newNavLink },
+                                                    i('.icon-plus')
+                                                ),
+                                            ]),
+                                        ]),
+                                    ])
                             ),
                         ]),
                     ]),
