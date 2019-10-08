@@ -12,7 +12,7 @@ export function ConfigModal({ state, setOpen, effects }) {
     const { site } = state;
     const [nav, setNav] = useState(site.nav);
     const [changes, setChanges] = useState({});
-    const dirty = Object.keys(changes).length > 0 || nav !== site.nav; 
+    const dirty = Object.keys(changes).length > 0 || nav !== site.nav;
 
     function swapNavLink(from, to) {
         const a = nav[from];
@@ -52,7 +52,7 @@ export function ConfigModal({ state, setOpen, effects }) {
             ...changes,
             nav,
         };
-        const state = effects.updateSiteConfig(config);
+        effects.updateSiteConfig(config);
         setOpen(false);
     }
 
@@ -109,7 +109,8 @@ export function ConfigModal({ state, setOpen, effects }) {
                                         input('.btn', {
                                             type: 'button',
                                             value: t`Cancelar`,
-                                            onClick: () => cancelConfigEdition(),
+                                            onClick: () =>
+                                                cancelConfigEdition(),
                                         }),
                                     ]),
                                 ]),
