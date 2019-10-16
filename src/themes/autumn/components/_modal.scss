@@ -30,6 +30,9 @@
 }
 
 .modal-container.config {
+	& .overflow-container {
+		max-height: 80vh;
+	}
 	& nav {
 		background: $lighter-shade;
 		border-right: 1px solid $light-shade;

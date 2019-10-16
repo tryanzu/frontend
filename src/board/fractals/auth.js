@@ -101,6 +101,13 @@ function updateSiteConfig(effects, changes) {
         });
 }
 
+function updateCategories(effects, categories) {
+    return state => ({
+        ...state,
+        categories,
+    });
+}
+
 function initialize(effects, props) {
     const _auth = props.auth || {};
     const session = JSON.parse(window.localStorage.getItem('_auth') || '{}');
