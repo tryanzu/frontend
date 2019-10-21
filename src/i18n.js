@@ -58,6 +58,9 @@ export const i18n = new Jed({
             'Not allowed to perform this operation': [
                 'No tienes permiso para realizar esta acción.',
             ],
+            'The content will be discarded, continue?': [
+                'El contenido se descartará, ¿Quieres continuar?',
+            ],
             'Tu cuenta en': ['Tu cuenta en'],
             'Únete a la conversación': ['Únete a la conversación'],
             'Iniciar sesión': ['Iniciar sesión'],

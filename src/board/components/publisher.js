@@ -247,7 +247,7 @@ function PostContent({ effects, state }) {
         ]),
         h(Prompt, {
             when: dirty,
-            message: () => `El contenido se descartará, ¿Quieres continuar?`,
+            message: t`The content will be discarded, continue?`,
         }),
     ]);
 }
