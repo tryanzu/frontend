@@ -144,15 +144,15 @@ function PostContent({ effects, state }) {
     useEffect(
         () => {
             setMarkdown(editor.toString('markdown'));
-            return () => {
-                setMarkdown('');
-            };
         },
         [editor]
     );
 
     useEffect(() => {
-        return () => setTitle('');
+        return () => {
+            setTitle('');
+            setMarkdown('');
+        };
     }, []);
 
     const ready = markdown.length > 30;
