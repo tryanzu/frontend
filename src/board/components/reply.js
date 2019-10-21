@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import RichTextEditor from 'react-rte';
 import classNames from 'classnames';
 import h from 'react-hyperscript';

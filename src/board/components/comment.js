@@ -25,7 +25,6 @@ const CommentEditor = memo(({ onChange, content }) => {
     });
 });
 
-
 function CommentView({ comment, effects, ui, hashtables, ...props }) {
     const [saving, setSaving] = useState(false);
     const [updating, setUpdating] = useState(false);
@@ -43,7 +42,7 @@ function CommentView({ comment, effects, ui, hashtables, ...props }) {
     const repliesCount = replies.count || 0;
     const isCurrentUsersComment = props.auth.user.id == comment.user_id;
     const { votes } = comment;
-    
+
     function onClickGn(type) {
         if (props.auth.user === false) {
             return () => effects.auth('modal', true);
