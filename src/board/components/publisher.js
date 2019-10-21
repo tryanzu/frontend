@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import classNames from 'classnames';
 import h from 'react-hyperscript';
 import helpers from 'hyperscript-helpers';
@@ -9,6 +9,8 @@ import { Redirect } from 'react-router-dom';
 import { Account } from '../components/account';
 import RichTextEditor from 'react-rte';
 import { t } from '../../i18n';
+import { Prompt } from 'react-router-dom';
+import { useStoredState } from '../../hooks';
 
 const tags = helpers(h);
 const { form, select, optgroup, option, input } = tags;
@@ -133,14 +135,29 @@ export function Publisher({ state, effects }) {
 
 function PostContent({ effects, state }) {
     const { categories, publisher } = state;
-    const [title, setTitle] = useState(publisher.title);
+    const [markdown, setMarkdown] = useStoredState('markdown', '');
+    const [title, setTitle] = useStoredState('title', publisher.title);
     const [editor, setEditor] = useState(() => {
-        return RichTextEditor.createValueFromString(
-            publisher.content,
-            'markdown'
-        );
+        return RichTextEditor.createValueFromString(markdown, 'markdown');
     });
-    const ready = editor.toString('markdown').length > 30;
+
+    useEffect(
+        () => {
+            setMarkdown(editor.toString('markdown'));
+            return () => {
+                setMarkdown('');
+            };
+        },
+        [editor]
+    );
+
+    useEffect(() => {
+        return () => setTitle('');
+    }, []);
+
+    const ready = markdown.length > 30;
+    const dirty = ready === true || title.length > 0;
+
     function onSubmit(event) {
         event.preventDefault();
         effects.publisher({
@@ -228,6 +245,10 @@ function PostContent({ effects, state }) {
                 ]),
             ]),
         ]),
+        h(Prompt, {
+            when: dirty,
+            message: () => `El contenido se descartará, ¿Quieres continuar?`,
+        }),
     ]);
 }
 

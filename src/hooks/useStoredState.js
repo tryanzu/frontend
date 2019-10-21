@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 /**
  * A temporal persisted state hook. (local/session storage).
@@ -17,11 +17,11 @@ export default function useStoredState(
     const parsed = stored !== null ? JSON.parse(stored).value : any;
     const [value, setValue] = useState(parsed);
 
-    // Temporal store side effect.
-    useEffect(() => window[storage].setItem(key, JSON.stringify({ value })), [
-        value,
-    ]);
+    function _setValue(value) {
+        window[storage].setItem(key, JSON.stringify({ value }));
+        return setValue(value);
+    }
 
     // Return stored values.
-    return [value, setValue];
+    return [value, _setValue];
 }
