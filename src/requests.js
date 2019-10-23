@@ -8,3 +8,7 @@ export function requestFlags() {
 export function requestBans() {
     return jsonReq(request('reasons/ban')).then(res => res.reasons);
 }
+
+export function requestMentionable(str) {
+    return jsonReq(request(`search/users/${str}`)).then(res => res.list);
+}

@@ -3,16 +3,10 @@ import { render } from 'react-dom';
 import h from 'react-hyperscript';
 import Home from './board/containers/home';
 
-export function anzu(elm, props = {}) {
-    const params = new window.URLSearchParams(window.location.search);
-    if (params.has('token')) {
-        window.localStorage.setItem(
-            '_auth',
-            JSON.stringify({
-                token: params.get('token'),
-            })
-        );
-        window.location.href = window.location.pathname;
-    }
+function anzu(elm, props = {}) {
     return render(h(Home, { ...props }), elm);
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    anzu(document.getElementById('react-anzu'));
+});
