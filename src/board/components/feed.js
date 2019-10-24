@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 import { withRouter } from 'react-router-dom';
 import { throttle } from 'lodash';
 import { differenceInMinutes } from 'date-fns';
+import SimpleBar from 'simplebar-react';
 
 const throttledFeedScroll = throttle(function onScroll(bottomReached, effects) {
     if (bottomReached) {
@@ -91,45 +92,50 @@ export function Feed({ state, effects }) {
         ]),
         h(
             'section.list.flex-auto',
-            { onScroll },
-            list
-                .map(post =>
-                    h(MemoFeedItem, {
-                        key: post.id,
-                        post,
-                        active: state.post.id === post.id,
-                        subcategories,
-                        recent:
-                            state.counters.recent[post.id] ||
-                            post.comments.count,
-                        missed: state.counters.missed[post.id] || 0,
-                        acknowledged: state.counters.acknowledged[post.id] || 0,
-                    })
-                )
-                .concat([
-                    feed.endReached &&
-                        h('div.pv2.ph3.tc', {}, [
-                            h(
-                                'p.measure.center.ph2.gray.lh-copy.tc',
-                                t`No encontramos más publicaciones por cargar en este momento.`
-                            ),
-                            h(
-                                'a.btn.btn-sm.btn-primary',
-                                { onClick: () => effects.fetchMorePosts() },
-                                h('i.icon-arrows-cw')
-                            ),
-                        ]),
-
-                    h(
-                        'div.pv2',
-                        { style: { minHeight: 50 } },
-                        h('div.loading', {
-                            className: classNames({
-                                dn: !feed.loading,
-                            }),
+            {},
+            h(
+                SimpleBar,
+                { className: 'z-9999' },
+                list
+                    .map(post =>
+                        h(MemoFeedItem, {
+                            key: post.id,
+                            post,
+                            active: state.post.id === post.id,
+                            subcategories,
+                            recent:
+                                state.counters.recent[post.id] ||
+                                post.comments.count,
+                            missed: state.counters.missed[post.id] || 0,
+                            acknowledged:
+                                state.counters.acknowledged[post.id] || 0,
                         })
-                    ),
-                ])
+                    )
+                    .concat([
+                        feed.endReached &&
+                            h('div.pv2.ph3.tc', {}, [
+                                h(
+                                    'p.measure.center.ph2.gray.lh-copy.tc',
+                                    t`No encontramos más publicaciones por cargar en este momento.`
+                                ),
+                                h(
+                                    'a.btn.btn-sm.btn-primary',
+                                    { onClick: () => effects.fetchMorePosts() },
+                                    h('i.icon-arrows-cw')
+                                ),
+                            ]),
+
+                        h(
+                            'div.pv2',
+                            { style: { minHeight: 50 } },
+                            h('div.loading', {
+                                className: classNames({
+                                    dn: !feed.loading,
+                                }),
+                            })
+                        ),
+                    ])
+            )
         ),
     ]);
 }
