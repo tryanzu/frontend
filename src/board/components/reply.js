@@ -40,7 +40,9 @@ export function ReplyView(props) {
 
     useEffect(
         () => {
-            setMarkdown(editorState.toString('markdown'));
+            const content = editorState.toString('markdown');
+            const sanitized = content.replace(/[^\x20-\x7E]/g, '');
+            setMarkdown(sanitized);
         },
         [editorState]
     );

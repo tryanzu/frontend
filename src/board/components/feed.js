@@ -93,10 +93,17 @@ export function Feed({ state, effects }) {
             'section.list.flex-auto',
             { onScroll },
             list
-                .map(post =>
-                    h(MemoFeedItem, {
+                .map(post => {
+                    const localDraft = window.localStorage.getItem(
+                        `anzu.markdown.post.${post.id}`
+                    );
+                    const draft = localDraft && JSON.parse(localDraft);
+                    const hasDraft =
+                        draft && draft.value && draft.value.length > 0;
+                    return h(MemoFeedItem, {
                         key: post.id,
                         post,
+                        hasDraft,
                         active: state.post.id === post.id,
                         subcategories,
                         recent:
@@ -104,8 +111,8 @@ export function Feed({ state, effects }) {
                             post.comments.count,
                         missed: state.counters.missed[post.id] || 0,
                         acknowledged: state.counters.acknowledged[post.id] || 0,
-                    })
-                )
+                    });
+                })
                 .concat([
                     feed.endReached &&
                         h('div.pv2.ph3.tc', {}, [
@@ -137,7 +144,7 @@ export function Feed({ state, effects }) {
 const MemoFeedItem = memo(withRouter(FeedItem));
 
 function FeedItem(props) {
-    const { post, subcategories, recent, active, history } = props;
+    const { post, subcategories, recent, active, history, hasDraft } = props;
     const { author } = post;
     const { count } = post.comments;
     const href = `/p/${post.slug}/${post.id}`;
@@ -147,6 +154,7 @@ function FeedItem(props) {
     const lastSeen = lastSeenAt
         ? differenceInMinutes(new Date(), lastSeenAt)
         : 1000;
+
     return h(
         'article.post',
         {
@@ -171,6 +179,7 @@ function FeedItem(props) {
                             category.name
                         )
                 ),
+                hasDraft && h('i.icon-doc-text', {}, t`Borrador`),
                 post.pinned && h('span.icon-pin.pinned-post'),
             ]),
             h('div.flex.items-center', [
