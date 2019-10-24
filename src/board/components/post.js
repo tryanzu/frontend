@@ -423,37 +423,42 @@ function RegularPostView({ state, effects }) {
         ]),
         comments.list !== false &&
             comments.list.length == 0 &&
-            div('.empty', [
-                div(
-                    '.empty-icon',
-                    {},
-                    blockReply
-                        ? i('.f4.icon-block-outline')
-                        : i('.f4.icon-chat-alt')
-                ),
-                p(
-                    '.empty-title.f5.fw5',
-                    blockReply
-                        ? t`Esta publicación bloqueó los comentarios`
-                        : t`Nadie ha respondido aún`
-                ),
-                p(
-                    '.empty-subtitle',
-                    blockReply
-                        ? t`Los comentarios han sido deshabilitados en esta publicación.`
-                        : t`Únete a la conversación y sé el primero en contestar.`
-                ),
+            div('.empty.pv0', [
                 state.authenticated === false &&
-                    blockReply === false &&
-                    div(
-                        '.empty-action',
-                        {},
-                        button(
-                            '.reply-to.btn.btn-primary',
-                            { onClick: () => effects.auth('modal', true) },
-                            t`Escribir respuesta`
-                        )
-                    ),
+                    div('.pv4', [
+                        div(
+                            '.empty-icon',
+                            {},
+                            blockReply
+                                ? i('.f4.icon-block-outline')
+                                : i('.f4.icon-chat-alt')
+                        ),
+                        p(
+                            '.empty-title.f5.fw5',
+                            blockReply
+                                ? t`Esta publicación bloqueó los comentarios`
+                                : t`Nadie ha respondido aún`
+                        ),
+                        p(
+                            '.empty-subtitle',
+                            blockReply
+                                ? t`Los comentarios han sido deshabilitados en esta publicación.`
+                                : t`Únete a la conversación y sé el primero en contestar.`
+                        ),
+                        blockReply === false &&
+                            div(
+                                '.empty-action',
+                                {},
+                                button(
+                                    '.reply-to.btn.btn-primary',
+                                    {
+                                        onClick: () =>
+                                            effects.auth('modal', true),
+                                    },
+                                    t`Escribir respuesta`
+                                )
+                            ),
+                    ]),
             ]),
         comments.before > 0 &&
             div(
