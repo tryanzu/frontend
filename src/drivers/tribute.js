@@ -32,26 +32,6 @@ export default class Tribute extends Component {
     this.bindToChildren();
   }
 
-  componentDidUpdate() {
-    if (this.tribute) {
-      // TODO handle the case where other options have changed
-
-      if (this.props.options.values) {
-        this.tribute.append(0, this.props.options.values, true /* replace */);
-      } else if (this.props.options.collections) {
-        this.props.options.collections.forEach((collection, index) => {
-          this.tribute.append(index, collection, true /* replace */);
-        });
-      }
-    } else {
-      this.bindToChildren();
-    }
-  }
-
-  shouldComponentUpdate(nextProps) {
-    return (!deepEqual(nextProps, this.props));
-  }
-
   bindToChildren = () => {
     const { customRef, options } = this.props;
 
