@@ -10,6 +10,8 @@ const EMPTY_HASHTABLES = {
     votes: {},
 };
 
+const POST_LIMIT = 15;
+
 function initialState(props) {
     const postId = props.match.params.id || false;
     const categorySlug =
@@ -46,7 +48,7 @@ function initialState(props) {
             loading: false,
             endReached: false,
             list: [],
-            limit: 10,
+            limit: POST_LIMIT,
             offset: 0,
             category: categorySlug,
             relevant: false,
@@ -132,7 +134,7 @@ async function fetchMorePosts(effects) {
     const { category, limit } = state.feed;
     let params = {
         limit,
-        offset: state.feed.offset + 10,
+        offset: state.feed.offset + POST_LIMIT,
     };
     if (state.feed.relevant !== false) {
         params.relevant = dateToString(new Date(), 'YYYY-MM-DD');
@@ -150,7 +152,7 @@ async function fetchMorePosts(effects) {
             list: state.feed.list.concat(result.feed),
             limit: result.limit,
             offset: state.feed.offset + result.feed.length,
-            endReached: result.feed.length < 10,
+            endReached: result.feed.length < POST_LIMIT,
             loading: false,
         },
     });
@@ -158,7 +160,7 @@ async function fetchMorePosts(effects) {
 
 function setTab(effects, relevant = false) {
     return effects
-        .feed({ relevant, offset: 0, limit: 10 })
+        .feed({ relevant, offset: 0, limit: POST_LIMIT })
         .then(() => effects.fetchFeed())
         .then(() => state => state);
 }
