@@ -1,10 +1,18 @@
 import { useState, memo } from 'react';
-import { t } from '../../i18n';
+import Tribute from '../../drivers/tribute';
 import h from 'react-hyperscript';
 import helpers from 'hyperscript-helpers';
+import { t } from '../../i18n';
 import { glueEvent } from '../utils';
+import { requestMentionable } from '../../requests';
 
 const { a, div, input, form, p } = helpers(h);
+
+async function fetchUsers(query, callback) {
+    if (!query) return;
+    const users = await requestMentionable(query);
+    callback(users.map(user => ({ name: user.Username, id: user.Username })));
+}
 
 export const ChatMessageInput = memo(function({ state, effects, chan }) {
     const [message, setMessage] = useState('');
@@ -46,13 +54,30 @@ export const ChatMessageInput = memo(function({ state, effects, chan }) {
                     ),
                 ]),
             ]),
-        input('.form-input', {
-            disabled: false === state.authenticated,
-            placeholder: t`Escribe aquí tu mensaje...`,
-            value: message,
-            type: 'text',
-            autoFocus: true,
-            onChange: event => setMessage(event.target.value),
-        }),
+        h(
+            Tribute,
+            {
+                onChange: event => setMessage(event.target.value),
+                options: {
+                    collection: [
+                        {
+                            values: fetchUsers,
+                            lookup: 'name',
+                            fillAttr: 'name',
+                        },
+                    ],
+                },
+            },
+            [
+                input('.form-input', {
+                    disabled: false === state.authenticated,
+                    placeholder: t`Escribe aquí tu mensaje...`,
+                    value: message,
+                    type: 'text',
+                    autoFocus: true,
+                    onChange: event => setMessage(event.target.value),
+                }),
+            ]
+        ),
     ]);
 });

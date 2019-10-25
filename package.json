@@ -12,6 +12,10 @@
     "url": "https://github.com/tryanzu/frontend/issues"
   },
   "homepage": "https://github.com/tryanzu/frontend#readme",
+  "scripts": {
+    "start": "webpack --watch --config webpack.dev.js",
+    "build": "webpack --config webpack.prod.js"
+  },
   "dependencies": {
     "@types/history": "^4.6.1",
     "autosize": "^4.0.0",
@@ -23,6 +27,7 @@
     "callbag-subscribe": "^1.5.1",
     "classnames": "^2.2.5",
     "date-fns": "^1.29.0",
+    "deep-equal": "^1.1.0",
     "emoji-dictionary": "^1.0.9",
     "extend": ">=3.0.2",
     "freactal": "^2.0.3",
@@ -34,9 +39,6 @@
     "lost": "^8.2.0",
     "number-format.js": "^1.1.11",
     "os": "^0.1.1",
-    "postcss-brunch": "^2.10.1",
-    "postcss-cssnext": "^3.0.2",
-    "postcss-import": "^11.0.0",
     "process": "^0.11.10",
     "qs": "^6.5.2",
     "query-string": "^5.1.1",
@@ -55,25 +57,34 @@
     "spectre.css": "^0.5.0",
     "switch-path": "^1.2.0",
     "tachyons": "^4.9.0",
-    "timeago.js": "^3.0.2"
+    "timeago.js": "^3.0.2",
+    "tributejs": "^4.0.0"
   },
   "devDependencies": {
-    "ws": ">=3.3.1",
-    "braces": ">=2.3.1",
-    "auto-reload-brunch": "^2",
-    "autoprefixer": "^7.1.6",
-    "babel-brunch": "^6.1.1",
+    "@babel/core": "^7.6.4",
+    "@babel/plugin-proposal-class-properties": "^7.5.5",
+    "@babel/preset-env": "^7.6.3",
+    "babel-loader": "^8.0.6",
+    "babel-minify-webpack-plugin": "^0.3.1",
     "babel-preset-env": "^1.7.0",
-    "babel-preset-stage-2": "^6.24.1",
-    "brunch": "^2.10.17",
+    "braces": ">=2.3.1",
     "clean-css": ">=4.1.11",
-    "clean-css-brunch": "^2",
+    "clean-webpack-plugin": "^3.0.0",
+    "closure-webpack-plugin": "^2.0.1",
+    "css-loader": "^3.2.0",
     "eslint": "^4.19.1",
-    "eslint-brunch": "^3.12.0",
     "eslint-config-prettier": "^2.9.0",
     "eslint-plugin-prettier": "^2.6.0",
+    "file-loader": "^4.2.0",
+    "mini-css-extract-plugin": "^0.8.0",
+    "node-sass": "^4.12.0",
     "prettier": "^1.12.0",
-    "sass-brunch": "^2.10.8",
-    "uglify-js-brunch": "^2.10.0"
+    "sass-loader": "^8.0.0",
+    "style-loader": "^1.0.0",
+    "terser-webpack-plugin": "^2.2.1",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.9",
+    "webpack-merge": "^4.2.2",
+    "ws": ">=3.3.1"
   }
 }

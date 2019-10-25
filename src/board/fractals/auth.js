@@ -2,7 +2,7 @@ import React from 'react';
 import { provideState, update } from 'freactal';
 import { request } from '../../utils';
 import { kvReducer, jsonReq, channelToObs } from '../utils';
-import { glue } from '../../drivers/ext/glue';
+import glue from '../../drivers/ext/glue';
 import { fromObs } from 'callbag-basics';
 import { toast } from 'react-toastify';
 import { t, i18n } from '../../i18n';

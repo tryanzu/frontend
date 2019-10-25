@@ -72,7 +72,7 @@ function Chat({ state, effects, match, history }) {
         div('#channels.flex-shrink-0.flex-ns.flex-column.dn', [
             div('.flex-auto.flex.flex-column', [
                 header('.flex.items-center.ph3', [
-                    h1('.f5.dib.v-mid', 'Canales'),
+                    h1('.f5.dib.v-mid', t`Canales`),
                 ]),
                 nav(
                     '.flex-auto',
@@ -115,7 +115,7 @@ function Chat({ state, effects, match, history }) {
                 ),
                 section('.flex.flex-column.peers', [
                     header('.ph3.pv2', [
-                        h4('.dib.v-mid.mb0', 'Conectados'),
+                        h4('.dib.v-mid.mb0', t`Conectados`),
                         a('.dib.btn-icon.ml4.dropdown-toggle', {}, [
                             span('.bg-green.br-100.dib.mr1', {
                                 style: { width: 10, height: 10 },
@@ -124,7 +124,7 @@ function Chat({ state, effects, match, history }) {
                         ]),
                     ]),
                     nav(
-                        '.flex-auto.overflow-y-scroll',
+                        '.flex-auto.overflow-y-auto',
                         (counters.peers || []).map(([id, username], k) =>
                             a(
                                 '.db.pa2.ph3',
