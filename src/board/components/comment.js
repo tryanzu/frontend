@@ -10,6 +10,7 @@ import { MemoizedMarkdown } from '../utils';
 import { t } from '../../i18n';
 import { ConfirmWithReasonLink } from './actions';
 import { Flag } from './actions';
+import { adminTools } from '../../acl';
 
 const tags = helpers(h);
 const { article, div, a, span, i, ul, li } = tags;
@@ -26,6 +27,7 @@ const CommentEditor = memo(({ onChange, content }) => {
 });
 
 function CommentView({ comment, effects, ui, hashtables, ...props }) {
+    const { user } = props.auth;
     const [saving, setSaving] = useState(false);
     const [updating, setUpdating] = useState(false);
     const [content, setContent] = useState(() =>
@@ -136,7 +138,7 @@ function CommentView({ comment, effects, ui, hashtables, ...props }) {
                                 h('i.icon-menu.f7')
                             ),
                             ul('.menu', { style: { width: '200px' } }, [
-                                props.auth.user.id === comment.user_id &&
+                                (adminTools({user}) || (props.auth.user.id === comment.user_id)) &&
                                     li(
                                         '.menu-item',
                                         {},
@@ -153,7 +155,7 @@ function CommentView({ comment, effects, ui, hashtables, ...props }) {
                                             ]
                                         )
                                     ),
-                                props.auth.user.id === comment.user_id &&
+                                (adminTools({user}) || (props.auth.user.id === comment.user_id)) &&
                                     li(
                                         '.menu-item',
                                         {},
@@ -175,7 +177,7 @@ function CommentView({ comment, effects, ui, hashtables, ...props }) {
                                             ]
                                         )
                                     ),
-                                props.auth.user.id !== comment.user_id &&
+                                (adminTools({user}) || (props.auth.user.id !== comment.user_id)) &&
                                     li(
                                         '.menu-item',
                                         {},
