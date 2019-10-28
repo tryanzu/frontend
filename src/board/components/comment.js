@@ -136,64 +136,67 @@ function CommentView({ comment, effects, ui, hashtables, ...props }) {
                                 h('i.icon-menu.f7')
                             ),
                             ul('.menu', { style: { width: '200px' } }, [
-                                li(
-                                    '.menu-item',
-                                    {},
-                                    a(
-                                        '.pointer.post-action',
-                                        {
-                                            onClick: () => {
-                                                setUpdating(true);
+                                props.auth.user.id === comment.user_id &&
+                                    li(
+                                        '.menu-item',
+                                        {},
+                                        a(
+                                            '.pointer.post-action',
+                                            {
+                                                onClick: () => {
+                                                    setUpdating(true);
+                                                },
                                             },
-                                        },
-                                        [
-                                            i('.mr1.icon-edit'),
-                                            t`Editar comentario`,
-                                        ]
-                                    )
-                                ),
-                                li(
-                                    '.menu-item',
-                                    {},
-                                    h(
-                                        ConfirmWithReasonLink,
-                                        {
-                                            title: t`¿Por qué quieres borrar este comentario?`,
-                                            placeholder: t`Describe el motivo...`,
-                                            action: t`Borrar comentario`,
-                                            onConfirm: reason =>
-                                                effects.deleteComment(
-                                                    comment.id,
-                                                    reason
-                                                ),
-                                        },
-                                        [
-                                            i('.mr1.icon-trash'),
-                                            t`Borrar comentario`,
-                                        ]
-                                    )
-                                ),
-                                li(
-                                    '.menu-item',
-                                    {},
-                                    h(
-                                        Flag,
-                                        {
-                                            title: t`Reportar un comentario`,
-                                            comment,
-                                            onSend: form =>
-                                                effects.requestFlag({
-                                                    ...form,
-                                                    related_id: comment.id,
-                                                    related_to: 'comment',
-                                                }),
-                                        },
-                                        [
-                                            i('.mr1.icon-warning-empty'),
-                                            t`Reportar`,
-                                        ]
-                                    )
-                                ),
+                                            [
+                                                i('.mr1.icon-edit'),
+                                                t`Editar comentario`,
+                                            ]
+                                        )
+                                    ),
+                                props.auth.user.id === comment.user_id &&
+                                    li(
+                                        '.menu-item',
+                                        {},
+                                        h(
+                                            ConfirmWithReasonLink,
+                                            {
+                                                title: t`¿Por qué quieres borrar este comentario?`,
+                                                placeholder: t`Describe el motivo...`,
+                                                action: t`Borrar comentario`,
+                                                onConfirm: reason =>
+                                                    effects.deleteComment(
+                                                        comment.id,
+                                                        reason
+                                                    ),
+                                            },
+                                            [
+                                                i('.mr1.icon-trash'),
+                                                t`Borrar comentario`,
+                                            ]
+                                        )
+                                    ),
+                                props.auth.user.id !== comment.user_id &&
+                                    li(
+                                        '.menu-item',
+                                        {},
+                                        h(
+                                            Flag,
+                                            {
+                                                title: t`Reportar un comentario`,
+                                                comment,
+                                                onSend: form =>
+                                                    effects.requestFlag({
+                                                        ...form,
+                                                        related_id: comment.id,
+                                                        related_to: 'comment',
+                                                    }),
+                                            },
+                                            [
+                                                i('.mr1.icon-warning-empty'),
+                                                t`Reportar`,
+                                            ]
+                                        )
+                                    ),
                             ]),
                         ]),
                     ]),
@@ -240,7 +243,7 @@ function CommentView({ comment, effects, ui, hashtables, ...props }) {
             nested === false &&
                 div(
                     '.feedback',
-                    { className: 'dn' },
+                    { className: updating ? 'dn' : '' },
                     (category.reactions || []).map(r =>
                         reactLink({
                             type: r,
