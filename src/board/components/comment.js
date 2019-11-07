@@ -10,6 +10,7 @@ import { MemoizedMarkdown } from '../utils';
 import { t } from '../../i18n';
 import { ConfirmWithReasonLink } from './actions';
 import { Flag } from './actions';
+import { adminTools } from '../../acl';
 
 const tags = helpers(h);
 const { article, div, a, span, i, ul, li } = tags;
@@ -26,6 +27,7 @@ const CommentEditor = memo(({ onChange, content }) => {
 });
 
 function CommentView({ comment, effects, ui, hashtables, ...props }) {
+    const { user } = props.auth;
     const [saving, setSaving] = useState(false);
     const [updating, setUpdating] = useState(false);
     const [content, setContent] = useState(() =>
@@ -136,64 +138,67 @@ function CommentView({ comment, effects, ui, hashtables, ...props }) {
                                 h('i.icon-menu.f7')
                             ),
                             ul('.menu', { style: { width: '200px' } }, [
-                                li(
-                                    '.menu-item',
-                                    {},
-                                    a(
-                                        '.pointer.post-action',
-                                        {
-                                            onClick: () => {
-                                                setUpdating(true);
+                                (adminTools({user}) || (props.auth.user.id === comment.user_id)) &&
+                                    li(
+                                        '.menu-item',
+                                        {},
+                                        a(
+                                            '.pointer.post-action',
+                                            {
+                                                onClick: () => {
+                                                    setUpdating(true);
+                                                },
                                             },
-                                        },
-                                        [
-                                            i('.mr1.icon-edit'),
-                                            t`Editar comentario`,
-                                        ]
-                                    )
-                                ),
-                                li(
-                                    '.menu-item',
-                                    {},
-                                    h(
-                                        ConfirmWithReasonLink,
-                                        {
-                                            title: t`¿Por qué quieres borrar este comentario?`,
-                                            placeholder: t`Describe el motivo...`,
-                                            action: t`Borrar comentario`,
-                                            onConfirm: reason =>
-                                                effects.deleteComment(
-                                                    comment.id,
-                                                    reason
-                                                ),
-                                        },
-                                        [
-                                            i('.mr1.icon-trash'),
-                                            t`Borrar comentario`,
-                                        ]
-                                    )
-                                ),
-                                li(
-                                    '.menu-item',
-                                    {},
-                                    h(
-                                        Flag,
-                                        {
-                                            title: t`Reportar un comentario`,
-                                            comment,
-                                            onSend: form =>
-                                                effects.requestFlag({
-                                                    ...form,
-                                                    related_id: comment.id,
-                                                    related_to: 'comment',
-                                                }),
-                                        },
-                                        [
-                                            i('.mr1.icon-warning-empty'),
-                                            t`Reportar`,
-                                        ]
-                                    )
-                                ),
+                                            [
+                                                i('.mr1.icon-edit'),
+                                                t`Editar comentario`,
+                                            ]
+                                        )
+                                    ),
+                                (adminTools({user}) || (props.auth.user.id === comment.user_id)) &&
+                                    li(
+                                        '.menu-item',
+                                        {},
+                                        h(
+                                            ConfirmWithReasonLink,
+                                            {
+                                                title: t`¿Por qué quieres borrar este comentario?`,
+                                                placeholder: t`Describe el motivo...`,
+                                                action: t`Borrar comentario`,
+                                                onConfirm: reason =>
+                                                    effects.deleteComment(
+                                                        comment.id,
+                                                        reason
+                                                    ),
+                                            },
+                                            [
+                                                i('.mr1.icon-trash'),
+                                                t`Borrar comentario`,
+                                            ]
+                                        )
+                                    ),
+                                (adminTools({user}) || (props.auth.user.id !== comment.user_id)) &&
+                                    li(
+                                        '.menu-item',
+                                        {},
+                                        h(
+                                            Flag,
+                                            {
+                                                title: t`Reportar un comentario`,
+                                                comment,
+                                                onSend: form =>
+                                                    effects.requestFlag({
+                                                        ...form,
+                                                        related_id: comment.id,
+                                                        related_to: 'comment',
+                                                    }),
+                                            },
+                                            [
+                                                i('.mr1.icon-warning-empty'),
+                                                t`Reportar`,
+                                            ]
+                                        )
+                                    ),
                             ]),
                         ]),
                     ]),
@@ -240,7 +245,7 @@ function CommentView({ comment, effects, ui, hashtables, ...props }) {
             nested === false &&
                 div(
                     '.feedback',
-                    { className: 'dn' },
+                    { className: updating ? 'dn' : '' },
                     (category.reactions || []).map(r =>
                         reactLink({
                             type: r,
