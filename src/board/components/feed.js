@@ -117,7 +117,7 @@ export function Feed({ state, effects }) {
                     feed.endReached &&
                         h('div.pv2.ph3.tc', {}, [
                             h(
-                                'p.measure.center.ph2.gray.lh-copy.tc',
+                                'p.measure.center.ph2.subtext.lh-copy.tc',
                                 t`No encontramos más publicaciones por cargar en este momento.`
                             ),
                             h(

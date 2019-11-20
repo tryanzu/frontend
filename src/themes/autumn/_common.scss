@@ -148,6 +148,17 @@ p.md p:last-child {
 	color: $light-color;	
 }
 
+footer {
+	color: #999999;
+}
+
+.icon-crown{
+    color:  $gold-color !important;
+}
+
+.subtext{
+    color: #acb3c2 !important;
+}
 @media (--breakpoint-medium){
 	.feed{
 	display: flex;
