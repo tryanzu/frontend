@@ -48,7 +48,7 @@ export function Login({ state, effects }) {
                 div('.form-group.tc', t`ó con tu cuenta anzu`),
             form({ onSubmit }, [
                 div(
-                    '.black.bg-washed-red.pa2.mb2.f7.fade-in',
+                    '.error-message.pa2.mb2.f7.fade-in',
                     { className: classNames({ dn: auth.error === false }) },
                     t`${auth.error}`
                 ),
