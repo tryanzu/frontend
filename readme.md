@@ -52,10 +52,7 @@ export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
 
 ```
 
-Download and configure **MongoDB** and **Redis**. You'll need to create a root user in MongoDB
-In database>uri set your MongoDB user and password
-
-Alternatively you can use remote servers.
+Download and configure **MongoDB** and **Redis** (you'll need to create a root user in MongoDB). Alternatively you can use remote servers.
 
 Install `dep` for go dependencies: [https://github.com/golang/dep](https://github.com/golang/dep). In MacOS it can be installed with `brew`.
 
@@ -70,9 +67,7 @@ Download the [core](http://github.com/tryanzu/core) in any path.
 Initialize the repo submodule, so the [frontend](http://github.com/tryanzu/frontend) is in `static/frontend`.
 
 ```
-
 git submodule update --init --recursive
-
 ```
 Install the core dependencies with `go build -o anzu`.
 
@@ -81,7 +76,13 @@ Install the frontend dependencies with `yarn install`.
 ###  Configure
 
 Copy the `env.json.example` file into `env.json` and edit it to meet your local environment configuration.
-In database>uri you'll need to set your MongoDB user and password
+You'll need to set your MongoDB user and password, should look like this:
+```
+"database": {
+    "uri": "mongodb://[yourUser]:[yourPassword]@127.0.0.1:27017/admin",
+    "name": "anzu"
+},
+```
   
 Copy the `config.toml.example` file into `config.toml`
 
