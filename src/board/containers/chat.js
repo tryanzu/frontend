@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect, useContext } from 'react';
 import YouTube from 'react-youtube';
+import ReactTwitchEmbedVideo from 'react-twitch-embed-video';
 import classNames from 'classnames';
 import { Link } from 'react-router-dom';
 import h from 'react-hyperscript';
@@ -20,7 +21,7 @@ const tags = helpers(h);
 const { main, div, i, input, label } = tags;
 const { header, a, nav, section } = tags;
 const { h4, ul, li, p } = tags;
-const { h1, span } = tags;
+const { h1, span, autoplay } = tags;
 
 function Chat({ state, effects, match, history }) {
     const scrollLockRef = useRef(false);
@@ -40,6 +41,7 @@ function Chat({ state, effects, match, history }) {
     const [counters, setCounters] = useState({});
     const auth = useContext(AuthContext);
     const { chat } = state;
+    const [twitchSource, setTwitchSource] = useState(false);
 
     useEffect(
         () => {
@@ -224,6 +226,18 @@ function Chat({ state, effects, match, history }) {
                                         i('.form-icon'),
                                         t`Desactivar sonido`,
                                     ]),
+                                    label('.form-switch.normal', [
+                                        input({
+                                            type: 'checkbox',
+                                            onChange: event =>
+                                                setTwitchSource(
+                                                    event.target.checked
+                                                ),
+                                            checked: twitchSource,
+                                        }),
+                                        i('.form-icon'),
+                                        t`Streaming de twitch`,
+                                    ]),
                                     adminTools({ user: auth.auth.user }) &&
                                         h('.div', {}, [
                                             span('.b.db', t`Administración`),
@@ -259,19 +273,32 @@ function Chat({ state, effects, match, history }) {
                             },
                         },
                         [
-                            h(
-                                '.video-responsive.center',
-                                { style: { maxWidth: '70%' } },
-                                h(YouTube, {
-                                    videoId: channel.youtubeVideo,
-                                    opts: {
-                                        playerVars: {
-                                            // https://developers.google.com/youtube/player_parameters
-                                            autoplay: 0,
+                            twitchSource === false &&
+                                h(
+                                    '.video-responsive.center',
+                                    { style: { maxWidth: '70%' } },
+                                    h(YouTube, {
+                                        videoId: channel.youtubeVideo,
+                                        opts: {
+                                            playerVars: {
+                                                // https://developers.google.com/youtube/player_parameters
+                                                autoplay: 0,
+                                            },
                                         },
-                                    },
-                                })
-                            ),
+                                    })
+                                ),
+                            twitchSource &&
+                                h(
+                                    '.video-responsive.center',
+                                    { style: { maxWidth: '70%' } },
+                                    h(ReactTwitchEmbedVideo, {
+                                        channel: 'xqcow',
+                                        autoplay,
+                                        layout: 'video',
+                                        muted: false,
+                                        targetClass: 'twitch-embed',
+                                    })
+                                ),
                         ]
                     ),
                 h(ChatMessageList, {
