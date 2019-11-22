@@ -226,18 +226,20 @@ function Chat({ state, effects, match, history }) {
                                         i('.form-icon'),
                                         t`Desactivar sonido`,
                                     ]),
-                                    label('.form-switch.normal', [
-                                        input({
-                                            type: 'checkbox',
-                                            onChange: event =>
-                                                setTwitchSource(
-                                                    event.target.checked
-                                                ),
-                                            checked: twitchSource,
-                                        }),
-                                        i('.form-icon'),
-                                        t`Streaming de twitch`,
-                                    ]),
+                                    channel.twitchStreaming != undefined &&
+                                        channel.twitchStreaming != '' &&
+                                        label('.form-switch.normal', [
+                                            input({
+                                                type: 'checkbox',
+                                                onChange: event =>
+                                                    setTwitchSource(
+                                                        event.target.checked
+                                                    ),
+                                                checked: twitchSource,
+                                            }),
+                                            i('.form-icon'),
+                                            t`Directo de twitch`,
+                                        ]),
                                     adminTools({ user: auth.auth.user }) &&
                                         h('.div', {}, [
                                             span('.b.db', t`Administración`),
@@ -292,7 +294,7 @@ function Chat({ state, effects, match, history }) {
                                     '.video-responsive.center',
                                     { style: { maxWidth: '70%' } },
                                     h(ReactTwitchEmbedVideo, {
-                                        channel: 'xqcow',
+                                        channel: channel.twitchStreaming,
                                         autoplay,
                                         layout: 'video',
                                         muted: false,

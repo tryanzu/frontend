@@ -13,16 +13,24 @@ export const ChatChannelSettings = withRouter(function ChatChannelSettings(
     props
 ) {
     const { channel, effects, isOpen, onRequestClose, ...otherProps } = props;
-    const [enableVideo, setEnableVideo] = useState(!!channel.youtubeVideo);
+    const [enableYoutubeVideo, setEnableYoutubeVideo] = useState(
+        !!channel.youtubeVideo
+    );
+    const [enableTwitchStreaming, setEnableTwitchStreaming] = useState(
+        !!channel.twitchStreaming
+    );
     const [deleteChannel, setDeleteChannel] = useState(false);
     const [name, setName] = useState(channel.name);
     const [description, setDescription] = useState(channel.description);
     const [videoId, setVideoId] = useState(channel.youtubeVideo);
+    const [streamingName, setStreamingName] = useState(channel.twitchStreaming);
     const disabled =
         (name == channel.name || !name) &&
         description == channel.description &&
         videoId == channel.youtubeVideo &&
-        (enableVideo == !!channel.youtubeVideo || !videoId) &&
+        (enableYoutubeVideo == !!channel.youtubeVideo || !videoId) &&
+        (enableTwitchStreaming == !!channel.twitchStreaming ||
+            !streamingName) &&
         !deleteChannel;
 
     async function onSubmit(event) {
@@ -34,7 +42,8 @@ export const ChatChannelSettings = withRouter(function ChatChannelSettings(
             ...channel,
             name,
             description,
-            youtubeVideo: enableVideo ? videoId : '',
+            youtubeVideo: enableYoutubeVideo ? videoId : '',
+            twitchStreaming: enableTwitchStreaming ? streamingName : '',
             deleted: deleteChannel === true,
         };
         const state = await effects.updateChatChannelConfig(channel, updated);
@@ -107,15 +116,17 @@ export const ChatChannelSettings = withRouter(function ChatChannelSettings(
                                 input({
                                     type: 'checkbox',
                                     onChange: event =>
-                                        setEnableVideo(event.target.checked),
-                                    checked: enableVideo,
+                                        setEnableYoutubeVideo(
+                                            event.target.checked
+                                        ),
+                                    checked: enableYoutubeVideo,
                                 }),
                                 i('.form-icon'),
                                 t`Video de Youtube`,
                             ]),
                         ]),
                     deleteChannel === false &&
-                        enableVideo === true &&
+                        enableYoutubeVideo === true &&
                         div('.form-group', [
                             label('.b.form-label', t`ID del video`),
                             input('.form-input', {
@@ -125,6 +136,38 @@ export const ChatChannelSettings = withRouter(function ChatChannelSettings(
                                 value: videoId,
                                 onChange: event =>
                                     setVideoId(event.target.value),
+                            }),
+                            p(
+                                '.form-input-hint',
+                                t`Mostrado alrededor del sitio, el nombre de tu comunidad.`
+                            ),
+                        ]),
+                    deleteChannel === false &&
+                        div('.form-group', [
+                            label('.b.form-switch.normal', [
+                                input({
+                                    type: 'checkbox',
+                                    onChange: event =>
+                                        setEnableTwitchStreaming(
+                                            event.target.checked
+                                        ),
+                                    checked: enableTwitchStreaming,
+                                }),
+                                i('.form-icon'),
+                                t`Directo de twitch`,
+                            ]),
+                        ]),
+                    deleteChannel === false &&
+                        enableTwitchStreaming === true &&
+                        div('.form-group', [
+                            label('.b.form-label', t`Nombre del canal`),
+                            input('.form-input', {
+                                name: 'streamingName',
+                                type: 'text',
+                                placeholder: t`Nombre del canal`,
+                                value: streamingName,
+                                onChange: event =>
+                                    setStreamingName(event.target.value),
                             }),
                             p(
                                 '.form-input-hint',
