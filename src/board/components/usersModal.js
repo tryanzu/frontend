@@ -50,10 +50,10 @@ export function UsersModal({ state, effects, setOpen }) {
         },
         div('.modal-container.fade-in', { style: { width: '640px' } }, [
             div('.pa3.flex.items-center', [
-                h2('.f5.pa0.flex-auto.w-60.ma0', 'Gestión de usuarios'),
+                h2('.f5.pa0.flex-auto.w-60.ma0', t`Gestión de usuarios`),
                 input('.form-input.input-sm.w-40', {
                     type: 'search',
-                    placeholder: 'Buscar usuario...',
+                    placeholder: t`Buscar usuario...`,
                     required: true,
                 }),
                 a('.btn-icon.ml3', { onClick: () => setOpen(false) }, [
@@ -76,7 +76,7 @@ export function UsersModal({ state, effects, setOpen }) {
                                 user.image &&
                                     img({
                                         src: user.image,
-                                        alt: `Avatar de ${user.username}`,
+                                        alt: t`Avatar de ${user.username}`,
                                     }),
                             ]
                         ),
@@ -118,12 +118,12 @@ export function UsersModal({ state, effects, setOpen }) {
                             user.validated &&
                                 span(
                                     '.label.label-sm.label-success',
-                                    'Correo validado'
+                                    t`Correo validado`
                                 ),
                             !user.validated &&
                                 span(
                                     '.label.label-sm.label-error',
-                                    'Correo sin validar'
+                                    t`Correo sin validar`
                                 ),
                         ]),
                         div([
@@ -145,7 +145,7 @@ export function UsersModal({ state, effects, setOpen }) {
                                             {
                                                 title: t`¿Por qué quieres banear este usuario?`,
                                                 user,
-                                                onBan: form =>
+                                                onSend: form =>
                                                     effects.requestUserBan({
                                                         ...form,
                                                         user_id: user.id,

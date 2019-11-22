@@ -3,6 +3,7 @@ import RichTextEditor from 'react-rte';
 import classNames from 'classnames';
 import h from 'react-hyperscript';
 import helpers from 'hyperscript-helpers';
+import { withRouter } from 'react-router-dom';
 import { injectState } from 'freactal/lib/inject';
 import { Quickstart } from './quickstart';
 import { t, i18n } from '../../i18n';
@@ -13,11 +14,12 @@ import { Link } from 'react-router-dom';
 import { ReplyView } from './reply';
 import { adminTools } from '../../acl';
 import { ConfirmWithReasonLink } from './actions';
+import { Flag } from './actions';
 
 const tags = helpers(h);
 const { form, label, select, optgroup, option, input } = tags;
 const { div, section, footer, small, article } = tags;
-const { h3, h1, h5, span, p, a, button, i, img, ul, li } = tags;
+const { h3, h1, span, p, a, button, i, img, ul, li } = tags;
 
 export function Post({ state, effects }) {
     const { post } = state;
@@ -44,7 +46,7 @@ export function Post({ state, effects }) {
             h(PostView, { state, effects }),
         footer('.pa3', [
             small('.silver', [
-                t`Powered by Anzu community`,
+                t`Powered by anzu community software`,
                 ' ',
                 a(
                     { href: 'https://github.com/tryanzu', target: '_blank' },
@@ -76,8 +78,17 @@ function PostView({ state, effects }) {
 
     return div('.current-article.flex-auto', [
         article([
-            div('.flex', [
-                div('.flex-auto', {}, h(Author, { item: post.data })),
+            div('.flex.actions', [
+                div(
+                    '.flex-auto',
+                    {},
+                    h(Author, { item: post.data }, [
+                        div('.b', [
+                            span('.icon.icon-eye-outline.mr1'),
+                            String(post.data.views),
+                        ]),
+                    ])
+                ),
                 h(PostActionsView, { state, effects, updating, setUpdating }),
             ]),
             updating === false && h(RegularPostView, { state, effects }),
@@ -87,7 +98,13 @@ function PostView({ state, effects }) {
     ]);
 }
 
-function PostActionsView({ state, effects, updating, setUpdating }) {
+const PostActionsView = withRouter(function PostActionsView({
+    state,
+    effects,
+    updating,
+    setUpdating,
+    history,
+}) {
     const post = state.post.data;
     const { user } = state.auth;
 
@@ -136,14 +153,51 @@ function PostActionsView({ state, effects, updating, setUpdating }) {
             ]),
         ]);
     }
-
-    return div([
-        a('.dib.btn-icon', [
-            i('.icon-warning-empty'),
-            span('.ml1.dn.dib-ns', t`Reportar`),
+    return div('.dropdown.dropdown-right', [
+        a(
+            '.dib.btn-icon.btn-sm.ml2.dropdown-toggle',
+            { tabIndex: 0 },
+            i('.icon-down-open')
+        ),
+        ul('.menu', { style: { width: '200px' } }, [
+            li(
+                '.menu-item',
+                {},
+                a('.pointer.post-action', { onClick: () => history.goBack() }, [
+                    i('.mr1.icon-left-open'),
+                    t`Volver atrás`,
+                ])
+            ),
+            li(
+                '.menu-item',
+                {},
+                h(
+                    Flag,
+                    {
+                        title: t`Reportar una publicación`,
+                        post,
+                        onSend: form =>
+                            effects.requestFlag({
+                                ...form,
+                                related_id: post.id,
+                                related_to: 'post',
+                            }),
+                    },
+                    [
+                        span(
+                            '.pointer.post-action',
+                            { onClick: () => setUpdating(true) },
+                            [
+                                i('.mr1.icon-warning-empty'),
+                                t`Reportar publicación`,
+                            ]
+                        ),
+                    ]
+                )
+            ),
         ]),
     ]);
-}
+});
 
 function UpdatePostView({ state, effects, setUpdating }) {
     const { categories } = state;
@@ -206,12 +260,11 @@ function UpdatePostView({ state, effects, setUpdating }) {
             ),
         ]),
         div('.form-group.pb2', [
-            label('.b.form-label', 'Título de la publicación'),
+            label('.b.form-label', t`Título de la publicación`),
             input('#title.form-input', {
                 type: 'text',
                 value: title,
-                placeholder:
-                    'Escribe el titulo de tu publicación o pregunta...',
+                placeholder: t`Escribe el titulo de tu publicación o pregunta...`,
                 required: true,
                 onChange: event => setTitle(event.target.value),
             }),
@@ -220,7 +273,7 @@ function UpdatePostView({ state, effects, setUpdating }) {
             h(RichTextEditor, {
                 value: content,
                 onChange: setContent,
-                placeholder: 'Escribe aquí el contenido de tu publicación',
+                placeholder: t`Escribe aquí el contenido de tu publicación`,
             }),
         ]),
         div('.form-group.pb2', [
@@ -234,7 +287,7 @@ function UpdatePostView({ state, effects, setUpdating }) {
                         checked: is_question,
                     }),
                     i('.form-icon'),
-                    'La publicación es una pregunta',
+                    t`La publicación es una pregunta`,
                 ])
             ),
             div(
@@ -247,7 +300,7 @@ function UpdatePostView({ state, effects, setUpdating }) {
                         checked: lock,
                     }),
                     i('.form-icon'),
-                    'No permitir comentarios en esta publicación',
+                    t`No permitir comentarios en esta publicación`,
                 ])
             ),
             div(
@@ -260,13 +313,13 @@ function UpdatePostView({ state, effects, setUpdating }) {
                         checked: pinned,
                     }),
                     i('.form-icon'),
-                    'Publicar como importante',
+                    t`Publicar como importante`,
                 ])
             ),
         ]),
         input('.btn.btn-primary.btn-block', {
             type: 'submit',
-            value: 'Guardar publicación',
+            value: t`Guardar publicación`,
         }),
     ]);
 }
@@ -336,7 +389,6 @@ function RegularPostView({ state, effects }) {
             content: post.data.content,
         }),
         div('.feedback', [
-            h5(t`Esta publicación fue considerada:`),
             div(
                 '.overflow-x-auto.pv2',
                 (category.reactions || []).map(r =>

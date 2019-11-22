@@ -8,7 +8,7 @@ main.board {
 	max-width: $layout-max-width;
 	width: 100%;
 	margin: 0 auto;
-	padding: 0 1rem;
+	padding: 0 0.5rem;
 
 	&::before {
 		content: "";
@@ -35,6 +35,7 @@ main.board {
 	}
 
 	@media screen and (min-width: $size-xs) {
+		padding: 0 1rem;
 
 		& > section.feed {
 			width: calc(99.9% * 1/3 - (30px - 30px * 1/3));

@@ -1,3 +1,4 @@
+import React from 'react';
 import { provideState, update } from 'freactal';
 import { request } from '../../utils';
 import { kvReducer, jsonReq, channelToObs } from '../utils';
@@ -5,6 +6,10 @@ import { glue } from '../../drivers/ext/glue';
 import { fromObs } from 'callbag-basics';
 import { toast } from 'react-toastify';
 import { t, i18n } from '../../i18n';
+import { adminTools } from '../../acl';
+
+export const GlueContext = React.createContext(false);
+export const AuthContext = React.createContext({});
 
 function initialState() {
     const realtime = glue(window.Anzu.glue || '', {});
@@ -32,6 +37,7 @@ function initialState() {
             name: '',
             description: '',
             nav: [],
+            chat: [],
             logoUrl: '',
             ...site,
         },
@@ -189,6 +195,7 @@ function fetchAccount(effects, token) {
         })
         .then(user => effects.fetchCategories(true).then(() => user))
         .then(user => {
+            user.profile = user.profile || { bio: '', country: '' };
             if ('Raven' in window) {
                 window.Raven.setUserContext(user);
             }
@@ -361,6 +368,27 @@ function onUpdatePass(effects) {
         });
 }
 
+function updateQuickstart(effects, updated) {
+    const body = {
+        section: 'site',
+        changes: {
+            quickstart: updated,
+        },
+    };
+    return jsonReq(request('config', { method: 'PUT', body }))
+        .then(res => {
+            if (res.status === 'error') {
+                throw res.message;
+            }
+            toast.success(t`Configuration saved successfully`);
+            return state => state;
+        })
+        .catch(message => {
+            toast.error(t`${message}`);
+            return state => state;
+        });
+}
+
 function postNewAvatar(effects, form) {
     return jsonReq(
         request(`user/my/avatar`, {
@@ -379,6 +407,29 @@ function postNewAvatar(effects, form) {
     }));
 }
 
+function requestFlag(effects, form) {
+    const body = {
+        related_to: form.related_to,
+        related_id: form.related_id,
+        category: form.reason,
+        content: form.content,
+    };
+    return jsonReq(request(`flags`, { method: 'POST', body }))
+        .then(res => {
+            if (res.status === 'error') {
+                throw res.message;
+            }
+            toast.success(
+                t`Tu solicitud ha sido enviada. Alguien la revisará pronto.`
+            );
+            return state => state;
+        })
+        .catch(message => {
+            toast.error(t`${message}`);
+            return state => state;
+        });
+}
+
 function requestUserBan(effects, form) {
     const body = {
         related_to: 'site',
@@ -393,6 +444,66 @@ function requestUserBan(effects, form) {
             }
             toast.success(t`La solicitud de baneo ha sido procesada.`);
             return state => state;
+        })
+        .catch(message => {
+            toast.error(t`${message}`);
+            return state => state;
+        });
+}
+
+function updateChatChannelConfig(effects, channel, updated) {
+    return effects
+        .working(true)
+        .then(state => {
+            const list = state.site.chat || [];
+            if (updated.deleted === true) {
+                if (list.length === 1) {
+                    throw 'Cannot delete last chat channel.';
+                }
+                return list.filter(item => item.name !== channel.name);
+            }
+            if (channel.name === '' && !updated.name) {
+                throw 'Cannot create new channel if name is empty.';
+            }
+            if (channel.name === '' && updated.name.length > 0) {
+                const invalid = list.find(item => item.name === updated.name);
+                if (invalid) {
+                    throw 'Cannot create duplicated chat channel.';
+                }
+                return list.concat(updated);
+            }
+            return list.map(
+                item =>
+                    item.name === channel.name
+                        ? { ...channel, ...updated }
+                        : item
+            );
+        })
+        .then(updated => {
+            const body = {
+                section: 'site',
+                changes: {
+                    chat: updated,
+                },
+            };
+
+            return Promise.all([
+                jsonReq(request('config', { method: 'PUT', body })),
+                updated,
+            ]);
+        })
+        .then(([res, updated]) => {
+            if (res.status === 'error') {
+                throw res.message;
+            }
+            toast.success(t`Cambios guardados con éxito`);
+            return state => ({
+                ...state,
+                site: {
+                    ...state.site,
+                    chat: updated,
+                },
+            });
         })
         .catch(message => {
             toast.error(t`${message}`);
@@ -558,12 +669,15 @@ export default provideState({
         performLogin,
         performSignup,
         change,
+        updateChatChannelConfig,
         requestValidationEmail,
         requestPasswordReset,
+        requestFlag,
         requestUserBan,
         fetchRequest,
         fetchGamification,
         postNewAvatar,
+        updateQuickstart,
         updateProfile,
         fetchCategories,
         fetchNotifications,
@@ -587,13 +701,25 @@ export default provideState({
         },
         canUpdate({ auth }) {
             return id => {
-                return auth.user !== false && auth.user.id == id;
+                return (
+                    auth.user !== false &&
+                    (auth.user.id == id || adminTools({ user: auth.user }))
+                );
             };
+        },
+        chat({ site }) {
+            return {
+                channels: new window.Map(
+                    site.chat.map(chan => [chan.name, chan])
+                ),
+            };
+        },
+        glue({ realtime }) {
+            return realtime;
         },
     },
     initialState,
 });
-
 function delay(duration) {
     return function() {
         return new Promise(function(resolve) {

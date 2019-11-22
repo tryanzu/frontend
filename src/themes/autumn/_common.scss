@@ -42,11 +42,6 @@ p.md p:last-child {
 }
 
 .avatar {
-	border-radius: 4px;
-	
-	& img {
-		border-radius: inherit;
-	}
 
 	&.avatar-xl {
 		width: 6.4rem;
@@ -85,12 +80,12 @@ p.md p:last-child {
 
 	&:hover {
 		border-color: $primary-color;
-		text-decoration: none;		
+		text-decoration: none;
 	}
 }
 
 .modal.active .modal-container, .modal:target .modal-container {
-	padding: 0
+	padding: 0;
 }
 
 .form-input:not(:placeholder-shown):invalid {
@@ -140,10 +135,24 @@ p.md p:last-child {
 	border-bottom-color: $gray-color-light;
 }
 
+.tile-quickstart:hover {
+	.tile-actions-q a {
+		color: $gray-color !important;
+
+		&:hover {
+			color: $primary-color !important;
+		}
+	}
+}
+
+.tile-actions-q a {
+	color: $light-color;	
+}
+
 @media (--breakpoint-medium){
 	.feed{
 	display: flex;
-	}	
+	}
 	.post-active .feed{
 	display: none;
 	}

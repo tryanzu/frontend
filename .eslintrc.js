@@ -35,6 +35,7 @@ module.exports = {
         console: true,
         Tribute: true,
         Promise: true,
+        document: true,
     },
     parserOptions: { ecmaVersion: 2018, sourceType: 'module' },
 };

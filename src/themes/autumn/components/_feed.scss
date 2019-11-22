@@ -100,7 +100,7 @@
 		& .ago {
 			font-size: 0.6rem;
 		}
-		
+
 		& article {
 			padding: 0.5rem 1rem;
 			border-left: 2px solid transparent;
@@ -131,7 +131,7 @@
 				font-size: 0.6rem;
 			}
 
-			
+
 
 			& .new-comments {
 				background: #38C172;
@@ -162,15 +162,20 @@
 a[rel="author"], .author {
 	color: $darkest-primary;
 	display: flex;
-	flex-wrap: wrap;
 	align-items: center;
 
 	&:hover {
 		text-decoration: none;
 	}
-	
+
 	& > div:first-child {
 		min-width: 32px;
+	}
+
+	& small.ago, & time {
+		color: $gray-color;
+		font-weight: normal;
+		font-size: 12px;
 	}
 
 	& > div {
@@ -179,15 +184,24 @@ a[rel="author"], .author {
 		}
 
 		& > span {
-			display: block;
+			display: flex;
 		}
 
-		& small.ago {
-			font-size: 14px;
+		& .reputation {
+			font-weight: normal;
+			font-size: 12px;
+			color: $gray-color-dark;
 		}
-		
+
 		& small.ago, & span.ago {
 			color: $gray-color-dark;
+		}
+
+		& p.bio {
+			font-weight: normal;
+			font-size: 12px;
+			color: $gray-color-dark;
+			margin-top: 0.25rem;
 		}
 	}
 

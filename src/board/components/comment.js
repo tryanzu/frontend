@@ -2,17 +2,28 @@ import h from 'react-hyperscript';
 import RichTextEditor from 'react-rte';
 import classNames from 'classnames';
 import helpers from 'hyperscript-helpers';
+import { useState, useEffect, memo } from 'react';
 import { Author } from './author';
-import { useState, memo } from 'react';
 import { ReplyView } from './reply';
 import { ErrorBoundary } from '../errors';
 import { MemoizedMarkdown } from '../utils';
 import { t } from '../../i18n';
 import { ConfirmWithReasonLink } from './actions';
+import { Flag } from './actions';
 
 const tags = helpers(h);
-const { article, div, a, span, i, h5, ul, li } = tags;
+const { article, div, a, span, i, ul, li } = tags;
 const { form, button } = tags;
+
+const CommentEditor = memo(({ onChange, content }) => {
+    const [comment, setComment] = useState(content);
+    useEffect(() => onChange(comment), [comment]);
+    return h(RichTextEditor, {
+        value: comment,
+        onChange: setComment,
+        placeholder: 'Escribe aquí tu respuesta',
+    });
+});
 
 function CommentView({ comment, effects, ui, hashtables, ...props }) {
     const [saving, setSaving] = useState(false);
@@ -83,35 +94,38 @@ function CommentView({ comment, effects, ui, hashtables, ...props }) {
             id: comment.id,
         },
         [
-            div('.flex', [
+            div('.flex.items-center', [
                 div('.flex.flex-auto', {}, [
                     nested === true && span('.icon-flow-split.mr2'),
                     h(Author, {
                         item: comment,
-                        label: 'Comentó',
+                        label: t`Comentó`,
                         noAvatar: nested,
+                        className: 'flex-auto',
                     }),
                 ]),
-                div('.flex-shrink-0', [
-                    a(
-                        '.v-mid.pointer.reply-to',
-                        {
-                            className: classNames({
-                                dn: isCurrentUsersComment,
-                                dib: !isCurrentUsersComment,
-                            }),
-                            onClick: () =>
-                                effects.replyFocus(
-                                    'comment',
-                                    noPadding ? comment.reply_to : comment.id
-                                ),
-                        },
-                        [
-                            i('.icon-reply-outline'),
-                            span('.pl2.dn.dib-ns', ['Responder']),
-                        ]
-                    ),
-                    props.auth.user !== false &&
+                props.auth.user !== false &&
+                    div('.flex-shrink-0.ml2', [
+                        a(
+                            '.v-mid.pointer.reply-to',
+                            {
+                                className: classNames({
+                                    dn: isCurrentUsersComment,
+                                    dib: !isCurrentUsersComment,
+                                }),
+                                onClick: () =>
+                                    effects.replyFocus(
+                                        'comment',
+                                        noPadding
+                                            ? comment.reply_to
+                                            : comment.id
+                                    ),
+                            },
+                            [
+                                i('.icon-reply-outline'),
+                                span('.pl2.dn.dib-ns', t`Responder`),
+                            ]
+                        ),
                         div('.dib.v-mid.dropdown.dropdown-right', [
                             a(
                                 {
@@ -161,9 +175,30 @@ function CommentView({ comment, effects, ui, hashtables, ...props }) {
                                         ]
                                     )
                                 ),
+                                li(
+                                    '.menu-item',
+                                    {},
+                                    h(
+                                        Flag,
+                                        {
+                                            title: t`Reportar un comentario`,
+                                            comment,
+                                            onSend: form =>
+                                                effects.requestFlag({
+                                                    ...form,
+                                                    related_id: comment.id,
+                                                    related_to: 'comment',
+                                                }),
+                                        },
+                                        [
+                                            i('.mr1.icon-warning-empty'),
+                                            t`Reportar`,
+                                        ]
+                                    )
+                                ),
                             ]),
                         ]),
-                ]),
+                    ]),
             ]),
             div('.comment-body', { className: updating ? 'dn' : '' }, [
                 h(
@@ -180,10 +215,9 @@ function CommentView({ comment, effects, ui, hashtables, ...props }) {
                         div(
                             '.form-group',
                             {},
-                            h(RichTextEditor, {
-                                value: content,
+                            h(CommentEditor, {
                                 onChange: setContent,
-                                placeholder: 'Escribe aquí tu respuesta',
+                                content,
                             })
                         ),
                         div('.tr.mt2', [
@@ -208,15 +242,13 @@ function CommentView({ comment, effects, ui, hashtables, ...props }) {
             nested === false &&
                 div(
                     '.feedback',
-                    { className: updating ? 'dn' : '' },
-                    [h5('Esta respuesta fue considerada:')].concat(
-                        (category.reactions || []).map(r =>
-                            reactLink({
-                                type: r,
-                                icon: r,
-                                label: t`${r}`,
-                            })
-                        )
+                    { className: 'dn' },
+                    (category.reactions || []).map(r =>
+                        reactLink({
+                            type: r,
+                            icon: r,
+                            label: t`${r}`,
+                        })
                     )
                 ),
             repliesCount > 0 &&

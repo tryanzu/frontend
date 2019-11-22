@@ -1,5 +1,6 @@
 import h from 'react-hyperscript';
 import qs from 'query-string';
+import helpers from 'hyperscript-helpers';
 import { adminTools } from '../../acl';
 import { ago, t } from '../../i18n';
 import { withRouter, Link } from 'react-router-dom';
@@ -7,6 +8,9 @@ import { useState } from 'react';
 import { DebounceInput } from 'react-debounce-input';
 import { ConfigModal } from './configModal';
 import { UsersModal } from './usersModal';
+
+const tags = helpers(h);
+const { span, a, i, div } = tags;
 
 export const Navbar = withRouter(function Navbar(props) {
     const [config, setConfig] = useState(false);
@@ -19,17 +23,19 @@ export const Navbar = withRouter(function Navbar(props) {
         adminTools({ user }) &&
             h('header.navbar-tools.fade-in', [
                 h('nav', [
-                    h('div.flex-auto', {}, h('span', 'Gestión y Herramientas')),
-                    h('span.badge', 'Reportes'),
-                    h(
-                        'a.dn.dib-ns.ml3',
-                        { onClick: () => viewUsers(true) },
-                        'Gestión de usuarios'
-                    ),
-                    h(
-                        'a.dn.dib-ns.ml3.modal-link',
+                    div('.flex-auto', {}, span('Gestión y Herramientas')),
+                    a('.dn.dib-ns.ml3', { onClick: () => viewUsers(true) }, [
+                        i('.icon-contacts.mr1'),
+                        t`Reportes`,
+                    ]),
+                    a('.dn.dib-ns.ml3', { onClick: () => viewUsers(true) }, [
+                        i('.icon-users.mr1'),
+                        t`Gestión de usuarios`,
+                    ]),
+                    a(
+                        '.dn.dib-ns.ml3.modal-link',
                         { onClick: () => setConfig(true) },
-                        'Configuración'
+                        [i('.icon-cog.mr1'), t`Configuración`]
                     ),
                 ]),
             ]),
@@ -58,10 +64,7 @@ function LogoSection(props) {
     function onChange(event) {
         const search = event.target.value;
         setSearch(search);
-        props.history.push({
-            ...location,
-            search: `?${qs.stringify({ search })}`,
-        });
+        props.history.push(`/?${qs.stringify({ search })}`);
     }
     return h('section.navbar-section', [
         h(
@@ -77,9 +80,9 @@ function LogoSection(props) {
             id: 'search',
             type: 'search',
             value: search,
-            debounceTimeout: 200,
+            debounceTimeout: 600,
             minLength: 3,
-            placeholder: 'Buscar...',
+            placeholder: t`Buscar...`,
             onChange,
         }),
         h(DebounceInput, {
@@ -87,9 +90,9 @@ function LogoSection(props) {
             id: 'search',
             type: 'search',
             value: search,
-            debounceTimeout: 200,
+            debounceTimeout: 600,
             minLength: 3,
-            placeholder: 'Buscar publicaciones...',
+            placeholder: t`Buscar publicaciones...`,
             onChange,
         }),
     ]);
@@ -107,7 +110,7 @@ function NotificationsDropdown({ loading, list }) {
                   list.length === 0
                       ? h(
                             'p.tc.mv2',
-                            'No tienes ninguna notificación por el momento.'
+                            t`No tienes ninguna notificación por el momento.`
                         )
                       : list.map(n => {
                             return h(
@@ -197,7 +200,7 @@ function MobileSection({ user, image, state, effects }) {
                         [
                             image.length > 0 &&
                                 h('img', {
-                                    alt: `Avatar de ${user.username}`,
+                                    alt: t`Avatar de ${user.username}`,
                                     src: image,
                                 }),
                         ]
@@ -217,7 +220,7 @@ function MobileSection({ user, image, state, effects }) {
                         h(
                             Link,
                             { to: `/u/${user.username}/${user.id}` },
-                            'Ver mi perfil'
+                            t`Ver mi perfil`
                         )
                     ),
                     h('li.divider'),
@@ -227,7 +230,7 @@ function MobileSection({ user, image, state, effects }) {
                             {},
                             h('label.label.label-primary', user.gaming.swords)
                         ),
-                        h('a', 'Reputación'),
+                        h('a', t`Reputación`),
                     ]),
                     h('li.menu-item.cf', [
                         h(
@@ -235,13 +238,13 @@ function MobileSection({ user, image, state, effects }) {
                             {},
                             h('label.label.label-primary', user.gaming.tribute)
                         ),
-                        h('a', 'Tributo'),
+                        h('a', t`Tributo`),
                     ]),
                     h('li.divider'),
                     h(
                         'li.menu-item',
                         { onClick: () => effects.logout() },
-                        h('a.pointer', 'Salir de mi cuenta')
+                        h('a.pointer', t`Salir de mi cuenta`)
                     ),
                 ]),
                 user.validated == false &&
@@ -277,7 +280,7 @@ function MobileSection({ user, image, state, effects }) {
                                                 tab: 'login',
                                             }),
                                     },
-                                    'Iniciar sesión'
+                                    t`Iniciar sesión`
                                 )
                             ),
                             h(
@@ -292,7 +295,7 @@ function MobileSection({ user, image, state, effects }) {
                                                 tab: 'signup',
                                             }),
                                     },
-                                    'Únete'
+                                    t`Únete`
                                 )
                             ),
                         ])
@@ -323,7 +326,7 @@ function DesktopVersion({ user, image, state, effects }) {
                             }),
                         className: user !== false ? 'dn' : '',
                     },
-                    'Iniciar sesión'
+                    t`Iniciar sesión`
                 ),
                 h(
                     'a.link.pointer.btn.btn-link.modal-link.b',
@@ -341,7 +344,7 @@ function DesktopVersion({ user, image, state, effects }) {
                     h(
                         NotificationsLink,
                         { notifications, effects },
-                        'Notificaciones'
+                        t`Notificaciones`
                     ),
                 user !== false &&
                     h('a.link.pointer.btn.btn-link', [
@@ -393,23 +396,6 @@ function DesktopVersion({ user, image, state, effects }) {
                                     t`Ver mi perfil`
                                 )
                             ),
-                            /*h(
-                              'li.menu-item',
-                              h(
-                                  'a.link.ng-link.pointer',
-                                  { dataset: { href: '/medallas' } },
-                                  'Medallas'
-                              )
-                          ),
-                          h(
-                              'li.menu-item',
-                              h(
-                                  'a.link.ng-link.pointer',
-                                  { dataset: { href: '/top-ranking' } },
-                                  'Ranking de usuarios'
-                              )
-                          ),
-                          h('li.divider'),*/
                             h('li.menu-item.cf', [
                                 h(
                                     'div.menu-badge',
@@ -449,7 +435,7 @@ function DesktopVersion({ user, image, state, effects }) {
     );
 }
 
-function NeedAccountValidation({ effects }) {
+export function NeedAccountValidation({ effects }) {
     const [sending, setSending] = useState(false);
     function onClick() {
         if (sending) {
@@ -461,9 +447,10 @@ function NeedAccountValidation({ effects }) {
     return h('div.absolute.top-2.z-2.w5.right-0.toast.shadow.lh-copy.tl.pa3', [
         h('span.b', 'Acción necesaria'),
         h('p.mb1', [
-            'Enviamos a tu correo las instrucciones necesarias para validar tu cuenta. Obtén acceso completo al sitio y únete a la conversación.',
+            t`Enviamos a tu correo las instrucciones necesarias para validar tu cuenta. Obtén acceso completo al sitio y únete a la conversación.`,
         ]),
         sending === true && h('div.loading'),
-        sending === false && h('a', { onClick }, 'Reenviar correo electrónico'),
+        sending === false &&
+            h('a', { onClick }, t`Reenviar correo electrónico`),
     ]);
 }
