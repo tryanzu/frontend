@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import RichTextEditor from 'react-rte';
 import classNames from 'classnames';
 import h from 'react-hyperscript';
@@ -6,18 +6,24 @@ import helpers from 'hyperscript-helpers';
 import { t } from '../../i18n';
 import { ReplyAdvice } from './replyAdvice';
 import { AuthorAvatarLink } from './author';
+import { useStoredState } from '../../hooks';
 
 const tags = helpers(h);
 const { form, div, button } = tags;
 
 export function ReplyView(props) {
+    const { effects, auth, ui, type, id } = props;
+    const [markdown, setMarkdown] = useStoredState(
+        `markdown.${type}.${id}`,
+        ''
+    );
     const [editorState, setEditorState] = useState(
-        RichTextEditor.createEmptyValue
+        RichTextEditor.createValueFromString(markdown, 'markdown')
     );
     const [mobileEditorContent, setMobileContent] = useState('');
-    const { effects, auth, ui, type, id } = props;
     const { user } = auth;
     const nested = props.nested || false;
+
     async function onSubmit(event) {
         event.preventDefault();
         const markdown =
@@ -31,6 +37,16 @@ export function ReplyView(props) {
         setEditorState(RichTextEditor.createEmptyValue());
         setMobileContent('');
     }
+
+    useEffect(
+        () => {
+            const content = editorState.toString('markdown');
+            const sanitized = content.replace(/[^\x20-\x7E]/g, '');
+            setMarkdown(sanitized);
+        },
+        [editorState]
+    );
+
     return div(
         '.comment.reply.flex.fade-in.items-start',
         { className: classNames({ pb3: nested == false, pt3: nested }) },

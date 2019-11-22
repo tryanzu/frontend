@@ -132,4 +132,8 @@ export function channelToObs(socket, name = false) {
     };
 }
 
+export function glueEvent(event, params) {
+    return JSON.stringify({ event, params });
+}
+
 export const audio = new window.Audio('/assets/sounds/notification.mp3');

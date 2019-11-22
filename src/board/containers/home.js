@@ -10,7 +10,7 @@ import withState, { AuthContext } from '../fractals/auth';
 import { injectState } from 'freactal/lib/inject';
 import { Account } from '../components/account';
 import { ToastContainer } from 'react-toastify';
-import Chat from '../components/chat';
+import Chat from './chat';
 import { audio } from '../utils';
 
 // Default export has the injected auth state.

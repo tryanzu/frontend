@@ -1,6 +1,7 @@
 main.chat {
 	max-width: $layout-max-width;
 	width: 100%;
+	width: calc(100% - 2rem);
 	margin: 0 auto 1rem;
 	padding: 0;
 	background: $light-color;
@@ -124,6 +125,18 @@ main.chat {
 			i {
 				color: $gold-color;
 			}
+		}
+	}
+
+	.mentions .form-input__input {
+		width: 100% !important;
+		height: 100%;
+		border: 0;
+		padding: 0.35rem 0.4rem;
+
+		&:focus {
+			box-shadow: 0 0 0 0.1rem rgba(61, 90, 254, 0.2);
+			border-color: #3D5AFE !important;
 		}
 	}
 }

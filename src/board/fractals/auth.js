@@ -2,7 +2,7 @@ import React from 'react';
 import { provideState, update } from 'freactal';
 import { request } from '../../utils';
 import { kvReducer, jsonReq, channelToObs } from '../utils';
-import { glue } from '../../drivers/ext/glue';
+import glue from '../../drivers/ext/glue';
 import { fromObs } from 'callbag-basics';
 import { toast } from 'react-toastify';
 import { t, i18n } from '../../i18n';
@@ -80,6 +80,25 @@ function initialState() {
             confirmPassword: '',
         },
     };
+}
+
+function updateSiteConfig(effects, changes) {
+    const body = {
+        section: 'site',
+        changes,
+    };
+    return jsonReq(request('config', { method: 'PUT', body }))
+        .then(res => {
+            if (res.status === 'error') {
+                throw res.message;
+            }
+            toast.success(t`Configuration saved successfully`);
+            return state => state;
+        })
+        .catch(message => {
+            toast.error(t`${message}`);
+            return state => state;
+        });
 }
 
 function initialize(effects, props) {
@@ -669,7 +688,6 @@ export default provideState({
         performLogin,
         performSignup,
         change,
-        updateChatChannelConfig,
         requestValidationEmail,
         requestPasswordReset,
         requestFlag,
@@ -677,6 +695,8 @@ export default provideState({
         fetchRequest,
         fetchGamification,
         postNewAvatar,
+        updateChatChannelConfig,
+        updateSiteConfig,
         updateQuickstart,
         updateProfile,
         fetchCategories,
