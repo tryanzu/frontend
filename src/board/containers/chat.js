@@ -101,7 +101,7 @@ function Chat({ state, effects, match, history }) {
                                                 name: '',
                                                 description: '',
                                                 youtubeVideo: '',
-                                                twitchStreaming: '',
+                                                twitchVideo: '',
                                             },
                                             effects,
                                         },
@@ -248,7 +248,7 @@ function Chat({ state, effects, match, history }) {
                         ]),
                     ]),
                 ]),
-                (channel.youtubeVideo || channel.twitchStreaming) &&
+                (channel.youtubeVideo || channel.twitchVideo) &&
                     hideVideo === false &&
                     div(
                         '.ph3#video',
@@ -275,12 +275,12 @@ function Chat({ state, effects, match, history }) {
                                         },
                                     })
                                 ),
-                            channel.twitchStreaming != '' &&
+                            channel.twitchVideo != '' &&
                                 h(
                                     '.video-responsive.center',
                                     { style: { maxWidth: '70%' } },
                                     h(ReactTwitchEmbedVideo, {
-                                        channel: channel.twitchStreaming,
+                                        channel: channel.twitchVideo,
                                         autoplay,
                                         layout: 'video',
                                         muted: false,

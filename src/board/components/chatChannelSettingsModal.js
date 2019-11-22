@@ -16,22 +16,21 @@ export const ChatChannelSettings = withRouter(function ChatChannelSettings(
     const [enableYoutubeVideo, setEnableYoutubeVideo] = useState(
         !!channel.youtubeVideo
     );
-    const [enableTwitchStreaming, setEnableTwitchStreaming] = useState(
-        !!channel.twitchStreaming
+    const [enableTwitchVideo, setEnableTwitchVideo] = useState(
+        !!channel.twitchVideo
     );
     const [deleteChannel, setDeleteChannel] = useState(false);
     const [name, setName] = useState(channel.name);
     const [description, setDescription] = useState(channel.description);
     const [videoId, setVideoId] = useState(channel.youtubeVideo);
-    const [streamingName, setStreamingName] = useState(channel.twitchStreaming);
+    const [streamingName, setStreamingName] = useState(channel.twitchVideo);
     const disabled =
         (name == channel.name || !name) &&
         description == channel.description &&
         videoId == channel.youtubeVideo &&
-        streamingName == channel.twitchStreaming &&
+        streamingName == channel.twitchVideo &&
         (enableYoutubeVideo == !!channel.youtubeVideo || !videoId) &&
-        (enableTwitchStreaming == !!channel.twitchStreaming ||
-            !streamingName) &&
+        (enableTwitchVideo == !!channel.twitchVideo || !streamingName) &&
         !deleteChannel;
 
     async function onSubmit(event) {
@@ -44,7 +43,7 @@ export const ChatChannelSettings = withRouter(function ChatChannelSettings(
             name,
             description,
             youtubeVideo: enableYoutubeVideo ? videoId : '',
-            twitchStreaming: enableTwitchStreaming ? streamingName : '',
+            twitchVideo: enableTwitchVideo ? streamingName : '',
             deleted: deleteChannel === true,
         };
         const state = await effects.updateChatChannelConfig(channel, updated);
@@ -112,7 +111,7 @@ export const ChatChannelSettings = withRouter(function ChatChannelSettings(
                             ]),
                         ]),
                     deleteChannel === false &&
-                        enableTwitchStreaming === false &&
+                        enableTwitchVideo === false &&
                         div('.form-group', [
                             label('.b.form-switch.normal', [
                                 input({
@@ -151,17 +150,17 @@ export const ChatChannelSettings = withRouter(function ChatChannelSettings(
                                 input({
                                     type: 'checkbox',
                                     onChange: event =>
-                                        setEnableTwitchStreaming(
+                                        setEnableTwitchVideo(
                                             event.target.checked
                                         ),
-                                    checked: enableTwitchStreaming,
+                                    checked: enableTwitchVideo,
                                 }),
                                 i('.form-icon'),
                                 t`Directo de twitch`,
                             ]),
                         ]),
                     deleteChannel === false &&
-                        enableTwitchStreaming === true &&
+                        enableTwitchVideo === true &&
                         div('.form-group', [
                             label('.b.form-label', t`Nombre del canal`),
                             input('.form-input', {
