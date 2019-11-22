@@ -41,7 +41,6 @@ function Chat({ state, effects, match, history }) {
     const [counters, setCounters] = useState({});
     const auth = useContext(AuthContext);
     const { chat } = state;
-    const [twitchSource, setTwitchSource] = useState(false);
 
     useEffect(
         () => {
@@ -102,6 +101,7 @@ function Chat({ state, effects, match, history }) {
                                                 name: '',
                                                 description: '',
                                                 youtubeVideo: '',
+                                                twitchStreaming: '',
                                             },
                                             effects,
                                         },
@@ -226,20 +226,6 @@ function Chat({ state, effects, match, history }) {
                                         i('.form-icon'),
                                         t`Desactivar sonido`,
                                     ]),
-                                    channel.twitchStreaming != undefined &&
-                                        channel.twitchStreaming != '' &&
-                                        label('.form-switch.normal', [
-                                            input({
-                                                type: 'checkbox',
-                                                onChange: event =>
-                                                    setTwitchSource(
-                                                        event.target.checked
-                                                    ),
-                                                checked: twitchSource,
-                                            }),
-                                            i('.form-icon'),
-                                            t`Directo de twitch`,
-                                        ]),
                                     adminTools({ user: auth.auth.user }) &&
                                         h('.div', {}, [
                                             span('.b.db', t`Administración`),
@@ -262,7 +248,7 @@ function Chat({ state, effects, match, history }) {
                         ]),
                     ]),
                 ]),
-                channel.youtubeVideo &&
+                (channel.youtubeVideo || channel.twitchStreaming) &&
                     hideVideo === false &&
                     div(
                         '.ph3#video',
@@ -275,7 +261,7 @@ function Chat({ state, effects, match, history }) {
                             },
                         },
                         [
-                            twitchSource === false &&
+                            channel.youtubeVideo != '' &&
                                 h(
                                     '.video-responsive.center',
                                     { style: { maxWidth: '70%' } },
@@ -289,7 +275,7 @@ function Chat({ state, effects, match, history }) {
                                         },
                                     })
                                 ),
-                            twitchSource &&
+                            channel.twitchStreaming != '' &&
                                 h(
                                     '.video-responsive.center',
                                     { style: { maxWidth: '70%' } },

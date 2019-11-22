@@ -28,6 +28,7 @@ export const ChatChannelSettings = withRouter(function ChatChannelSettings(
         (name == channel.name || !name) &&
         description == channel.description &&
         videoId == channel.youtubeVideo &&
+        streamingName == channel.twitchStreaming &&
         (enableYoutubeVideo == !!channel.youtubeVideo || !videoId) &&
         (enableTwitchStreaming == !!channel.twitchStreaming ||
             !streamingName) &&
@@ -111,6 +112,7 @@ export const ChatChannelSettings = withRouter(function ChatChannelSettings(
                             ]),
                         ]),
                     deleteChannel === false &&
+                        enableTwitchStreaming === false &&
                         div('.form-group', [
                             label('.b.form-switch.normal', [
                                 input({
@@ -143,6 +145,7 @@ export const ChatChannelSettings = withRouter(function ChatChannelSettings(
                             ),
                         ]),
                     deleteChannel === false &&
+                        enableYoutubeVideo === false &&
                         div('.form-group', [
                             label('.b.form-switch.normal', [
                                 input({
