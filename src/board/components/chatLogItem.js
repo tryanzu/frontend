@@ -14,7 +14,9 @@ export const ChatLogItem = memo(function({ message }) {
             small('.time', [format(message.at, 'HH:mm')]),
         ]),
         div('.tile-content', [
-            div('.tile-title', [small('.text-bold.subtext', t`System message:`)]),
+            div('.tile-title', [
+                small('.text-bold.text-gray', t`System message:`),
+            ]),
             div(
                 '.tile-subtitle.mb1.text-small',
                 translate`${message.msg}`.fetch(...translated)

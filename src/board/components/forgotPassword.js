@@ -27,7 +27,7 @@ export function ForgotPassword({ state, effects }) {
                     t`Recupera el acceso a tu cuenta proporcionando el correo electrónico que usaste en tu registro.`
                 ),
                 div(
-                    '.error-message.pa2.mb2.f7.fade-in',
+                    '.bg-error.pa2.mb2.f7.fade-in',
                     { className: classNames({ dn: auth.error === false }) },
                     t`${auth.error}`
                 ),

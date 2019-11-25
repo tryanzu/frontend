@@ -124,7 +124,7 @@ function NotificationsDropdown({ loading, list }) {
                                     },
                                     [
                                         h('span.db.clean-styles', n.title),
-                                        h('span.db.subtext', n.subtitle),
+                                        h('span.db.text-gray', n.subtitle),
                                         h('span.db', ago(n.createdAt)),
                                     ]
                                 )

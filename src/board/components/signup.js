@@ -46,7 +46,7 @@ export function Signup({ state, effects }) {
                 div('.form-group.tc', t`ó crea una cuenta con tu correo`),
             form({ onSubmit }, [
                 div(
-                    '.error-message.pa2.mb2.f7.fade-in',
+                    '.bg-error.pa2.mb2.f7.fade-in',
                     { className: classNames({ dn: auth.error === false }) },
                     t`${auth.error}`
                 ),

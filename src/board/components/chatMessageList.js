@@ -81,7 +81,10 @@ export const ChatMessageList = memo(function(props) {
                         div('.tile-content', [
                             div('.tile-title.mb2', [
                                 span('.text-bold.text-primary', featured.from),
-                                span('.subtext.ml2', format(featured.at, 'HH:mm')),
+                                span(
+                                    '.text-gray.ml2',
+                                    format(featured.at, 'HH:mm')
+                                ),
                             ]),
                             div('.tile-subtitle', {}, [
                                 h(MemoizedBasicMarkdown, {

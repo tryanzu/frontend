@@ -53,7 +53,7 @@ export const ChatMessageItem = memo(function(props) {
                         { to: `/u/${message.from}/${message.userId}` },
                         span('.text-bold.text-primary', message.from)
                     ),
-                    span('.subtext.ml2', format(message.at, 'HH:mm')),
+                    span('.text-gray.ml2', format(message.at, 'HH:mm')),
                 ]),
             div('.tile-subtitle', {}, [
                 h(MemoizedBasicMarkdown, { content: message.msg, onImageLoad }),
