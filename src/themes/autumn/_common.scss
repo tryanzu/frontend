@@ -100,7 +100,7 @@ p.md p:last-child {
 }
 
 .gray {
-	color: $gray-color !important;
+	color: $gray-color-dark !important;
 }
 
 .b--light-gray {
@@ -125,9 +125,13 @@ p.md p:last-child {
 }
 
 .badge[data-badge]::after {
+	background: $gray-color-dark;
     font-size: 0.6rem;
     height: 0.8rem;
 	line-height: 0.6rem;
+}
+.badge.badge-inline::after {
+    transform: none;
 }
 
 .tab {

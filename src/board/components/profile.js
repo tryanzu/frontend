@@ -29,7 +29,7 @@ function Profile({ state, effects }) {
     const ends = lvl.swords_end || 0;
     const gap = ends - starts;
     const rest = ends - user.gaming.swords;
-    const gapPercent = Math.round(rest / gap * 10000) / 100;
+    const gapPercent = Math.round((rest / gap) * 10000) / 100;
     const { image, username } = user;
 
     function onDrop(acceptedFiles) {
