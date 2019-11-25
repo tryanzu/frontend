@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect, useContext } from 'react';
 import YouTube from 'react-youtube';
-import ReactTwitchEmbedVideo from 'react-twitch-embed-video';
+import twitch from 'react-twitch-embed-video';
 import classNames from 'classnames';
 import { Link } from 'react-router-dom';
 import h from 'react-hyperscript';
@@ -21,7 +21,7 @@ const tags = helpers(h);
 const { main, div, i, input, label } = tags;
 const { header, a, nav, section } = tags;
 const { h4, ul, li, p } = tags;
-const { h1, span, autoplay } = tags;
+const { h1, span } = tags;
 
 function Chat({ state, effects, match, history }) {
     const scrollLockRef = useRef(false);
@@ -279,9 +279,8 @@ function Chat({ state, effects, match, history }) {
                                 h(
                                     '.video-responsive.center',
                                     { style: { maxWidth: '70%' } },
-                                    h(ReactTwitchEmbedVideo, {
+                                    h(twitch, {
                                         channel: channel.twitchVideo,
-                                        autoplay,
                                         layout: 'video',
                                         muted: false,
                                         targetClass: 'twitch-embed',
