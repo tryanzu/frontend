@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect, useContext } from 'react';
 import YouTube from 'react-youtube';
+import twitch from 'react-twitch-embed-video';
 import classNames from 'classnames';
 import { Link } from 'react-router-dom';
 import h from 'react-hyperscript';
@@ -100,6 +101,7 @@ function Chat({ state, effects, match, history }) {
                                                 name: '',
                                                 description: '',
                                                 youtubeVideo: '',
+                                                twitchVideo: '',
                                             },
                                             effects,
                                         },
@@ -246,7 +248,7 @@ function Chat({ state, effects, match, history }) {
                         ]),
                     ]),
                 ]),
-                channel.youtubeVideo &&
+                (channel.youtubeVideo || channel.twitchVideo) &&
                     hideVideo === false &&
                     div(
                         '.ph3#video',
@@ -259,19 +261,31 @@ function Chat({ state, effects, match, history }) {
                             },
                         },
                         [
-                            h(
-                                '.video-responsive.center',
-                                { style: { maxWidth: '70%' } },
-                                h(YouTube, {
-                                    videoId: channel.youtubeVideo,
-                                    opts: {
-                                        playerVars: {
-                                            // https://developers.google.com/youtube/player_parameters
-                                            autoplay: 0,
+                            channel.youtubeVideo != '' &&
+                                h(
+                                    '.video-responsive.center',
+                                    { style: { maxWidth: '70%' } },
+                                    h(YouTube, {
+                                        videoId: channel.youtubeVideo,
+                                        opts: {
+                                            playerVars: {
+                                                // https://developers.google.com/youtube/player_parameters
+                                                autoplay: 0,
+                                            },
                                         },
-                                    },
-                                })
-                            ),
+                                    })
+                                ),
+                            channel.twitchVideo != '' &&
+                                h(
+                                    '.video-responsive.center',
+                                    { style: { maxWidth: '70%' } },
+                                    h(twitch, {
+                                        channel: channel.twitchVideo,
+                                        layout: 'video',
+                                        muted: false,
+                                        targetClass: 'twitch-embed',
+                                    })
+                                ),
                         ]
                     ),
                 h(ChatMessageList, {
