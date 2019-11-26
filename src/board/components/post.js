@@ -44,8 +44,8 @@ export function Post({ state, effects }) {
             post.loading === false &&
             post.id !== false &&
             h(PostView, { state, effects }),
-        footer('.pa3', [
-            small('.silver', [
+        footer('.pa3.text-gray', [
+            small([
                 t`Powered by anzu community software`,
                 ' ',
                 a(

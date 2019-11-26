@@ -162,7 +162,7 @@ function Profile({ state, effects }) {
                 ),
             //holi
             div('.mw5.mb3.center', [
-                i('.icon-crown.gold.f5'),
+                i('.icon-crown.f5'),
                 span('.db.mb2.f5', [
                     span('.b', number(user.gaming.swords)),
                     ' / reputación',

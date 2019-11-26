@@ -152,6 +152,10 @@ p.md p:last-child {
 	color: $light-color;	
 }
 
+.icon-crown{
+    color:  $gold-color !important;
+}
+
 @media (--breakpoint-medium){
 	.feed{
 	display: flex;

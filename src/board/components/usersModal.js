@@ -96,10 +96,10 @@ export function UsersModal({ state, effects, setOpen }) {
                                 '.dib.mr2',
                                 {},
                                 small(
-                                    '.bg-light-gray.br1.gray.ml2',
+                                    '.bg-light-gray.br1.text-gray.ml2',
                                     { style: { padding: '2px 5px' } },
                                     [
-                                        i('.icon-crown.gold'),
+                                        i('.icon-crown'),
                                         span(
                                             '.b',
                                             ' ' + String(user.gaming.swords)
@@ -108,7 +108,7 @@ export function UsersModal({ state, effects, setOpen }) {
                                 )
                             ),
                             span(
-                                '.ago.db.f7.gray.mt2',
+                                '.ago.db.f7.text-gray.mt2',
                                 t`Miembro desde hace` +
                                     ' ' +
                                     ago(user.created_at)
