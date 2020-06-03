@@ -729,6 +729,21 @@ export default provideState({
                 );
             };
         },
+        getPrivateChannel({ auth }) {
+            return channel => {
+                if (!auth.user) {
+                    return false;
+                }
+                if (!channel.startsWith('u:')) {
+                    return false;
+                }
+                const ids = [channel.substr(2), auth.user.id].sort();
+                return {
+                    name: `u:${ids[0]}:${ids[1]}`,
+                    label: t`Canal de conversación privado`,
+                };
+            };
+        },
         chat({ site }) {
             return {
                 channels: new window.Map(

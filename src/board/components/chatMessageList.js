@@ -22,40 +22,36 @@ export const ChatMessageList = memo(function(props) {
     const [, { pingNotification }] = useTitleNotification();
     const [loading, setLoading] = useState(false);
     const chan = channel.name;
-
-    useEffect(
-        () => {
-            // This side effect will be executed every time a channel is load.
-            // So in short it clears the message list state and subscribes to
-            // the events stream.
-            setList([]);
-            setFeatured(false);
-            setLoading(true);
-            // Reactive message list from our chat source.
-            const dispose = streamChatChannel(
-                { realtime: state.realtime, chan },
-                ({ list, starred }) => {
-                    setList(lockRef.current ? list : list.slice(-50));
-                    setFeatured(starred.length > 0 && starred[0]);
-                    setLoading(false);
-                    if (soundRef.current === false) {
-                        pingNotification();
-                    }
-                    if (lockRef.current) {
-                        return;
-                    }
-                    window.requestAnimationFrame(() => {
-                        if (bottomRef.current) {
-                            bottomRef.current.scrollIntoView({});
-                        }
-                    });
+    useEffect(() => {
+        // This side effect will be executed every time a channel is load.
+        // So in short it clears the message list state and subscribes to
+        // the events stream.
+        setList([]);
+        setFeatured(false);
+        setLoading(true);
+        // Reactive message list from our chat source.
+        const dispose = streamChatChannel(
+            { realtime: state.realtime, chan },
+            ({ list, starred }) => {
+                setList(lockRef.current ? list : list.slice(-50));
+                setFeatured(starred.length > 0 && starred[0]);
+                setLoading(false);
+                if (soundRef.current === false) {
+                    pingNotification();
                 }
-            );
-            // Unsubscribe will be called at unmount.
-            return dispose;
-        },
-        [chan]
-    );
+                if (lockRef.current) {
+                    return;
+                }
+                window.requestAnimationFrame(() => {
+                    if (bottomRef.current) {
+                        bottomRef.current.scrollIntoView({});
+                    }
+                });
+            }
+        );
+        // Unsubscribe will be called at unmount.
+        return dispose;
+    }, [chan]);
 
     return div('.flex-auto.overflow-y-scroll.relative', [
         loading && div('.loading.loading-lg.mt2'),
