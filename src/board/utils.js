@@ -15,7 +15,11 @@ function linkSupport(props) {
     return props.href.match(/^(https?:)?\/\//)
         ? h(
               'a',
-              { href: props.href, target: 'blank', rel: 'noopener noreferrer' },
+              {
+                  href: props.href,
+                  target: '_blank',
+                  rel: 'noopener noreferrer',
+              },
               props.children
           )
         : h(Link, { to: props.href }, props.children);
@@ -84,17 +88,15 @@ export function kvReducer(obj) {
 }
 
 export function jsonReq(req) {
-    return req
-        .then(response => response.json())
-        .then(response => {
-            const status = response.status || 'okay';
-            const message =
-                response.message || 'Invalid response, check network requests.';
-            if (status !== 'okay') {
-                throw message;
-            }
-            return response;
-        });
+    return req.then(response => response.json()).then(response => {
+        const status = response.status || 'okay';
+        const message =
+            response.message || 'Invalid response, check network requests.';
+        if (status !== 'okay') {
+            throw message;
+        }
+        return response;
+    });
 }
 
 function socketEvent(event, params) {

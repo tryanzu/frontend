@@ -491,11 +491,8 @@ function updateChatChannelConfig(effects, channel, updated) {
                 }
                 return list.concat(updated);
             }
-            return list.map(
-                item =>
-                    item.name === channel.name
-                        ? { ...channel, ...updated }
-                        : item
+            return list.map(item =>
+                item.name === channel.name ? { ...channel, ...updated } : item
             );
         })
         .then(updated => {
@@ -718,6 +715,11 @@ export default provideState({
         },
         authenticated({ auth }) {
             return auth.user !== false && auth.loading === false;
+        },
+        isOwner({ auth }) {
+            return id => {
+                return auth.user !== false && auth.user.id == id;
+            };
         },
         canUpdate({ auth }) {
             return id => {

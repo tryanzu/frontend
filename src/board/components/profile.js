@@ -42,6 +42,8 @@ function Profile({ state, effects }) {
     }
 
     const editable = state.canUpdate(user.id);
+    const owner = state.isOwner(user.id);
+
     return main('.profile.flex-auto', [
         section('.fade-in.tc', [
             editable &&
@@ -156,11 +158,11 @@ function Profile({ state, effects }) {
                 ),
             editable &&
                 !user.description &&
+                owner &&
                 div(
                     '.toast.toast-warning.measure-wide.center.lh-copy.mv3',
                     t`Aún no has escrito tu biografía. Ayuda a otros a conocer sobre ti escribiendo una en tu perfil.`
                 ),
-            //holi
             div('.mw5.mb3.center', [
                 i('.icon-crown.f5'),
                 span('.db.mb2.f5', [
