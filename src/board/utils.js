@@ -139,3 +139,4 @@ export function glueEvent(event, params) {
 }
 
 export const audio = new window.Audio('/assets/sounds/notification.mp3');
+export const chatAudio = new window.Audio('/assets/sounds/chat.mp3');

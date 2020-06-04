@@ -1,19 +1,21 @@
 import { useEffect } from 'react';
 import useWindowVisibility from './useWindowVisibility';
-import { audio } from '../board/utils';
+import { audio, chatAudio } from '../board/utils';
 
-export default function useTitleNotification() {
+const sounds = {
+    default: audio,
+    chat: chatAudio,
+};
+
+export default function useTitleNotification({ type = 'default' }) {
     const [isWindowActive, isWindowActiveRef] = useWindowVisibility();
 
     // Reset notification title as needed.
-    useEffect(
-        () => {
-            if (isWindowActive && document.title.substr(0, 3) === '(*)') {
-                document.title = document.title.substr(4);
-            }
-        },
-        [isWindowActive]
-    );
+    useEffect(() => {
+        if (isWindowActive && document.title.substr(0, 3) === '(*)') {
+            document.title = document.title.substr(4);
+        }
+    }, [isWindowActive]);
 
     function pingNotification() {
         if (!isWindowActiveRef.current) {
@@ -21,7 +23,7 @@ export default function useTitleNotification() {
                 document.title.substr(0, 3) === '(*)'
                     ? document.title
                     : `(*) ${document.title}`;
-            audio.play();
+            sounds[type].play();
         }
     }
 
