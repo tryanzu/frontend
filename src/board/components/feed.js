@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 import { withRouter } from 'react-router-dom';
 import { throttle } from 'lodash';
 import { differenceInMinutes } from 'date-fns';
+import { AuthorOptionsMenu } from './authorOptionsMenu';
 
 const throttledFeedScroll = throttle(function onScroll(bottomReached, effects) {
     if (bottomReached) {
@@ -224,16 +225,7 @@ function FeedItem(props) {
                             ])
                         ),
                         h('div', [
-                            h(
-                                Link,
-                                {
-                                    to: `/u/${author.username}/${author.id}`,
-                                    rel: 'author',
-                                    style: { display: 'inline' },
-                                    onClick: event => event.stopPropagation(),
-                                },
-                                h('span', {}, author.username)
-                            ),
+                            h(AuthorOptionsMenu, { author }),
                             h(
                                 'span.ago.f7',
                                 {},
