@@ -73,7 +73,7 @@ function PostError(/*{ status }*/) {
 export default injectState(Post);
 
 function PostView({ state, effects }) {
-    const { post } = state;
+    const { post, authenticated } = state;
     const [updating, setUpdating] = useState(false);
 
     return div('.current-article.flex-auto', [
@@ -82,7 +82,7 @@ function PostView({ state, effects }) {
                 div(
                     '.flex-auto',
                     {},
-                    h(Author, { item: post.data }, [
+                    h(Author, { item: post.data, authenticated }, [
                         div('.b', [
                             span('.icon.icon-eye-outline.mr1'),
                             String(post.data.views),
@@ -498,6 +498,7 @@ function RegularPostView({ state, effects }) {
                           hashtables: comments.hashtables,
                           ui: state.ui,
                           auth: state.auth,
+                          authenticated: state.authenticated,
                           mentionable: state.mentionable,
                           effects,
                       });

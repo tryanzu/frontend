@@ -104,6 +104,7 @@ function CommentView({ comment, effects, ui, hashtables, ...props }) {
                         label: t`Comentó`,
                         noAvatar: nested,
                         className: 'flex-auto',
+                        authenticated: props.authenticated,
                     }),
                 ]),
                 props.auth.user !== false &&
@@ -140,7 +141,8 @@ function CommentView({ comment, effects, ui, hashtables, ...props }) {
                                 h('i.icon-menu.f7')
                             ),
                             ul('.menu', { style: { width: '200px' } }, [
-                                (adminTools({user}) || (props.auth.user.id === comment.user_id)) &&
+                                (adminTools({ user }) ||
+                                    props.auth.user.id === comment.user_id) &&
                                     li(
                                         '.menu-item',
                                         {},
@@ -157,7 +159,8 @@ function CommentView({ comment, effects, ui, hashtables, ...props }) {
                                             ]
                                         )
                                     ),
-                                (adminTools({user}) || (props.auth.user.id === comment.user_id)) &&
+                                (adminTools({ user }) ||
+                                    props.auth.user.id === comment.user_id) &&
                                     li(
                                         '.menu-item',
                                         {},
@@ -179,7 +182,8 @@ function CommentView({ comment, effects, ui, hashtables, ...props }) {
                                             ]
                                         )
                                     ),
-                                (adminTools({user}) || (props.auth.user.id !== comment.user_id)) &&
+                                (adminTools({ user }) ||
+                                    props.auth.user.id !== comment.user_id) &&
                                     li(
                                         '.menu-item',
                                         {},

@@ -16,7 +16,7 @@ const throttledFeedScroll = throttle(function onScroll(bottomReached, effects) {
 }, 200);
 
 export function Feed({ state, effects }) {
-    const { feed, subcategories, categories } = state;
+    const { feed, subcategories, categories, authenticated } = state;
     const { list } = feed;
     function onScroll(e) {
         const bottomReached =
@@ -103,6 +103,7 @@ export function Feed({ state, effects }) {
                         draft && draft.value && draft.value.length > 0;
                     return h(MemoFeedItem, {
                         key: post.id,
+                        authenticated,
                         post,
                         hasDraft,
                         active: state.post.id === post.id,
@@ -145,7 +146,15 @@ export function Feed({ state, effects }) {
 const MemoFeedItem = memo(withRouter(FeedItem));
 
 function FeedItem(props) {
-    const { post, subcategories, recent, active, history, hasDraft } = props;
+    const {
+        post,
+        subcategories,
+        recent,
+        active,
+        history,
+        hasDraft,
+        authenticated,
+    } = props;
     const { author } = post;
     const { count } = post.comments;
     const href = `/p/${post.slug}/${post.id}`;
@@ -198,34 +207,22 @@ function FeedItem(props) {
                         )
                     ),
                     h('div.author', [
-                        h(
-                            Link,
-                            {
-                                to: `/u/${author.username}/${author.id}`,
-                                rel: 'author',
-                                onClick: event => event.stopPropagation(),
-                            },
-                            h('figure.avatar', [
-                                author.image
-                                    ? h('img', {
-                                          src: author.image,
-                                          alt: `Avatar de ${author.username}`,
-                                      })
-                                    : h(
-                                          'div.empty-avatar',
-                                          {},
-                                          author.username.substr(0, 1)
-                                      ),
-                                h('i.avatar-presence', {
-                                    className: classNames({
-                                        online: lastSeen < 15,
-                                        away: lastSeen >= 15 && lastSeen < 30,
-                                    }),
-                                }),
-                            ])
-                        ),
+                        h(AuthorOptionsMenu, {
+                            author,
+                            lastSeen,
+                            authenticated,
+                        }),
                         h('div', [
-                            h(AuthorOptionsMenu, { author }),
+                            h(
+                                Link,
+                                {
+                                    to: `/u/${author.username}/${author.id}`,
+                                    rel: 'author',
+                                    style: { display: 'inline' },
+                                    onClick: event => event.stopPropagation(),
+                                },
+                                h('span', {}, author.username)
+                            ),
                             h(
                                 'span.ago.f7',
                                 {},
