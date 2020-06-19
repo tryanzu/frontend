@@ -18,6 +18,7 @@ export function AuthorOptionsMenu({ author, bold = false }) {
                         {
                             to: `/u/${author.username}/${author.id}`,
                             rel: 'author',
+                            onClick: event => event.stopPropagation(),
                         },
                         [i('.mr1.icon-user'), t`Ver perfil`]
                     ),
@@ -28,6 +29,7 @@ export function AuthorOptionsMenu({ author, bold = false }) {
                         {
                             to: `/chat/u:${author.id}`,
                             rel: 'author',
+                            onClick: event => event.stopPropagation(),
                         },
                         [i('.mr1.icon-chat-alt'), t`Chat privado`]
                     ),
