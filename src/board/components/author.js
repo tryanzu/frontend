@@ -4,8 +4,9 @@ import classNames from 'classnames';
 import { t, dateToString } from '../../i18n';
 import { Link } from 'react-router-dom';
 import { differenceInMinutes } from 'date-fns';
+import { AuthorOptionsMenu } from './authorOptionsMenu';
 
-const { div, img, span, p, time, figure } = helpers(h);
+const { div, img, p, time, figure } = helpers(h);
 
 export function AuthorAvatarLink({ user }) {
     return h(Link, { to: `/u/${user.username}/${user.id}`, rel: 'author' }, [
@@ -29,41 +30,33 @@ export function Author({ item, ...props }) {
     const lastSeen = lastSeenAt
         ? differenceInMinutes(new Date(), lastSeenAt)
         : 1000;
-    return h(
-        Link,
-        {
-            to: `/u/${author.username}/${author.id}`,
-            rel: 'author',
-            className: props.className || '',
-        },
-        [
-            noAvatar === false &&
-                figure('.avatar', [
-                    author.image
-                        ? h('img', {
-                              src: author.image,
-                              alt: `Avatar de ${author.username}`,
-                          })
-                        : h(
-                              'div.empty-avatar',
-                              {},
-                              author.username.substr(0, 1)
-                          ),
-                    h('i.avatar-presence', {
-                        className: classNames({
-                            online: lastSeen < 15,
-                            away: lastSeen >= 15 && lastSeen < 30,
-                        }),
+    return h('div.flex.items-center', [
+        noAvatar === false &&
+            figure('.avatar', [
+                author.image
+                    ? h('img', {
+                          src: author.image,
+                          alt: `Avatar de ${author.username}`,
+                      })
+                    : h(
+                          'div.empty-avatar.h-100.flex.items-center.justify-center',
+                          {},
+                          author.username.substr(0, 1)
+                      ),
+                h('i.avatar-presence', {
+                    className: classNames({
+                        online: lastSeen < 15,
+                        away: lastSeen >= 15 && lastSeen < 30,
                     }),
-                ]),
-            div('.flex-auto', [
-                span('.b', [author.username]),
-                author.description && p('.mb0.bio', author.description || ''),
+                }),
             ]),
-            time('.flex-auto.text-right', [
-                dateToString(item.created_at, 'D MMMM YYYY HH:mm'),
-                props.children || false,
-            ]),
-        ]
-    );
+        div('.flex-auto.mh1', [
+            h(AuthorOptionsMenu, { author, bold: true }),
+            author.description && p('.mb0.bio', author.description || ''),
+        ]),
+        time('.flex-auto.text-right', [
+            dateToString(item.created_at, 'D MMMM YYYY HH:mm'),
+            props.children || false,
+        ]),
+    ]);
 }

@@ -63,6 +63,17 @@ p.md p:last-child {
 	min-width: 210px;
 }
 
+.popover .popover-container {
+	width: 210px;
+}
+
+.card .card-body {
+	padding: .25rem;
+	&:last-child {
+		padding: .25rem;
+	}
+}
+
 .btn-icon {
 	border: 1px solid $gray-color;
 	border-radius: .125rem;
