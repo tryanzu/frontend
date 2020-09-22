@@ -36,6 +36,7 @@ module.exports = {
         Tribute: true,
         Promise: true,
         document: true,
+        CURRENT_VERSION: true,
     },
     parser: 'babel-eslint',
     parserOptions: { ecmaVersion: 2020, sourceType: 'module' },

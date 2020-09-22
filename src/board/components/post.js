@@ -50,7 +50,7 @@ export function Post({ state, effects }) {
                 ' ',
                 a(
                     { href: 'https://github.com/tryanzu', target: '_blank' },
-                    t`v0.1 alpha`
+                    `v${CURRENT_VERSION}`
                 ),
             ]),
         ]),

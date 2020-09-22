@@ -1,3 +1,4 @@
+const webpack = require('webpack');
 const path = require('path');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
@@ -26,6 +27,9 @@ module.exports = {
     // },
     plugins: [
         //new CleanWebpackPlugin(),
+        new webpack.DefinePlugin({
+            CURRENT_VERSION: JSON.stringify(process.env.npm_package_version),
+        }),
         new MiniCssExtractPlugin({
             // Options similar to the same options in webpackOptions.output
             // both options are optional
