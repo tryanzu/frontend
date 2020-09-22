@@ -32,12 +32,9 @@ export default function useWindowVisibility() {
         };
     }, []);
 
-    useEffect(
-        () => {
-            activeRef.current = windowIsActive;
-        },
-        [windowIsActive]
-    );
+    useEffect(() => {
+        activeRef.current = windowIsActive;
+    }, [windowIsActive]);
 
     return [windowIsActive, activeRef];
 }

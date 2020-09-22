@@ -37,5 +37,6 @@ module.exports = {
         Promise: true,
         document: true,
     },
-    parserOptions: { ecmaVersion: 2018, sourceType: 'module' },
+    parser: 'babel-eslint',
+    parserOptions: { ecmaVersion: 2020, sourceType: 'module' },
 };

@@ -38,14 +38,11 @@ export function ReplyView(props) {
         setMobileContent('');
     }
 
-    useEffect(
-        () => {
-            const content = editorState.toString('markdown');
-            const sanitized = content.replace(/[^\x20-\x7E]/g, '');
-            setMarkdown(sanitized);
-        },
-        [editorState]
-    );
+    useEffect(() => {
+        const content = editorState.toString('markdown');
+        const sanitized = content.replace(/[^\x20-\x7E]/g, '');
+        setMarkdown(sanitized);
+    }, [editorState]);
 
     return div(
         '.comment.reply.flex.fade-in.items-start',

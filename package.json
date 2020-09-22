@@ -1,7 +1,7 @@
 {
   "name": "anzu.frontend",
   "version": "0.1.0",
-  "description": "Anzu forums system frontend.",
+  "description": "The next generation community-engine. frontend",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tryanzu/frontend.git"
@@ -14,7 +14,9 @@
   "homepage": "https://github.com/tryanzu/frontend#readme",
   "scripts": {
     "start": "webpack --watch --config webpack.dev.js",
-    "build": "webpack --config webpack.prod.js"
+    "build": "webpack --config webpack.prod.js",
+    "release": "release-it --preRelease=alpha --no-npm.publish",
+    "eslint": "node_modules/eslint/bin/eslint.js src/."
   },
   "dependencies": {
     "@types/history": "^4.7.5",
@@ -64,7 +66,9 @@
   "devDependencies": {
     "@babel/core": "^7.9.0",
     "@babel/plugin-proposal-class-properties": "^7.8.3",
-    "@babel/preset-env": "^7.9.0",
+    "@babel/preset-env": "^7.11.5",
+    "@release-it/conventional-changelog": "^2.0.0",
+    "babel-eslint": "^10.1.0",
     "babel-loader": "^8.1.0",
     "babel-minify-webpack-plugin": "^0.3.1",
     "babel-preset-env": "^1.7.0",
@@ -80,6 +84,7 @@
     "mini-css-extract-plugin": "^0.8.2",
     "node-sass": "^4.13.1",
     "prettier": "^1.19.1",
+    "release-it": "^14.0.3",
     "sass-loader": "^8.0.2",
     "style-loader": "^1.1.3",
     "terser-webpack-plugin": "^2.3.5",
@@ -87,5 +92,18 @@
     "webpack-cli": "^3.3.11",
     "webpack-merge": "^4.2.2",
     "ws": "^7.2.3"
+  },
+  "release-it": {
+    "hooks": {
+      "before:init": [
+        "npm run eslint"
+      ]
+    },
+    "plugins": {
+      "@release-it/conventional-changelog": {
+        "preset": "angular",
+        "infile": "CHANGELOG.md"
+      }
+    }
   }
 }

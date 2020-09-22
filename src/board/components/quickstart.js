@@ -173,8 +173,8 @@ export function Quickstart({ state, effects }) {
                             effects,
                             onUpdate: link => {
                                 onUpdate({
-                                    links: links.map(
-                                        (one, k) => (k === index ? link : one)
+                                    links: links.map((one, k) =>
+                                        k === index ? link : one
                                     ),
                                 });
                             },

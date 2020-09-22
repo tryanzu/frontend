@@ -141,12 +141,9 @@ function PostContent({ effects, state }) {
         return RichTextEditor.createValueFromString(markdown, 'markdown');
     });
 
-    useEffect(
-        () => {
-            setMarkdown(editor.toString('markdown'));
-        },
-        [editor]
-    );
+    useEffect(() => {
+        setMarkdown(editor.toString('markdown'));
+    }, [editor]);
 
     useEffect(() => {
         return () => {
