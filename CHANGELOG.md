@@ -1,3 +1,5 @@
+# [1.0.0-alpha.2](https://github.com/tryanzu/frontend/compare/v1.0.0-alpha.1...v1.0.0-alpha.2) (2020-09-22)
+
 # [1.0.0-alpha.1](https://github.com/tryanzu/frontend/compare/v0.1.0...v1.0.0-alpha.1) (2020-09-22)
 
 
