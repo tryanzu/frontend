@@ -94,6 +94,12 @@
     "ws": "^7.2.3"
   },
   "release-it": {
+    "git": {
+      "commitMessage": "chore: release v${version}"
+    },
+    "github": {
+      "release": true
+    },
     "hooks": {
       "before:init": [
         "npm run eslint"
