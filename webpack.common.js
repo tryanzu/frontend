@@ -25,6 +25,9 @@ module.exports = {
     //         },
     //     },
     // },
+    resolve: {
+        fallback: { path: require.resolve('path-browserify') },
+    },
     plugins: [
         //new CleanWebpackPlugin(),
         new webpack.DefinePlugin({
@@ -51,7 +54,12 @@ module.exports = {
             {
                 test: /\.s[ac]ss$/i,
                 use: [
-                    MiniCssExtractPlugin.loader,
+                    {
+                        loader: MiniCssExtractPlugin.loader,
+                        options: {
+                            publicPath: '',
+                        },
+                    },
                     // Translates CSS into CommonJS
                     'css-loader',
                     // Compiles Sass to CSS
