@@ -41,14 +41,16 @@ export function Author({ item, authenticated, ...props }) {
                         rel: 'author',
                         style: { display: 'inline' },
                     },
-                    h('span.b', {}, author.username)
+                    [
+                        h('span.b', {}, author.username),
+                        time('.flex-auto.text-right.ml2.text-dark', [
+                            dateToString(item.created_at, 'D MMMM YYYY HH:mm'),
+                        ]),
+                    ]
                 ),
             ]),
             author.description && p('.mb0.bio', author.description || ''),
         ]),
-        time('.flex-auto.text-right', [
-            dateToString(item.created_at, 'D MMMM YYYY HH:mm'),
-            props.children || false,
-        ]),
+        h('span.flex-auto', props.children || false),
     ]);
 }
