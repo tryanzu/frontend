@@ -94,12 +94,16 @@
 
 	& .feedback a {
 		margin: 0 10px;
-		font-size: 14px;
+		font-size: 18px;
+		line-height: 18px;
 		color: $dark-color;
 		cursor: pointer;
-
+		& .icon {
+			margin-right: 0.5rem;
+		}
 		& .type {
 			padding: 0 0.5rem;
+			display: none;
 		}
 
 		&:last-child {

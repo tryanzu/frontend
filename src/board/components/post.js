@@ -49,7 +49,7 @@ export function Post({ state, effects }) {
                 t`Powered by anzu community software`,
                 ' ',
                 a(
-                    { href: 'https://github.com/tryanzu', target: '_blank' },
+                    { href: 'https://tryanzu.com', target: '_blank' },
                     `v${CURRENT_VERSION}`
                 ),
             ]),
