@@ -1,4 +1,4 @@
-import { Fragment, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import h from 'react-hyperscript';
 import helpers from 'hyperscript-helpers';
 import Dropzone from 'react-dropzone';
@@ -14,9 +14,16 @@ const { main, div, section } = tags;
 const { figure, article, a, img } = tags;
 const { h3, h1, span, p, i, input, button } = tags;
 
-function Profile({ state, effects }) {
+function Profile({ match, state, effects }) {
     const { profile, auth, gamification, comments, posts } = state;
     const user = profile.id === auth.user.id ? auth.user : profile.data;
+
+    // Sync profile state on id change.
+    useEffect(() => {
+        if (match.params.id) {
+            effects.syncProfile(match.params.id);
+        }
+    }, [match.params.id]);
 
     // Loading state.
     if (profile.loading || profile.id === false) {

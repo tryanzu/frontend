@@ -25,10 +25,6 @@ function initialState() {
 }
 
 async function initialize(effects, props) {
-    const userId = props.match.params.id || false;
-    if (userId) {
-        await effects.syncProfile(userId);
-    }
     return state => state;
 }
 

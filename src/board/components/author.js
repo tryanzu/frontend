@@ -51,6 +51,6 @@ export function Author({ item, authenticated, ...props }) {
             ]),
             author.description && p('.mb0.bio', author.description || ''),
         ]),
-        h('span.flex-auto', props.children || false),
+        h('span.flex-auto.text-right', {}, props.children || false),
     ]);
 }
