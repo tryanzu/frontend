@@ -130,6 +130,26 @@ function Profile({ match, state, effects }) {
                     },
                     p('.flex-auto', user.email)
                 ),
+            editable &&
+                h(
+                    'div.form-group.center',
+                    { style: { maxWidth: 400 } },
+                    h('label.form-switch', [
+                        input({
+                            type: 'checkbox',
+                            defaultChecked: user.emailNotifications || false,
+                            onChange: event => {
+                                effects.updateCurrentProfile({
+                                    emailNotifications: String(
+                                        event.target.checked
+                                    ),
+                                });
+                            },
+                        }),
+                        i('.form-icon'),
+                        t`Recibir notificaciones por correo electrónico`,
+                    ])
+                ),
             h(
                 UpdatableProfileField,
                 {

@@ -24,10 +24,6 @@ function initialState() {
     };
 }
 
-async function initialize(effects, props) {
-    return state => state;
-}
-
 function initProfile(_, id = false) {
     return state => ({
         ...state,
@@ -149,7 +145,6 @@ async function fetchProfile(effects, id) {
 
 export default provideState({
     effects: {
-        initialize,
         initProfile,
         fetchProfile,
         syncProfile,
