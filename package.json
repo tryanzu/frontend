@@ -94,7 +94,7 @@
     "webpack-cli": "^4.2.0",
     "webpack-merge": "^5.7.2",
     "webpack-plugin-modern-npm": "^0.1.0",
-    "ws": "^7.2.3"
+    "ws": "^7.4.5"
   },
   "release-it": {
     "git": {
