@@ -8,6 +8,7 @@ import { withRouter } from 'react-router-dom';
 import { throttle } from 'lodash';
 import { differenceInMinutes } from 'date-fns';
 import { AuthorOptionsMenu } from './authorOptionsMenu';
+import { getLocalValue } from '../utils';
 
 const throttledFeedScroll = throttle(function onScroll(bottomReached, effects) {
     if (bottomReached) {
@@ -95,7 +96,7 @@ export function Feed({ state, effects }) {
             { onScroll },
             list
                 .map(post => {
-                    const localDraft = window.localStorage.getItem(
+                    const localDraft = getLocalValue(
                         `anzu.markdown.post.${post.id}`
                     );
                     const draft = localDraft && JSON.parse(localDraft);
