@@ -11,6 +11,15 @@ function emojiSupport(props) {
     );
 }
 
+export function getLocalValue(key) {
+    try {
+        return window.localStorage.getItem(key);
+    } catch (error) {
+        console.error(error);
+    }
+    return '';
+}
+
 function linkSupport(props) {
     return props.href.match(/^(https?:)?\/\//)
         ? h(

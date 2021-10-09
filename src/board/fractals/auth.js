@@ -1,7 +1,7 @@
 import React from 'react';
 import { provideState, update } from 'freactal';
 import { request } from '../../utils';
-import { kvReducer, jsonReq, channelToObs } from '../utils';
+import { kvReducer, jsonReq, channelToObs, getLocalValue } from '../utils';
 import glue from '../../drivers/ext/glue';
 import { fromObs } from 'callbag-basics';
 import { toast } from 'react-toastify';
@@ -110,7 +110,7 @@ function updateCategories(effects, categories) {
 
 function initialize(effects, props) {
     const _auth = props.auth || {};
-    const session = JSON.parse(window.localStorage.getItem('_auth') || '{}');
+    const session = JSON.parse(getLocalValue('_auth') || '{}');
     const auth = { ..._auth, ...session };
     const finalReducer = state => ({ ...state, init: true });
     const loadGamification = Promise.all([
