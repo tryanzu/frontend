@@ -42,7 +42,7 @@
     "number-format.js": "^1.1.11",
     "os": "^0.1.1",
     "process": "^0.11.10",
-    "qs": "^6.9.3",
+    "qs": "^6.9.7",
     "query-string": "^5.1.1",
     "react": "^16.13.1",
     "react-autosize-textarea": "^6.0.0",
