@@ -50,7 +50,7 @@
 		border-radius: 2px;
 
 		&:focus {
-			border-color: color(var(--primaryColor) whiteness(25%));
+			border-color: var(--primaryColor);
 		}
 	}
 
