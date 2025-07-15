@@ -12,6 +12,7 @@ module.exports = {
     output: {
         path: path.resolve(__dirname, 'public/dist'),
         filename: '[name].bundle.js',
+        hashFunction: 'sha256',
     },
     // optimization: {
     //     splitChunks: {
