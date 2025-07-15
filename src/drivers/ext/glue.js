@@ -30,7 +30,7 @@ var glue = function(host, options) {
     function Emitter(obj) {
         if (obj) return mixin(obj);
     }
-    
+
     /**
      * Mixin the emitter properties.
      *
@@ -38,14 +38,14 @@ var glue = function(host, options) {
      * @return {Object}
      * @api private
      */
-    
+
     function mixin(obj) {
         for (var key in Emitter.prototype) {
-        obj[key] = Emitter.prototype[key];
+            obj[key] = Emitter.prototype[key];
         }
         return obj;
     }
-    
+
     /**
      * Listen on the given `event` with `fn`.
      *
@@ -54,15 +54,17 @@ var glue = function(host, options) {
      * @return {Emitter}
      * @api public
      */
-    
-    Emitter.prototype.on =
-    Emitter.prototype.addEventListener = function(event, fn){
+
+    Emitter.prototype.on = Emitter.prototype.addEventListener = function(
+        event,
+        fn
+    ) {
         this._callbacks = this._callbacks || {};
-        (this._callbacks['$' + event] = this._callbacks['$' + event] || [])
-        .push(fn);
+        (this._callbacks['$' + event] =
+            this._callbacks['$' + event] || []).push(fn);
         return this;
     };
-    
+
     /**
      * Adds an `event` listener that will be invoked a single
      * time then automatically removed.
@@ -72,18 +74,18 @@ var glue = function(host, options) {
      * @return {Emitter}
      * @api public
      */
-    
-    Emitter.prototype.once = function(event, fn){
+
+    Emitter.prototype.once = function(event, fn) {
         function on() {
-        this.off(event, on);
-        fn.apply(this, arguments);
+            this.off(event, on);
+            fn.apply(this, arguments);
         }
-    
+
         on.fn = fn;
         this.on(event, on);
         return this;
     };
-    
+
     /**
      * Remove the given callback for `event` or all
      * registered callbacks.
@@ -93,41 +95,41 @@ var glue = function(host, options) {
      * @return {Emitter}
      * @api public
      */
-    
-    Emitter.prototype.off =
-    Emitter.prototype.removeListener =
-    Emitter.prototype.removeAllListeners =
-    Emitter.prototype.removeEventListener = function(event, fn){
+
+    Emitter.prototype.off = Emitter.prototype.removeListener = Emitter.prototype.removeAllListeners = Emitter.prototype.removeEventListener = function(
+        event,
+        fn
+    ) {
         this._callbacks = this._callbacks || {};
-    
+
         // all
         if (0 === arguments.length) {
-        this._callbacks = {};
-        return this;
+            this._callbacks = {};
+            return this;
         }
-    
+
         // specific event
         var callbacks = this._callbacks['$' + event];
         if (!callbacks) return this;
-    
+
         // remove all handlers
         if (1 == arguments.length) {
-        delete this._callbacks['$' + event];
-        return this;
+            delete this._callbacks['$' + event];
+            return this;
         }
-    
+
         // remove specific handler
         var cb;
         for (var i = 0; i < callbacks.length; i++) {
-        cb = callbacks[i];
-        if (cb === fn || cb.fn === fn) {
-            callbacks.splice(i, 1);
-            break;
-        }
+            cb = callbacks[i];
+            if (cb === fn || cb.fn === fn) {
+                callbacks.splice(i, 1);
+                break;
+            }
         }
         return this;
     };
-    
+
     /**
      * Emit `event` with the given args.
      *
@@ -135,21 +137,22 @@ var glue = function(host, options) {
      * @param {Mixed} ...
      * @return {Emitter}
      */
-    
-    Emitter.prototype.emit = function(event){
+
+    Emitter.prototype.emit = function(event) {
         this._callbacks = this._callbacks || {};
-        var args = [].slice.call(arguments, 1), callbacks = this._callbacks['$' + event];
-    
+        var args = [].slice.call(arguments, 1),
+            callbacks = this._callbacks['$' + event];
+
         if (callbacks) {
-        callbacks = callbacks.slice(0);
-        for (var i = 0, len = callbacks.length; i < len; ++i) {
-            callbacks[i].apply(this, args);
+            callbacks = callbacks.slice(0);
+            for (var i = 0, len = callbacks.length; i < len; ++i) {
+                callbacks[i].apply(this, args);
+            }
         }
-        }
-    
+
         return this;
     };
-    
+
     /**
      * Return array of callbacks for `event`.
      *
@@ -157,12 +160,12 @@ var glue = function(host, options) {
      * @return {Array}
      * @api public
      */
-    
-    Emitter.prototype.listeners = function(event){
+
+    Emitter.prototype.listeners = function(event) {
         this._callbacks = this._callbacks || {};
         return this._callbacks['$' + event] || [];
     };
-    
+
     /**
      * Check if this emitter has `event` handlers.
      *
@@ -170,35 +173,33 @@ var glue = function(host, options) {
      * @return {Boolean}
      * @api public
      */
-    
-    Emitter.prototype.hasListeners = function(event){
-        return !! this.listeners(event).length;
+
+    Emitter.prototype.hasListeners = function(event) {
+        return !!this.listeners(event).length;
     };
-    
-    var newWebSocket = function () {
+
+    var newWebSocket = function() {
         /*
-        * Variables
-        */
+         * Variables
+         */
 
         var s = {},
             ws;
 
-
-
         /*
-        * Socket layer implementation.
-        */
+         * Socket layer implementation.
+         */
 
-        s.open = function () {
+        s.open = function() {
             try {
                 // Generate the websocket url.
                 var url;
-                if (host.match("^https://")) {
-                    url = "wss" + host.substr(5);
+                if (host.match('^https://')) {
+                    url = 'wss' + host.substr(5);
                 } else {
-                    url = "ws" + host.substr(4);
+                    url = 'ws' + host.substr(4);
                 }
-                url += options.baseURL + "ws";
+                url += options.baseURL + 'ws';
 
                 // Open the websocket connection
                 ws = new WebSocket(url);
@@ -209,12 +210,11 @@ var glue = function(host, options) {
                 };
 
                 ws.onerror = function(event) {
-                    var msg = "the websocket closed the connection with ";
+                    var msg = 'the websocket closed the connection with ';
                     if (event.code) {
-                        msg += "the error code: " + event.code;
-                    }
-                    else {
-                        msg += "an error.";
+                        msg += 'the error code: ' + event.code;
+                    } else {
+                        msg += 'an error.';
                     }
 
                     s.onError(msg);
@@ -232,7 +232,7 @@ var glue = function(host, options) {
             }
         };
 
-        s.send = function (data) {
+        s.send = function(data) {
             // Send the data to the server
             ws.send(data);
         };
@@ -248,44 +248,41 @@ var glue = function(host, options) {
 
         return s;
     };
-    var newAjaxSocket = function () {
+    var newAjaxSocket = function() {
         /*
-        * Constants
-        */
+         * Constants
+         */
 
-        var ajaxHost = host + options.baseURL + "ajax",
+        var ajaxHost = host + options.baseURL + 'ajax',
             sendTimeout = 8000,
             pollTimeout = 45000;
 
         var PollCommands = {
-            Timeout:    "t",
-            Closed:     "c"
+            Timeout: 't',
+            Closed: 'c',
         };
 
         var Commands = {
-            Delimiter:  "&",
-            Init:       "i",
-            Push:       "u",
-            Poll:       "o"
+            Delimiter: '&',
+            Init: 'i',
+            Push: 'u',
+            Poll: 'o',
         };
 
-
-
         /*
-        * Variables
-        */
+         * Variables
+         */
 
         var s = {},
-            uid, pollToken,
+            uid,
+            pollToken,
             pollXhr = false,
             sendXhr = false,
             poll;
 
-
-
         /*
-        * Methods
-        */
+         * Methods
+         */
 
         var stopRequests = function() {
             // Set the poll function to a dummy function.
@@ -302,22 +299,24 @@ var glue = function(host, options) {
         };
 
         var postAjax = function(url, timeout, data, success, error) {
-            var xhr = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
+            var xhr = window.XMLHttpRequest
+                ? new XMLHttpRequest()
+                : new ActiveXObject('Microsoft.XMLHTTP');
 
             xhr.onload = function() {
-            success(xhr.response);
+                success(xhr.response);
             };
 
             xhr.onerror = function() {
-            error();
+                error();
             };
 
             xhr.ontimeout = function() {
-            error("timeout");
+                error('timeout');
             };
 
             xhr.open('POST', url, true);
-            xhr.responseType = "text";
+            xhr.responseType = 'text';
             xhr.timeout = timeout;
             xhr.send(data);
 
@@ -338,84 +337,99 @@ var glue = function(host, options) {
 
             // Create the error message.
             if (msg) {
-                msg = "the ajax socket closed the connection with the error: " + msg;
-            }
-            else {
-                msg = "the ajax socket closed the connection with an error.";
+                msg =
+                    'the ajax socket closed the connection with the error: ' +
+                    msg;
+            } else {
+                msg = 'the ajax socket closed the connection with an error.';
             }
 
             // Trigger the event.
             s.onError(msg);
         };
 
-        var send = function (data, callback) {
-            sendXhr = postAjax(ajaxHost, sendTimeout, data, function (data) {
-                sendXhr = false;
+        var send = function(data, callback) {
+            sendXhr = postAjax(
+                ajaxHost,
+                sendTimeout,
+                data,
+                function(data) {
+                    sendXhr = false;
 
-                if (callback) {
-                    callback(data);
+                    if (callback) {
+                        callback(data);
+                    }
+                },
+                function(msg) {
+                    sendXhr = false;
+                    triggerError(msg);
                 }
-            }, function (msg) {
-                sendXhr = false;
-                triggerError(msg);
-            });
+            );
         };
 
-        poll = function () {
+        poll = function() {
             var data = Commands.Poll + uid + Commands.Delimiter + pollToken;
 
-            pollXhr = postAjax(ajaxHost, pollTimeout, data, function (data) {
-            pollXhr = false;
+            pollXhr = postAjax(
+                ajaxHost,
+                pollTimeout,
+                data,
+                function(data) {
+                    pollXhr = false;
 
-            // Check if this jax request has reached the server's timeout.
-            if (data == PollCommands.Timeout) {
-                // Just start the next poll request.
-                poll();
-                return;
-            }
+                    // Check if this jax request has reached the server's timeout.
+                    if (data == PollCommands.Timeout) {
+                        // Just start the next poll request.
+                        poll();
+                        return;
+                    }
 
-            // Check if this ajax connection was closed.
-            if (data == PollCommands.Closed) {
-                // Trigger the closed event.
-                triggerClosed();
-                return;
-            }
+                    // Check if this ajax connection was closed.
+                    if (data == PollCommands.Closed) {
+                        // Trigger the closed event.
+                        triggerClosed();
+                        return;
+                    }
 
-            // Split the new token from the rest of the data.
-            var i = data.indexOf(Commands.Delimiter);
-            if (i < 0) {
-                triggerError("ajax socket: failed to split poll token from data!");
-                return;
-            }
+                    // Split the new token from the rest of the data.
+                    var i = data.indexOf(Commands.Delimiter);
+                    if (i < 0) {
+                        triggerError(
+                            'ajax socket: failed to split poll token from data!'
+                        );
+                        return;
+                    }
 
-            // Set the new token and the data variable.
-            pollToken = data.substring(0, i);
-            data = data.substr(i + 1);
+                    // Set the new token and the data variable.
+                    pollToken = data.substring(0, i);
+                    data = data.substr(i + 1);
 
-            // Start the next poll request.
-            poll();
+                    // Start the next poll request.
+                    poll();
 
-            // Call the event.
-            s.onMessage(data);
-            }, function (msg) {
-                pollXhr = false;
-                triggerError(msg);
-            });
+                    // Call the event.
+                    s.onMessage(data);
+                },
+                function(msg) {
+                    pollXhr = false;
+                    triggerError(msg);
+                }
+            );
         };
 
-
-
         /*
-        * Socket layer implementation.
-        */
+         * Socket layer implementation.
+         */
 
-        s.open = function () {
+        s.open = function() {
             // Initialize the ajax socket session
-            send(Commands.Init, function (data) {
+            send(Commands.Init, function(data) {
                 // Get the uid and token string
                 var i = data.indexOf(Commands.Delimiter);
                 if (i < 0) {
-                    triggerError("ajax socket: failed to split uid and poll token from data!");
+                    triggerError(
+                        'ajax socket: failed to split uid and poll token from data!'
+                    );
                     return;
                 }
 
@@ -431,7 +445,7 @@ var glue = function(host, options) {
             });
         };
 
-        s.send = function (data) {
+        s.send = function(data) {
             // Always prepend the command with the uid to the data.
             send(Commands.Push + uid + Commands.Delimiter + data);
         };
@@ -444,90 +458,85 @@ var glue = function(host, options) {
         return s;
     };
 
-
-
     /*
      * Constants
      */
 
-    var Version         = "1.9.1",
-        MainChannelName = "m";
+    var Version = '1.9.1',
+        MainChannelName = 'm';
 
     var SocketTypes = {
-        WebSocket:  "WebSocket",
-        AjaxSocket: "AjaxSocket"
+        WebSocket: 'WebSocket',
+        AjaxSocket: 'AjaxSocket',
     };
 
     var Commands = {
-        Len: 	            2,
-        Init:               'in',
-        Ping:               'pi',
-        Pong:               'po',
-        Close: 	            'cl',
-        Invalid:            'iv',
-        DontAutoReconnect:  'dr',
-        ChannelData:        'cd'
+        Len: 2,
+        Init: 'in',
+        Ping: 'pi',
+        Pong: 'po',
+        Close: 'cl',
+        Invalid: 'iv',
+        DontAutoReconnect: 'dr',
+        ChannelData: 'cd',
     };
 
     var States = {
-        Disconnected:   "disconnected",
-        Connecting:     "connecting",
-        Reconnecting:   "reconnecting",
-        Connected:      "connected"
+        Disconnected: 'disconnected',
+        Connecting: 'connecting',
+        Reconnecting: 'reconnecting',
+        Connected: 'connected',
     };
 
     var DefaultOptions = {
         // The base URL is appended to the host string. This value has to match with the server value.
-        baseURL: "/glue/",
+        baseURL: '/glue/',
 
         // Force a socket type.
         // Values: false, "WebSocket", "AjaxSocket"
         forceSocketType: false,
 
         // Kill the connect attempt after the timeout.
-        connectTimeout:  10000,
+        connectTimeout: 10000,
 
         // If the connection is idle, ping the server to check if the connection is stil alive.
-        pingInterval:           35000,
+        pingInterval: 35000,
         // Reconnect if the server did not response with a pong within the timeout.
-        pingReconnectTimeout:   5000,
+        pingReconnectTimeout: 5000,
 
         // Whenever to automatically reconnect if the connection was lost.
-        reconnect:          true,
-        reconnectDelay:     1000,
-        reconnectDelayMax:  5000,
+        reconnect: true,
+        reconnectDelay: 1000,
+        reconnectDelayMax: 5000,
         // To disable set to 0 (endless).
-        reconnectAttempts:  10,
+        reconnectAttempts: 10,
 
         // Reset the send buffer after the timeout.
-        resetSendBufferTimeout: 10000
+        resetSendBufferTimeout: 10000,
     };
-
-
 
     /*
      * Variables
      */
 
-    var emitter                 = new Emitter,
-        bs                      = false,
+    var emitter = new Emitter(),
+        bs = false,
         mainChannel,
-        initialConnectedOnce    = false,    // If at least one successful connection was made.
-        bsNewFunc,                          // Function to create a new backend socket.
+        initialConnectedOnce = false, // If at least one successful connection was made.
+        bsNewFunc, // Function to create a new backend socket.
         currentSocketType,
-        currentState            = States.Disconnected,
-        reconnectCount          = 0,
-        autoReconnectDisabled   = false,
-        connectTimeout          = false,
-        pingTimeout             = false,
-        pingReconnectTimeout    = false,
-        sendBuffer              = [],
-        resetSendBufferTimeout  = false,
+        currentState = States.Disconnected,
+        reconnectCount = 0,
+        autoReconnectDisabled = false,
+        connectTimeout = false,
+        pingTimeout = false,
+        pingReconnectTimeout = false,
+        sendBuffer = [],
+        resetSendBufferTimeout = false,
         resetSendBufferTimedOut = false,
-        isReady                 = false,    // If true, the socket is initialized and ready.
-        beforeReadySendBuffer   = [],       // Buffer to hold requests for the server while the socket is not ready yet.
-        socketID               = "";
-
+        isReady = false, // If true, the socket is initialized and ready.
+        beforeReadySendBuffer = [], // Buffer to hold requests for the server while the socket is not ready yet.
+        socketID = '';
 
     /*
      * Include the dependencies
@@ -540,39 +549,35 @@ var glue = function(host, options) {
         /*
          * Constants
          */
-    
-        var Delimiter = "&";
-    
-    
-    
+
+        var Delimiter = '&';
+
         /*
          * Variables
          */
-    
-         var instance = {}; // Our public instance object returned by this function.
-    
-    
-    
+
+        var instance = {}; // Our public instance object returned by this function.
+
         /*
          * Public Methods
          */
-    
+
         // Mimics jQuery's extend method.
         // Source: http://stackoverflow.com/questions/11197247/javascript-equivalent-of-jquerys-extend-method
         instance.extend = function() {
-          for(var i=1; i<arguments.length; i++)
-              for(var key in arguments[i])
-                  if(arguments[i].hasOwnProperty(key))
-                      arguments[0][key] = arguments[i][key];
-          return arguments[0];
+            for (var i = 1; i < arguments.length; i++)
+                for (var key in arguments[i])
+                    if (arguments[i].hasOwnProperty(key))
+                        arguments[0][key] = arguments[i][key];
+            return arguments[0];
         };
-    
+
         // Source: http://stackoverflow.com/questions/5999998/how-can-i-check-if-a-javascript-variable-is-function-type.
         instance.isFunction = function(v) {
             var getType = {};
             return v && getType.toString.call(v) === '[object Function]';
         };
-    
+
         // unmarshalValues splits two values from a single string.
         // This function is chainable to extract multiple values.
         // An object with two strings (first, second) is returned.
@@ -580,139 +585,146 @@ var glue = function(host, options) {
             if (!data) {
                 return false;
             }
-    
+
             // Find the delimiter position.
             var pos = data.indexOf(Delimiter);
-    
+
             // Extract the value length integer of the first value.
             var len = parseInt(data.substring(0, pos), 10);
             data = data.substring(pos + 1);
-    
+
             // Validate the length.
             if (len < 0 || len > data.length) {
                 return false;
             }
-    
+
             // Now split the first value from the second.
             var firstV = data.substr(0, len);
             var secondV = data.substr(len);
-    
+
             // Return an object with both values.
             return {
-                first:  firstV,
-                second: secondV
+                first: firstV,
+                second: secondV,
             };
         };
-    
+
         // marshalValues joins two values into a single string.
         // They can be decoded by the unmarshalValues function.
         instance.marshalValues = function(first, second) {
             return String(first.length) + Delimiter + first + second;
         };
-    
-    
+
         return instance;
     })();
     var channel = (function() {
         /*
          * Variables
          */
-    
-         var instance = {}, // Our public instance object returned by this function.
-             channels = {}; // Object as key value map.
-    
-    
-    
-         /*
-          * Private Methods
-          */
-    
-         var newChannel = function(name) {
-             // Create the channel object.
-             var channel = {
-                 // Set to a dummy function.
-                 onMessageFunc: function() {}
-             };
-    
-             // Set the channel public instance object.
-             // This is the value which is returned by the public glue.channel(...) function.
-             channel.instance = {
-                 // onMessage sets the function which is triggered as soon as a message is received.
-                 onMessage: function(f) {
-                     channel.onMessageFunc = f;
-                 },
-    
-                 // send a data string to the channel.
-                 // One optional discard callback can be passed.
-                 // It is called if the data could not be send to the server.
-                 // The data is passed as first argument to the discard callback.
-                 // returns:
-                 //  1 if immediately send,
-                 //  0 if added to the send queue and
-                 //  -1 if discarded.
-                 send: function(data, discardCallback) {
-                     // Discard empty data.
-                     if (!data) {
-                         return -1;
-                     }
-    
-                     // Call the helper method and send the data to the channel.
-                     return sendBuffered(Commands.ChannelData, utils.marshalValues(name, data), discardCallback);
-                 }
-             };
-    
-             // Return the channel object.
-             return channel;
-         };
-    
-    
-    
-         /*
-          * Public Methods
-          */
-    
-         // Get or create a channel if it does not exists.
-         instance.get = function(name) {
-             if (!name) {
-                 return false;
-             }
-    
-             // Get the channel.
-             var c = channels[name];
-             if (c) {
-                 return c.instance;
-             }
-    
-             // Create a new one, if it does not exists and add it to the map.
-             c = newChannel(name);
-             channels[name] = c;
-    
-             return c.instance;
-         };
-    
-         instance.emitOnMessage = function(name, data) {
-             if (!name || !data) {
-                 return;
-             }
-    
-             // Get the channel.
-             var c = channels[name];
-             if (!c) {
-                 console.log("glue: channel '" + name + "': emit onMessage event: channel does not exists");
-                 return;
-             }
-    
-             // Call the channel's on message event.
-             try {
-                 c.onMessageFunc(data);
-             }
-             catch(err) {
-                 console.log("glue: channel '" + name + "': onMessage event call failed: " + err.message);
-                 return;
-             }
-         };
-    
-         return instance;
+
+        var instance = {}, // Our public instance object returned by this function.
+            channels = {}; // Object as key value map.
+
+        /*
+         * Private Methods
+         */
+
+        var newChannel = function(name) {
+            // Create the channel object.
+            var channel = {
+                // Set to a dummy function.
+                onMessageFunc: function() {},
+            };
+
+            // Set the channel public instance object.
+            // This is the value which is returned by the public glue.channel(...) function.
+            channel.instance = {
+                // onMessage sets the function which is triggered as soon as a message is received.
+                onMessage: function(f) {
+                    channel.onMessageFunc = f;
+                },
+
+                // send a data string to the channel.
+                // One optional discard callback can be passed.
+                // It is called if the data could not be send to the server.
+                // The data is passed as first argument to the discard callback.
+                // returns:
+                //  1 if immediately send,
+                //  0 if added to the send queue and
+                //  -1 if discarded.
+                send: function(data, discardCallback) {
+                    // Discard empty data.
+                    if (!data) {
+                        return -1;
+                    }
+
+                    // Call the helper method and send the data to the channel.
+                    return sendBuffered(
+                        Commands.ChannelData,
+                        utils.marshalValues(name, data),
+                        discardCallback
+                    );
+                },
+            };
+
+            // Return the channel object.
+            return channel;
+        };
+
+        /*
+         * Public Methods
+         */
+
+        // Get or create a channel if it does not exists.
+        instance.get = function(name) {
+            if (!name) {
+                return false;
+            }
+
+            // Get the channel.
+            var c = channels[name];
+            if (c) {
+                return c.instance;
+            }
+
+            // Create a new one, if it does not exists and add it to the map.
+            c = newChannel(name);
+            channels[name] = c;
+
+            return c.instance;
+        };
+
+        instance.emitOnMessage = function(name, data) {
+            if (!name || !data) {
+                return;
+            }
+
+            // Get the channel.
+            var c = channels[name];
+            if (!c) {
+                console.log(
+                    "glue: channel '" +
+                        name +
+                        "': emit onMessage event: channel does not exists"
+                );
+                return;
+            }
+
+            // Call the channel's on message event.
+            try {
+                c.onMessageFunc(data);
+            } catch (err) {
+                console.log(
+                    "glue: channel '" +
+                        name +
+                        "': onMessage event call failed: " +
+                        err.message
+                );
+                return;
+            }
+        };
+
+        return instance;
     })();
     /*
      * Methods
@@ -786,18 +798,23 @@ var glue = function(host, options) {
             var buf;
             for (var i = 0; i < sendBuffer.length; i++) {
                 buf = sendBuffer[i];
-                if (buf.discardCallback && utils.isFunction(buf.discardCallback)) {
+                if (
+                    buf.discardCallback &&
+                    utils.isFunction(buf.discardCallback)
+                ) {
                     try {
                         buf.discardCallback(buf.data);
-                    }
-                    catch (err) {
-                       console.log("glue: failed to call discard callback: " + err.message);
+                    } catch (err) {
+                        console.log(
+                            'glue: failed to call discard callback: ' +
+                                err.message
+                        );
                     }
                 }
             }
 
             // Trigger the event if any buffered send data is discarded.
-            triggerEvent("discard_send_buffer");
+            triggerEvent('discard_send_buffer');
 
             // Reset the buffer.
             sendBuffer = [];
@@ -838,7 +855,7 @@ var glue = function(host, options) {
         // Be sure, that the data value is an empty
         // string if not passed to this method.
         if (!data) {
-            data = "";
+            data = '';
         }
 
         // Add the data to the send buffer if disconnected.
@@ -858,9 +875,9 @@ var glue = function(host, options) {
 
             // Append to the buffer.
             sendBuffer.push({
-                cmd:                cmd,
-                data:               data,
-                discardCallback:    discardCallback
+                cmd: cmd,
+                data: data,
+                discardCallback: discardCallback,
             });
 
             return 0;
@@ -890,7 +907,7 @@ var glue = function(host, options) {
             connectTimeout = false;
 
             // Trigger the event.
-            triggerEvent("connect_timeout");
+            triggerEvent('connect_timeout');
 
             // Reconnect to the server.
             reconnect();
@@ -929,7 +946,7 @@ var glue = function(host, options) {
                 pingReconnectTimeout = false;
 
                 // Trigger the event.
-                triggerEvent("timeout");
+                triggerEvent('timeout');
 
                 // Reconnect to the server.
                 reconnect();
@@ -956,14 +973,13 @@ var glue = function(host, options) {
         }
 
         // Choose the socket layer depending on the browser support.
-        if ((!options.forceSocketType && window.WebSocket) ||
-            options.forceSocketType === SocketTypes.WebSocket)
-        {
+        if (
+            (!options.forceSocketType && window.WebSocket) ||
+            options.forceSocketType === SocketTypes.WebSocket
+        ) {
             bsNewFunc = newWebSocket;
             currentSocketType = SocketTypes.WebSocket;
-        }
-        else
-        {
+        } else {
             bsNewFunc = newAjaxSocket;
             currentSocketType = SocketTypes.AjaxSocket;
         }
@@ -980,7 +996,9 @@ var glue = function(host, options) {
         // Close the socket and log the error on invalid data.
         if (!data.socketID) {
             closeSocket();
-            console.log("glue: socket initialization failed: invalid initialization data received");
+            console.log(
+                'glue: socket initialization failed: invalid initialization data received'
+            );
             return;
         }
 
@@ -999,7 +1017,7 @@ var glue = function(host, options) {
 
         // Now set the state and trigger the event.
         currentState = States.Connected;
-        triggerEvent("connected");
+        triggerEvent('connected');
 
         // Send the queued data from the send buffer if present.
         // Do this after the next tick to be sure, that
@@ -1027,7 +1045,7 @@ var glue = function(host, options) {
 
             // Prepare the init data to be send to the server.
             var data = {
-                version: Version
+                version: Version,
             };
 
             // Marshal the data object to a JSON string.
@@ -1047,7 +1065,7 @@ var glue = function(host, options) {
 
         bs.onError = function(msg) {
             // Trigger the error event.
-            triggerEvent("error", [msg]);
+            triggerEvent('error', [msg]);
 
             // Reconnect the socket.
             reconnect();
@@ -1059,7 +1077,9 @@ var glue = function(host, options) {
 
             // Log if the received data is too short.
             if (data.length < Commands.Len) {
-                console.log("glue: received invalid data from server: data is too short.");
+                console.log(
+                    'glue: received invalid data from server: data is too short.'
+                );
                 return;
             }
 
@@ -1070,38 +1090,45 @@ var glue = function(host, options) {
             if (cmd === Commands.Ping) {
                 // Response with a pong message.
                 send(Commands.Pong);
-            }
-            else if (cmd === Commands.Pong) {
+            } else if (cmd === Commands.Pong) {
                 // Don't do anything.
                 // The ping timeout was already reset.
-            }
-            else if (cmd === Commands.Invalid) {
+            } else if (cmd === Commands.Invalid) {
                 // Log.
-                console.log("glue: server replied with an invalid request notification!");
-            }
-            else if (cmd === Commands.DontAutoReconnect) {
+                console.log(
+                    'glue: server replied with an invalid request notification!'
+                );
+            } else if (cmd === Commands.DontAutoReconnect) {
                 // Disable auto reconnections.
                 autoReconnectDisabled = true;
 
                 // Log.
-                console.log("glue: server replied with an don't automatically reconnect request. This might be due to an incompatible protocol version.");
-            }
-            else if (cmd === Commands.Init) {
+                console.log(
+                    "glue: server replied with an don't automatically reconnect request. This might be due to an incompatible protocol version."
+                );
+            } else if (cmd === Commands.Init) {
                 initSocket(data);
-            }
-            else if (cmd === Commands.ChannelData) {
+            } else if (cmd === Commands.ChannelData) {
                 // Obtain the two values from the data string.
                 var v = utils.unmarshalValues(data);
                 if (!v) {
-                    console.log("glue: server requested an invalid channel data request: " + data);
+                    console.log(
+                        'glue: server requested an invalid channel data request: ' +
+                            data
+                    );
                     return;
                 }
 
                 // Trigger the event.
                 channel.emitOnMessage(v.first, v.second);
-            }
-            else {
-                console.log("glue: received invalid data from server with command '" + cmd + "' and data '" + data + "'!");
+            } else {
+                console.log(
+                    "glue: received invalid data from server with command '" +
+                        cmd +
+                        "' and data '" +
+                        data +
+                        "'!"
+                );
             }
         };
 
@@ -1111,11 +1138,10 @@ var glue = function(host, options) {
             // Set the state and trigger the event.
             if (reconnectCount > 0) {
                 currentState = States.Reconnecting;
-                triggerEvent("reconnecting");
-            }
-            else {
+                triggerEvent('reconnecting');
+            } else {
                 currentState = States.Connecting;
-                triggerEvent("connecting");
+                triggerEvent('connecting');
             }
 
             // Reset or start the connect timeout.
@@ -1133,7 +1159,7 @@ var glue = function(host, options) {
 
         // Reset flags and variables.
         isReady = false;
-        socketID = "";
+        socketID = '';
 
         // Clear the buffer.
         // This buffer is attached to each single socket.
@@ -1158,12 +1184,15 @@ var glue = function(host, options) {
 
         // If no reconnections should be made or more than max
         // reconnect attempts where made, trigger the disconnected event.
-        if ((options.reconnectAttempts > 0 && reconnectCount > options.reconnectAttempts) ||
-            options.reconnect === false || autoReconnectDisabled)
-        {
+        if (
+            (options.reconnectAttempts > 0 &&
+                reconnectCount > options.reconnectAttempts) ||
+            options.reconnect === false ||
+            autoReconnectDisabled
+        ) {
             // Set the state and trigger the event.
             currentState = States.Disconnected;
-            triggerEvent("disconnected");
+            triggerEvent('disconnected');
 
             return;
         }
@@ -1197,10 +1226,8 @@ var glue = function(host, options) {
 
         // Set the state and trigger the event.
         currentState = States.Disconnected;
-        triggerEvent("disconnected");
+        triggerEvent('disconnected');
     };
-
-
 
     /*
      * Initialize section
@@ -1212,10 +1239,10 @@ var glue = function(host, options) {
     // Prepare the host string.
     // Use the current location if the host string is not set.
     if (!host) {
-        host = window.location.protocol + "//" + window.location.host;
+        host = window.location.protocol + '//' + window.location.host;
     }
     // The host string has to start with http:// or https://
-    if (!host.match("^http://") && !host.match("^https://")) {
+    if (!host.match('^http://') && !host.match('^https://')) {
         console.log("glue: invalid host: missing 'http://' or 'https://'!");
         return;
     }
@@ -1230,17 +1257,15 @@ var glue = function(host, options) {
 
     // Prepare the base URL.
     // The base URL has to start and end with a slash.
-    if (options.baseURL.indexOf("/") !== 0) {
-        options.baseURL = "/" + options.baseURL;
+    if (options.baseURL.indexOf('/') !== 0) {
+        options.baseURL = '/' + options.baseURL;
     }
-    if (options.baseURL.slice(-1) !== "/") {
-        options.baseURL = options.baseURL + "/";
+    if (options.baseURL.slice(-1) !== '/') {
+        options.baseURL = options.baseURL + '/';
     }
 
     // Create the initial backend socket and establish a connection to the server.
     connectSocket();
-
-
 
     /*
      * Socket object
@@ -1331,7 +1356,7 @@ var glue = function(host, options) {
         // to communicate in a separate channel than the default one.
         channel: function(name) {
             return channel.get(name);
-        }
+        },
     };
 
     // Define the function body of the triggerEvent function.

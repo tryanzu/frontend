@@ -1,4 +1,4 @@
-import { useEffect, useState, useReducer } from 'react';
+import { useReducer } from 'react';
 import h from 'react-hyperscript';
 import helpers from 'hyperscript-helpers';
 import { t } from '../../i18n';
@@ -16,8 +16,6 @@ function cloneCategories({ categories }) {
     }
     return [...categories.map(clone)];
 }
-
-const initialState = { categories: [], dirty: false, saving: false };
 
 function reducer(state, action) {
     const { categories } = state;
@@ -56,9 +54,8 @@ function reducer(state, action) {
                 name: '',
                 description: '',
             };
-            copy[action.k].subcategories = copy[action.k].subcategories.concat(
-                newItem
-            );
+            copy[action.k].subcategories =
+                copy[action.k].subcategories.concat(newItem);
             return {
                 ...state,
                 dirty: true,
@@ -97,9 +94,9 @@ function reducer(state, action) {
         case 'cancelConfig': {
             return { ...state, dirty: false, categories: action.categories };
         }
-        case 'saving': 
+        case 'saving':
             return { ...state, saving: true };
-        case 'saved': 
+        case 'saved':
             return { ...state, saving: false };
         default:
             throw new Error('invalid action type');
@@ -110,7 +107,7 @@ export function CategoriesConfig({ state, effects }) {
     const [internalState, dispatch] = useReducer(reducer, {
         categories: cloneCategories(state),
     });
-    const { categories, dirty, saving } = internalState;
+    const { categories, dirty } = internalState;
 
     return form('.flex-auto.pa3.overflow-container', [
         div([
@@ -126,7 +123,9 @@ export function CategoriesConfig({ state, effects }) {
                                     dispatch({ type: 'saving' });
                                     return effects
                                         .updateCategories(categories)
-                                        .then(() => dispatch({type: 'saved'}));
+                                        .then(() =>
+                                            dispatch({ type: 'saved' })
+                                        );
                                 },
                             }),
                         ]),
@@ -211,8 +210,7 @@ export function CategoriesConfig({ state, effects }) {
                                                         onClick: () =>
                                                             index > 0 &&
                                                             dispatch({
-                                                                type:
-                                                                    'swapSubcategory',
+                                                                type: 'swapSubcategory',
                                                                 from: index,
                                                                 to: index - 1,
                                                                 k: k,
@@ -230,8 +228,7 @@ export function CategoriesConfig({ state, effects }) {
                                                                     .length -
                                                                     1 &&
                                                             dispatch({
-                                                                type:
-                                                                    'swapSubcategory',
+                                                                type: 'swapSubcategory',
                                                                 from: index,
                                                                 to: index + 1,
                                                                 k: k,
@@ -244,8 +241,7 @@ export function CategoriesConfig({ state, effects }) {
                                                     index,
                                                     onChange: changes =>
                                                         dispatch({
-                                                            type:
-                                                                'updateSubcategory',
+                                                            type: 'updateSubcategory',
                                                             changes,
                                                             k,
                                                             index,
@@ -256,8 +252,7 @@ export function CategoriesConfig({ state, effects }) {
                                                     {
                                                         onClick: () =>
                                                             dispatch({
-                                                                type:
-                                                                    'deleteSubcategory',
+                                                                type: 'deleteSubcategory',
                                                                 k,
                                                                 index,
                                                             }),
@@ -274,8 +269,7 @@ export function CategoriesConfig({ state, effects }) {
                                                         {
                                                             onClick: () =>
                                                                 dispatch({
-                                                                    type:
-                                                                        'newSubcategory',
+                                                                    type: 'newSubcategory',
                                                                     k,
                                                                 }),
                                                         },

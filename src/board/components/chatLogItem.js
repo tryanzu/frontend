@@ -6,7 +6,7 @@ import helpers from 'hyperscript-helpers';
 
 const { div, small } = helpers(h);
 
-export const ChatLogItem = memo(function({ message }) {
+export const ChatLogItem = memo(function ({ message }) {
     const i18nParams = message.i18n || [];
     const translated = i18nParams.map(item => t`${item}`);
     return div('.tile.mb2.ph3.log', { key: message.id }, [

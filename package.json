@@ -1,118 +1,118 @@
 {
-  "name": "anzu.frontend",
-  "version": "1.0.0-alpha.2",
-  "description": "The next generation community-engine. frontend",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/tryanzu/frontend.git"
-  },
-  "author": "fernandez14",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/tryanzu/frontend/issues"
-  },
-  "homepage": "https://github.com/tryanzu/frontend#readme",
-  "scripts": {
-    "start": "webpack --watch --config webpack.dev.js",
-    "build": "webpack --config webpack.prod.js",
-    "release": "release-it --preRelease=alpha --no-npm.publish",
-    "eslint": "node_modules/eslint/bin/eslint.js src/."
-  },
-  "dependencies": {
-    "@types/history": "^4.7.5",
-    "autosize": "^4.0.2",
-    "babel-polyfill": "^6.26.0",
-    "callbag-basics": "^3.2.0",
-    "callbag-basics-esmodules": "^4.0.0",
-    "callbag-debounce": "^2.1.2",
-    "callbag-observe": "^1.0.0",
-    "callbag-subscribe": "^1.5.1",
-    "classnames": "^2.2.6",
-    "date-fns": "^1.30.1",
-    "deep-equal": "^1.1.1",
-    "emoji-dictionary": "^1.0.9",
-    "extend": ">=3.0.2",
-    "freactal": "^2.0.3",
-    "functional-acl": "^0.6.0",
-    "hyperscript-helpers": "^3.0.3",
-    "install": "^0.10.2",
-    "jed": "^1.1.1",
-    "lodash": "^4.17.19",
-    "lost": "^8.3.1",
-    "number-format.js": "^1.1.11",
-    "os": "^0.1.1",
-    "process": "^0.11.10",
-    "qs": "^6.9.3",
-    "query-string": "^5.1.1",
-    "react": "^16.13.1",
-    "react-autosize-textarea": "^6.0.0",
-    "react-debounce-input": "^3.2.2",
-    "react-dom": "^16.13.1",
-    "react-dropzone": "^8.0.4",
-    "react-hyperscript": "^3.2.0",
-    "react-markdown": "^5.0.3",
-    "react-modal": "^3.11.2",
-    "react-router-dom": "^4.3.1",
-    "react-rte": "^0.16.1",
-    "react-toastify": "^4.5.2",
-    "react-twitch-embed-video": "^1.1.4",
-    "react-youtube": "^7.9.0",
-    "spectre.css": "^0.5.8",
-    "switch-path": "^1.2.0",
-    "tachyons": "^4.11.1",
-    "timeago.js": "^3.0.2",
-    "tributejs": "^4.1.3"
-  },
-  "devDependencies": {
-    "@babel/core": "^7.12.10",
-    "@babel/eslint-parser": "^7.28.0",
-    "@babel/plugin-proposal-class-properties": "^7.12.1",
-    "@babel/preset-env": "^7.12.11",
-    "@release-it/conventional-changelog": "^2.0.0",
-    "babel-eslint": "^10.1.0",
-    "babel-loader": "^8.2.2",
-    "babel-minify-webpack-plugin": "^0.3.1",
-    "braces": ">=2.3.1",
-    "clean-css": "^4.2.3",
-    "clean-webpack-plugin": "^3.0.0",
-    "closure-webpack-plugin": "^2.3.0",
-    "css-loader": "^3.4.2",
-    "eslint": "^9.31.0",
-    "eslint-config-prettier": "^10.1.5",
-    "eslint-plugin-prettier": "^5.5.1",
-    "file-loader": "^4.3.0",
-    "mini-css-extract-plugin": "^1.3.3",
-    "optimize-plugin": "^1.0.0",
-    "path-browserify": "^1.0.1",
-    "prettier": "^3.6.2",
-    "release-it": "^14.0.3",
-    "sass": "^1.89.2",
-    "sass-loader": "^12.6.0",
-    "style-loader": "^1.1.3",
-    "terser-webpack-plugin": "^4.2.3",
-    "webpack": "^5.88.0",
-    "webpack-cli": "^4.2.0",
-    "webpack-merge": "^5.7.2",
-    "webpack-plugin-modern-npm": "^0.1.0",
-    "ws": "^7.2.3"
-  },
-  "release-it": {
-    "git": {
-      "commitMessage": "chore: release v${version}"
+    "name": "anzu.frontend",
+    "version": "1.0.0-alpha.2",
+    "description": "The next generation community-engine. frontend",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/tryanzu/frontend.git"
     },
-    "github": {
-      "release": true
+    "author": "fernandez14",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/tryanzu/frontend/issues"
     },
-    "hooks": {
-      "before:init": [
-        "npm run eslint"
-      ]
+    "homepage": "https://github.com/tryanzu/frontend#readme",
+    "scripts": {
+        "start": "webpack --watch --config webpack.dev.js",
+        "build": "webpack --config webpack.prod.js",
+        "release": "release-it --preRelease=alpha --no-npm.publish",
+        "eslint": "node_modules/eslint/bin/eslint.js src/. --fix"
     },
-    "plugins": {
-      "@release-it/conventional-changelog": {
-        "preset": "angular",
-        "infile": "CHANGELOG.md"
-      }
+    "dependencies": {
+        "@types/history": "^4.7.5",
+        "autosize": "^4.0.2",
+        "babel-polyfill": "^6.26.0",
+        "callbag-basics": "^3.2.0",
+        "callbag-basics-esmodules": "^4.0.0",
+        "callbag-debounce": "^2.1.2",
+        "callbag-observe": "^1.0.0",
+        "callbag-subscribe": "^1.5.1",
+        "classnames": "^2.2.6",
+        "date-fns": "^1.30.1",
+        "deep-equal": "^1.1.1",
+        "emoji-dictionary": "^1.0.9",
+        "extend": ">=3.0.2",
+        "freactal": "^2.0.3",
+        "functional-acl": "^0.6.0",
+        "hyperscript-helpers": "^3.0.3",
+        "install": "^0.10.2",
+        "jed": "^1.1.1",
+        "lodash": "^4.17.19",
+        "lost": "^8.3.1",
+        "number-format.js": "^1.1.11",
+        "os": "^0.1.1",
+        "process": "^0.11.10",
+        "qs": "^6.9.3",
+        "query-string": "^5.1.1",
+        "react": "^16.13.1",
+        "react-autosize-textarea": "^6.0.0",
+        "react-debounce-input": "^3.2.2",
+        "react-dom": "^16.13.1",
+        "react-dropzone": "^8.0.4",
+        "react-hyperscript": "^3.2.0",
+        "react-markdown": "^5.0.3",
+        "react-modal": "^3.11.2",
+        "react-router-dom": "^4.3.1",
+        "react-rte": "^0.16.1",
+        "react-toastify": "^4.5.2",
+        "react-twitch-embed-video": "^1.1.4",
+        "react-youtube": "^7.9.0",
+        "spectre.css": "^0.5.8",
+        "switch-path": "^1.2.0",
+        "tachyons": "^4.11.1",
+        "timeago.js": "^3.0.2",
+        "tributejs": "^4.1.3"
+    },
+    "devDependencies": {
+        "@babel/core": "^7.12.10",
+        "@babel/eslint-parser": "^7.28.0",
+        "@babel/plugin-proposal-class-properties": "^7.12.1",
+        "@babel/preset-env": "^7.12.11",
+        "@release-it/conventional-changelog": "^2.0.0",
+        "babel-eslint": "^10.1.0",
+        "babel-loader": "^8.2.2",
+        "babel-minify-webpack-plugin": "^0.3.1",
+        "braces": ">=2.3.1",
+        "clean-css": "^4.2.3",
+        "clean-webpack-plugin": "^3.0.0",
+        "closure-webpack-plugin": "^2.3.0",
+        "css-loader": "^3.4.2",
+        "eslint": "^9.31.0",
+        "eslint-config-prettier": "^10.1.5",
+        "eslint-plugin-prettier": "^5.5.1",
+        "file-loader": "^4.3.0",
+        "mini-css-extract-plugin": "^1.3.3",
+        "optimize-plugin": "^1.0.0",
+        "path-browserify": "^1.0.1",
+        "prettier": "^3.6.2",
+        "release-it": "^14.0.3",
+        "sass": "^1.89.2",
+        "sass-loader": "^12.6.0",
+        "style-loader": "^1.1.3",
+        "terser-webpack-plugin": "^4.2.3",
+        "webpack": "^5.88.0",
+        "webpack-cli": "^4.2.0",
+        "webpack-merge": "^5.7.2",
+        "webpack-plugin-modern-npm": "^0.1.0",
+        "ws": "^7.2.3"
+    },
+    "release-it": {
+        "git": {
+            "commitMessage": "chore: release v${version}"
+        },
+        "github": {
+            "release": true
+        },
+        "hooks": {
+            "before:init": [
+                "npm run eslint"
+            ]
+        },
+        "plugins": {
+            "@release-it/conventional-changelog": {
+                "preset": "angular",
+                "infile": "CHANGELOG.md"
+            }
+        }
     }
-  }
 }

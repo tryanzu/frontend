@@ -14,7 +14,7 @@ async function fetchUsers(query, callback) {
     callback(users.map(user => ({ name: user.Username, id: user.Username })));
 }
 
-export const ChatMessageInput = memo(function({ state, effects, chan }) {
+export const ChatMessageInput = memo(function ({ state, effects, chan }) {
     const [message, setMessage] = useState('');
     function onSubmit(event) {
         event.preventDefault();

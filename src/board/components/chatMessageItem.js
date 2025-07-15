@@ -12,17 +12,10 @@ import { Flag } from './actions';
 
 const { a, div, small, i, figure, span, img } = helpers(h);
 
-export const ChatMessageItem = memo(function(props) {
+export const ChatMessageItem = memo(function (props) {
     const auth = useContext(AuthContext);
-    const {
-        message,
-        short,
-        isOnline,
-        bottomRef,
-        lockRef,
-        chan,
-        effects,
-    } = props;
+    const { message, short, isOnline, bottomRef, lockRef, chan, effects } =
+        props;
     function onImageLoad() {
         if (lockRef.current) {
             return;

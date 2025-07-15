@@ -4,7 +4,7 @@ import helpers from 'hyperscript-helpers';
 import { t } from '../../i18n';
 
 const tags = helpers(h);
-const { div, img, i, a, p } = tags;
+const { div, i, a, p } = tags;
 const { span, h2, form, input, label, textarea } = tags;
 
 export function GeneralConfig({ state, setOpen, effects }) {

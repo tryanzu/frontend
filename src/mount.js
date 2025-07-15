@@ -7,6 +7,6 @@ function anzu(elm, props = {}) {
     return render(h(Home, { ...props }), elm);
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     anzu(document.getElementById('react-anzu'));
 });

@@ -44,9 +44,10 @@ export const i18n = new Jed({
             'Cannot change username more than 2 times': [
                 'No se puede cambiar el nombre de usuario más de 2 veces',
             ],
-            'An email has been sent to this address with instructions on how to reset your password.': [
-                'Se ha enviado un correo con instrucciones. Revisa tu bandeja de entrada.',
-            ],
+            'An email has been sent to this address with instructions on how to reset your password.':
+                [
+                    'Se ha enviado un correo con instrucciones. Revisa tu bandeja de entrada.',
+                ],
             'You just lost %d reputation points. =/': [
                 'Acabar de perder %d puntos de tu reputación. :/',
                 'Acabar de perder %d puntos de tu reputación. :/',
@@ -108,14 +109,16 @@ export const i18n = new Jed({
                 'Mostrado alrededor del sitio, el nombre de tu comunidad.',
             ],
             'Descripción del sitio': ['Descripción del sitio'],
-            'Para metadatos, resultados de busqueda y dar a conocer tu comunidad.': [
-                'Para metadatos, resultados de busqueda y dar a conocer tu comunidad.',
-            ],
+            'Para metadatos, resultados de busqueda y dar a conocer tu comunidad.':
+                [
+                    'Para metadatos, resultados de busqueda y dar a conocer tu comunidad.',
+                ],
             'Dirección del sitio': ['Dirección del sitio'],
             'Ej. https://comunidad.anzu.io': ['Ej. https://comunidad.anzu.io'],
-            'URL absoluta donde vive la instalación de Anzu. Utilizar una dirección no accesible puede provocar no poder acceder al sitio.': [
-                'URL absoluta donde vive la instalación de Anzu. Utilizar una dirección no accesible puede provocar no poder acceder al sitio.',
-            ],
+            'URL absoluta donde vive la instalación de Anzu. Utilizar una dirección no accesible puede provocar no poder acceder al sitio.':
+                [
+                    'URL absoluta donde vive la instalación de Anzu. Utilizar una dirección no accesible puede provocar no poder acceder al sitio.',
+                ],
             'Menú de navegación': ['Menú de navegación'],
             'Mostrado en la parte superior del sitio. (- = +)': [
                 'Mostrado en la parte superior del sitio. (- = +)',
@@ -130,9 +133,10 @@ export const i18n = new Jed({
             'Buscando: ${feed.search}': ['Buscando: ${feed.search}'],
             'Todas las categorias': ['Todas las categorias'],
             'Recuperar contraseña': ['Recuperar contraseña'],
-            'Recupera el acceso a tu cuenta proporcionando el correo electrónico que usaste en tu registro.': [
-                'Recupera el acceso a tu cuenta proporcionando el correo electrónico que usaste en tu registro.',
-            ],
+            'Recupera el acceso a tu cuenta proporcionando el correo electrónico que usaste en tu registro.':
+                [
+                    'Recupera el acceso a tu cuenta proporcionando el correo electrónico que usaste en tu registro.',
+                ],
             'Correo electrónico': ['Correo electrónico'],
             'Continuar con Facebook': ['Continuar con Facebook'],
             'ó con tu cuenta anzu': ['ó con tu cuenta anzu'],
@@ -155,18 +159,20 @@ export const i18n = new Jed({
             Únete: ['Únete'],
             'Crear una cuenta': ['Crear una cuenta'],
             Notificaciones: ['Notificaciones'],
-            'Enviamos a tu correo las instrucciones necesarias para validar tu cuenta. Obtén acceso completo al sitio y únete a la conversación.': [
-                'Enviamos a tu correo las instrucciones necesarias para validar tu cuenta. Obtén acceso completo al sitio y únete a la conversación.',
-            ],
+            'Enviamos a tu correo las instrucciones necesarias para validar tu cuenta. Obtén acceso completo al sitio y únete a la conversación.':
+                [
+                    'Enviamos a tu correo las instrucciones necesarias para validar tu cuenta. Obtén acceso completo al sitio y únete a la conversación.',
+                ],
             'Reenviar correo electrónico': ['Reenviar correo electrónico'],
             'Powered by Anzu community': ['Powered by Anzu community'],
             'v0.1 alpha': ['v0.1 alpha'],
             '¡Vaya!, ¿cómo llegaste hasta aquí?': [
                 '¡Vaya!, ¿cómo llegaste hasta aquí?',
             ],
-            'Bueno, esto es raro, el contenido al que estas intentando acceder no existe ó ha sido eliminado recientemente.': [
-                'Bueno, esto es raro, el contenido al que estas intentando acceder no existe ó ha sido eliminado recientemente.',
-            ],
+            'Bueno, esto es raro, el contenido al que estas intentando acceder no existe ó ha sido eliminado recientemente.':
+                [
+                    'Bueno, esto es raro, el contenido al que estas intentando acceder no existe ó ha sido eliminado recientemente.',
+                ],
             'Volver al inicio': ['Volver al inicio'],
             'Editar publicación': ['Editar publicación'],
             '¿Por qué quieres borrar esta publicación?': [
@@ -223,9 +229,10 @@ export const i18n = new Jed({
             'Escribe tu nueva contraseña...': [
                 'Escribe tu nueva contraseña...',
             ],
-            'Aún no has escrito tu biografía. Ayuda a otros a conocer sobre ti escribiendo una en tu perfil.': [
-                'Aún no has escrito tu biografía. Ayuda a otros a conocer sobre ti escribiendo una en tu perfil.',
-            ],
+            'Aún no has escrito tu biografía. Ayuda a otros a conocer sobre ti escribiendo una en tu perfil.':
+                [
+                    'Aún no has escrito tu biografía. Ayuda a otros a conocer sobre ti escribiendo una en tu perfil.',
+                ],
             '${number(rest)} para el siguiente nivel': [
                 '${number(rest)} para el siguiente nivel',
             ],
@@ -253,67 +260,79 @@ export const i18n = new Jed({
             'Las publicaciones deben ser relacionados a su categoría': [
                 'Las publicaciones deben ser relacionados a su categoría',
             ],
-            'Si deseas colocar un tema que se salga muy abruptamente de las categorías de la comunidad, te pedimos que utilices la sección de Bar Spartano para hacerlo. Damos la bienvenida a temas de discusión general, pero los rechazamos en las otras secciones.': [
-                'Si deseas colocar un tema que se salga muy abruptamente de las categorías de la comunidad, te pedimos que utilices la sección de Bar Spartano para hacerlo. Damos la bienvenida a temas de discusión general, pero los rechazamos en las otras secciones.',
-            ],
+            'Si deseas colocar un tema que se salga muy abruptamente de las categorías de la comunidad, te pedimos que utilices la sección de Bar Spartano para hacerlo. Damos la bienvenida a temas de discusión general, pero los rechazamos en las otras secciones.':
+                [
+                    'Si deseas colocar un tema que se salga muy abruptamente de las categorías de la comunidad, te pedimos que utilices la sección de Bar Spartano para hacerlo. Damos la bienvenida a temas de discusión general, pero los rechazamos en las otras secciones.',
+                ],
             'Utiliza títulos que expliquen tu publicación': [
                 'Utiliza títulos que expliquen tu publicación',
             ],
-            'No publiques títulos poniendo solamente frases como “Ayuda”, “No sé qué hacer”, “xD”, “Recomendación”, o cualquier otra cosa que no explique tu tema. Nuestros algoritmos van a penalizar dichas publicaciones, incluso cuando en la descripción expliques perfectamente tu problema. La única excepción para publicar cualquier título es el Bar Spartano.': [
-                'No publiques títulos poniendo solamente frases como “Ayuda”, “No sé qué hacer”, “xD”, “Recomendación”, o cualquier otra cosa que no explique tu tema. Nuestros algoritmos van a penalizar dichas publicaciones, incluso cuando en la descripción expliques perfectamente tu problema. La única excepción para publicar cualquier título es el Bar Spartano.',
-            ],
+            'No publiques títulos poniendo solamente frases como “Ayuda”, “No sé qué hacer”, “xD”, “Recomendación”, o cualquier otra cosa que no explique tu tema. Nuestros algoritmos van a penalizar dichas publicaciones, incluso cuando en la descripción expliques perfectamente tu problema. La única excepción para publicar cualquier título es el Bar Spartano.':
+                [
+                    'No publiques títulos poniendo solamente frases como “Ayuda”, “No sé qué hacer”, “xD”, “Recomendación”, o cualquier otra cosa que no explique tu tema. Nuestros algoritmos van a penalizar dichas publicaciones, incluso cuando en la descripción expliques perfectamente tu problema. La única excepción para publicar cualquier título es el Bar Spartano.',
+                ],
             'Explica y escribe bien tu tema, pregunta o aportación': [
                 'Explica y escribe bien tu tema, pregunta o aportación',
             ],
-            'Haz un esfuerzo por leer una vez más el texto donde describes tu pregunta o comentario ANTES DE PUBLICAR. Procura que esté lo mejor explicado que puedas, que no esté incompleto, y que sea fácil de comprender. Todo eso ayuda a que los demás contribuyan y a que aumentes tu reputación en la comunidad.': [
-                'Haz un esfuerzo por leer una vez más el texto donde describes tu pregunta o comentario ANTES DE PUBLICAR. Procura que esté lo mejor explicado que puedas, que no esté incompleto, y que sea fácil de comprender. Todo eso ayuda a que los demás contribuyan y a que aumentes tu reputación en la comunidad.',
-            ],
+            'Haz un esfuerzo por leer una vez más el texto donde describes tu pregunta o comentario ANTES DE PUBLICAR. Procura que esté lo mejor explicado que puedas, que no esté incompleto, y que sea fácil de comprender. Todo eso ayuda a que los demás contribuyan y a que aumentes tu reputación en la comunidad.':
+                [
+                    'Haz un esfuerzo por leer una vez más el texto donde describes tu pregunta o comentario ANTES DE PUBLICAR. Procura que esté lo mejor explicado que puedas, que no esté incompleto, y que sea fácil de comprender. Todo eso ayuda a que los demás contribuyan y a que aumentes tu reputación en la comunidad.',
+                ],
             'Contenido ilegal (torrents, cracks, MP3, P2P, etc)': [
                 'Contenido ilegal (torrents, cracks, MP3, P2P, etc)',
             ],
-            'Está prohibido cualquier mensaje de solicitud, ayuda o recomendación sobre contenido ilegal. Cualquier mensaje en foros, artículos, perfiles u otra sección pública de la comunidad SpartanGeek.com que contenga dicho material será removido y se evaluará suspender la cuenta.': [
-                'Está prohibido cualquier mensaje de solicitud, ayuda o recomendación sobre contenido ilegal. Cualquier mensaje en foros, artículos, perfiles u otra sección pública de la comunidad SpartanGeek.com que contenga dicho material será removido y se evaluará suspender la cuenta.',
-            ],
+            'Está prohibido cualquier mensaje de solicitud, ayuda o recomendación sobre contenido ilegal. Cualquier mensaje en foros, artículos, perfiles u otra sección pública de la comunidad SpartanGeek.com que contenga dicho material será removido y se evaluará suspender la cuenta.':
+                [
+                    'Está prohibido cualquier mensaje de solicitud, ayuda o recomendación sobre contenido ilegal. Cualquier mensaje en foros, artículos, perfiles u otra sección pública de la comunidad SpartanGeek.com que contenga dicho material será removido y se evaluará suspender la cuenta.',
+                ],
             'Leer reglamento completo': ['Leer reglamento completo'],
             'Escoge una categoría (requerido)': [
                 'Escoge una categoría (requerido)',
             ],
             'Escribe aquí un titulo...': ['Escribe aquí un titulo...'],
             'Revisión y publicar': ['Revisión y publicar'],
-            'Sugerencias para obtener más y mejores respuestas y comentarios:': [
-                'Sugerencias para obtener más y mejores respuestas y comentarios:',
-            ],
-            'Lee nuevamente tu publicación antes de enviarla. Procura que sea clara y entendible.': [
-                'Lee nuevamente tu publicación antes de enviarla. Procura que sea clara y entendible.',
-            ],
-            'Si son varias preguntas, trata de empezar por las más importantes. Evita abrumar con mucha info y ve al punto.': [
-                'Si son varias preguntas, trata de empezar por las más importantes. Evita abrumar con mucha info y ve al punto.',
-            ],
-            'Gana reputación agradeciendo a los que te ayuden o contribuyan a tu tema.': [
-                'Gana reputación agradeciendo a los que te ayuden o contribuyan a tu tema.',
-            ],
+            'Sugerencias para obtener más y mejores respuestas y comentarios:':
+                [
+                    'Sugerencias para obtener más y mejores respuestas y comentarios:',
+                ],
+            'Lee nuevamente tu publicación antes de enviarla. Procura que sea clara y entendible.':
+                [
+                    'Lee nuevamente tu publicación antes de enviarla. Procura que sea clara y entendible.',
+                ],
+            'Si son varias preguntas, trata de empezar por las más importantes. Evita abrumar con mucha info y ve al punto.':
+                [
+                    'Si son varias preguntas, trata de empezar por las más importantes. Evita abrumar con mucha info y ve al punto.',
+                ],
+            'Gana reputación agradeciendo a los que te ayuden o contribuyan a tu tema.':
+                [
+                    'Gana reputación agradeciendo a los que te ayuden o contribuyan a tu tema.',
+                ],
             'Un último vistazo antes de publicar': [
                 'Un último vistazo antes de publicar',
             ],
             'Publicar ahora': ['Publicar ahora'],
             'Código de conducta': ['Código de conducta'],
-            'Si gustas de contribuir te compartimos los lineamientos que está comunidad sigue por el bien de todos.': [
-                'Si gustas de contribuir te compartimos los lineamientos que está comunidad sigue por el bien de todos.',
-            ],
+            'Si gustas de contribuir te compartimos los lineamientos que está comunidad sigue por el bien de todos.':
+                [
+                    'Si gustas de contribuir te compartimos los lineamientos que está comunidad sigue por el bien de todos.',
+                ],
             'Preguntas frecuentes': ['Preguntas frecuentes'],
-            'Antes de preguntar algo te pedimos consultar está sección para saber si alguien más ya ha resuelto esa duda.': [
-                'Antes de preguntar algo te pedimos consultar está sección para saber si alguien más ya ha resuelto esa duda.',
-            ],
+            'Antes de preguntar algo te pedimos consultar está sección para saber si alguien más ya ha resuelto esa duda.':
+                [
+                    'Antes de preguntar algo te pedimos consultar está sección para saber si alguien más ya ha resuelto esa duda.',
+                ],
             'Desarrollo libre': ['Desarrollo libre'],
-            'Anzu es una plataforma de código abierto escrita por apasionados del software! Te invitamos a conocer nuestra misión y unirte.': [
-                'Anzu es una plataforma de código abierto escrita por apasionados del software! Te invitamos a conocer nuestra misión y unirte.',
-            ],
+            'Anzu es una plataforma de código abierto escrita por apasionados del software! Te invitamos a conocer nuestra misión y unirte.':
+                [
+                    'Anzu es una plataforma de código abierto escrita por apasionados del software! Te invitamos a conocer nuestra misión y unirte.',
+                ],
             'Bienvenido a la comunidad de Anzu.': [
                 'Bienvenido a la comunidad de Anzu.',
             ],
-            'Únete a la conversación y aporta ideas para el desarrollo de Anzu, una poderosa plataforma de foros y comunidades enfocada en la discusión e interacción entre usuarios en tiempo real.': [
-                'Únete a la conversación y aporta ideas para el desarrollo de Anzu, una poderosa plataforma de foros y comunidades enfocada en la discusión e interacción entre usuarios en tiempo real.`',
-            ],
+            'Únete a la conversación y aporta ideas para el desarrollo de Anzu, una poderosa plataforma de foros y comunidades enfocada en la discusión e interacción entre usuarios en tiempo real.':
+                [
+                    'Únete a la conversación y aporta ideas para el desarrollo de Anzu, una poderosa plataforma de foros y comunidades enfocada en la discusión e interacción entre usuarios en tiempo real.`',
+                ],
             'Si eres nuevo por aquí': ['Si eres nuevo por aquí'],
             'Gracias por contribuir con tu respuesta!': [
                 'Gracias por contribuir con tu respuesta!',
@@ -329,9 +348,10 @@ export const i18n = new Jed({
             evitar: ['evitar'],
             'Responder con otra pregunta.': ['Responder con otra pregunta.'],
             'Responder a otras respuestas.': ['Responder a otras respuestas.'],
-            'Responder sólo tu opinión. Argumenta con referencias o tu experiencia personal.': [
-                'Responder sólo tu opinión. Argumenta con referencias o tu experiencia personal.',
-            ],
+            'Responder sólo tu opinión. Argumenta con referencias o tu experiencia personal.':
+                [
+                    'Responder sólo tu opinión. Argumenta con referencias o tu experiencia personal.',
+                ],
             'También puedes consultar nuestras recomendaciones sobre ': [
                 'También puedes consultar nuestras recomendaciones sobre ',
             ],

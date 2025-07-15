@@ -3,17 +3,20 @@ const prettier = require('eslint-plugin-prettier');
 const prettierConfig = require('eslint-config-prettier');
 
 module.exports = [
+    {
+        ignores: ['**/*.min.js', 'node_modules', 'src/drivers/ext/glue.js'],
+    },
     js.configs.recommended,
     prettierConfig,
     {
         plugins: {
-            prettier
+            prettier,
         },
         languageOptions: {
             parser: require('@babel/eslint-parser'),
             parserOptions: {
                 ecmaVersion: 2020,
-                sourceType: 'module'
+                sourceType: 'module',
             },
             globals: {
                 window: true,
@@ -22,15 +25,15 @@ module.exports = [
                 Tribute: true,
                 Promise: true,
                 document: true,
-                CURRENT_VERSION: true
-            }
+                CURRENT_VERSION: true,
+            },
         },
         rules: {
             'function-paren-newline': [0],
             'no-console': [0],
             'object-property-newline': [
                 1,
-                { allowMultiplePropertiesPerLine: true }
+                { allowMultiplePropertiesPerLine: true },
             ],
             'prettier/prettier': [
                 'error',
@@ -47,9 +50,9 @@ module.exports = [
                     htmlWhitespaceSensitivity: 'css',
                     jsxBracketSameLine: false,
                     proseWrap: 'preserve',
-                    requirePragma: false
-                }
-            ]
-        }
-    }
+                    requirePragma: false,
+                },
+            ],
+        },
+    },
 ];

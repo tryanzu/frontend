@@ -14,7 +14,7 @@ const { div, i } = tags;
 const { figure, img } = tags;
 const { h5, span } = tags;
 
-export const ChatMessageList = memo(function(props) {
+export const ChatMessageList = memo(function (props) {
     const { state, channel, isOnline, lockRef, effects, soundRef } = props;
     const bottomRef = useRef(null);
     const [list, setList] = useState([]);
