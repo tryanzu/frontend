@@ -40,7 +40,29 @@ export function Login({ state, effects }) {
                                 src: '/dist/images/facebook.svg',
                                 className: 'fl w1',
                             }),
-                            t`Continuar con Facebook`,
+                            t`Acceso con Facebook`,
+                        ]
+                    )
+                ),
+            providers.includes('google') &&
+                div(
+                    '.form-group',
+                    {},
+                    a(
+                        '.btn.btn-primary.db.w-80.btn-google.center',
+                        {
+                            href:
+                                Anzu.layer +
+                                'oauth/google?redir=' +
+                                window.location.href,
+                            style: {},
+                        },
+                        [
+                            img({
+                                src: '/dist/images/google.svg',
+                                className: 'fl w1',
+                            }),
+                            t`Acceso con Google`,
                         ]
                     )
                 ),
